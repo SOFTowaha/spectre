@@ -1,0 +1,188 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - 5912ac2e49a80e6a27b3707c9a1e6ce5248b1b2a - NumericalAlgorithms/Interpolation/Interpolate.hpp</title>
+  <link rel="stylesheet" type="text/css" href="../../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title"> SpECTRE Documentation Coverage Report</td></tr>
+    <tr><td class="ruler"><img src="../../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../../index.html">top level</a> - <a href="index.html">NumericalAlgorithms/Interpolation</a> - Interpolate.hpp</td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+             <td class="headerItem">Commit:</td>
+             <td class="headerValue"><a target="_blank" href="https://github.com/sxs-collaboration/spectre/commit/5912ac2e49a80e6a27b3707c9a1e6ce5248b1b2a">5912ac2e49a80e6a27b3707c9a1e6ce5248b1b2a</a></td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">1</td>
+            <td class="headerCovTableEntry">12</td>
+            <td class="headerCovTableEntryLo">8.3 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2019-12-02 22:01:08</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td class="headerItem">Legend:</td>
+            <td class="headerValueLeg">            Lines:
+            <span class="coverLegendCov">hit</span>
+            <span class="coverLegendNoCov">not hit</span>
+</td>
+            <td></td>
+          </tr>
+          <tr><td><img src="../../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">          Line data    Source code</pre>
+<pre class="source">
+<span class="lineNum">       1 </span><span class="lineNoCov">          0 : // Distributed under the MIT License.</span>
+<span class="lineNum">       2 </span>            : // See LICENSE.txt for details.
+<span class="lineNum">       3 </span>            : 
+<span class="lineNum">       4 </span>            : #pragma once
+<span class="lineNum">       5 </span>            : 
+<span class="lineNum">       6 </span>            : #include &lt;cstddef&gt;
+<span class="lineNum">       7 </span>            : #include &lt;pup.h&gt;
+<span class="lineNum">       8 </span>            : 
+<span class="lineNum">       9 </span>            : #include &quot;DataStructures/DataBox/DataBoxTag.hpp&quot;
+<span class="lineNum">      10 </span>            : #include &quot;Domain/ElementId.hpp&quot;
+<span class="lineNum">      11 </span>            : #include &quot;Options/Options.hpp&quot;
+<span class="lineNum">      12 </span>            : #include &quot;Parallel/CharmPupable.hpp&quot;
+<span class="lineNum">      13 </span>            : #include &quot;Parallel/ConstGlobalCache.hpp&quot;
+<span class="lineNum">      14 </span>            : #include &quot;Parallel/Invoke.hpp&quot;
+<span class="lineNum">      15 </span>            : #include &quot;ParallelAlgorithms/EventsAndTriggers/Event.hpp&quot;
+<span class="lineNum">      16 </span>            : #include &quot;PointwiseFunctions/GeneralRelativity/Tags.hpp&quot;
+<span class="lineNum">      17 </span>            : #include &quot;Utilities/TMPL.hpp&quot;
+<span class="lineNum">      18 </span>            : 
+<span class="lineNum">      19 </span>            : /// \cond
+<span class="lineNum">      20 </span>            : class TimeStepId;
+<span class="lineNum">      21 </span>            : namespace Tags {
+<span class="lineNum">      22 </span>            : struct TimeStepId;
+<span class="lineNum">      23 </span>            : template &lt;size_t VolumeDim&gt;
+<span class="lineNum">      24 </span>            : struct Mesh;
+<span class="lineNum">      25 </span>            : template &lt;typename TagsList&gt;
+<span class="lineNum">      26 </span>            : struct Variables;
+<span class="lineNum">      27 </span>            : }  // namespace Tags
+<span class="lineNum">      28 </span>            : template &lt;size_t Dim&gt; class Mesh;
+<span class="lineNum">      29 </span>            : template &lt;size_t VolumeDim&gt; class ElementIndex;
+<span class="lineNum">      30 </span>            : namespace intrp {
+<span class="lineNum">      31 </span>            : template &lt;typename Metavariables&gt;
+<span class="lineNum">      32 </span>            : struct Interpolator;
+<span class="lineNum">      33 </span>            : namespace Actions {
+<span class="lineNum">      34 </span>            : struct InterpolatorReceiveVolumeData;
+<span class="lineNum">      35 </span>            : }  // namespace Actions
+<span class="lineNum">      36 </span>            : }  // namespace intrp
+<span class="lineNum">      37 </span>            : /// \endcond
+<span class="lineNum">      38 </span>            : 
+<span class="lineNum">      39 </span>            : namespace intrp {
+<span class="lineNum">      40 </span><span class="lineNoCov">          0 : namespace Events {</span>
+<span class="lineNum">      41 </span>            : template &lt;size_t VolumeDim, typename Tensors, typename EventRegistrars&gt;
+<span class="lineNum">      42 </span><span class="lineCov">          1 : class Interpolate;</span>
+<span class="lineNum">      43 </span>            : 
+<span class="lineNum">      44 </span><span class="lineNoCov">          0 : namespace Registrars {</span>
+<span class="lineNum">      45 </span>            : template &lt;size_t VolumeDim, typename Tensors&gt;
+<span class="lineNum">      46 </span><span class="lineNoCov">          0 : struct Interpolate {</span>
+<span class="lineNum">      47 </span>            :   template &lt;typename RegistrarList&gt;
+<span class="lineNum">      48 </span><span class="lineNoCov">          0 :   using f = Events::Interpolate&lt;VolumeDim, Tensors, RegistrarList&gt;;</span>
+<span class="lineNum">      49 </span>            : };
+<span class="lineNum">      50 </span>            : }  // namespace Registrars
+<span class="lineNum">      51 </span>            : 
+<span class="lineNum">      52 </span>            : /// Does an interpolation by calling Actions on Interpolator.
+<span class="lineNum">      53 </span>            : template &lt;size_t VolumeDim, typename Tensors,
+<span class="lineNum">      54 </span>            :           typename EventRegistrars =
+<span class="lineNum">      55 </span>            :               tmpl::list&lt;Registrars::Interpolate&lt;VolumeDim, Tensors&gt;&gt;&gt;
+<span class="lineNum">      56 </span>            : class Interpolate;  // IWYU pragma: keep
+<span class="lineNum">      57 </span>            : 
+<span class="lineNum">      58 </span>            : template &lt;size_t VolumeDim, typename... Tensors, typename EventRegistrars&gt;
+<span class="lineNum">      59 </span>            : class Interpolate&lt;VolumeDim, tmpl::list&lt;Tensors...&gt;, EventRegistrars&gt;
+<span class="lineNum">      60 </span><span class="lineNoCov">          0 :     : public Event&lt;EventRegistrars&gt; {</span>
+<span class="lineNum">      61 </span>            :   /// \cond
+<span class="lineNum">      62 </span>            :   explicit Interpolate(CkMigrateMessage* /*unused*/) noexcept {}
+<span class="lineNum">      63 </span>            :   using PUP::able::register_constructor;
+<span class="lineNum">      64 </span>            :   WRAPPED_PUPable_decl_template(Interpolate);  // NOLINT
+<span class="lineNum">      65 </span>            :   /// \endcond
+<span class="lineNum">      66 </span>            : 
+<span class="lineNum">      67 </span><span class="lineNoCov">          0 :   using options = tmpl::list&lt;&gt;;</span>
+<span class="lineNum">      68 </span><span class="lineNoCov">          0 :   static constexpr OptionString help =</span>
+<span class="lineNum">      69 </span>            :       &quot;Starts interpolation by sending data to the Interpolator.&quot;;
+<span class="lineNum">      70 </span>            : 
+<span class="lineNum">      71 </span><span class="lineNoCov">          0 :   Interpolate() = default;</span>
+<span class="lineNum">      72 </span>            : 
+<span class="lineNum">      73 </span><span class="lineNoCov">          0 :   using argument_tags =</span>
+<span class="lineNum">      74 </span>            :       tmpl::list&lt;::Tags::TimeStepId, ::Tags::Mesh&lt;VolumeDim&gt;, Tensors...&gt;;
+<span class="lineNum">      75 </span>            : 
+<span class="lineNum">      76 </span>            :   template &lt;typename Metavariables, typename ParallelComponent&gt;
+<span class="lineNum">      77 </span><span class="lineNoCov">          0 :   void operator()(const TimeStepId&amp; time_id, const Mesh&lt;VolumeDim&gt;&amp; mesh,</span>
+<span class="lineNum">      78 </span>            :                   const db::const_item_type&lt;Tensors&gt;&amp;... tensors,
+<span class="lineNum">      79 </span>            :                   Parallel::ConstGlobalCache&lt;Metavariables&gt;&amp; cache,
+<span class="lineNum">      80 </span>            :                   const ElementIndex&lt;VolumeDim&gt;&amp; array_index,
+<span class="lineNum">      81 </span>            :                   const ParallelComponent* const /*meta*/) const noexcept {
+<span class="lineNum">      82 </span>            :     Variables&lt;tmpl::list&lt;Tensors...&gt;&gt; interp_vars(mesh.number_of_grid_points());
+<span class="lineNum">      83 </span>            :     const auto copy_to_variables = [&amp;interp_vars](const auto tensor_tag_v,
+<span class="lineNum">      84 </span>            :                                                   const auto&amp; tensor) noexcept {
+<span class="lineNum">      85 </span>            :       using tensor_tag = tmpl::type_from&lt;decltype(tensor_tag_v)&gt;;
+<span class="lineNum">      86 </span>            :       get&lt;tensor_tag&gt;(interp_vars) = tensor;
+<span class="lineNum">      87 </span>            :       return 0;
+<span class="lineNum">      88 </span>            :     };
+<span class="lineNum">      89 </span>            :     expand_pack(copy_to_variables(tmpl::type_&lt;Tensors&gt;{}, tensors)...);
+<span class="lineNum">      90 </span>            : 
+<span class="lineNum">      91 </span>            :     // Send volume data to the Interpolator, to trigger interpolation.
+<span class="lineNum">      92 </span>            :     auto&amp; interpolator =
+<span class="lineNum">      93 </span>            :         *::Parallel::get_parallel_component&lt;Interpolator&lt;Metavariables&gt;&gt;(cache)
+<span class="lineNum">      94 </span>            :              .ckLocalBranch();
+<span class="lineNum">      95 </span>            :     Parallel::simple_action&lt;Actions::InterpolatorReceiveVolumeData&gt;(
+<span class="lineNum">      96 </span>            :         interpolator, time_id, ElementId&lt;VolumeDim&gt;(array_index), mesh,
+<span class="lineNum">      97 </span>            :         interp_vars);
+<span class="lineNum">      98 </span>            :   }
+<span class="lineNum">      99 </span>            : };
+<span class="lineNum">     100 </span>            : 
+<span class="lineNum">     101 </span>            : /// \cond
+<span class="lineNum">     102 </span>            : template &lt;size_t VolumeDim, typename... Tensors, typename EventRegistrars&gt;
+<span class="lineNum">     103 </span>            : PUP::able::PUP_ID Interpolate&lt;VolumeDim, tmpl::list&lt;Tensors...&gt;,
+<span class="lineNum">     104 </span>            :                               EventRegistrars&gt;::my_PUP_ID = 0;  // NOLINT
+<span class="lineNum">     105 </span>            : /// \endcond
+<span class="lineNum">     106 </span>            : 
+<span class="lineNum">     107 </span>            : }  // namespace Events
+<span class="lineNum">     108 </span>            : }  // namespace intrp
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.13</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

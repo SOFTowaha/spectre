@@ -1,0 +1,209 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - 5912ac2e49a80e6a27b3707c9a1e6ce5248b1b2a - Domain/InterfaceHelpers.hpp</title>
+  <link rel="stylesheet" type="text/css" href="../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title"> SpECTRE Documentation Coverage Report</td></tr>
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../index.html">top level</a> - <a href="index.html">Domain</a> - InterfaceHelpers.hpp</td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+             <td class="headerItem">Commit:</td>
+             <td class="headerValue"><a target="_blank" href="https://github.com/sxs-collaboration/spectre/commit/5912ac2e49a80e6a27b3707c9a1e6ce5248b1b2a">5912ac2e49a80e6a27b3707c9a1e6ce5248b1b2a</a></td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">2</td>
+            <td class="headerCovTableEntry">3</td>
+            <td class="headerCovTableEntryLo">66.7 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2019-12-02 22:01:08</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td class="headerItem">Legend:</td>
+            <td class="headerValueLeg">            Lines:
+            <span class="coverLegendCov">hit</span>
+            <span class="coverLegendNoCov">not hit</span>
+</td>
+            <td></td>
+          </tr>
+          <tr><td><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">          Line data    Source code</pre>
+<pre class="source">
+<span class="lineNum">       1 </span><span class="lineNoCov">          0 : // Distributed under the MIT License.</span>
+<span class="lineNum">       2 </span>            : // See LICENSE.txt for details.
+<span class="lineNum">       3 </span>            : 
+<span class="lineNum">       4 </span>            : #pragma once
+<span class="lineNum">       5 </span>            : 
+<span class="lineNum">       6 </span>            : #include &lt;cstddef&gt;
+<span class="lineNum">       7 </span>            : 
+<span class="lineNum">       8 </span>            : #include &quot;DirectionMap.hpp&quot;
+<span class="lineNum">       9 </span>            : #include &quot;Domain/Direction.hpp&quot;
+<span class="lineNum">      10 </span>            : #include &quot;Domain/Tags.hpp&quot;
+<span class="lineNum">      11 </span>            : #include &quot;Utilities/TMPL.hpp&quot;
+<span class="lineNum">      12 </span>            : 
+<span class="lineNum">      13 </span>            : namespace InterfaceHelpers_detail {
+<span class="lineNum">      14 </span>            : 
+<span class="lineNum">      15 </span>            : template &lt;typename T, typename = cpp17::void_t&lt;&gt;&gt;
+<span class="lineNum">      16 </span>            : struct get_volume_tags_impl {
+<span class="lineNum">      17 </span>            :   using type = tmpl::list&lt;&gt;;
+<span class="lineNum">      18 </span>            : };
+<span class="lineNum">      19 </span>            : template &lt;typename T&gt;
+<span class="lineNum">      20 </span>            : struct get_volume_tags_impl&lt;T, cpp17::void_t&lt;typename T::volume_tags&gt;&gt; {
+<span class="lineNum">      21 </span>            :   using type = typename T::volume_tags;
+<span class="lineNum">      22 </span>            : };
+<span class="lineNum">      23 </span>            : 
+<span class="lineNum">      24 </span>            : }  // namespace InterfaceHelpers_detail
+<span class="lineNum">      25 </span>            : 
+<span class="lineNum">      26 </span>            : /// Retrieve `T::volume_tags`, defaulting to an empty list
+<span class="lineNum">      27 </span>            : template &lt;typename T&gt;
+<span class="lineNum">      28 </span><span class="lineCov">          1 : using get_volume_tags =</span>
+<span class="lineNum">      29 </span>            :     tmpl::type_from&lt;InterfaceHelpers_detail::get_volume_tags_impl&lt;T&gt;&gt;;
+<span class="lineNum">      30 </span>            : 
+<span class="lineNum">      31 </span>            : namespace InterfaceHelpers_detail {
+<span class="lineNum">      32 </span>            : 
+<span class="lineNum">      33 </span>            : template &lt;typename Tag, typename DirectionsTag, typename VolumeTags&gt;
+<span class="lineNum">      34 </span>            : struct make_interface_tag_impl {
+<span class="lineNum">      35 </span>            :   using type = tmpl::conditional_t&lt;tmpl::list_contains_v&lt;VolumeTags, Tag&gt;, Tag,
+<span class="lineNum">      36 </span>            :                                    ::Tags::Interface&lt;DirectionsTag, Tag&gt;&gt;;
+<span class="lineNum">      37 </span>            : };
+<span class="lineNum">      38 </span>            : 
+<span class="lineNum">      39 </span>            : // Retrieve the `argument_tags` from the `InterfaceInvokable` and wrap them in
+<span class="lineNum">      40 </span>            : // `::Tags::Interface` if they are not listed in
+<span class="lineNum">      41 </span>            : // `InterfaceInvokable::volume_tags`.
+<span class="lineNum">      42 </span>            : template &lt;typename InterfaceInvokable, typename DirectionsTag&gt;
+<span class="lineNum">      43 </span>            : using get_interface_argument_tags = tmpl::transform&lt;
+<span class="lineNum">      44 </span>            :     typename InterfaceInvokable::argument_tags,
+<span class="lineNum">      45 </span>            :     make_interface_tag_impl&lt;tmpl::_1, tmpl::pin&lt;DirectionsTag&gt;,
+<span class="lineNum">      46 </span>            :                             tmpl::pin&lt;get_volume_tags&lt;InterfaceInvokable&gt;&gt;&gt;&gt;;
+<span class="lineNum">      47 </span>            : 
+<span class="lineNum">      48 </span>            : /// Pull the direction's entry from interface arguments, passing volume
+<span class="lineNum">      49 </span>            : /// arguments through unchanged.
+<span class="lineNum">      50 </span>            : template &lt;bool IsVolumeTag&gt;
+<span class="lineNum">      51 </span>            : struct unmap_interface_args;
+<span class="lineNum">      52 </span>            : 
+<span class="lineNum">      53 </span>            : template &lt;&gt;
+<span class="lineNum">      54 </span>            : struct unmap_interface_args&lt;true&gt; {
+<span class="lineNum">      55 </span>            :   template &lt;typename T&gt;
+<span class="lineNum">      56 </span>            :   using f = T;
+<span class="lineNum">      57 </span>            : 
+<span class="lineNum">      58 </span>            :   template &lt;size_t VolumeDim, typename T&gt;
+<span class="lineNum">      59 </span>            :   static constexpr const T&amp; apply(const ::Direction&lt;VolumeDim&gt;&amp; /*direction*/,
+<span class="lineNum">      60 </span>            :                                   const T&amp; arg) noexcept {
+<span class="lineNum">      61 </span>            :     return arg;
+<span class="lineNum">      62 </span>            :   }
+<span class="lineNum">      63 </span>            : };
+<span class="lineNum">      64 </span>            : 
+<span class="lineNum">      65 </span>            : template &lt;&gt;
+<span class="lineNum">      66 </span>            : struct unmap_interface_args&lt;false&gt; {
+<span class="lineNum">      67 </span>            :   template &lt;typename T&gt;
+<span class="lineNum">      68 </span>            :   using f = typename T::mapped_type;
+<span class="lineNum">      69 </span>            : 
+<span class="lineNum">      70 </span>            :   template &lt;size_t VolumeDim, typename T&gt;
+<span class="lineNum">      71 </span>            :   static constexpr decltype(auto) apply(const ::Direction&lt;VolumeDim&gt;&amp; direction,
+<span class="lineNum">      72 </span>            :                                         const T&amp; arg) noexcept {
+<span class="lineNum">      73 </span>            :     return arg.at(direction);
+<span class="lineNum">      74 </span>            :   }
+<span class="lineNum">      75 </span>            : };
+<span class="lineNum">      76 </span>            : 
+<span class="lineNum">      77 </span>            : template &lt;typename DirectionsTag, typename VolumeTags,
+<span class="lineNum">      78 </span>            :           typename InterfaceInvokable, typename DbTagsList,
+<span class="lineNum">      79 </span>            :           typename... ArgumentTags, typename... ExtraArgs&gt;
+<span class="lineNum">      80 </span>            : SPECTRE_ALWAYS_INLINE constexpr auto interface_apply_impl(
+<span class="lineNum">      81 </span>            :     InterfaceInvokable&amp;&amp; interface_invokable,
+<span class="lineNum">      82 </span>            :     const db::DataBox&lt;DbTagsList&gt;&amp; box, tmpl::list&lt;ArgumentTags...&gt; /*meta*/,
+<span class="lineNum">      83 </span>            :     ExtraArgs&amp;&amp;... extra_args) noexcept {
+<span class="lineNum">      84 </span>            :   using interface_return_type = std::decay_t&lt;decltype(interface_invokable(
+<span class="lineNum">      85 </span>            :       std::declval&lt;db::const_item_type&lt;ArgumentTags, DbTagsList&gt;&gt;()...,
+<span class="lineNum">      86 </span>            :       std::declval&lt;ExtraArgs&amp;&amp;&gt;()...))&gt;;
+<span class="lineNum">      87 </span>            :   constexpr size_t volume_dim = DirectionsTag::volume_dim;
+<span class="lineNum">      88 </span>            :   DirectionMap&lt;volume_dim, interface_return_type&gt; result{};
+<span class="lineNum">      89 </span>            :   for (const auto&amp; direction : get&lt;DirectionsTag&gt;(box)) {
+<span class="lineNum">      90 </span>            :     auto interface_value = interface_invokable(
+<span class="lineNum">      91 </span>            :         unmap_interface_args&lt;tmpl::list_contains_v&lt;VolumeTags, ArgumentTags&gt;&gt;::
+<span class="lineNum">      92 </span>            :             apply(direction,
+<span class="lineNum">      93 </span>            :                   get&lt;tmpl::type_from&lt;make_interface_tag_impl&lt;
+<span class="lineNum">      94 </span>            :                       ArgumentTags, DirectionsTag, VolumeTags&gt;&gt;&gt;(box))...,
+<span class="lineNum">      95 </span>            :         extra_args...);
+<span class="lineNum">      96 </span>            :     result.insert({direction, std::move(interface_value)});
+<span class="lineNum">      97 </span>            :   }
+<span class="lineNum">      98 </span>            :   return result;
+<span class="lineNum">      99 </span>            : }
+<span class="lineNum">     100 </span>            : 
+<span class="lineNum">     101 </span>            : }  // namespace InterfaceHelpers_detail
+<span class="lineNum">     102 </span>            : 
+<span class="lineNum">     103 </span>            : /*!
+<span class="lineNum">     104 </span>            :  * \brief Apply the `interface_invokable` to the `box` on all interfaces given
+<span class="lineNum">     105 </span>            :  * by the `DirectionsTag`.
+<span class="lineNum">     106 </span>            :  *
+<span class="lineNum">     107 </span>            :  * \details The `interface_invokable` is expected to be invokable with the types
+<span class="lineNum">     108 </span>            :  * held by the `ArgumentTags`, followed by the `extra_args`. The `ArgumentTags`
+<span class="lineNum">     109 </span>            :  * will be prefixed as `::Tags::Interface&lt;DirectionsTag, ArgumentTag&gt;` and thus
+<span class="lineNum">     110 </span>            :  * taken from the interface, except for those specified in the `VolumeTags`.
+<span class="lineNum">     111 </span>            :  *
+<span class="lineNum">     112 </span>            :  * This function returns a `DirectionMap` that holds the value returned by
+<span class="lineNum">     113 </span>            :  * the `interface_invokable` in every direction of the `DirectionsTag`.
+<span class="lineNum">     114 </span>            :  *
+<span class="lineNum">     115 </span>            :  * Here is an example how to use this function:
+<span class="lineNum">     116 </span>            :  *
+<span class="lineNum">     117 </span>            :  * \snippet Test_InterfaceHelpers.cpp interface_apply_example
+<span class="lineNum">     118 </span>            :  */
+<span class="lineNum">     119 </span>            : template &lt;typename DirectionsTag, typename ArgumentTags, typename VolumeTags,
+<span class="lineNum">     120 </span>            :           typename InterfaceInvokable, typename DbTagsList,
+<span class="lineNum">     121 </span>            :           typename... ExtraArgs&gt;
+<span class="lineNum">     122 </span><span class="lineCov">          1 : SPECTRE_ALWAYS_INLINE constexpr auto interface_apply(</span>
+<span class="lineNum">     123 </span>            :     InterfaceInvokable&amp;&amp; interface_invokable,
+<span class="lineNum">     124 </span>            :     const db::DataBox&lt;DbTagsList&gt;&amp; box, ExtraArgs&amp;&amp;... extra_args) noexcept {
+<span class="lineNum">     125 </span>            :   return InterfaceHelpers_detail::interface_apply_impl&lt;DirectionsTag,
+<span class="lineNum">     126 </span>            :                                                        VolumeTags&gt;(
+<span class="lineNum">     127 </span>            :       std::forward&lt;InterfaceInvokable&gt;(interface_invokable), box,
+<span class="lineNum">     128 </span>            :       ArgumentTags{}, std::forward&lt;ExtraArgs&gt;(extra_args)...);
+<span class="lineNum">     129 </span>            : }
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.13</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

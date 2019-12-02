@@ -1,0 +1,404 @@
+<!-- HTML header for doxygen 1.8.10-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=9"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="author" content="SXS Collaboration">
+    <meta name="generator" content="Doxygen 1.8.13"/>
+    <style>
+        /*!
+         * IE10 viewport hack for Surface/desktop Windows 8 bug
+         * Copyright 2014-2015 Twitter, Inc.
+         * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
+         */
+        @-webkit-viewport { width: device-width; }
+        @-moz-viewport    { width: device-width; }
+        @-ms-viewport     { width: device-width; }
+        @-o-viewport      { width: device-width; }
+        @viewport         { width: device-width; }
+      </style>
+  <title>SpECTRE: RelativisticEuler::Valencia Namespace Reference</title>
+  <link href="tabs.css" rel="stylesheet" type="text/css"/>
+  <script type="text/javascript" src="jquery.js"></script>
+  <script type="text/javascript" src="dynsections.js"></script>
+  <link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+  <script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    extensions: ["tex2jax.js", "TeX/AMSmath.js", "TeX/AMSsymbols.js", "color.js"],
+    jax: ["input/TeX","output/HTML-CSS"],
+});
+MathJax.Hub.Config({
+    TeX: { equationNumbers: { autoNumber: "AMS" } }
+});
+MathJax.Hub.Config({
+    tex2jax: {inlineMath: [['^^','^^'], ['\\(', '\\)']]}
+});
+</script><script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js"></script>
+  <link href="octicons.css" rel="stylesheet">
+  <link href="bootstrap.min.css" rel="stylesheet">
+  <link href="doxygen.css" rel="stylesheet" type="text/css" />
+  <script type="text/javascript" src="jquery.js"></script>
+  <script type="text/javascript" src="popper.min.js"></script>
+  <script type="text/javascript" src="bootstrap.min.js"></script>
+  <script type="text/javascript" src="spectre.js"></script>
+  </head>
+  <body>
+  <div id="top" class="navbar-fixed-top"><!-- do not remove this div, it is closed by doxygen! -->
+  <!-- BEGIN TITLEAREA -->
+  <div id="titlearea">
+  <script type="text/javascript">
+  var searchBox = new SearchBox("searchBox", "search",false,'Search');
+  </script>
+  <div id="main-nav">
+    <ul class="sm sm-dox" id="main-menu">
+      <li>
+      <a href="index.html">
+      SpECTRE &#160;
+        <span id="projectnumber">v0.0.0</span>
+      </a>
+      </li>
+      <li class="dropdown">
+        <a class="dropdown-toggle" data-toggle="dropdown" href="#" id="selected">
+          <span id="selected">
+            <i class="octicon octicon-book"></i><span>Documentation</span>
+          </span>
+          <span class="caret"></span>
+        </a>
+        <ul class="dropdown-menu">
+          <li style="min-width: 135px;">
+            <a href="index.html">
+            <i class="octicon octicon-book"></i><span>Introduction</span></a>
+          </li>
+          <li style="min-width: 135px;">
+            <a href="installation.html">
+              <i class="octicon octicon-desktop-download"></i><span>Installation</span>
+            </a>
+          </li>
+          <li style="min-width: 135px;">
+            <a href="tutorials.html">
+              <i class="octicon octicon-mortar-board"></i><span>User Tutorials</span>
+            </a>
+          </li>
+          <li style="min-width: 135px;">
+            <a href="dev_guide.html">
+              <i class="octicon octicon-gist-secret"></i><span>Dev Guide</span>
+            </a>
+          </li>
+          <li style="min-width: 135px;">
+            <a href="code_of_conduct.html">
+              <i class="octicon octicon-comment-discussion"></i><span>Code of Conduct</span>
+            </a>
+          </li>
+          <li style="min-width: 135px;">
+            <a href="contributing_to_spectre.html">
+              <i class="octicon octicon-git-pull-request"></i><span>Contributing Guide</span>
+            </a>
+          </li>
+        </ul>
+      </li>
+      <li class="dropdown">
+        <a class="dropdown-toggle" data-toggle="dropdown" href="#" id="selected">
+          <span id="selected">
+            <i class="octicon octicon-code"></i>
+              <span>Code Reference</span>
+          </span>
+          <span class="caret"></span>
+        </a>
+        <ul class="dropdown-menu">
+          <li style="min-width: 130px;">
+            <a href="modules.html">
+              <i class="octicon octicon-code"></i>
+              <span>Topics</span>
+            </a>
+          </li>
+          <li style="min-width: 130px;">
+            <a href="namespaces.html">
+              <i class="octicon octicon-gist"></i>
+              <span>Namespaces</span>
+            </a>
+          </li>
+        </ul>
+      </li>
+      <li>
+        <a href="files.html">
+          <i class="octicon octicon-file-directory"></i><span>Files</span>
+        </a>
+      </li>
+      <li>
+        <a href="citelist.html">
+          <i class="octicon octicon-file-text"></i><span>Bibliography</span>
+        </a>
+      </li>
+      <li>
+        <a href="https://github.com/sxs-collaboration/spectre" target="_blank">
+          <i class="octicon octicon-mark-github"></i><span>View on GitHub</span>
+        </a>
+      </li>
+      <!--The Search <li> is added by doxygen later-->
+    </ul>
+  </div><!-- main-nav -->
+  </div><!-- titlearea -->
+  <!-- window showing the filter options -->
+  <div id="MSearchSelectWindow"  style="position: fixed;"
+       onmouseover="return searchBox.OnSearchSelectShow()"
+       onmouseout="return searchBox.OnSearchSelectHide()"
+       onkeydown="return searchBox.OnSearchSelectKey(event)">
+  </div>
+  <!-- iframe showing the search results (closed by default) -->
+  <div id="MSearchResultsWindow"  style="position: fixed;">
+  <iframe src="javascript:void(0)" frameborder="0"
+          name="MSearchResults" id="MSearchResults">
+  </iframe>
+  </div>
+<!-- Generated by Doxygen 1.8.13 -->
+<script type="text/javascript">
+var searchBox = new SearchBox("searchBox", "search",false,'Search');
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+$(function() {
+  initMenu('',true,false,'search.php','Search');
+  $(document).ready(function() { init_search(); });
+});
+</script>
+<div id="main-nav"></div>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<iframe src="javascript:void(0)" frameborder="0" 
+        name="MSearchResults" id="MSearchResults">
+</iframe>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceRelativisticEuler.html">RelativisticEuler</a></li><li class="navelem"><a class="el" href="namespaceRelativisticEuler_1_1Valencia.html">Valencia</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#namespaces">Namespaces</a> &#124;
+<a href="#nested-classes">Classes</a>  </div>
+  <div class="headertitle">
+<div class="title">RelativisticEuler::Valencia Namespace Reference</div>  </div>
+</div><!--header-->
+<div class="contents">
+
+<p>The <a class="el" href="namespaceRelativisticEuler_1_1Valencia.html" title="The Valencia formulation of the relativistic Euler System See Chapter 7 of Relativistic Hydrodynamics...">Valencia</a> formulation of the relativistic Euler <a class="el" href="structRelativisticEuler_1_1Valencia_1_1System.html">System</a> See Chapter 7 of Relativistic Hydrodynamics by Luciano Rezzolla and Olindo Zanotti or <a href="http://iopscience.iop.org/article/10.1086/303604">http://iopscience.iop.org/article/10.1086/303604</a>.  
+<a href="#details">More...</a></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="namespaces"></a>
+Namespaces</h2></td></tr>
+<tr class="memitem:namespaceRelativisticEuler_1_1Valencia_1_1Tags"><td class="memItemLeft" align="right" valign="top"> &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceRelativisticEuler_1_1Valencia_1_1Tags.html">Tags</a></td></tr>
+<tr class="memdesc:namespaceRelativisticEuler_1_1Valencia_1_1Tags"><td class="mdescLeft">&#160;</td><td class="mdescRight">Tags for the <a class="el" href="namespaceRelativisticEuler_1_1Valencia.html" title="The Valencia formulation of the relativistic Euler System See Chapter 7 of Relativistic Hydrodynamics...">Valencia</a> formulation of the relativistic Euler system. <br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
+Classes</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structRelativisticEuler_1_1Valencia_1_1ComputeFluxes.html">ComputeFluxes</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">The fluxes of the conservative variables.  <a href="structRelativisticEuler_1_1Valencia_1_1ComputeFluxes.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structRelativisticEuler_1_1Valencia_1_1ComputeLargestCharacteristicSpeed.html">ComputeLargestCharacteristicSpeed</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structRelativisticEuler_1_1Valencia_1_1ComputeSources.html">ComputeSources</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute the source terms for the flux-conservative <a class="el" href="namespaceRelativisticEuler_1_1Valencia.html" title="The Valencia formulation of the relativistic Euler System See Chapter 7 of Relativistic Hydrodynamics...">Valencia</a> formulation of the relativistic Euler system.  <a href="structRelativisticEuler_1_1Valencia_1_1ComputeSources.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structRelativisticEuler_1_1Valencia_1_1ConservativeFromPrimitive.html">ConservativeFromPrimitive</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute the conservative variables from primitive variables.  <a href="structRelativisticEuler_1_1Valencia_1_1ConservativeFromPrimitive.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structRelativisticEuler_1_1Valencia_1_1PrimitiveFromConservative.html">PrimitiveFromConservative</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute the primitive variables from the conservative variables.  <a href="structRelativisticEuler_1_1Valencia_1_1PrimitiveFromConservative.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structRelativisticEuler_1_1Valencia_1_1System.html">System</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
+Functions</h2></td></tr>
+<tr><td colspan="2"><div class="groupHeader"></div></td></tr>
+<tr class="memitem:a69ff615359393965bc2fd89600030ef6"><td class="memTemplParams" colspan="2">template&lt;size_t Dim&gt; </td></tr>
+<tr class="memitem:a69ff615359393965bc2fd89600030ef6"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceRelativisticEuler_1_1Valencia.html#a69ff615359393965bc2fd89600030ef6">characteristic_speeds</a> (<a class="el" href="classgsl_1_1not__null.html">gsl::not_null</a>&lt; <a class="elRef" doxygen="/work/spectre/docs/config/cppreference-doxygen-web.tag.xml:http://en.cppreference.com/w/" href="http://en.cppreference.com/w/cpp/container/array.html">std::array</a>&lt; <a class="el" href="classDataVector.html">DataVector</a>, Dim+2 &gt; *&gt; char_speeds, const <a class="el" href="group__TensorGroup.html#ga06ebcb38a1f13c246e53378b9e8959ce">Scalar</a>&lt; <a class="el" href="classDataVector.html">DataVector</a> &gt; &amp;lapse, const tnsr::I&lt; <a class="el" href="classDataVector.html">DataVector</a>, Dim &gt; &amp;shift, const tnsr::I&lt; <a class="el" href="classDataVector.html">DataVector</a>, Dim &gt; &amp;spatial_velocity, const <a class="el" href="group__TensorGroup.html#ga06ebcb38a1f13c246e53378b9e8959ce">Scalar</a>&lt; <a class="el" href="classDataVector.html">DataVector</a> &gt; &amp;spatial_velocity_squared, const <a class="el" href="group__TensorGroup.html#ga06ebcb38a1f13c246e53378b9e8959ce">Scalar</a>&lt; <a class="el" href="classDataVector.html">DataVector</a> &gt; &amp;sound_speed_squared, const tnsr::i&lt; <a class="el" href="classDataVector.html">DataVector</a>, Dim &gt; &amp;normal) noexcept</td></tr>
+<tr class="memdesc:a69ff615359393965bc2fd89600030ef6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute the characteristic speeds for the <a class="el" href="namespaceRelativisticEuler_1_1Valencia.html" title="The Valencia formulation of the relativistic Euler System See Chapter 7 of Relativistic Hydrodynamics...">Valencia</a> formulation of the relativistic Euler system.  <a href="#a69ff615359393965bc2fd89600030ef6">More...</a><br /></td></tr>
+<tr class="separator:a69ff615359393965bc2fd89600030ef6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a45ee2fcecfa0e0a03101d15c88d9bd57"><td class="memTemplParams" colspan="2">template&lt;size_t Dim&gt; </td></tr>
+<tr class="memitem:a45ee2fcecfa0e0a03101d15c88d9bd57"><td class="memTemplItemLeft" align="right" valign="top"><a class="elRef" doxygen="/work/spectre/docs/config/cppreference-doxygen-web.tag.xml:http://en.cppreference.com/w/" href="http://en.cppreference.com/w/cpp/container/array.html">std::array</a>&lt; <a class="el" href="classDataVector.html">DataVector</a>, Dim+2 &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceRelativisticEuler_1_1Valencia.html#a45ee2fcecfa0e0a03101d15c88d9bd57">characteristic_speeds</a> (const <a class="el" href="group__TensorGroup.html#ga06ebcb38a1f13c246e53378b9e8959ce">Scalar</a>&lt; <a class="el" href="classDataVector.html">DataVector</a> &gt; &amp;lapse, const tnsr::I&lt; <a class="el" href="classDataVector.html">DataVector</a>, Dim &gt; &amp;shift, const tnsr::I&lt; <a class="el" href="classDataVector.html">DataVector</a>, Dim &gt; &amp;spatial_velocity, const <a class="el" href="group__TensorGroup.html#ga06ebcb38a1f13c246e53378b9e8959ce">Scalar</a>&lt; <a class="el" href="classDataVector.html">DataVector</a> &gt; &amp;spatial_velocity_squared, const <a class="el" href="group__TensorGroup.html#ga06ebcb38a1f13c246e53378b9e8959ce">Scalar</a>&lt; <a class="el" href="classDataVector.html">DataVector</a> &gt; &amp;sound_speed_squared, const tnsr::i&lt; <a class="el" href="classDataVector.html">DataVector</a>, Dim &gt; &amp;normal) noexcept</td></tr>
+<tr class="memdesc:a45ee2fcecfa0e0a03101d15c88d9bd57"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute the characteristic speeds for the <a class="el" href="namespaceRelativisticEuler_1_1Valencia.html" title="The Valencia formulation of the relativistic Euler System See Chapter 7 of Relativistic Hydrodynamics...">Valencia</a> formulation of the relativistic Euler system.  <a href="#a45ee2fcecfa0e0a03101d15c88d9bd57">More...</a><br /></td></tr>
+<tr class="separator:a45ee2fcecfa0e0a03101d15c88d9bd57"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>The <a class="el" href="namespaceRelativisticEuler_1_1Valencia.html" title="The Valencia formulation of the relativistic Euler System See Chapter 7 of Relativistic Hydrodynamics...">Valencia</a> formulation of the relativistic Euler <a class="el" href="structRelativisticEuler_1_1Valencia_1_1System.html">System</a> See Chapter 7 of Relativistic Hydrodynamics by Luciano Rezzolla and Olindo Zanotti or <a href="http://iopscience.iop.org/article/10.1086/303604">http://iopscience.iop.org/article/10.1086/303604</a>. </p>
+</div><h2 class="groupheader">Function Documentation</h2>
+<a id="a69ff615359393965bc2fd89600030ef6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a69ff615359393965bc2fd89600030ef6">&#9670;&nbsp;</a></span>characteristic_speeds() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;size_t Dim&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void RelativisticEuler::Valencia::characteristic_speeds </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classgsl_1_1not__null.html">gsl::not_null</a>&lt; <a class="elRef" doxygen="/work/spectre/docs/config/cppreference-doxygen-web.tag.xml:http://en.cppreference.com/w/" href="http://en.cppreference.com/w/cpp/container/array.html">std::array</a>&lt; <a class="el" href="classDataVector.html">DataVector</a>, Dim+2 &gt; *&gt;&#160;</td>
+          <td class="paramname"><em>char_speeds</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="group__TensorGroup.html#ga06ebcb38a1f13c246e53378b9e8959ce">Scalar</a>&lt; <a class="el" href="classDataVector.html">DataVector</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>lapse</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const tnsr::I&lt; <a class="el" href="classDataVector.html">DataVector</a>, Dim &gt; &amp;&#160;</td>
+          <td class="paramname"><em>shift</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const tnsr::I&lt; <a class="el" href="classDataVector.html">DataVector</a>, Dim &gt; &amp;&#160;</td>
+          <td class="paramname"><em>spatial_velocity</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="group__TensorGroup.html#ga06ebcb38a1f13c246e53378b9e8959ce">Scalar</a>&lt; <a class="el" href="classDataVector.html">DataVector</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>spatial_velocity_squared</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="group__TensorGroup.html#ga06ebcb38a1f13c246e53378b9e8959ce">Scalar</a>&lt; <a class="el" href="classDataVector.html">DataVector</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>sound_speed_squared</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const tnsr::i&lt; <a class="el" href="classDataVector.html">DataVector</a>, Dim &gt; &amp;&#160;</td>
+          <td class="paramname"><em>normal</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Compute the characteristic speeds for the <a class="el" href="namespaceRelativisticEuler_1_1Valencia.html" title="The Valencia formulation of the relativistic Euler System See Chapter 7 of Relativistic Hydrodynamics...">Valencia</a> formulation of the relativistic Euler system. </p>
+<p>The principal symbol of the system is diagonalized so that the elements of the diagonal matrix are the \((\text{Dim} + 2)\) characteristic speeds</p>
+<p class="formulaDsp">
+\begin{align*} \lambda_1 &amp;= \alpha \Lambda^- - \beta_n,\\ \lambda_{i + 1} &amp;= \alpha v_n - \beta_n,\quad i = 1,...,\text{Dim}\\ \lambda_{\text{Dim} + 2} &amp;= \alpha \Lambda^+ - \beta_n, \end{align*}
+</p>
+<p>where \(\alpha\) is the lapse, \(\beta_n = n_i \beta^i\) and \(v_n = n_i v^i\) are the projections of the shift \(\beta^i\) and the spatial velocity \(v^i\) onto the normal one-form \(n_i\), respectively, and</p>
+<p class="formulaDsp">
+\begin{align*} \Lambda^{\pm} &amp;= \dfrac{1}{1 - v^2 c_s^2}\left[ v_n (1- c_s^2) \pm c_s\sqrt{\left(1 - v^2\right)\left[1 - v^2 c_s^2 - v_n^2(1 - c_s^2)\right]} \right], \end{align*}
+</p>
+<p>where \(v^2 = \gamma_{ij}v^iv^j\) is the magnitude squared of the spatial velocity, and \(c_s\) is the sound speed. </p>
+
+</div>
+</div>
+<a id="a45ee2fcecfa0e0a03101d15c88d9bd57"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a45ee2fcecfa0e0a03101d15c88d9bd57">&#9670;&nbsp;</a></span>characteristic_speeds() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;size_t Dim&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="elRef" doxygen="/work/spectre/docs/config/cppreference-doxygen-web.tag.xml:http://en.cppreference.com/w/" href="http://en.cppreference.com/w/cpp/container/array.html">std::array</a>&lt;<a class="el" href="classDataVector.html">DataVector</a>, Dim + 2&gt; RelativisticEuler::Valencia::characteristic_speeds </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="group__TensorGroup.html#ga06ebcb38a1f13c246e53378b9e8959ce">Scalar</a>&lt; <a class="el" href="classDataVector.html">DataVector</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>lapse</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const tnsr::I&lt; <a class="el" href="classDataVector.html">DataVector</a>, Dim &gt; &amp;&#160;</td>
+          <td class="paramname"><em>shift</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const tnsr::I&lt; <a class="el" href="classDataVector.html">DataVector</a>, Dim &gt; &amp;&#160;</td>
+          <td class="paramname"><em>spatial_velocity</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="group__TensorGroup.html#ga06ebcb38a1f13c246e53378b9e8959ce">Scalar</a>&lt; <a class="el" href="classDataVector.html">DataVector</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>spatial_velocity_squared</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="group__TensorGroup.html#ga06ebcb38a1f13c246e53378b9e8959ce">Scalar</a>&lt; <a class="el" href="classDataVector.html">DataVector</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>sound_speed_squared</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const tnsr::i&lt; <a class="el" href="classDataVector.html">DataVector</a>, Dim &gt; &amp;&#160;</td>
+          <td class="paramname"><em>normal</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Compute the characteristic speeds for the <a class="el" href="namespaceRelativisticEuler_1_1Valencia.html" title="The Valencia formulation of the relativistic Euler System See Chapter 7 of Relativistic Hydrodynamics...">Valencia</a> formulation of the relativistic Euler system. </p>
+<p>The principal symbol of the system is diagonalized so that the elements of the diagonal matrix are the \((\text{Dim} + 2)\) characteristic speeds</p>
+<p class="formulaDsp">
+\begin{align*} \lambda_1 &amp;= \alpha \Lambda^- - \beta_n,\\ \lambda_{i + 1} &amp;= \alpha v_n - \beta_n,\quad i = 1,...,\text{Dim}\\ \lambda_{\text{Dim} + 2} &amp;= \alpha \Lambda^+ - \beta_n, \end{align*}
+</p>
+<p>where \(\alpha\) is the lapse, \(\beta_n = n_i \beta^i\) and \(v_n = n_i v^i\) are the projections of the shift \(\beta^i\) and the spatial velocity \(v^i\) onto the normal one-form \(n_i\), respectively, and</p>
+<p class="formulaDsp">
+\begin{align*} \Lambda^{\pm} &amp;= \dfrac{1}{1 - v^2 c_s^2}\left[ v_n (1- c_s^2) \pm c_s\sqrt{\left(1 - v^2\right)\left[1 - v^2 c_s^2 - v_n^2(1 - c_s^2)\right]} \right], \end{align*}
+</p>
+<p>where \(v^2 = \gamma_{ij}v^iv^j\) is the magnitude squared of the spatial velocity, and \(c_s\) is the sound speed. </p>
+
+</div>
+</div>
+</div><!-- contents -->
+<!-- HTML footer for doxygen 1.8.10-->
+<!-- start footer part -->
+<hr class="footer"/><address class="footer"><small>
+&copy; Copyright 2017 - 2019
+<a href="https://black-holes.org">SXS Collaboration</a>,
+<a href="LICENSE.txt" target="_blank">
+<span class="hidden-xs">Distributed under the</span>
+MIT License</a>
+</small></address>
+</body>
+</html>

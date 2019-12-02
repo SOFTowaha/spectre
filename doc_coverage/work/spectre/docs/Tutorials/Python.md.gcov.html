@@ -1,0 +1,144 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - 5912ac2e49a80e6a27b3707c9a1e6ce5248b1b2a - /work/spectre/docs/Tutorials/Python.md</title>
+  <link rel="stylesheet" type="text/css" href="../../../../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title"> SpECTRE Documentation Coverage Report</td></tr>
+    <tr><td class="ruler"><img src="../../../../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../../../../index.html">top level</a> - <a href="index.html">work/spectre/docs/Tutorials</a> - Python.md</td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+             <td class="headerItem">Commit:</td>
+             <td class="headerValue"><a target="_blank" href="https://github.com/sxs-collaboration/spectre/commit/5912ac2e49a80e6a27b3707c9a1e6ce5248b1b2a">5912ac2e49a80e6a27b3707c9a1e6ce5248b1b2a</a></td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntry">1</td>
+            <td class="headerCovTableEntryLo">0.0 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2019-12-02 22:01:08</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td class="headerItem">Legend:</td>
+            <td class="headerValueLeg">            Lines:
+            <span class="coverLegendCov">hit</span>
+            <span class="coverLegendNoCov">not hit</span>
+</td>
+            <td></td>
+          </tr>
+          <tr><td><img src="../../../../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../../../../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">          Line data    Source code</pre>
+<pre class="source">
+<span class="lineNum">       1 </span><span class="lineNoCov">          0 : \cond NEVER</span>
+<span class="lineNum">       2 </span>            : Distributed under the MIT License.
+<span class="lineNum">       3 </span>            : See LICENSE.txt for details.
+<span class="lineNum">       4 </span>            : \endcond
+<span class="lineNum">       5 </span>            : # Using SpECTRE's Python modules {#spectre_using_python}
+<span class="lineNum">       6 </span>            : 
+<span class="lineNum">       7 </span>            : Some classes and functions from SpECTRE have Python bindings to make it easier
+<span class="lineNum">       8 </span>            : to visualize data, write test code, and provide an introduction to numerical
+<span class="lineNum">       9 </span>            : relativity without needing to delve into C++.
+<span class="lineNum">      10 </span>            : 
+<span class="lineNum">      11 </span>            : ## Installing the SpECTRE Python modules
+<span class="lineNum">      12 </span>            : 
+<span class="lineNum">      13 </span>            : First, build SpECTRE with Python bindings enabled by appending the
+<span class="lineNum">      14 </span>            : `-D BUILD_PYTHON_BINDINGS=ON` flag to the `cmake` command. You will find that
+<span class="lineNum">      15 </span>            : a `BUILD_DIR/bin/python` directory is created that contains the Python modules.
+<span class="lineNum">      16 </span>            : Then, you can install the modules into your Python environment in
+<span class="lineNum">      17 </span>            : _development mode_, which means they are symlinked so that changes to the
+<span class="lineNum">      18 </span>            : modules will be reflected in your Python environment, with the command
+<span class="lineNum">      19 </span>            : `pip install -e path/to/bin/python`. Alternatively, remove the `-e` flag to
+<span class="lineNum">      20 </span>            : install the modules normally. You can do this in any Python environment that
+<span class="lineNum">      21 </span>            : supports `pip`, for instance in a
+<span class="lineNum">      22 </span>            : [`virtualenv`/`venv`](https://docs.python.org/3/tutorial/venv.html) or in an
+<span class="lineNum">      23 </span>            : [Anaconda](https://www.anaconda.com/distribution/) environment. You can also get
+<span class="lineNum">      24 </span>            : access to the SpECTRE Python modules by adding  `BUILD_DIR/bin/python` to your
+<span class="lineNum">      25 </span>            : `PYTHONPATH`. This is done automatically by sourcing the `LoadPython.sh` file
+<span class="lineNum">      26 </span>            : with the command `. BUILD_DIR/bin/LoadPython.sh`.
+<span class="lineNum">      27 </span>            : 
+<span class="lineNum">      28 </span>            : ## Running Jupyter within the Docker container
+<span class="lineNum">      29 </span>            : 
+<span class="lineNum">      30 </span>            : [Jupyter lab](https://jupyterlab.readthedocs.io/) is installed in the Docker
+<span class="lineNum">      31 </span>            : container. You can run it in the container and access it through a browser on
+<span class="lineNum">      32 </span>            : the host for a convenient way to work with the SpECTRE Python bindings. To do
+<span class="lineNum">      33 </span>            : so, make sure you have exposed a port when running the Docker container, e.g.
+<span class="lineNum">      34 </span>            : by appending the option `-p 8000:8000` to the `docker run` command (see
+<span class="lineNum">      35 </span>            : \ref installation). Inside the docker container, it can be convenient to
+<span class="lineNum">      36 </span>            : use `disown` or to `apt-get install screen` and use `screen` to obtain a shell
+<span class="lineNum">      37 </span>            : that runs the Jupyter server permanently in the background. Within the shell you
+<span class="lineNum">      38 </span>            : want to run your Jupyter server, navigate to a directory that will serve as the
+<span class="lineNum">      39 </span>            : root for the file system that Jupyter has access to. Make sure it is shared with
+<span class="lineNum">      40 </span>            : the host (e.g. `SPECTRE_HOME`) so your Jupyter notebooks are not lost when the
+<span class="lineNum">      41 </span>            : container is deleted. Then, run the following command:
+<span class="lineNum">      42 </span>            : 
+<span class="lineNum">      43 </span>            : ```sh
+<span class="lineNum">      44 </span>            : jupyter lab --ip 0.0.0.0 --port 8000 --allow-root
+<span class="lineNum">      45 </span>            : ```
+<span class="lineNum">      46 </span>            : 
+<span class="lineNum">      47 </span>            : Copy the token that is being displayed. Now you can open a browser on the host
+<span class="lineNum">      48 </span>            : machine, point it to `http://localhost:8000` and paste in the token. You will
+<span class="lineNum">      49 </span>            : have access to the Python environment within the Docker container. If you have
+<span class="lineNum">      50 </span>            : followed the instructions above for installing the SpECTRE Python package,
+<span class="lineNum">      51 </span>            : you can try importing the Python package in a notebook with:
+<span class="lineNum">      52 </span>            : 
+<span class="lineNum">      53 </span>            : ```py
+<span class="lineNum">      54 </span>            : import spectre
+<span class="lineNum">      55 </span>            : ```
+<span class="lineNum">      56 </span>            : 
+<span class="lineNum">      57 </span>            : While developing Python code in the `spectre` packages it can be useful to
+<span class="lineNum">      58 </span>            : configure Jupyter to reload packages when they change. Add the following code
+<span class="lineNum">      59 </span>            : before any import statements:
+<span class="lineNum">      60 </span>            : 
+<span class="lineNum">      61 </span>            : ```
+<span class="lineNum">      62 </span>            : %load_ext autoreload
+<span class="lineNum">      63 </span>            : %autoreload 2
+<span class="lineNum">      64 </span>            : ```
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../../../../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.13</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

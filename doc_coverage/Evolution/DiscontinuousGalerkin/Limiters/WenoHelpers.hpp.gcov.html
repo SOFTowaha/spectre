@@ -1,0 +1,210 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - 5912ac2e49a80e6a27b3707c9a1e6ce5248b1b2a - Evolution/DiscontinuousGalerkin/Limiters/WenoHelpers.hpp</title>
+  <link rel="stylesheet" type="text/css" href="../../../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title"> SpECTRE Documentation Coverage Report</td></tr>
+    <tr><td class="ruler"><img src="../../../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../../../index.html">top level</a> - <a href="index.html">Evolution/DiscontinuousGalerkin/Limiters</a> - WenoHelpers.hpp</td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+             <td class="headerItem">Commit:</td>
+             <td class="headerValue"><a target="_blank" href="https://github.com/sxs-collaboration/spectre/commit/5912ac2e49a80e6a27b3707c9a1e6ce5248b1b2a">5912ac2e49a80e6a27b3707c9a1e6ce5248b1b2a</a></td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntry">1</td>
+            <td class="headerCovTableEntryLo">0.0 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2019-12-02 22:01:08</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td class="headerItem">Legend:</td>
+            <td class="headerValueLeg">            Lines:
+            <span class="coverLegendCov">hit</span>
+            <span class="coverLegendNoCov">not hit</span>
+</td>
+            <td></td>
+          </tr>
+          <tr><td><img src="../../../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../../../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">          Line data    Source code</pre>
+<pre class="source">
+<span class="lineNum">       1 </span><span class="lineNoCov">          0 : // Distributed under the MIT License.</span>
+<span class="lineNum">       2 </span>            : // See LICENSE.txt for details.
+<span class="lineNum">       3 </span>            : 
+<span class="lineNum">       4 </span>            : #pragma once
+<span class="lineNum">       5 </span>            : 
+<span class="lineNum">       6 </span>            : #include &lt;cstddef&gt;
+<span class="lineNum">       7 </span>            : #include &lt;unordered_map&gt;
+<span class="lineNum">       8 </span>            : #include &lt;utility&gt;
+<span class="lineNum">       9 </span>            : 
+<span class="lineNum">      10 </span>            : #include &quot;DataStructures/DataBox/DataBoxTag.hpp&quot;
+<span class="lineNum">      11 </span>            : #include &quot;DataStructures/Variables.hpp&quot;  // IWYU pragma: keep
+<span class="lineNum">      12 </span>            : #include &quot;Domain/Direction.hpp&quot;          // IWYU pragma: keep
+<span class="lineNum">      13 </span>            : #include &quot;Domain/ElementId.hpp&quot;          // IWYU pragma: keep
+<span class="lineNum">      14 </span>            : #include &quot;Evolution/DiscontinuousGalerkin/Limiters/WenoOscillationIndicator.hpp&quot;
+<span class="lineNum">      15 </span>            : #include &quot;NumericalAlgorithms/LinearOperators/MeanValue.hpp&quot;
+<span class="lineNum">      16 </span>            : #include &quot;Utilities/ConstantExpressions.hpp&quot;
+<span class="lineNum">      17 </span>            : #include &quot;Utilities/EqualWithinRoundoff.hpp&quot;
+<span class="lineNum">      18 </span>            : #include &quot;Utilities/Gsl.hpp&quot;
+<span class="lineNum">      19 </span>            : 
+<span class="lineNum">      20 </span>            : // IWYU pragma: no_forward_declare Variables
+<span class="lineNum">      21 </span>            : 
+<span class="lineNum">      22 </span>            : /// \cond
+<span class="lineNum">      23 </span>            : class DataVector;
+<span class="lineNum">      24 </span>            : template &lt;size_t&gt;
+<span class="lineNum">      25 </span>            : class Mesh;
+<span class="lineNum">      26 </span>            : 
+<span class="lineNum">      27 </span>            : namespace boost {
+<span class="lineNum">      28 </span>            : template &lt;class T&gt;
+<span class="lineNum">      29 </span>            : struct hash;
+<span class="lineNum">      30 </span>            : }  // namespace boost
+<span class="lineNum">      31 </span>            : /// \endcond
+<span class="lineNum">      32 </span>            : 
+<span class="lineNum">      33 </span>            : namespace Limiters {
+<span class="lineNum">      34 </span>            : namespace Weno_detail {
+<span class="lineNum">      35 </span>            : 
+<span class="lineNum">      36 </span>            : // Compute the unnormalized nonlinear WENO weights. This is a fairly standard
+<span class="lineNum">      37 </span>            : // choice of weights; see e.g., Eq. 3.9 of Zhong2013 or Eq. 3.6 of Zhu2016.
+<span class="lineNum">      38 </span>            : inline double unnormalized_nonlinear_weight(
+<span class="lineNum">      39 </span>            :     const double linear_weight, const double oscillation_indicator) noexcept {
+<span class="lineNum">      40 </span>            :   return linear_weight / square(1.e-6 + oscillation_indicator);
+<span class="lineNum">      41 </span>            : }
+<span class="lineNum">      42 </span>            : 
+<span class="lineNum">      43 </span>            : // Compute the WENO weighted reconstruction of several polynomials, see e.g.,
+<span class="lineNum">      44 </span>            : // Eq. 4.3 of Zhu2016. This is fairly standard, though different references can
+<span class="lineNum">      45 </span>            : // differ in their choice of oscillation/smoothness indicator.
+<span class="lineNum">      46 </span>            : //
+<span class="lineNum">      47 </span>            : // The neighbor tensors corresponding to `local_tensor` (i.e., the tensor in
+<span class="lineNum">      48 </span>            : // each `neighbor_vars` value that is identified by `Tag`), must have the same
+<span class="lineNum">      49 </span>            : // mean as the local tensor. This is checked with an ASSERT.
+<span class="lineNum">      50 </span>            : template &lt;typename Tag, size_t VolumeDim, typename TagsList&gt;
+<span class="lineNum">      51 </span>            : void reconstruct_from_weighted_sum(
+<span class="lineNum">      52 </span>            :     const gsl::not_null&lt;db::item_type&lt;Tag&gt;*&gt; local_tensor,
+<span class="lineNum">      53 </span>            :     const Mesh&lt;VolumeDim&gt;&amp; mesh, const double neighbor_linear_weight,
+<span class="lineNum">      54 </span>            :     const std::unordered_map&lt;
+<span class="lineNum">      55 </span>            :         std::pair&lt;Direction&lt;VolumeDim&gt;, ElementId&lt;VolumeDim&gt;&gt;,
+<span class="lineNum">      56 </span>            :         Variables&lt;TagsList&gt;,
+<span class="lineNum">      57 </span>            :         boost::hash&lt;std::pair&lt;Direction&lt;VolumeDim&gt;, ElementId&lt;VolumeDim&gt;&gt;&gt;&gt;&amp;
+<span class="lineNum">      58 </span>            :         neighbor_vars,
+<span class="lineNum">      59 </span>            :     const DerivativeWeight derivative_weight) noexcept {
+<span class="lineNum">      60 </span>            :   for (size_t tensor_storage_index = 0;
+<span class="lineNum">      61 </span>            :        tensor_storage_index &lt; local_tensor-&gt;size(); ++tensor_storage_index) {
+<span class="lineNum">      62 </span>            :     auto&amp; local_polynomial = (*local_tensor)[tensor_storage_index];
+<span class="lineNum">      63 </span>            : 
+<span class="lineNum">      64 </span>            : #ifdef SPECTRE_DEBUG
+<span class="lineNum">      65 </span>            :     // Check inputs match requirements
+<span class="lineNum">      66 </span>            :     const double local_mean = mean_value(local_polynomial, mesh);
+<span class="lineNum">      67 </span>            :     for (const auto&amp; kv : neighbor_vars) {
+<span class="lineNum">      68 </span>            :       const auto&amp; neighbor_polynomial =
+<span class="lineNum">      69 </span>            :           get&lt;Tag&gt;(kv.second)[tensor_storage_index];
+<span class="lineNum">      70 </span>            :       const double neighbor_mean = mean_value(neighbor_polynomial, mesh);
+<span class="lineNum">      71 </span>            :       ASSERT(equal_within_roundoff(local_mean, neighbor_mean),
+<span class="lineNum">      72 </span>            :              &quot;Invalid inputs to Weno_detail::reconstruct_from_weighted_sum:\n&quot;
+<span class="lineNum">      73 </span>            :              &quot;The neighbor polynomials should have the same mean as the local\n&quot;
+<span class="lineNum">      74 </span>            :              &quot;polynomial.&quot;);
+<span class="lineNum">      75 </span>            :     }
+<span class="lineNum">      76 </span>            : #endif  // ifdef SPECTRE_DEBUG
+<span class="lineNum">      77 </span>            : 
+<span class="lineNum">      78 </span>            :     // Store linear weights in `local_weights` and `neighbor_weights`
+<span class="lineNum">      79 </span>            :     // These weights will have to be generalized for multiple neighbors per
+<span class="lineNum">      80 </span>            :     // face for use with h-refinement and AMR.
+<span class="lineNum">      81 </span>            :     double local_weight = 1.;
+<span class="lineNum">      82 </span>            :     std::unordered_map&lt;
+<span class="lineNum">      83 </span>            :         std::pair&lt;Direction&lt;VolumeDim&gt;, ElementId&lt;VolumeDim&gt;&gt;, double,
+<span class="lineNum">      84 </span>            :         boost::hash&lt;std::pair&lt;Direction&lt;VolumeDim&gt;, ElementId&lt;VolumeDim&gt;&gt;&gt;&gt;
+<span class="lineNum">      85 </span>            :         neighbor_weights;
+<span class="lineNum">      86 </span>            :     for (const auto&amp; kv : neighbor_vars) {
+<span class="lineNum">      87 </span>            :       local_weight -= neighbor_linear_weight;
+<span class="lineNum">      88 </span>            :       neighbor_weights[kv.first] = neighbor_linear_weight;
+<span class="lineNum">      89 </span>            :     }
+<span class="lineNum">      90 </span>            : 
+<span class="lineNum">      91 </span>            :     // Update `local_weights` and `neighbor_weights` to hold the unnormalized
+<span class="lineNum">      92 </span>            :     // nonlinear weights.
+<span class="lineNum">      93 </span>            :     local_weight = unnormalized_nonlinear_weight(
+<span class="lineNum">      94 </span>            :         local_weight,
+<span class="lineNum">      95 </span>            :         oscillation_indicator(local_polynomial, mesh, derivative_weight));
+<span class="lineNum">      96 </span>            :     for (const auto&amp; kv : neighbor_vars) {
+<span class="lineNum">      97 </span>            :       const auto&amp; key = kv.first;
+<span class="lineNum">      98 </span>            :       const auto&amp; neighbor_tensor_component =
+<span class="lineNum">      99 </span>            :           get&lt;Tag&gt;(kv.second)[tensor_storage_index];
+<span class="lineNum">     100 </span>            :       neighbor_weights[key] = unnormalized_nonlinear_weight(
+<span class="lineNum">     101 </span>            :           neighbor_weights[key],
+<span class="lineNum">     102 </span>            :           oscillation_indicator(neighbor_tensor_component, mesh,
+<span class="lineNum">     103 </span>            :                                 derivative_weight));
+<span class="lineNum">     104 </span>            :     }
+<span class="lineNum">     105 </span>            : 
+<span class="lineNum">     106 </span>            :     // Update `local_weights` and `neighbor_weights` to hold the normalized
+<span class="lineNum">     107 </span>            :     // weights; these are the final weights of the WENO reconstruction.
+<span class="lineNum">     108 </span>            :     double normalization = local_weight;
+<span class="lineNum">     109 </span>            :     for (const auto&amp; kv : neighbor_weights) {
+<span class="lineNum">     110 </span>            :       normalization += kv.second;
+<span class="lineNum">     111 </span>            :     }
+<span class="lineNum">     112 </span>            :     local_weight /= normalization;
+<span class="lineNum">     113 </span>            :     for (auto&amp; kv : neighbor_weights) {
+<span class="lineNum">     114 </span>            :       kv.second /= normalization;
+<span class="lineNum">     115 </span>            :     }
+<span class="lineNum">     116 </span>            : 
+<span class="lineNum">     117 </span>            :     // Perform reconstruction, by superposition of local and neighbor
+<span class="lineNum">     118 </span>            :     // polynomials.
+<span class="lineNum">     119 </span>            :     local_polynomial *= local_weight;
+<span class="lineNum">     120 </span>            :     for (const auto&amp; kv : neighbor_vars) {
+<span class="lineNum">     121 </span>            :       const auto&amp; key = kv.first;
+<span class="lineNum">     122 </span>            :       const auto&amp; neighbor_polynomial =
+<span class="lineNum">     123 </span>            :           get&lt;Tag&gt;(kv.second)[tensor_storage_index];
+<span class="lineNum">     124 </span>            :       local_polynomial += neighbor_weights.at(key) * neighbor_polynomial;
+<span class="lineNum">     125 </span>            :     }
+<span class="lineNum">     126 </span>            :   }
+<span class="lineNum">     127 </span>            : }
+<span class="lineNum">     128 </span>            : 
+<span class="lineNum">     129 </span>            : }  // namespace Weno_detail
+<span class="lineNum">     130 </span>            : }  // namespace Limiters
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../../../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.13</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

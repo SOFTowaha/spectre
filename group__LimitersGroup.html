@@ -1,0 +1,422 @@
+<!-- HTML header for doxygen 1.8.10-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=9"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="author" content="SXS Collaboration">
+    <meta name="generator" content="Doxygen 1.8.13"/>
+    <style>
+        /*!
+         * IE10 viewport hack for Surface/desktop Windows 8 bug
+         * Copyright 2014-2015 Twitter, Inc.
+         * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
+         */
+        @-webkit-viewport { width: device-width; }
+        @-moz-viewport    { width: device-width; }
+        @-ms-viewport     { width: device-width; }
+        @-o-viewport      { width: device-width; }
+        @viewport         { width: device-width; }
+      </style>
+  <title>SpECTRE: Limiters</title>
+  <link href="tabs.css" rel="stylesheet" type="text/css"/>
+  <script type="text/javascript" src="jquery.js"></script>
+  <script type="text/javascript" src="dynsections.js"></script>
+  <link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+  <script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    extensions: ["tex2jax.js", "TeX/AMSmath.js", "TeX/AMSsymbols.js", "color.js"],
+    jax: ["input/TeX","output/HTML-CSS"],
+});
+MathJax.Hub.Config({
+    TeX: { equationNumbers: { autoNumber: "AMS" } }
+});
+MathJax.Hub.Config({
+    tex2jax: {inlineMath: [['^^','^^'], ['\\(', '\\)']]}
+});
+</script><script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js"></script>
+  <link href="octicons.css" rel="stylesheet">
+  <link href="bootstrap.min.css" rel="stylesheet">
+  <link href="doxygen.css" rel="stylesheet" type="text/css" />
+  <script type="text/javascript" src="jquery.js"></script>
+  <script type="text/javascript" src="popper.min.js"></script>
+  <script type="text/javascript" src="bootstrap.min.js"></script>
+  <script type="text/javascript" src="spectre.js"></script>
+  </head>
+  <body>
+  <div id="top" class="navbar-fixed-top"><!-- do not remove this div, it is closed by doxygen! -->
+  <!-- BEGIN TITLEAREA -->
+  <div id="titlearea">
+  <script type="text/javascript">
+  var searchBox = new SearchBox("searchBox", "search",false,'Search');
+  </script>
+  <div id="main-nav">
+    <ul class="sm sm-dox" id="main-menu">
+      <li>
+      <a href="index.html">
+      SpECTRE &#160;
+        <span id="projectnumber">v0.0.0</span>
+      </a>
+      </li>
+      <li class="dropdown">
+        <a class="dropdown-toggle" data-toggle="dropdown" href="#" id="selected">
+          <span id="selected">
+            <i class="octicon octicon-book"></i><span>Documentation</span>
+          </span>
+          <span class="caret"></span>
+        </a>
+        <ul class="dropdown-menu">
+          <li style="min-width: 135px;">
+            <a href="index.html">
+            <i class="octicon octicon-book"></i><span>Introduction</span></a>
+          </li>
+          <li style="min-width: 135px;">
+            <a href="installation.html">
+              <i class="octicon octicon-desktop-download"></i><span>Installation</span>
+            </a>
+          </li>
+          <li style="min-width: 135px;">
+            <a href="tutorials.html">
+              <i class="octicon octicon-mortar-board"></i><span>User Tutorials</span>
+            </a>
+          </li>
+          <li style="min-width: 135px;">
+            <a href="dev_guide.html">
+              <i class="octicon octicon-gist-secret"></i><span>Dev Guide</span>
+            </a>
+          </li>
+          <li style="min-width: 135px;">
+            <a href="code_of_conduct.html">
+              <i class="octicon octicon-comment-discussion"></i><span>Code of Conduct</span>
+            </a>
+          </li>
+          <li style="min-width: 135px;">
+            <a href="contributing_to_spectre.html">
+              <i class="octicon octicon-git-pull-request"></i><span>Contributing Guide</span>
+            </a>
+          </li>
+        </ul>
+      </li>
+      <li class="dropdown">
+        <a class="dropdown-toggle" data-toggle="dropdown" href="#" id="selected">
+          <span id="selected">
+            <i class="octicon octicon-code"></i>
+              <span>Code Reference</span>
+          </span>
+          <span class="caret"></span>
+        </a>
+        <ul class="dropdown-menu">
+          <li style="min-width: 130px;">
+            <a href="modules.html">
+              <i class="octicon octicon-code"></i>
+              <span>Topics</span>
+            </a>
+          </li>
+          <li style="min-width: 130px;">
+            <a href="namespaces.html">
+              <i class="octicon octicon-gist"></i>
+              <span>Namespaces</span>
+            </a>
+          </li>
+        </ul>
+      </li>
+      <li>
+        <a href="files.html">
+          <i class="octicon octicon-file-directory"></i><span>Files</span>
+        </a>
+      </li>
+      <li>
+        <a href="citelist.html">
+          <i class="octicon octicon-file-text"></i><span>Bibliography</span>
+        </a>
+      </li>
+      <li>
+        <a href="https://github.com/sxs-collaboration/spectre" target="_blank">
+          <i class="octicon octicon-mark-github"></i><span>View on GitHub</span>
+        </a>
+      </li>
+      <!--The Search <li> is added by doxygen later-->
+    </ul>
+  </div><!-- main-nav -->
+  </div><!-- titlearea -->
+  <!-- window showing the filter options -->
+  <div id="MSearchSelectWindow"  style="position: fixed;"
+       onmouseover="return searchBox.OnSearchSelectShow()"
+       onmouseout="return searchBox.OnSearchSelectHide()"
+       onkeydown="return searchBox.OnSearchSelectKey(event)">
+  </div>
+  <!-- iframe showing the search results (closed by default) -->
+  <div id="MSearchResultsWindow"  style="position: fixed;">
+  <iframe src="javascript:void(0)" frameborder="0"
+          name="MSearchResults" id="MSearchResults">
+  </iframe>
+  </div>
+<!-- Generated by Doxygen 1.8.13 -->
+<script type="text/javascript">
+var searchBox = new SearchBox("searchBox", "search",false,'Search');
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+$(function() {
+  initMenu('',true,false,'search.php','Search');
+  $(document).ready(function() { init_search(); });
+});
+</script>
+<div id="main-nav"></div>
+</div><!-- top -->
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<iframe src="javascript:void(0)" frameborder="0" 
+        name="MSearchResults" id="MSearchResults">
+</iframe>
+</div>
+
+<div class="header">
+  <div class="summary">
+<a href="#namespaces">Namespaces</a> &#124;
+<a href="#nested-classes">Classes</a> &#124;
+<a href="#enum-members">Enumerations</a> &#124;
+<a href="#func-members">Functions</a>  </div>
+  <div class="headertitle">
+<div class="title">Limiters</div>  </div>
+</div><!--header-->
+<div class="contents">
+
+<p><a class="el" href="namespaceLimiters.html" title="Things relating to limiting. ">Limiters</a> to control shocks and surfaces in the solution.  
+<a href="#details">More...</a></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="namespaces"></a>
+Namespaces</h2></td></tr>
+<tr class="memitem:namespaceLimiters"><td class="memItemLeft" align="right" valign="top"> &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceLimiters.html">Limiters</a></td></tr>
+<tr class="memdesc:namespaceLimiters"><td class="mdescLeft">&#160;</td><td class="mdescRight">Things relating to limiting. <br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
+Classes</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classLimiters_1_1Krivodonova_3_01VolumeDim_00_01tmpl_1_1list_3_01Tags_8_8_8_01_4_01_4.html">Limiters::Krivodonova&lt; VolumeDim, tmpl::list&lt; Tags... &gt; &gt;</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">An implementation of the Krivodonova limiter.  <a href="classLimiters_1_1Krivodonova_3_01VolumeDim_00_01tmpl_1_1list_3_01Tags_8_8_8_01_4_01_4.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structLimiters_1_1Tags_1_1LimiterCommunicationTag.html">Limiters::Tags::LimiterCommunicationTag&lt; Metavariables &gt;</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">The inbox tag for limiter communication.  <a href="structLimiters_1_1Tags_1_1LimiterCommunicationTag.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structLimiters_1_1Actions_1_1Limit.html">Limiters::Actions::Limit&lt; Metavariables &gt;</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Receive limiter data from neighbors, then apply limiter.  <a href="structLimiters_1_1Actions_1_1Limit.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structLimiters_1_1Actions_1_1SendData.html">Limiters::Actions::SendData&lt; Metavariables &gt;</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Send local data needed for limiting.  <a href="structLimiters_1_1Actions_1_1SendData.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classLimiters_1_1Minmod_3_01VolumeDim_00_01tmpl_1_1list_3_01Tags_8_8_8_01_4_01_4.html">Limiters::Minmod&lt; VolumeDim, tmpl::list&lt; Tags... &gt; &gt;</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A general minmod slope limiter.  <a href="classLimiters_1_1Minmod_3_01VolumeDim_00_01tmpl_1_1list_3_01Tags_8_8_8_01_4_01_4.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classLimiters_1_1Weno_3_01VolumeDim_00_01tmpl_1_1list_3_01Tags_8_8_8_01_4_01_4.html">Limiters::Weno&lt; VolumeDim, tmpl::list&lt; Tags... &gt; &gt;</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A compact-stencil WENO limiter for DG.  <a href="classLimiters_1_1Weno_3_01VolumeDim_00_01tmpl_1_1list_3_01Tags_8_8_8_01_4_01_4.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="enum-members"></a>
+Enumerations</h2></td></tr>
+<tr class="memitem:ga530a6d3e2a08bb4bd61090a8f9aadd35"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__LimitersGroup.html#ga530a6d3e2a08bb4bd61090a8f9aadd35">Limiters::MinmodType</a> { <b>LambdaPi1</b>, 
+<b>LambdaPiN</b>, 
+<b>Muscl</b>
+ }<tr class="memdesc:ga530a6d3e2a08bb4bd61090a8f9aadd35"><td class="mdescLeft">&#160;</td><td class="mdescRight">Possible types of the minmod slope limiter and/or troubled-cell indicator.  <a href="group__LimitersGroup.html#ga530a6d3e2a08bb4bd61090a8f9aadd35">More...</a><br /></td></tr>
+</td></tr>
+<tr class="separator:ga530a6d3e2a08bb4bd61090a8f9aadd35"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga9579591401477fc50611bf73b93c9841"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__LimitersGroup.html#ga9579591401477fc50611bf73b93c9841">Limiters::WenoType</a> { <b>Hweno</b>, 
+<b>SimpleWeno</b>
+ }<tr class="memdesc:ga9579591401477fc50611bf73b93c9841"><td class="mdescLeft">&#160;</td><td class="mdescRight">Possible types of the WENO limiter.  <a href="group__LimitersGroup.html#ga9579591401477fc50611bf73b93c9841">More...</a><br /></td></tr>
+</td></tr>
+<tr class="separator:ga9579591401477fc50611bf73b93c9841"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
+Functions</h2></td></tr>
+<tr class="memitem:gaa2685a1044ae90dd6753af16d788d67e"><td class="memTemplParams" colspan="2">template&lt;typename Tag , size_t VolumeDim, typename Package &gt; </td></tr>
+<tr class="memitem:gaa2685a1044ae90dd6753af16d788d67e"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group__LimitersGroup.html#gaa2685a1044ae90dd6753af16d788d67e">Limiters::hweno_modified_neighbor_solution</a> (const <a class="el" href="classgsl_1_1not__null.html">gsl::not_null</a>&lt; <a class="el" href="group__DataBoxGroup.html#ga6da12f8bf23ee87c99472b0f33b2b155">db::item_type</a>&lt; Tag &gt; *&gt; modified_tensor, const <a class="el" href="group__DataBoxGroup.html#gaca3b55a83d51f19ae5f2c40af6afcc65">db::const_item_type</a>&lt; Tag &gt; &amp;local_tensor, const <a class="el" href="classElement.html">Element</a>&lt; VolumeDim &gt; &amp;element, const <a class="el" href="classMesh.html">Mesh</a>&lt; VolumeDim &gt; &amp;mesh, const <a class="elRef" doxygen="/work/spectre/docs/config/cppreference-doxygen-web.tag.xml:http://en.cppreference.com/w/" href="http://en.cppreference.com/w/cpp/container/unordered_map.html">LimiterNeighborData</a>&lt; VolumeDim, Package &gt; &amp;neighbor_data, const <a class="elRef" doxygen="/work/spectre/docs/config/cppreference-doxygen-web.tag.xml:http://en.cppreference.com/w/" href="http://en.cppreference.com/w/cpp/utility/pair.html">std::pair</a>&lt; <a class="el" href="classDirection.html">Direction</a>&lt; VolumeDim &gt;, <a class="el" href="classElementId.html">ElementId</a>&lt; VolumeDim &gt;&gt; &amp;primary_neighbor) noexcept</td></tr>
+<tr class="memdesc:gaa2685a1044ae90dd6753af16d788d67e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute the HWENO modified solution for a particular tensor from a particular neighbor element.  <a href="group__LimitersGroup.html#gaa2685a1044ae90dd6753af16d788d67e">More...</a><br /></td></tr>
+<tr class="separator:gaa2685a1044ae90dd6753af16d788d67e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<p><a class="el" href="namespaceLimiters.html" title="Things relating to limiting. ">Limiters</a> to control shocks and surfaces in the solution. </p>
+<h2 class="groupheader">Enumeration Type Documentation</h2>
+<a id="ga530a6d3e2a08bb4bd61090a8f9aadd35"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga530a6d3e2a08bb4bd61090a8f9aadd35">&#9670;&nbsp;</a></span>MinmodType</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum <a class="el" href="group__LimitersGroup.html#ga530a6d3e2a08bb4bd61090a8f9aadd35">Limiters::MinmodType</a></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">strong</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Possible types of the minmod slope limiter and/or troubled-cell indicator. </p>
+<dl class="section see"><dt>See also</dt><dd>Limiters::Minmod for a description and reference. </dd></dl>
+
+</div>
+</div>
+<a id="ga9579591401477fc50611bf73b93c9841"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga9579591401477fc50611bf73b93c9841">&#9670;&nbsp;</a></span>WenoType</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum <a class="el" href="group__LimitersGroup.html#ga9579591401477fc50611bf73b93c9841">Limiters::WenoType</a></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">strong</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Possible types of the WENO limiter. </p>
+<dl class="section see"><dt>See also</dt><dd>Limiters::Weno for a description and references. </dd></dl>
+
+</div>
+</div>
+<h2 class="groupheader">Function Documentation</h2>
+<a id="gaa2685a1044ae90dd6753af16d788d67e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#gaa2685a1044ae90dd6753af16d788d67e">&#9670;&nbsp;</a></span>hweno_modified_neighbor_solution()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename Tag , size_t VolumeDim, typename Package &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Limiters::hweno_modified_neighbor_solution </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classgsl_1_1not__null.html">gsl::not_null</a>&lt; <a class="el" href="group__DataBoxGroup.html#ga6da12f8bf23ee87c99472b0f33b2b155">db::item_type</a>&lt; Tag &gt; *&gt;&#160;</td>
+          <td class="paramname"><em>modified_tensor</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="group__DataBoxGroup.html#gaca3b55a83d51f19ae5f2c40af6afcc65">db::const_item_type</a>&lt; Tag &gt; &amp;&#160;</td>
+          <td class="paramname"><em>local_tensor</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classElement.html">Element</a>&lt; VolumeDim &gt; &amp;&#160;</td>
+          <td class="paramname"><em>element</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classMesh.html">Mesh</a>&lt; VolumeDim &gt; &amp;&#160;</td>
+          <td class="paramname"><em>mesh</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="elRef" doxygen="/work/spectre/docs/config/cppreference-doxygen-web.tag.xml:http://en.cppreference.com/w/" href="http://en.cppreference.com/w/cpp/container/unordered_map.html">LimiterNeighborData</a>&lt; VolumeDim, Package &gt; &amp;&#160;</td>
+          <td class="paramname"><em>neighbor_data</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="elRef" doxygen="/work/spectre/docs/config/cppreference-doxygen-web.tag.xml:http://en.cppreference.com/w/" href="http://en.cppreference.com/w/cpp/utility/pair.html">std::pair</a>&lt; <a class="el" href="classDirection.html">Direction</a>&lt; VolumeDim &gt;, <a class="el" href="classElementId.html">ElementId</a>&lt; VolumeDim &gt;&gt; &amp;&#160;</td>
+          <td class="paramname"><em>primary_neighbor</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Compute the HWENO modified solution for a particular tensor from a particular neighbor element. </p>
+<p>The HWENO limiter reconstructs a new solution from the linear combination of the local DG solution and a "modified" solution from each neighbor element. This function computes the modified solution for a particular tensor and neighbor, following Section 3 of <a class="el" href="citelist.html#CITEREF_Zhu2016">[53]</a>.</p>
+<p>The modified solution associated with a particular neighbor (the "primary" neighbor) is obtained by solving a constrained fit over the local element, the primary neighbor, and the other ("secondary") neighbors of the local element. This fit seeks to minimize in a least-squared sense:</p><ol type="1">
+<li>The distance between the modified solution and the original solution on the primary neighbor.</li>
+<li>The distance between the cell average of the modified solution and the cell average of the original solution on each secondary neighbor. Note however that one secondary neighbor (or, rarely, several) is excluded from this minimization: the secondary neighbor(s) where the original solution has the most different cell average from the local element. This helps to prevent an outlier (e.g., near a shock) from biasing the fit.</li>
+</ol>
+<p>The constraint on the minimization is the following: the cell average of the modified solution on the local element must equal the cell average of the local element's original solution.</p>
+<p>Below we give the mathematical form of the constraints described above and show how these are translated into a numerical algorithm.</p>
+<p>Consider an element \(I_0\) with neighbors \(I_1, I_2, ...\). For a given tensor component \(u\), the values on each of these elements are \(u^{(0)}, u^{(1)}, u^{(2)}, ...\). Taking for the sake of example the primary neighbor to be \(I_1\), the modified solution \(\phi\) must minimize</p>
+<p class="formulaDsp">
+\[ \chi^2 = \int_{I_1} (\phi - u^{(1)})^2 dV + \sum_{\ell \in L} \left( \int_{I_{\ell}} ( \phi - u^{(\ell)} ) dV \right)^2, \]
+</p>
+<p>subject to the constaint</p>
+<p class="formulaDsp">
+\[ C = \int_{I_0} ( \phi - u^{(0)} ) dV = 0. \]
+</p>
+<p>where \(\ell\) ranges over a subset \(L\) of the secondary neighbors. \(L\) excludes the one (or more) secondary neighbor(s) where the mean of \(u\) is the most different from the mean of \(u^{(0)}\). Typically, only one secondary neighbor is excluded, so \(L\) contains two fewer neighbors than the total number of neighbors to the element. Note that in 1D, this implies that \(L\) is the empty set; for each modified solution, one neighbor is the primary neighbor and the other is the excluded neighbor.</p>
+<p>The integrals are evaluated by quadrature. We denote the quadrature weights by \(w_s\) and the values of some data \(X\) at the quadrature nodes by \(X_s\). We use subscripts \(r,s\) to denote quadrature nodes on the neighbor and local elements, respectively. The minimization becomes</p>
+<p class="formulaDsp">
+\[ \chi^2 = \sum_r w^{(1)}_r ( \phi_r - u^{(1)}_r )^2 + \sum_{\ell \in L} \left( \sum_r w^{(\ell)}_r ( \phi_r - u^{(\ell)}_r ) \right)^2, \]
+</p>
+<p>subject to the constraint</p>
+<p class="formulaDsp">
+\[ C = \sum_s w^{(0)}_s ( \phi_s - u^{(0)}_s ) = 0. \]
+</p>
+<p>Note that \(\phi\) is a function defined on the local element \(I_0\), and so is fully represented by its values \(\phi_s\) at the quadrature points on this element. When evaluating \(\phi\) on element \(I_{\ell}\), we obtain the function values \(\phi_r\) by polynomial extrapolation, \(\phi_r = \sum_s \mathcal{I}^{(\ell)}_{rs} \phi_s\), where \(\mathcal{I}^{(\ell)}_{rs}\) is the interpolation/extrapolation matrix that interpolates data defined at grid points \(x_s\) and evaluates it at grid points \(x_r\) of \(I_{\ell}\). Thus,</p>
+<p class="formulaDsp">
+\[ \chi^2 = \sum_r w^{(1)}_r \left( \sum_s \mathcal{I}^{(1)}_{rs} \phi_s - u^{(1)}_r \right)^2 + \sum_{\ell \in L} \left( \sum_r w^{(\ell)}_r \left( \sum_s \mathcal{I}^{(\ell)}_{rs} \phi_s - u^{(\ell)}_r \right) \right)^2. \]
+</p>
+<p>The solution to this optimization problem is found in the standard way, using a Lagrange multiplier \(\lambda\) to impose the constraint:</p>
+<p class="formulaDsp">
+\[ 0 = \frac{d}{d \phi_s} \left( \chi^2 + \lambda C \right). \]
+</p>
+<p>Working out the differentiation with respect to \(\phi_s\) leads to the linear problem that must be inverted to obtain the solution,</p>
+<p class="formulaDsp">
+\[ 0 = A_{st} \phi_t - b_s - \lambda w^{(0)}_s, \]
+</p>
+<p>where</p>
+<p class="formulaDsp">
+\begin{align*} A_{st} &amp;= \sum_r \left( w^{(1)}_r \mathcal{I}^{(1)}_{rs} \mathcal{I}^{(1)}_{rt} \right) + \sum_{\ell \in L} \left( \sum_r \left( w^{(\ell)}_r \mathcal{I}^{(\ell)}_{rt} \right) \cdot \sum_r \left( w^{(\ell)}_r \mathcal{I}^{(\ell)}_{rs} \right) \right) \\ b_s &amp;= \sum_r \left( w^{(1)}_r u^{(1)}_r \mathcal{I}^{(1)}_{rs} \right) + \sum_{\ell \in L} \left( \sum_r \left( w^{(\ell)}_r u^{(\ell)}_r \right) \cdot \sum_r \left( w^{(\ell)}_r \mathcal{I}^{(\ell)}_{rs} \right) \right). \end{align*}
+</p>
+<p>Finally, the solution to the constrained fit is</p>
+<p class="formulaDsp">
+\begin{align*} \lambda &amp;= - \frac{ \sum_s w^{(0)}_s \left( (A^{-1})_{st} b_t - u^{(0)}_s \right) }{ \sum_s w^{(0)}_s (A^{-1})_{st} w^{(0)}_t } \\ \phi_s &amp;= (A^{-1})_{st} ( b_t + \lambda w^{(0)}_t ). \end{align*}
+</p>
+<p>Note that the matrix \(A\) does not depend on the values of the tensor \(u\), so its inverse \(A^{-1}\) can be precomputed and stored.</p>
+<dl class="section warning"><dt>Warning</dt><dd>Note also that the implementation currently does not support h- or p-refinement; this is checked by some assertions. The implementation is untested for grids where elements are curved, and it should not be expected to work in these cases. </dd></dl>
+
+</div>
+</div>
+</div><!-- contents -->
+<!-- HTML footer for doxygen 1.8.10-->
+<!-- start footer part -->
+<hr class="footer"/><address class="footer"><small>
+&copy; Copyright 2017 - 2019
+<a href="https://black-holes.org">SXS Collaboration</a>,
+<a href="LICENSE.txt" target="_blank">
+<span class="hidden-xs">Distributed under the</span>
+MIT License</a>
+</small></address>
+</body>
+</html>

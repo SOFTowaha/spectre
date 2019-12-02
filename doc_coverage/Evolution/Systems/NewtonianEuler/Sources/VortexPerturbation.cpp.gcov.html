@@ -1,0 +1,172 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - 5912ac2e49a80e6a27b3707c9a1e6ce5248b1b2a - Evolution/Systems/NewtonianEuler/Sources/VortexPerturbation.cpp</title>
+  <link rel="stylesheet" type="text/css" href="../../../../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title"> SpECTRE Documentation Coverage Report</td></tr>
+    <tr><td class="ruler"><img src="../../../../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../../../../index.html">top level</a> - <a href="index.html">Evolution/Systems/NewtonianEuler/Sources</a> - VortexPerturbation.cpp</td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+             <td class="headerItem">Commit:</td>
+             <td class="headerValue"><a target="_blank" href="https://github.com/sxs-collaboration/spectre/commit/5912ac2e49a80e6a27b3707c9a1e6ce5248b1b2a">5912ac2e49a80e6a27b3707c9a1e6ce5248b1b2a</a></td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntry">1</td>
+            <td class="headerCovTableEntryLo">0.0 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2019-12-02 22:01:08</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td class="headerItem">Legend:</td>
+            <td class="headerValueLeg">            Lines:
+            <span class="coverLegendCov">hit</span>
+            <span class="coverLegendNoCov">not hit</span>
+</td>
+            <td></td>
+          </tr>
+          <tr><td><img src="../../../../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../../../../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">          Line data    Source code</pre>
+<pre class="source">
+<span class="lineNum">       1 </span><span class="lineNoCov">          0 : // Distributed under the MIT License.</span>
+<span class="lineNum">       2 </span>            : // See LICENSE.txt for details.
+<span class="lineNum">       3 </span>            : 
+<span class="lineNum">       4 </span>            : #include &quot;Evolution/Systems/NewtonianEuler/Sources/VortexPerturbation.hpp&quot;
+<span class="lineNum">       5 </span>            : 
+<span class="lineNum">       6 </span>            : #include &lt;cstddef&gt;
+<span class="lineNum">       7 </span>            : #include &lt;pup.h&gt;
+<span class="lineNum">       8 </span>            : 
+<span class="lineNum">       9 </span>            : #include &quot;DataStructures/DataVector.hpp&quot;
+<span class="lineNum">      10 </span>            : #include &quot;DataStructures/Tensor/Tensor.hpp&quot;
+<span class="lineNum">      11 </span>            : #include &quot;DataStructures/Variables.hpp&quot;
+<span class="lineNum">      12 </span>            : #include &quot;Evolution/Systems/NewtonianEuler/ConservativeFromPrimitive.hpp&quot;
+<span class="lineNum">      13 </span>            : #include &quot;Evolution/Systems/NewtonianEuler/Tags.hpp&quot;
+<span class="lineNum">      14 </span>            : #include &quot;PointwiseFunctions/AnalyticSolutions/NewtonianEuler/IsentropicVortex.hpp&quot;
+<span class="lineNum">      15 </span>            : #include &quot;Utilities/GenerateInstantiations.hpp&quot;
+<span class="lineNum">      16 </span>            : #include &quot;Utilities/Gsl.hpp&quot;
+<span class="lineNum">      17 </span>            : #include &quot;Utilities/TMPL.hpp&quot;
+<span class="lineNum">      18 </span>            : 
+<span class="lineNum">      19 </span>            : // IWYU pragma: no_include &lt;array&gt;
+<span class="lineNum">      20 </span>            : 
+<span class="lineNum">      21 </span>            : // IWYU pragma: no_forward_declare Tensor
+<span class="lineNum">      22 </span>            : 
+<span class="lineNum">      23 </span>            : /// \cond
+<span class="lineNum">      24 </span>            : namespace NewtonianEuler {
+<span class="lineNum">      25 </span>            : namespace Sources {
+<span class="lineNum">      26 </span>            : template &lt;&gt;
+<span class="lineNum">      27 </span>            : void VortexPerturbation&lt;2&gt;::apply() const noexcept {}
+<span class="lineNum">      28 </span>            : 
+<span class="lineNum">      29 </span>            : template &lt;&gt;
+<span class="lineNum">      30 </span>            : void VortexPerturbation&lt;3&gt;::apply(
+<span class="lineNum">      31 </span>            :     const gsl::not_null&lt;Scalar&lt;DataVector&gt;*&gt; source_mass_density_cons,
+<span class="lineNum">      32 </span>            :     const gsl::not_null&lt;tnsr::I&lt;DataVector, 3&gt;*&gt; source_momentum_density,
+<span class="lineNum">      33 </span>            :     const gsl::not_null&lt;Scalar&lt;DataVector&gt;*&gt; source_energy_density,
+<span class="lineNum">      34 </span>            :     const NewtonianEuler::Solutions::IsentropicVortex&lt;3&gt;&amp; vortex,
+<span class="lineNum">      35 </span>            :     const tnsr::I&lt;DataVector, 3&gt;&amp; x, const double time) const noexcept {
+<span class="lineNum">      36 </span>            :   const size_t number_of_grid_points = get&lt;0&gt;(x).size();
+<span class="lineNum">      37 </span>            :   const auto vortex_primitives = vortex.variables(
+<span class="lineNum">      38 </span>            :       x, time,
+<span class="lineNum">      39 </span>            :       tmpl::list&lt;Tags::MassDensity&lt;DataVector&gt;, Tags::Velocity&lt;DataVector, 3&gt;,
+<span class="lineNum">      40 </span>            :                  Tags::SpecificInternalEnergy&lt;DataVector&gt;,
+<span class="lineNum">      41 </span>            :                  Tags::Pressure&lt;DataVector&gt;&gt;{});
+<span class="lineNum">      42 </span>            :   Variables&lt;
+<span class="lineNum">      43 </span>            :       tmpl::list&lt;::Tags::TempScalar&lt;0&gt;, ::Tags::TempI&lt;1, 3, Frame::Inertial&gt;,
+<span class="lineNum">      44 </span>            :                  ::Tags::TempScalar&lt;2&gt;&gt;&gt;
+<span class="lineNum">      45 </span>            :       temp_buffer(number_of_grid_points);
+<span class="lineNum">      46 </span>            :   auto&amp; vortex_mass_density_cons = get&lt;::Tags::TempScalar&lt;0&gt;&gt;(temp_buffer);
+<span class="lineNum">      47 </span>            :   auto&amp; vortex_momentum_density =
+<span class="lineNum">      48 </span>            :       get&lt;::Tags::TempI&lt;1, 3, Frame::Inertial&gt;&gt;(temp_buffer);
+<span class="lineNum">      49 </span>            :   auto&amp; vortex_energy_density = get&lt;::Tags::TempScalar&lt;2&gt;&gt;(temp_buffer);
+<span class="lineNum">      50 </span>            : 
+<span class="lineNum">      51 </span>            :   NewtonianEuler::ConservativeFromPrimitive&lt;3&gt;::apply(
+<span class="lineNum">      52 </span>            :       make_not_null(&amp;vortex_mass_density_cons),
+<span class="lineNum">      53 </span>            :       make_not_null(&amp;vortex_momentum_density),
+<span class="lineNum">      54 </span>            :       make_not_null(&amp;vortex_energy_density),
+<span class="lineNum">      55 </span>            :       get&lt;Tags::MassDensity&lt;DataVector&gt;&gt;(vortex_primitives),
+<span class="lineNum">      56 </span>            :       get&lt;Tags::Velocity&lt;DataVector, 3, Frame::Inertial&gt;&gt;(vortex_primitives),
+<span class="lineNum">      57 </span>            :       get&lt;Tags::SpecificInternalEnergy&lt;DataVector&gt;&gt;(vortex_primitives));
+<span class="lineNum">      58 </span>            : 
+<span class="lineNum">      59 </span>            :   // We save the precomputed value of dv_z/dz in source_mass_density_cons
+<span class="lineNum">      60 </span>            :   // in order to save an allocation
+<span class="lineNum">      61 </span>            :   get(*source_mass_density_cons) =
+<span class="lineNum">      62 </span>            :       vortex.perturbation_amplitude() *
+<span class="lineNum">      63 </span>            :       vortex.deriv_of_perturbation_profile(get&lt;2&gt;(x));
+<span class="lineNum">      64 </span>            : 
+<span class="lineNum">      65 </span>            :   for (size_t i = 0; i &lt; 3; ++i) {
+<span class="lineNum">      66 </span>            :     source_momentum_density-&gt;get(i) =
+<span class="lineNum">      67 </span>            :         vortex_momentum_density.get(i) * get(*source_mass_density_cons);
+<span class="lineNum">      68 </span>            :   }
+<span class="lineNum">      69 </span>            :   source_momentum_density-&gt;get(2) *= 2.0;
+<span class="lineNum">      70 </span>            : 
+<span class="lineNum">      71 </span>            :   get(*source_energy_density) =
+<span class="lineNum">      72 </span>            :       (get(vortex_energy_density) +
+<span class="lineNum">      73 </span>            :        get(get&lt;Tags::Pressure&lt;DataVector&gt;&gt;(vortex_primitives)) +
+<span class="lineNum">      74 </span>            :        vortex_momentum_density.get(2) *
+<span class="lineNum">      75 </span>            :            get&lt;2&gt;(get&lt;Tags::Velocity&lt;DataVector, 3, Frame::Inertial&gt;&gt;(
+<span class="lineNum">      76 </span>            :                vortex_primitives))) *
+<span class="lineNum">      77 </span>            :       get(*source_mass_density_cons);
+<span class="lineNum">      78 </span>            : 
+<span class="lineNum">      79 </span>            :   get(*source_mass_density_cons) *= get(vortex_mass_density_cons);
+<span class="lineNum">      80 </span>            : }
+<span class="lineNum">      81 </span>            : 
+<span class="lineNum">      82 </span>            : #define DIM(data) BOOST_PP_TUPLE_ELEM(0, data)
+<span class="lineNum">      83 </span>            : 
+<span class="lineNum">      84 </span>            : #define INSTANTIATE(_, data) template struct VortexPerturbation&lt;DIM(data)&gt;;
+<span class="lineNum">      85 </span>            : 
+<span class="lineNum">      86 </span>            : GENERATE_INSTANTIATIONS(INSTANTIATE, (2, 3))
+<span class="lineNum">      87 </span>            : 
+<span class="lineNum">      88 </span>            : #undef INSTANTIATE
+<span class="lineNum">      89 </span>            : #undef DIM
+<span class="lineNum">      90 </span>            : }  // Namespace Sources
+<span class="lineNum">      91 </span>            : }  // namespace NewtonianEuler
+<span class="lineNum">      92 </span>            : /// \endcond
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../../../../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.13</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

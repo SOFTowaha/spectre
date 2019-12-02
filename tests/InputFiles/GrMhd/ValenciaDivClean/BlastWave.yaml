@@ -1,0 +1,60 @@
+# Distributed under the MIT License.
+# See LICENSE.txt for details.
+
+# Executable: EvolveCylindricalBlastWave
+# Check: parse;execute
+
+Evolution:
+  InitialTime: 0.0
+  InitialTimeStep: 0.01
+  TimeStepper: RungeKutta3
+
+DomainCreator:
+  Brick:
+    LowerBound: [-6.0, -6.0, -6.0]
+    UpperBound: [6.0, 6.0, 6.0]
+    IsPeriodicIn: [true, true, true]
+    InitialRefinement: [2, 2, 0]
+    InitialGridPoints: [2, 2, 2]
+
+AnalyticData:
+  CylindricalBlastWave:
+    InnerRadius: 0.8
+    OuterRadius: 1.0
+    InnerDensity: 1.0e-2
+    OuterDensity: 1.0e-4
+    InnerPressure: 1.0
+    OuterPressure: 5.0e-4
+    MagneticField: [0.1, 0.0, 0.0]
+    AdiabaticIndex: 1.3333333333333333333
+
+NumericalFlux:
+  LocalLaxFriedrichs:
+
+EvolutionSystem:
+  ValenciaDivClean:
+    DampingParameter: 0.0
+
+Limiter:
+  Minmod:
+    Type: Muscl
+    TvbmConstant: 0
+
+VariableFixing:
+  FixConservatives:
+    CutoffD: 1.0e-12
+    MinimumValueOfD: 1.0e-12
+    SafetyFactorForB: 1.0e-12
+    SafetyFactorForS: 1.0e-12
+  FixToAtmosphere:
+    DensityOfAtmosphere: 1.0e-12
+    DensityCutoff: 1.0e-12
+
+Observers:
+  VolumeFileName: "GrMhdBlastWaveVolume"
+  ReductionFileName: "GrMhdBlastWaveReductions"
+
+EventsAndTriggers:
+  ? SpecifiedSlabs:
+      Slabs: [2]
+  : - Completion

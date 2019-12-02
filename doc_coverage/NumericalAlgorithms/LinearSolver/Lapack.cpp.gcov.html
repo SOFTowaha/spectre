@@ -1,0 +1,207 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - 5912ac2e49a80e6a27b3707c9a1e6ce5248b1b2a - NumericalAlgorithms/LinearSolver/Lapack.cpp</title>
+  <link rel="stylesheet" type="text/css" href="../../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title"> SpECTRE Documentation Coverage Report</td></tr>
+    <tr><td class="ruler"><img src="../../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../../index.html">top level</a> - <a href="index.html">NumericalAlgorithms/LinearSolver</a> - Lapack.cpp</td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+             <td class="headerItem">Commit:</td>
+             <td class="headerValue"><a target="_blank" href="https://github.com/sxs-collaboration/spectre/commit/5912ac2e49a80e6a27b3707c9a1e6ce5248b1b2a">5912ac2e49a80e6a27b3707c9a1e6ce5248b1b2a</a></td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">1</td>
+            <td class="headerCovTableEntry">9</td>
+            <td class="headerCovTableEntryLo">11.1 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2019-12-02 22:01:08</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td class="headerItem">Legend:</td>
+            <td class="headerValueLeg">            Lines:
+            <span class="coverLegendCov">hit</span>
+            <span class="coverLegendNoCov">not hit</span>
+</td>
+            <td></td>
+          </tr>
+          <tr><td><img src="../../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">          Line data    Source code</pre>
+<pre class="source">
+<span class="lineNum">       1 </span><span class="lineNoCov">          0 : // Distributed under the MIT License.</span>
+<span class="lineNum">       2 </span>            : // See LICENSE.txt for details.
+<span class="lineNum">       3 </span>            : 
+<span class="lineNum">       4 </span>            : #include &quot;NumericalAlgorithms/LinearSolver/Lapack.hpp&quot;
+<span class="lineNum">       5 </span>            : 
+<span class="lineNum">       6 </span>            : #include &lt;cstddef&gt;
+<span class="lineNum">       7 </span>            : #include &lt;vector&gt;
+<span class="lineNum">       8 </span>            : 
+<span class="lineNum">       9 </span>            : #include &quot;DataStructures/DataVector.hpp&quot;
+<span class="lineNum">      10 </span>            : #include &quot;DataStructures/Matrix.hpp&quot;
+<span class="lineNum">      11 </span>            : #include &quot;ErrorHandling/Assert.hpp&quot;
+<span class="lineNum">      12 </span>            : #include &quot;Utilities/Gsl.hpp&quot;
+<span class="lineNum">      13 </span>            : 
+<span class="lineNum">      14 </span>            : extern &quot;C&quot; {
+<span class="lineNum">      15 </span><span class="lineNoCov">          0 : extern void dgesv_(int*, int*, double*, int*, int*, double*, int*, int*);</span>
+<span class="lineNum">      16 </span>            : }
+<span class="lineNum">      17 </span>            : 
+<span class="lineNum">      18 </span><span class="lineCov">          1 : namespace lapack {</span>
+<span class="lineNum">      19 </span><span class="lineNoCov">          0 : int general_matrix_linear_solve(</span>
+<span class="lineNum">      20 </span>            :     const gsl::not_null&lt;DataVector*&gt; rhs_in_solution_out,
+<span class="lineNum">      21 </span>            :     const gsl::not_null&lt;Matrix*&gt; matrix_operator,
+<span class="lineNum">      22 </span>            :     const int number_of_rhs) noexcept {
+<span class="lineNum">      23 </span>            :   const size_t rhs_vector_size = matrix_operator-&gt;rows();
+<span class="lineNum">      24 </span>            :   std::vector&lt;int&gt; ipiv(rhs_vector_size);
+<span class="lineNum">      25 </span>            :   return general_matrix_linear_solve(rhs_in_solution_out, make_not_null(&amp;ipiv),
+<span class="lineNum">      26 </span>            :                                      matrix_operator, number_of_rhs);
+<span class="lineNum">      27 </span>            : }
+<span class="lineNum">      28 </span>            : 
+<span class="lineNum">      29 </span><span class="lineNoCov">          0 : int general_matrix_linear_solve(</span>
+<span class="lineNum">      30 </span>            :     const gsl::not_null&lt;DataVector*&gt; rhs_in_solution_out,
+<span class="lineNum">      31 </span>            :     const gsl::not_null&lt;std::vector&lt;int&gt;*&gt; pivots,
+<span class="lineNum">      32 </span>            :     const gsl::not_null&lt;Matrix*&gt; matrix_operator, int number_of_rhs) noexcept {
+<span class="lineNum">      33 </span>            :   int output_vector_size = matrix_operator-&gt;columns();
+<span class="lineNum">      34 </span>            :   int rhs_vector_size = matrix_operator-&gt;rows();
+<span class="lineNum">      35 </span>            :   ASSERT(output_vector_size == rhs_vector_size,
+<span class="lineNum">      36 </span>            :          &quot;The LAPACK-based general linear solve requires a square matrix &quot;
+<span class="lineNum">      37 </span>            :          &quot;input, not &quot;
+<span class="lineNum">      38 </span>            :              &lt;&lt; rhs_vector_size &lt;&lt; &quot; by &quot; &lt;&lt; output_vector_size);
+<span class="lineNum">      39 </span>            : 
+<span class="lineNum">      40 </span>            :   if (number_of_rhs == 0) {
+<span class="lineNum">      41 </span>            :     ASSERT(
+<span class="lineNum">      42 </span>            :         rhs_in_solution_out-&gt;size() % static_cast&lt;size_t&gt;(rhs_vector_size) == 0,
+<span class="lineNum">      43 </span>            :         &quot;The provided DataVector does not have size equal to (number of &quot;
+<span class="lineNum">      44 </span>            :         &quot;equations) * (larger matrix dimension), so the number of right-hand &quot;
+<span class="lineNum">      45 </span>            :         &quot;sides cannot be inferred and must be provided explicitly&quot;);
+<span class="lineNum">      46 </span>            :     number_of_rhs =
+<span class="lineNum">      47 </span>            :         rhs_in_solution_out-&gt;size() /
+<span class="lineNum">      48 </span>            :         static_cast&lt;size_t&gt;(std::max(rhs_vector_size, output_vector_size));
+<span class="lineNum">      49 </span>            :   }
+<span class="lineNum">      50 </span>            :   int info = 0;
+<span class="lineNum">      51 </span>            :   ASSERT(static_cast&lt;size_t&gt;(rhs_vector_size * number_of_rhs) &lt;=
+<span class="lineNum">      52 </span>            :                  rhs_in_solution_out-&gt;size() and
+<span class="lineNum">      53 </span>            :              static_cast&lt;size_t&gt;(output_vector_size * number_of_rhs) &lt;=
+<span class="lineNum">      54 </span>            :                  rhs_in_solution_out-&gt;size(),
+<span class="lineNum">      55 </span>            :          &quot;The single DataVector passed to the LAPACK call must be sufficiently &quot;
+<span class="lineNum">      56 </span>            :          &quot;large to contain x and b in A x = b&quot;);
+<span class="lineNum">      57 </span>            :   dgesv_(&amp;rhs_vector_size, &amp;number_of_rhs, matrix_operator-&gt;data(),
+<span class="lineNum">      58 </span>            :          &amp;output_vector_size, pivots-&gt;data(), rhs_in_solution_out-&gt;data(),
+<span class="lineNum">      59 </span>            :          &amp;output_vector_size, &amp;info);
+<span class="lineNum">      60 </span>            :   return info;
+<span class="lineNum">      61 </span>            : }
+<span class="lineNum">      62 </span>            : 
+<span class="lineNum">      63 </span><span class="lineNoCov">          0 : int general_matrix_linear_solve(const gsl::not_null&lt;DataVector*&gt; solution,</span>
+<span class="lineNum">      64 </span>            :                                 const gsl::not_null&lt;Matrix*&gt; matrix_operator,
+<span class="lineNum">      65 </span>            :                                 const DataVector&amp; rhs,
+<span class="lineNum">      66 </span>            :                                 const int number_of_rhs) noexcept {
+<span class="lineNum">      67 </span>            :   const size_t rhs_vector_size = matrix_operator-&gt;rows();
+<span class="lineNum">      68 </span>            :   std::vector&lt;int&gt; ipiv(rhs_vector_size);
+<span class="lineNum">      69 </span>            :   return general_matrix_linear_solve(solution, make_not_null(&amp;ipiv),
+<span class="lineNum">      70 </span>            :                                      matrix_operator, rhs, number_of_rhs);
+<span class="lineNum">      71 </span>            : }
+<span class="lineNum">      72 </span>            : 
+<span class="lineNum">      73 </span><span class="lineNoCov">          0 : int general_matrix_linear_solve(const gsl::not_null&lt;DataVector*&gt; solution,</span>
+<span class="lineNum">      74 </span>            :                                 const gsl::not_null&lt;std::vector&lt;int&gt;*&gt; pivots,
+<span class="lineNum">      75 </span>            :                                 const gsl::not_null&lt;Matrix*&gt; matrix_operator,
+<span class="lineNum">      76 </span>            :                                 const DataVector&amp; rhs,
+<span class="lineNum">      77 </span>            :                                 int number_of_rhs) noexcept {
+<span class="lineNum">      78 </span>            :   // NOLINTNEXTLINE(clang-analyzer-deadcode)
+<span class="lineNum">      79 </span>            :   const int output_vector_size = matrix_operator-&gt;columns();
+<span class="lineNum">      80 </span>            :   const int rhs_vector_size = matrix_operator-&gt;rows();
+<span class="lineNum">      81 </span>            :   if (number_of_rhs == 0) {
+<span class="lineNum">      82 </span>            :     ASSERT(rhs.size() % static_cast&lt;size_t&gt;(rhs_vector_size) == 0,
+<span class="lineNum">      83 </span>            :            &quot;The provided DataVector does not have size equal to (number of &quot;
+<span class="lineNum">      84 </span>            :            &quot;equations) * (number_of_matrix_rows), so the number of right-hand &quot;
+<span class="lineNum">      85 </span>            :            &quot;sides cannot be inferred and must be provided explicitly&quot;);
+<span class="lineNum">      86 </span>            :     number_of_rhs = rhs.size() / static_cast&lt;size_t&gt;(rhs_vector_size);
+<span class="lineNum">      87 </span>            :   }
+<span class="lineNum">      88 </span>            :   ASSERT(solution-&gt;size() &gt;=
+<span class="lineNum">      89 </span>            :              static_cast&lt;size_t&gt;(number_of_rhs * output_vector_size),
+<span class="lineNum">      90 </span>            :          &quot;The provided pointer for the output of the LAPACK linear solve is &quot;
+<span class="lineNum">      91 </span>            :          &quot;too small for the operation. Solution size is: &quot;
+<span class="lineNum">      92 </span>            :              &lt;&lt; solution-&gt;size() &lt;&lt; &quot; and should be: &quot;
+<span class="lineNum">      93 </span>            :              &lt;&lt; number_of_rhs * output_vector_size &lt;&lt; &quot;.&quot;);
+<span class="lineNum">      94 </span>            :   ASSERT(rhs.size() &gt;= static_cast&lt;size_t&gt;(number_of_rhs * rhs_vector_size),
+<span class="lineNum">      95 </span>            :          &quot;The provided pointer for the input right-hand side vector of the &quot;
+<span class="lineNum">      96 </span>            :          &quot;LAPACK linear solve is too small for the operation. Vector size is: &quot;
+<span class="lineNum">      97 </span>            :              &lt;&lt; rhs.size()
+<span class="lineNum">      98 </span>            :              &lt;&lt; &quot; and should be: &quot; &lt;&lt; number_of_rhs * rhs_vector_size &lt;&lt; &quot;.&quot;);
+<span class="lineNum">      99 </span>            :   std::copy(rhs.begin(), rhs.begin() + number_of_rhs * rhs_vector_size,
+<span class="lineNum">     100 </span>            :             solution-&gt;begin());
+<span class="lineNum">     101 </span>            :   return general_matrix_linear_solve(solution, pivots, matrix_operator,
+<span class="lineNum">     102 </span>            :                                      number_of_rhs);
+<span class="lineNum">     103 </span>            : }
+<span class="lineNum">     104 </span>            : 
+<span class="lineNum">     105 </span><span class="lineNoCov">          0 : int general_matrix_linear_solve(</span>
+<span class="lineNum">     106 </span>            :     const gsl::not_null&lt;DataVector*&gt; rhs_in_solution_out,
+<span class="lineNum">     107 </span>            :     const Matrix&amp; matrix_operator, const int number_of_rhs) noexcept {
+<span class="lineNum">     108 </span>            :   // LAPACK is permitted to modify the matrix in-place, so we copy before
+<span class="lineNum">     109 </span>            :   // providing the operator if the original must be preserved.
+<span class="lineNum">     110 </span>            :   Matrix copied_matrix_operator = matrix_operator;
+<span class="lineNum">     111 </span>            :   return general_matrix_linear_solve(rhs_in_solution_out,
+<span class="lineNum">     112 </span>            :                                      make_not_null(&amp;copied_matrix_operator),
+<span class="lineNum">     113 </span>            :                                      number_of_rhs);
+<span class="lineNum">     114 </span>            : }
+<span class="lineNum">     115 </span>            : 
+<span class="lineNum">     116 </span><span class="lineNoCov">          0 : int general_matrix_linear_solve(const gsl::not_null&lt;DataVector*&gt; solution,</span>
+<span class="lineNum">     117 </span>            :                                 const Matrix&amp; matrix_operator,
+<span class="lineNum">     118 </span>            :                                 const DataVector&amp; rhs,
+<span class="lineNum">     119 </span>            :                                 const int number_of_rhs) noexcept {
+<span class="lineNum">     120 </span>            :   // LAPACK is permitted to modify the matrix in-place, so we copy before
+<span class="lineNum">     121 </span>            :   // providing the operator if the original must be preserved.
+<span class="lineNum">     122 </span>            :   Matrix copied_matrix_operator = matrix_operator;
+<span class="lineNum">     123 </span>            :   return general_matrix_linear_solve(
+<span class="lineNum">     124 </span>            :       solution, make_not_null(&amp;copied_matrix_operator), rhs, number_of_rhs);
+<span class="lineNum">     125 </span>            : }
+<span class="lineNum">     126 </span>            : 
+<span class="lineNum">     127 </span>            : }  // namespace lapack
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.13</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

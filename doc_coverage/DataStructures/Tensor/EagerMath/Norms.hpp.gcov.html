@@ -1,0 +1,231 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - 5912ac2e49a80e6a27b3707c9a1e6ce5248b1b2a - DataStructures/Tensor/EagerMath/Norms.hpp</title>
+  <link rel="stylesheet" type="text/css" href="../../../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title"> SpECTRE Documentation Coverage Report</td></tr>
+    <tr><td class="ruler"><img src="../../../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../../../index.html">top level</a> - <a href="index.html">DataStructures/Tensor/EagerMath</a> - Norms.hpp</td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+             <td class="headerItem">Commit:</td>
+             <td class="headerValue"><a target="_blank" href="https://github.com/sxs-collaboration/spectre/commit/5912ac2e49a80e6a27b3707c9a1e6ce5248b1b2a">5912ac2e49a80e6a27b3707c9a1e6ce5248b1b2a</a></td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">6</td>
+            <td class="headerCovTableEntry">17</td>
+            <td class="headerCovTableEntryLo">35.3 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2019-12-02 22:01:08</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td class="headerItem">Legend:</td>
+            <td class="headerValueLeg">            Lines:
+            <span class="coverLegendCov">hit</span>
+            <span class="coverLegendNoCov">not hit</span>
+</td>
+            <td></td>
+          </tr>
+          <tr><td><img src="../../../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../../../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">          Line data    Source code</pre>
+<pre class="source">
+<span class="lineNum">       1 </span><span class="lineNoCov">          0 : // Distributed under the MIT License.</span>
+<span class="lineNum">       2 </span>            : // See LICENSE.txt for details.
+<span class="lineNum">       3 </span>            : 
+<span class="lineNum">       4 </span>            : #pragma once
+<span class="lineNum">       5 </span>            : 
+<span class="lineNum">       6 </span>            : #include &lt;string&gt;
+<span class="lineNum">       7 </span>            : 
+<span class="lineNum">       8 </span>            : #include &quot;DataStructures/DataBox/DataBoxTag.hpp&quot;
+<span class="lineNum">       9 </span>            : #include &quot;DataStructures/DataVector.hpp&quot;
+<span class="lineNum">      10 </span>            : #include &quot;DataStructures/Tensor/Tensor.hpp&quot;
+<span class="lineNum">      11 </span>            : #include &quot;Utilities/Functional.hpp&quot;
+<span class="lineNum">      12 </span>            : #include &quot;Utilities/Numeric.hpp&quot;
+<span class="lineNum">      13 </span>            : #include &quot;Utilities/TMPL.hpp&quot;
+<span class="lineNum">      14 </span>            : 
+<span class="lineNum">      15 </span>            : namespace L2Norm_detail {
+<span class="lineNum">      16 </span>            : template &lt;typename DataType, typename Symm, typename IndexList&gt;
+<span class="lineNum">      17 </span>            : Scalar&lt;DataType&gt; pointwise_l2_norm_square(
+<span class="lineNum">      18 </span>            :     const Tensor&lt;DataType, Symm, IndexList&gt;&amp; tensor) noexcept {
+<span class="lineNum">      19 </span>            :   auto pointwise_l2_normsq = make_with_value&lt;Scalar&lt;DataType&gt;&gt;(tensor, 0.);
+<span class="lineNum">      20 </span>            :   for (auto tensor_element = tensor.begin(); tensor_element != tensor.end();
+<span class="lineNum">      21 </span>            :        ++tensor_element) {
+<span class="lineNum">      22 </span>            :     // In order to handle tensory symmetries, we multiply the square of each
+<span class="lineNum">      23 </span>            :     // stored component with its multiplicity
+<span class="lineNum">      24 </span>            :     get(pointwise_l2_normsq) +=
+<span class="lineNum">      25 </span>            :         tensor.multiplicity(tensor_element) * square(*tensor_element);
+<span class="lineNum">      26 </span>            :   }
+<span class="lineNum">      27 </span>            :   return pointwise_l2_normsq;
+<span class="lineNum">      28 </span>            : }
+<span class="lineNum">      29 </span>            : }  // namespace L2Norm_detail
+<span class="lineNum">      30 </span>            : 
+<span class="lineNum">      31 </span>            : /*!
+<span class="lineNum">      32 </span>            :  * \ingroup TensorGroup
+<span class="lineNum">      33 </span>            :  * \brief Compute point-wise Euclidean \f$L^2\f$-norm of arbitrary Tensors.
+<span class="lineNum">      34 </span>            :  *
+<span class="lineNum">      35 </span>            :  * \details
+<span class="lineNum">      36 </span>            :  * At each grid point \f$p\f$ in the element, this function computes the
+<span class="lineNum">      37 </span>            :  * point-wise Frobenius norm of a given Tensor with arbitrary rank. If the
+<span class="lineNum">      38 </span>            :  * Tensor \f$A\f$ has rank \f$n\f$ and dimensionality \f$D\f$, then its
+<span class="lineNum">      39 </span>            :  * Frobenius norm at point \f$p\f$ is computed as:
+<span class="lineNum">      40 </span>            :  *
+<span class="lineNum">      41 </span>            :  * \f{equation}
+<span class="lineNum">      42 </span>            :  * ||A||_2(p) =
+<span class="lineNum">      43 </span>            :  *    \left(\sum^{D-1}_{i_1=0}\sum^{D-1}_{i_2=0}\cdots \sum^{D-1}_{i_n=0}
+<span class="lineNum">      44 </span>            :  *          |A_{i_1 i_2 \cdots i_n}(p)|^2 \right)^{1/2},
+<span class="lineNum">      45 </span>            :  * \f}
+<span class="lineNum">      46 </span>            :  *
+<span class="lineNum">      47 </span>            :  * where both contra-variant and co-variant indices are shown as lower indices.
+<span class="lineNum">      48 </span>            :  */
+<span class="lineNum">      49 </span>            : template &lt;typename DataType, typename Symm, typename IndexList&gt;
+<span class="lineNum">      50 </span><span class="lineCov">          1 : Scalar&lt;DataType&gt; pointwise_l2_norm(</span>
+<span class="lineNum">      51 </span>            :     const Tensor&lt;DataType, Symm, IndexList&gt;&amp; tensor) noexcept {
+<span class="lineNum">      52 </span>            :   return Scalar&lt;DataType&gt;{
+<span class="lineNum">      53 </span>            :       sqrt(get(L2Norm_detail::pointwise_l2_norm_square(tensor)))};
+<span class="lineNum">      54 </span>            : }
+<span class="lineNum">      55 </span>            : 
+<span class="lineNum">      56 </span>            : // @{
+<span class="lineNum">      57 </span>            : /*!
+<span class="lineNum">      58 </span>            :  * \ingroup TensorGroup
+<span class="lineNum">      59 </span>            :  * \brief Compute Euclidean \f$L^2\f$-norm of arbitrary Tensors reduced over an
+<span class="lineNum">      60 </span>            :  * element.
+<span class="lineNum">      61 </span>            :  *
+<span class="lineNum">      62 </span>            :  * \details
+<span class="lineNum">      63 </span>            :  * Computes the RMS value of the point-wise Frobenius norm of a given Tensor
+<span class="lineNum">      64 </span>            :  * with arbitrary rank over all grid points in an element. If the Tensor \f$A\f$
+<span class="lineNum">      65 </span>            :  * has rank \f$n\f$ and dimensionality \f$D\f$, and the element (of order
+<span class="lineNum">      66 </span>            :  * \f$N\f$) has \f$N+1\f$ points, then its element-reduced Frobenius norm is
+<span class="lineNum">      67 </span>            :  * computed as:
+<span class="lineNum">      68 </span>            :  *
+<span class="lineNum">      69 </span>            :  * \f{equation}
+<span class="lineNum">      70 </span>            :  *  ||A||_2 =
+<span class="lineNum">      71 </span>            :  *     \left(\frac{1}{N+1}\sum^{N}_{p=0}
+<span class="lineNum">      72 </span>            :  *          \left(\sum^{D-1}_{i_1=0}\sum^{D-1}_{i_2=0}\cdots
+<span class="lineNum">      73 </span>            :  *                \sum^{D-1}_{i_n=0} |A^p_{i_1 i_2 \cdots i_n}|^2 \right)
+<span class="lineNum">      74 </span>            :  * \right)^{1/2},
+<span class="lineNum">      75 </span>            :  * \f}
+<span class="lineNum">      76 </span>            :  *
+<span class="lineNum">      77 </span>            :  * where both contra-variant and co-variant indices are shown as lower indices,
+<span class="lineNum">      78 </span>            :  * and \f$p\f$ indexes grid points in the element.
+<span class="lineNum">      79 </span>            :  *
+<span class="lineNum">      80 </span>            :  * \warning This function reduces the Frobenius norm over the element, not the
+<span class="lineNum">      81 </span>            :  * whole domain.
+<span class="lineNum">      82 </span>            :  */
+<span class="lineNum">      83 </span>            : template &lt;typename DataType, typename Symm, typename IndexList&gt;
+<span class="lineNum">      84 </span><span class="lineCov">          1 : double l2_norm(const Tensor&lt;DataType, Symm, IndexList&gt;&amp; tensor) noexcept {</span>
+<span class="lineNum">      85 </span>            :   const auto pointwise_l2_normsq =
+<span class="lineNum">      86 </span>            :       L2Norm_detail::pointwise_l2_norm_square(tensor);
+<span class="lineNum">      87 </span>            :   using Plus = funcl::Plus&lt;funcl::Identity&gt;;
+<span class="lineNum">      88 </span>            :   return sqrt(alg::accumulate(get(pointwise_l2_normsq), 0., Plus{}) /
+<span class="lineNum">      89 </span>            :               tensor.begin()-&gt;size());
+<span class="lineNum">      90 </span>            : }
+<span class="lineNum">      91 </span>            : 
+<span class="lineNum">      92 </span>            : namespace Tags {
+<span class="lineNum">      93 </span>            : /*!
+<span class="lineNum">      94 </span>            :  * \ingroup DataBoxTagsGroup
+<span class="lineNum">      95 </span>            :  * \ingroup DataStructuresGroup
+<span class="lineNum">      96 </span>            :  * Point-wise Euclidean \f$L^2\f$-norm of a Tensor.
+<span class="lineNum">      97 </span>            :  * \see `pointwise_l2_norm()` for details.
+<span class="lineNum">      98 </span>            :  */
+<span class="lineNum">      99 </span>            : template &lt;typename Tag&gt;
+<span class="lineNum">     100 </span><span class="lineCov">          1 : struct PointwiseL2Norm : db::SimpleTag {</span>
+<span class="lineNum">     101 </span><span class="lineNoCov">          0 :   using type = Scalar&lt;typename Tag::type::type&gt;;</span>
+<span class="lineNum">     102 </span><span class="lineNoCov">          0 :   static std::string name() noexcept {</span>
+<span class="lineNum">     103 </span>            :     return &quot;PointwiseL2Norm(&quot; + db::tag_name&lt;Tag&gt;() + &quot;)&quot;;
+<span class="lineNum">     104 </span>            :   }
+<span class="lineNum">     105 </span>            : };
+<span class="lineNum">     106 </span>            : 
+<span class="lineNum">     107 </span>            : /*!
+<span class="lineNum">     108 </span>            :  * \ingroup DataBoxTagsGroup
+<span class="lineNum">     109 </span>            :  * \ingroup DataStructuresGroup
+<span class="lineNum">     110 </span>            :  * Computes the point-wise Euclidean \f$L^2\f$-norm of a Tensor.
+<span class="lineNum">     111 </span>            :  * \see `pointwise_l2_norm()` for details.
+<span class="lineNum">     112 </span>            :  */
+<span class="lineNum">     113 </span>            : template &lt;typename Tag&gt;
+<span class="lineNum">     114 </span><span class="lineCov">          1 : struct PointwiseL2NormCompute : PointwiseL2Norm&lt;Tag&gt;, db::ComputeTag {</span>
+<span class="lineNum">     115 </span><span class="lineNoCov">          0 :   using base = PointwiseL2Norm&lt;Tag&gt;;</span>
+<span class="lineNum">     116 </span><span class="lineNoCov">          0 :   static constexpr db::const_item_type&lt;PointwiseL2Norm&lt;Tag&gt;&gt; (*function)(</span>
+<span class="lineNum">     117 </span>            :       const db::const_item_type&lt;Tag&gt;&amp;) = pointwise_l2_norm;
+<span class="lineNum">     118 </span><span class="lineNoCov">          0 :   using argument_tags = tmpl::list&lt;Tag&gt;;</span>
+<span class="lineNum">     119 </span>            : };
+<span class="lineNum">     120 </span>            : 
+<span class="lineNum">     121 </span>            : /*!
+<span class="lineNum">     122 </span>            :  * \ingroup DataBoxTagsGroup
+<span class="lineNum">     123 </span>            :  * \ingroup DataStructuresGroup
+<span class="lineNum">     124 </span>            :  * Euclidean \f$L^2\f$-norm of a Tensor, RMS over grid points in element.
+<span class="lineNum">     125 </span>            :  * \see `l2_norm()` for details.
+<span class="lineNum">     126 </span>            :  */
+<span class="lineNum">     127 </span>            : template &lt;typename Tag&gt;
+<span class="lineNum">     128 </span><span class="lineCov">          1 : struct L2Norm : db::SimpleTag {</span>
+<span class="lineNum">     129 </span><span class="lineNoCov">          0 :   using type = double;</span>
+<span class="lineNum">     130 </span><span class="lineNoCov">          0 :   static std::string name() noexcept {</span>
+<span class="lineNum">     131 </span>            :     return &quot;L2Norm(&quot; + db::tag_name&lt;Tag&gt;() + &quot;)&quot;;
+<span class="lineNum">     132 </span>            :   }
+<span class="lineNum">     133 </span>            : };
+<span class="lineNum">     134 </span>            : 
+<span class="lineNum">     135 </span>            : /*!
+<span class="lineNum">     136 </span>            :  * \ingroup DataBoxTagsGroup
+<span class="lineNum">     137 </span>            :  * \ingroup DataStructuresGroup
+<span class="lineNum">     138 </span>            :  * Computes the Euclidean \f$L^2\f$-norm of a Tensor, RMS over grid points in
+<span class="lineNum">     139 </span>            :  * element. \see `l2_norm()` for details.
+<span class="lineNum">     140 </span>            :  *
+<span class="lineNum">     141 </span>            :  * \warning This compute tag reduces the Frobenius norm over the element, not
+<span class="lineNum">     142 </span>            :  * the whole domain.
+<span class="lineNum">     143 </span>            :  */
+<span class="lineNum">     144 </span>            : template &lt;typename Tag&gt;
+<span class="lineNum">     145 </span><span class="lineCov">          1 : struct L2NormCompute : L2Norm&lt;Tag&gt;, db::ComputeTag {</span>
+<span class="lineNum">     146 </span><span class="lineNoCov">          0 :   using base = L2Norm&lt;Tag&gt;;</span>
+<span class="lineNum">     147 </span><span class="lineNoCov">          0 :   static constexpr db::const_item_type&lt;L2Norm&lt;Tag&gt;&gt; (*function)(</span>
+<span class="lineNum">     148 </span>            :       const db::const_item_type&lt;Tag&gt;&amp;) = l2_norm;
+<span class="lineNum">     149 </span><span class="lineNoCov">          0 :   using argument_tags = tmpl::list&lt;Tag&gt;;</span>
+<span class="lineNum">     150 </span>            : };
+<span class="lineNum">     151 </span>            : }  // namespace Tags
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../../../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.13</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

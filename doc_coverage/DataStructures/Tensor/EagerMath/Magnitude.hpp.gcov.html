@@ -1,0 +1,240 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - 5912ac2e49a80e6a27b3707c9a1e6ce5248b1b2a - DataStructures/Tensor/EagerMath/Magnitude.hpp</title>
+  <link rel="stylesheet" type="text/css" href="../../../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title"> SpECTRE Documentation Coverage Report</td></tr>
+    <tr><td class="ruler"><img src="../../../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../../../index.html">top level</a> - <a href="index.html">DataStructures/Tensor/EagerMath</a> - Magnitude.hpp</td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+             <td class="headerItem">Commit:</td>
+             <td class="headerValue"><a target="_blank" href="https://github.com/sxs-collaboration/spectre/commit/5912ac2e49a80e6a27b3707c9a1e6ce5248b1b2a">5912ac2e49a80e6a27b3707c9a1e6ce5248b1b2a</a></td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">10</td>
+            <td class="headerCovTableEntry">29</td>
+            <td class="headerCovTableEntryLo">34.5 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2019-12-02 22:01:08</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td class="headerItem">Legend:</td>
+            <td class="headerValueLeg">            Lines:
+            <span class="coverLegendCov">hit</span>
+            <span class="coverLegendNoCov">not hit</span>
+</td>
+            <td></td>
+          </tr>
+          <tr><td><img src="../../../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../../../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">          Line data    Source code</pre>
+<pre class="source">
+<span class="lineNum">       1 </span><span class="lineNoCov">          0 : // Distributed under the MIT License.</span>
+<span class="lineNum">       2 </span>            : // See LICENSE.txt for details.
+<span class="lineNum">       3 </span>            : 
+<span class="lineNum">       4 </span>            : #pragma once
+<span class="lineNum">       5 </span>            : 
+<span class="lineNum">       6 </span>            : #include &lt;string&gt;
+<span class="lineNum">       7 </span>            : 
+<span class="lineNum">       8 </span>            : #include &quot;DataStructures/DataBox/DataBoxTag.hpp&quot;
+<span class="lineNum">       9 </span>            : #include &quot;DataStructures/DataVector.hpp&quot;
+<span class="lineNum">      10 </span>            : #include &quot;DataStructures/Tensor/EagerMath/DotProduct.hpp&quot;
+<span class="lineNum">      11 </span>            : #include &quot;DataStructures/Tensor/Tensor.hpp&quot;
+<span class="lineNum">      12 </span>            : #include &quot;Utilities/ContainerHelpers.hpp&quot;
+<span class="lineNum">      13 </span>            : #include &quot;Utilities/TMPL.hpp&quot;
+<span class="lineNum">      14 </span>            : 
+<span class="lineNum">      15 </span>            : /*!
+<span class="lineNum">      16 </span>            :  * \ingroup TensorGroup
+<span class="lineNum">      17 </span>            :  * \brief Compute the Euclidean magnitude of a rank-1 tensor
+<span class="lineNum">      18 </span>            :  *
+<span class="lineNum">      19 </span>            :  * \details
+<span class="lineNum">      20 </span>            :  * Computes the square root of the sum of the squares of the components of
+<span class="lineNum">      21 </span>            :  * the rank-1 tensor.
+<span class="lineNum">      22 </span>            :  */
+<span class="lineNum">      23 </span>            : template &lt;typename DataType, typename Index&gt;
+<span class="lineNum">      24 </span><span class="lineCov">          1 : Scalar&lt;DataType&gt; magnitude(</span>
+<span class="lineNum">      25 </span>            :     const Tensor&lt;DataType, Symmetry&lt;1&gt;, index_list&lt;Index&gt;&gt;&amp; vector) noexcept {
+<span class="lineNum">      26 </span>            :   return Scalar&lt;DataType&gt;{sqrt(get(dot_product(vector, vector)))};
+<span class="lineNum">      27 </span>            : }
+<span class="lineNum">      28 </span>            : 
+<span class="lineNum">      29 </span>            : // @{
+<span class="lineNum">      30 </span>            : /*!
+<span class="lineNum">      31 </span>            :  * \ingroup TensorGroup
+<span class="lineNum">      32 </span>            :  * \brief Compute the magnitude of a rank-1 tensor
+<span class="lineNum">      33 </span>            :  *
+<span class="lineNum">      34 </span>            :  * \details
+<span class="lineNum">      35 </span>            :  * Returns the square root of the input tensor contracted twice with the given
+<span class="lineNum">      36 </span>            :  * metric.
+<span class="lineNum">      37 </span>            :  */
+<span class="lineNum">      38 </span>            : template &lt;typename DataType, typename Index&gt;
+<span class="lineNum">      39 </span><span class="lineCov">          1 : Scalar&lt;DataType&gt; magnitude(</span>
+<span class="lineNum">      40 </span>            :     const Tensor&lt;DataType, Symmetry&lt;1&gt;, index_list&lt;Index&gt;&gt;&amp; vector,
+<span class="lineNum">      41 </span>            :     const Tensor&lt;DataType, Symmetry&lt;1, 1&gt;,
+<span class="lineNum">      42 </span>            :                  index_list&lt;change_index_up_lo&lt;Index&gt;,
+<span class="lineNum">      43 </span>            :                             change_index_up_lo&lt;Index&gt;&gt;&gt;&amp; metric) noexcept {
+<span class="lineNum">      44 </span>            :   Scalar&lt;DataType&gt; local_magnitude{get_size(get&lt;0&gt;(vector))};
+<span class="lineNum">      45 </span>            :   magnitude(make_not_null(&amp;local_magnitude), vector, metric);
+<span class="lineNum">      46 </span>            :   return local_magnitude;
+<span class="lineNum">      47 </span>            : }
+<span class="lineNum">      48 </span>            : 
+<span class="lineNum">      49 </span>            : template &lt;typename DataType, typename Index&gt;
+<span class="lineNum">      50 </span><span class="lineCov">          1 : void magnitude(</span>
+<span class="lineNum">      51 </span>            :     const gsl::not_null&lt;Scalar&lt;DataType&gt;*&gt; magnitude,
+<span class="lineNum">      52 </span>            :     const Tensor&lt;DataType, Symmetry&lt;1&gt;, index_list&lt;Index&gt;&gt;&amp; vector,
+<span class="lineNum">      53 </span>            :     const Tensor&lt;DataType, Symmetry&lt;1, 1&gt;,
+<span class="lineNum">      54 </span>            :                  index_list&lt;change_index_up_lo&lt;Index&gt;,
+<span class="lineNum">      55 </span>            :                             change_index_up_lo&lt;Index&gt;&gt;&gt;&amp; metric) noexcept {
+<span class="lineNum">      56 </span>            :   dot_product(magnitude, vector, vector, metric);
+<span class="lineNum">      57 </span>            :   get(*magnitude) = sqrt(get(*magnitude));
+<span class="lineNum">      58 </span>            : }
+<span class="lineNum">      59 </span>            : // @}
+<span class="lineNum">      60 </span>            : 
+<span class="lineNum">      61 </span>            : /// \ingroup TensorGroup
+<span class="lineNum">      62 </span>            : /// \brief Compute square root of the Euclidean magnitude of a rank-0 tensor
+<span class="lineNum">      63 </span>            : ///
+<span class="lineNum">      64 </span>            : /// \details
+<span class="lineNum">      65 </span>            : /// Computes the square root of the absolute value of the scalar.
+<span class="lineNum">      66 </span>            : template &lt;typename DataType&gt;
+<span class="lineNum">      67 </span><span class="lineCov">          1 : Scalar&lt;DataType&gt; sqrt_magnitude(const Scalar&lt;DataType&gt;&amp; input) noexcept {</span>
+<span class="lineNum">      68 </span>            :   return Scalar&lt;DataType&gt;{sqrt(abs(get(input)))};
+<span class="lineNum">      69 </span>            : }
+<span class="lineNum">      70 </span>            : 
+<span class="lineNum">      71 </span>            : namespace Tags {
+<span class="lineNum">      72 </span>            : /// \ingroup DataBoxTagsGroup
+<span class="lineNum">      73 </span>            : /// \ingroup DataStructuresGroup
+<span class="lineNum">      74 </span>            : /// The magnitude of a (co)vector
+<span class="lineNum">      75 </span>            : ///
+<span class="lineNum">      76 </span>            : /// \snippet Test_Magnitude.cpp magnitude_name
+<span class="lineNum">      77 </span>            : template &lt;typename Tag&gt;
+<span class="lineNum">      78 </span><span class="lineCov">          1 : struct Magnitude : db::PrefixTag, db::SimpleTag {</span>
+<span class="lineNum">      79 </span><span class="lineNoCov">          0 :   static std::string name() noexcept {</span>
+<span class="lineNum">      80 </span>            :     return &quot;Magnitude(&quot; + Tag::name() + &quot;)&quot;;
+<span class="lineNum">      81 </span>            :   }
+<span class="lineNum">      82 </span><span class="lineNoCov">          0 :   using tag = Tag;</span>
+<span class="lineNum">      83 </span><span class="lineNoCov">          0 :   using type = Scalar&lt;DataVector&gt;;</span>
+<span class="lineNum">      84 </span>            : };
+<span class="lineNum">      85 </span>            : 
+<span class="lineNum">      86 </span>            : /// \ingroup DataBoxTagsGroup
+<span class="lineNum">      87 </span>            : /// \ingroup DataStructuresGroup
+<span class="lineNum">      88 </span>            : /// The Euclidean magnitude of a (co)vector
+<span class="lineNum">      89 </span>            : ///
+<span class="lineNum">      90 </span>            : /// This tag inherits from `Tags::Magnitude&lt;Tag&gt;`
+<span class="lineNum">      91 </span>            : template &lt;typename Tag&gt;
+<span class="lineNum">      92 </span><span class="lineCov">          1 : struct EuclideanMagnitude : Magnitude&lt;Tag&gt;, db::ComputeTag {</span>
+<span class="lineNum">      93 </span><span class="lineNoCov">          0 :   using base = Magnitude&lt;Tag&gt;;</span>
+<span class="lineNum">      94 </span><span class="lineNoCov">          0 :   static constexpr Scalar&lt;DataVector&gt; (*function)(</span>
+<span class="lineNum">      95 </span>            :       const db::const_item_type&lt;Tag&gt;&amp;) = magnitude;
+<span class="lineNum">      96 </span><span class="lineNoCov">          0 :   using argument_tags = tmpl::list&lt;Tag&gt;;</span>
+<span class="lineNum">      97 </span>            : };
+<span class="lineNum">      98 </span>            : 
+<span class="lineNum">      99 </span>            : /// \ingroup DataBoxTagsGroup
+<span class="lineNum">     100 </span>            : /// \ingroup DataStructuresGroup
+<span class="lineNum">     101 </span>            : /// The magnitude of a (co)vector with respect to a specific metric
+<span class="lineNum">     102 </span>            : ///
+<span class="lineNum">     103 </span>            : /// This tag inherits from `Tags::Magnitude&lt;Tag&gt;`
+<span class="lineNum">     104 </span>            : template &lt;typename Tag, typename MetricTag&gt;
+<span class="lineNum">     105 </span><span class="lineCov">          1 : struct NonEuclideanMagnitude : Magnitude&lt;Tag&gt;, db::ComputeTag {</span>
+<span class="lineNum">     106 </span><span class="lineNoCov">          0 :   using base = Magnitude&lt;Tag&gt;;</span>
+<span class="lineNum">     107 </span><span class="lineNoCov">          0 :   static constexpr Scalar&lt;DataVector&gt; (*function)(</span>
+<span class="lineNum">     108 </span>            :       const db::const_item_type&lt;Tag&gt;&amp;,
+<span class="lineNum">     109 </span>            :       const db::const_item_type&lt;MetricTag&gt;&amp;) = magnitude;
+<span class="lineNum">     110 </span><span class="lineNoCov">          0 :   using argument_tags = tmpl::list&lt;Tag, MetricTag&gt;;</span>
+<span class="lineNum">     111 </span>            : };
+<span class="lineNum">     112 </span>            : 
+<span class="lineNum">     113 </span>            : /// \ingroup DataBoxTagsGroup
+<span class="lineNum">     114 </span>            : /// \ingroup DataStructuresGroup
+<span class="lineNum">     115 </span>            : /// The normalized (co)vector represented by Tag
+<span class="lineNum">     116 </span>            : ///
+<span class="lineNum">     117 </span>            : /// \snippet Test_Magnitude.cpp normalized_name
+<span class="lineNum">     118 </span>            : template &lt;typename Tag&gt;
+<span class="lineNum">     119 </span><span class="lineCov">          1 : struct Normalized : db::PrefixTag, db::SimpleTag {</span>
+<span class="lineNum">     120 </span><span class="lineNoCov">          0 :   static std::string name() noexcept {</span>
+<span class="lineNum">     121 </span>            :     return &quot;Normalized(&quot; + Tag::name() + &quot;)&quot;;
+<span class="lineNum">     122 </span>            :   }
+<span class="lineNum">     123 </span><span class="lineNoCov">          0 :   using tag = Tag;</span>
+<span class="lineNum">     124 </span><span class="lineNoCov">          0 :   using type = db::const_item_type&lt;Tag&gt;;</span>
+<span class="lineNum">     125 </span>            : };
+<span class="lineNum">     126 </span>            : 
+<span class="lineNum">     127 </span>            : /// \ingroup DataBoxTagsGroup
+<span class="lineNum">     128 </span>            : /// \ingroup DataStructuresGroup
+<span class="lineNum">     129 </span>            : /// Normalizes the (co)vector represented by Tag
+<span class="lineNum">     130 </span>            : ///
+<span class="lineNum">     131 </span>            : /// This tag inherits from `Tags::Normalized&lt;Tag&gt;`
+<span class="lineNum">     132 </span>            : template &lt;typename Tag&gt;
+<span class="lineNum">     133 </span><span class="lineCov">          1 : struct NormalizedCompute : Normalized&lt;Tag&gt;, db::ComputeTag {</span>
+<span class="lineNum">     134 </span><span class="lineNoCov">          0 :   using base = Normalized&lt;Tag&gt;;</span>
+<span class="lineNum">     135 </span><span class="lineNoCov">          0 :   static constexpr auto function(</span>
+<span class="lineNum">     136 </span>            :       const db::const_item_type&lt;Tag&gt;&amp;
+<span class="lineNum">     137 </span>            :           vector_in,  // Compute items need to take const references
+<span class="lineNum">     138 </span>            :       const db::const_item_type&lt;Magnitude&lt;Tag&gt;&gt;&amp; magnitude) noexcept {
+<span class="lineNum">     139 </span>            :     auto vector = vector_in;
+<span class="lineNum">     140 </span>            :     for (size_t d = 0; d &lt; vector.index_dim(0); ++d) {
+<span class="lineNum">     141 </span>            :       vector.get(d) /= get(magnitude);
+<span class="lineNum">     142 </span>            :     }
+<span class="lineNum">     143 </span>            :     return vector;
+<span class="lineNum">     144 </span>            :   }
+<span class="lineNum">     145 </span><span class="lineNoCov">          0 :   using argument_tags = tmpl::list&lt;Tag, Magnitude&lt;Tag&gt;&gt;;</span>
+<span class="lineNum">     146 </span>            : };
+<span class="lineNum">     147 </span>            : 
+<span class="lineNum">     148 </span>            : /// \ingroup DataBoxTagsGroup
+<span class="lineNum">     149 </span>            : /// \ingroup DataStructuresGroup
+<span class="lineNum">     150 </span>            : /// The square root of a scalar
+<span class="lineNum">     151 </span>            : ///
+<span class="lineNum">     152 </span>            : /// \snippet Test_Magnitude.cpp sqrt_name
+<span class="lineNum">     153 </span>            : template &lt;typename Tag&gt;
+<span class="lineNum">     154 </span><span class="lineCov">          1 : struct Sqrt : db::ComputeTag {</span>
+<span class="lineNum">     155 </span><span class="lineNoCov">          0 :   static std::string name() noexcept { return &quot;Sqrt(&quot; + Tag::name() + &quot;)&quot;; }</span>
+<span class="lineNum">     156 </span><span class="lineNoCov">          0 :   static constexpr Scalar&lt;DataVector&gt; (*function)(</span>
+<span class="lineNum">     157 </span>            :       const db::const_item_type&lt;Tag&gt;&amp;) = sqrt_magnitude;
+<span class="lineNum">     158 </span><span class="lineNoCov">          0 :   using argument_tags = tmpl::list&lt;Tag&gt;;</span>
+<span class="lineNum">     159 </span>            : };
+<span class="lineNum">     160 </span>            : }  // namespace Tags
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../../../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.13</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

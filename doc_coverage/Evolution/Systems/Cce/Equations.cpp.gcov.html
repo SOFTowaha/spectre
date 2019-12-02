@@ -1,0 +1,348 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - 5912ac2e49a80e6a27b3707c9a1e6ce5248b1b2a - Evolution/Systems/Cce/Equations.cpp</title>
+  <link rel="stylesheet" type="text/css" href="../../../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title"> SpECTRE Documentation Coverage Report</td></tr>
+    <tr><td class="ruler"><img src="../../../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../../../index.html">top level</a> - <a href="index.html">Evolution/Systems/Cce</a> - Equations.cpp</td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+             <td class="headerItem">Commit:</td>
+             <td class="headerValue"><a target="_blank" href="https://github.com/sxs-collaboration/spectre/commit/5912ac2e49a80e6a27b3707c9a1e6ce5248b1b2a">5912ac2e49a80e6a27b3707c9a1e6ce5248b1b2a</a></td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntry">1</td>
+            <td class="headerCovTableEntryLo">0.0 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2019-12-02 22:01:08</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td class="headerItem">Legend:</td>
+            <td class="headerValueLeg">            Lines:
+            <span class="coverLegendCov">hit</span>
+            <span class="coverLegendNoCov">not hit</span>
+</td>
+            <td></td>
+          </tr>
+          <tr><td><img src="../../../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../../../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">          Line data    Source code</pre>
+<pre class="source">
+<span class="lineNum">       1 </span><span class="lineNoCov">          0 : // Distributed under the MIT License.</span>
+<span class="lineNum">       2 </span>            : // See LICENSE.txt for details.
+<span class="lineNum">       3 </span>            : 
+<span class="lineNum">       4 </span>            : #include &quot;Evolution/Systems/Cce/Equations.hpp&quot;
+<span class="lineNum">       5 </span>            : 
+<span class="lineNum">       6 </span>            : #include &lt;complex&gt;
+<span class="lineNum">       7 </span>            : 
+<span class="lineNum">       8 </span>            : #include &quot;DataStructures/ComplexDataVector.hpp&quot;
+<span class="lineNum">       9 </span>            : #include &quot;DataStructures/DataVector.hpp&quot;
+<span class="lineNum">      10 </span>            : #include &quot;DataStructures/SpinWeighted.hpp&quot;
+<span class="lineNum">      11 </span>            : #include &quot;Utilities/ConstantExpressions.hpp&quot;
+<span class="lineNum">      12 </span>            : 
+<span class="lineNum">      13 </span>            : // IWYU pragma: no_forward_declare Cce::Tags::BondiBeta
+<span class="lineNum">      14 </span>            : // IWYU pragma: no_forward_declare Cce::Tags::BondiH
+<span class="lineNum">      15 </span>            : // IWYU pragma: no_forward_declare Cce::Tags::BondiQ
+<span class="lineNum">      16 </span>            : // IWYU pragma: no_forward_declare Cce::Tags::BondiU
+<span class="lineNum">      17 </span>            : // IWYU pragma: no_forward_declare Cce::Tags::BondiW
+<span class="lineNum">      18 </span>            : // IWYU pragma: no_forward_declare Cce::Tags::Integrand
+<span class="lineNum">      19 </span>            : // IWYU pragma: no_forward_declare Cce::Tags::LinearFactor
+<span class="lineNum">      20 </span>            : // IWYU pragma: no_forward_declare Cce::Tags::LinearFactorForConjugate
+<span class="lineNum">      21 </span>            : // IWYU pragma: no_forward_declare Cce::Tags::PoleOfIntegrand
+<span class="lineNum">      22 </span>            : // IWYU pragma: no_forward_declare Cce::Tags::RegularIntegrand
+<span class="lineNum">      23 </span>            : // IWYU pragma: no_forward_declare SpinWeighted
+<span class="lineNum">      24 </span>            : 
+<span class="lineNum">      25 </span>            : namespace Cce {
+<span class="lineNum">      26 </span>            : // suppresses doxygen problems with these functions
+<span class="lineNum">      27 </span>            : /// \cond
+<span class="lineNum">      28 </span>            : 
+<span class="lineNum">      29 </span>            : void ComputeBondiIntegrand&lt;Tags::Integrand&lt;Tags::BondiBeta&gt;&gt;::apply_impl(
+<span class="lineNum">      30 </span>            :     const gsl::not_null&lt;SpinWeighted&lt;ComplexDataVector, 0&gt;*&gt; integrand_for_beta,
+<span class="lineNum">      31 </span>            :     const SpinWeighted&lt;ComplexDataVector, 2&gt;&amp; dy_j,
+<span class="lineNum">      32 </span>            :     const SpinWeighted&lt;ComplexDataVector, 2&gt;&amp; j,
+<span class="lineNum">      33 </span>            :     const SpinWeighted&lt;ComplexDataVector, 0&gt;&amp; one_minus_y) noexcept {
+<span class="lineNum">      34 </span>            :   *integrand_for_beta =
+<span class="lineNum">      35 </span>            :       0.125 * one_minus_y *
+<span class="lineNum">      36 </span>            :       (dy_j * conj(dy_j) -
+<span class="lineNum">      37 </span>            :        0.25 * square(j * conj(dy_j) + conj(j) * dy_j) / (1.0 + j * conj(j)));
+<span class="lineNum">      38 </span>            : }
+<span class="lineNum">      39 </span>            : 
+<span class="lineNum">      40 </span>            : void ComputeBondiIntegrand&lt;Tags::PoleOfIntegrand&lt;Tags::BondiQ&gt;&gt;::apply_impl(
+<span class="lineNum">      41 </span>            :     const gsl::not_null&lt;SpinWeighted&lt;ComplexDataVector, 1&gt;*&gt;
+<span class="lineNum">      42 </span>            :         pole_of_integrand_for_q,
+<span class="lineNum">      43 </span>            :     const SpinWeighted&lt;ComplexDataVector, 1&gt;&amp; eth_beta) noexcept {
+<span class="lineNum">      44 </span>            :   *pole_of_integrand_for_q = -4.0 * eth_beta;
+<span class="lineNum">      45 </span>            : }
+<span class="lineNum">      46 </span>            : 
+<span class="lineNum">      47 </span>            : void ComputeBondiIntegrand&lt;Tags::RegularIntegrand&lt;Tags::BondiQ&gt;&gt;::apply_impl(
+<span class="lineNum">      48 </span>            :     const gsl::not_null&lt;SpinWeighted&lt;ComplexDataVector, 1&gt;*&gt;
+<span class="lineNum">      49 </span>            :         regular_integrand_for_q,
+<span class="lineNum">      50 </span>            :     const gsl::not_null&lt;SpinWeighted&lt;ComplexDataVector, 1&gt;*&gt; script_aq,
+<span class="lineNum">      51 </span>            :     const SpinWeighted&lt;ComplexDataVector, 0&gt;&amp; dy_beta,
+<span class="lineNum">      52 </span>            :     const SpinWeighted&lt;ComplexDataVector, 2&gt;&amp; dy_j,
+<span class="lineNum">      53 </span>            :     const SpinWeighted&lt;ComplexDataVector, 2&gt;&amp; j,
+<span class="lineNum">      54 </span>            :     const SpinWeighted&lt;ComplexDataVector, 1&gt;&amp; eth_dy_beta,
+<span class="lineNum">      55 </span>            :     const SpinWeighted&lt;ComplexDataVector, 1&gt;&amp; eth_j_jbar,
+<span class="lineNum">      56 </span>            :     const SpinWeighted&lt;ComplexDataVector, 1&gt;&amp; eth_jbar_dy_j,
+<span class="lineNum">      57 </span>            :     const SpinWeighted&lt;ComplexDataVector, 1&gt;&amp; ethbar_dy_j,
+<span class="lineNum">      58 </span>            :     const SpinWeighted&lt;ComplexDataVector, 1&gt;&amp; ethbar_j,
+<span class="lineNum">      59 </span>            :     const SpinWeighted&lt;ComplexDataVector, 1&gt;&amp; eth_r_divided_by_r,
+<span class="lineNum">      60 </span>            :     const SpinWeighted&lt;ComplexDataVector, 0&gt;&amp; k) noexcept {
+<span class="lineNum">      61 </span>            :   *script_aq =
+<span class="lineNum">      62 </span>            :       0.25 * (j * conj(ethbar_dy_j) - eth_jbar_dy_j - conj(ethbar_j) * dy_j +
+<span class="lineNum">      63 </span>            :               0.5 * eth_j_jbar * (conj(j) * dy_j + j * conj(dy_j)) /
+<span class="lineNum">      64 </span>            :                   (1.0 + j * conj(j)) -
+<span class="lineNum">      65 </span>            :               (conj(j) * dy_j - j * conj(dy_j)) * eth_r_divided_by_r);
+<span class="lineNum">      66 </span>            : 
+<span class="lineNum">      67 </span>            :   *regular_integrand_for_q =
+<span class="lineNum">      68 </span>            :       -2.0 * (*script_aq + j * conj(*script_aq) / k - eth_dy_beta +
+<span class="lineNum">      69 </span>            :               0.5 * ethbar_dy_j / k - dy_beta * eth_r_divided_by_r +
+<span class="lineNum">      70 </span>            :               0.5 * dy_j * conj(eth_r_divided_by_r) / k);
+<span class="lineNum">      71 </span>            : }
+<span class="lineNum">      72 </span>            : 
+<span class="lineNum">      73 </span>            : void ComputeBondiIntegrand&lt;Tags::Integrand&lt;Tags::BondiU&gt;&gt;::apply_impl(
+<span class="lineNum">      74 </span>            :     const gsl::not_null&lt;SpinWeighted&lt;ComplexDataVector, 1&gt;*&gt;
+<span class="lineNum">      75 </span>            :         regular_integrand_for_u,
+<span class="lineNum">      76 </span>            :     const SpinWeighted&lt;ComplexDataVector, 0&gt;&amp; exp_2_beta,
+<span class="lineNum">      77 </span>            :     const SpinWeighted&lt;ComplexDataVector, 2&gt;&amp; j,
+<span class="lineNum">      78 </span>            :     const SpinWeighted&lt;ComplexDataVector, 1&gt;&amp; q,
+<span class="lineNum">      79 </span>            :     const SpinWeighted&lt;ComplexDataVector, 0&gt;&amp; k,
+<span class="lineNum">      80 </span>            :     const SpinWeighted&lt;ComplexDataVector, 0&gt;&amp; r) noexcept {
+<span class="lineNum">      81 </span>            :   *regular_integrand_for_u = 0.5 * exp_2_beta / r * (k * q - j * conj(q));
+<span class="lineNum">      82 </span>            : }
+<span class="lineNum">      83 </span>            : 
+<span class="lineNum">      84 </span>            : void ComputeBondiIntegrand&lt;Tags::PoleOfIntegrand&lt;Tags::BondiW&gt;&gt;::apply_impl(
+<span class="lineNum">      85 </span>            :     const gsl::not_null&lt;SpinWeighted&lt;ComplexDataVector, 0&gt;*&gt;
+<span class="lineNum">      86 </span>            :         pole_of_integrand_for_w,
+<span class="lineNum">      87 </span>            :     const SpinWeighted&lt;ComplexDataVector, 0&gt;&amp; ethbar_u) noexcept {
+<span class="lineNum">      88 </span>            :   *pole_of_integrand_for_w = ethbar_u + conj(ethbar_u);
+<span class="lineNum">      89 </span>            : }
+<span class="lineNum">      90 </span>            : 
+<span class="lineNum">      91 </span>            : void ComputeBondiIntegrand&lt;Tags::RegularIntegrand&lt;Tags::BondiW&gt;&gt;::apply_impl(
+<span class="lineNum">      92 </span>            :     const gsl::not_null&lt;SpinWeighted&lt;ComplexDataVector, 0&gt;*&gt;
+<span class="lineNum">      93 </span>            :         regular_integrand_for_w,
+<span class="lineNum">      94 </span>            :     const gsl::not_null&lt;SpinWeighted&lt;ComplexDataVector, 0&gt;*&gt; script_av,
+<span class="lineNum">      95 </span>            :     const SpinWeighted&lt;ComplexDataVector, 1&gt;&amp; dy_u,
+<span class="lineNum">      96 </span>            :     const SpinWeighted&lt;ComplexDataVector, 0&gt;&amp; exp_2_beta,
+<span class="lineNum">      97 </span>            :     const SpinWeighted&lt;ComplexDataVector, 2&gt;&amp; j,
+<span class="lineNum">      98 </span>            :     const SpinWeighted&lt;ComplexDataVector, 1&gt;&amp; q,
+<span class="lineNum">      99 </span>            :     const SpinWeighted&lt;ComplexDataVector, 1&gt;&amp; eth_beta,
+<span class="lineNum">     100 </span>            :     const SpinWeighted&lt;ComplexDataVector, 2&gt;&amp; eth_eth_beta,
+<span class="lineNum">     101 </span>            :     const SpinWeighted&lt;ComplexDataVector, 0&gt;&amp; eth_ethbar_beta,
+<span class="lineNum">     102 </span>            :     const SpinWeighted&lt;ComplexDataVector, 2&gt;&amp; eth_ethbar_j,
+<span class="lineNum">     103 </span>            :     const SpinWeighted&lt;ComplexDataVector, 0&gt;&amp; eth_ethbar_j_jbar,
+<span class="lineNum">     104 </span>            :     const SpinWeighted&lt;ComplexDataVector, 1&gt;&amp; eth_j_jbar,
+<span class="lineNum">     105 </span>            :     const SpinWeighted&lt;ComplexDataVector, 0&gt;&amp; ethbar_dy_u,
+<span class="lineNum">     106 </span>            :     const SpinWeighted&lt;ComplexDataVector, 0&gt;&amp; ethbar_ethbar_j,
+<span class="lineNum">     107 </span>            :     const SpinWeighted&lt;ComplexDataVector, 1&gt;&amp; ethbar_j,
+<span class="lineNum">     108 </span>            :     const SpinWeighted&lt;ComplexDataVector, 1&gt;&amp; eth_r_divided_by_r,
+<span class="lineNum">     109 </span>            :     const SpinWeighted&lt;ComplexDataVector, 0&gt;&amp; k,
+<span class="lineNum">     110 </span>            :     const SpinWeighted&lt;ComplexDataVector, 0&gt;&amp; r) noexcept {
+<span class="lineNum">     111 </span>            :   *script_av =
+<span class="lineNum">     112 </span>            :       (eth_beta * conj(ethbar_j) + 0.5 * ethbar_ethbar_j +
+<span class="lineNum">     113 </span>            :        j * square(conj(eth_beta)) + j * conj(eth_eth_beta) +
+<span class="lineNum">     114 </span>            :        0.125 * eth_j_jbar * conj(eth_j_jbar) / (k * (1.0 + j * conj(j))) +
+<span class="lineNum">     115 </span>            :        0.5 *
+<span class="lineNum">     116 </span>            :            (1.0 - 0.25 * eth_ethbar_j_jbar - eth_j_jbar * conj(eth_beta) -
+<span class="lineNum">     117 </span>            :             0.5 * conj(ethbar_j) * ethbar_j - 0.5 * conj(j) * eth_ethbar_j) /
+<span class="lineNum">     118 </span>            :            k +
+<span class="lineNum">     119 </span>            :        k * (0.5 - eth_ethbar_beta - eth_beta * conj(eth_beta) -
+<span class="lineNum">     120 </span>            :             0.25 * q * conj(q)) +
+<span class="lineNum">     121 </span>            :        0.25 * j * square(conj(q)));
+<span class="lineNum">     122 </span>            : 
+<span class="lineNum">     123 </span>            :   *regular_integrand_for_w =
+<span class="lineNum">     124 </span>            :       0.5 * (0.5 * (ethbar_dy_u + conj(ethbar_dy_u) +
+<span class="lineNum">     125 </span>            :                     conj(dy_u) * eth_r_divided_by_r +
+<span class="lineNum">     126 </span>            :                     dy_u * conj(eth_r_divided_by_r)) -
+<span class="lineNum">     127 </span>            :              1.0 / r + 0.5 * exp_2_beta * (*script_av + conj(*script_av)) / r);
+<span class="lineNum">     128 </span>            : }
+<span class="lineNum">     129 </span>            : 
+<span class="lineNum">     130 </span>            : void ComputeBondiIntegrand&lt;Tags::PoleOfIntegrand&lt;Tags::BondiH&gt;&gt;::apply_impl(
+<span class="lineNum">     131 </span>            :     const gsl::not_null&lt;SpinWeighted&lt;ComplexDataVector, 2&gt;*&gt;
+<span class="lineNum">     132 </span>            :         pole_of_integrand_for_h,
+<span class="lineNum">     133 </span>            :     const SpinWeighted&lt;ComplexDataVector, 2&gt;&amp; j,
+<span class="lineNum">     134 </span>            :     const SpinWeighted&lt;ComplexDataVector, 1&gt;&amp; u,
+<span class="lineNum">     135 </span>            :     const SpinWeighted&lt;ComplexDataVector, 0&gt;&amp; w,
+<span class="lineNum">     136 </span>            :     const SpinWeighted&lt;ComplexDataVector, 2&gt;&amp; eth_u,
+<span class="lineNum">     137 </span>            :     const SpinWeighted&lt;ComplexDataVector, 1&gt;&amp; ethbar_j,
+<span class="lineNum">     138 </span>            :     const SpinWeighted&lt;ComplexDataVector, -2&gt;&amp; ethbar_jbar_u,
+<span class="lineNum">     139 </span>            :     const SpinWeighted&lt;ComplexDataVector, 0&gt;&amp; ethbar_u,
+<span class="lineNum">     140 </span>            :     const SpinWeighted&lt;ComplexDataVector, 0&gt;&amp; k) noexcept {
+<span class="lineNum">     141 </span>            :   *pole_of_integrand_for_h = -0.5 * conj(ethbar_jbar_u) - j * conj(ethbar_u) -
+<span class="lineNum">     142 </span>            :                              0.5 * j * ethbar_u - k * eth_u -
+<span class="lineNum">     143 </span>            :                              0.5 * u * ethbar_j + 2.0 * j * w;
+<span class="lineNum">     144 </span>            : }
+<span class="lineNum">     145 </span>            : 
+<span class="lineNum">     146 </span>            : void ComputeBondiIntegrand&lt;Tags::RegularIntegrand&lt;Tags::BondiH&gt;&gt;::apply_impl(
+<span class="lineNum">     147 </span>            :     const gsl::not_null&lt;SpinWeighted&lt;ComplexDataVector, 2&gt;*&gt;
+<span class="lineNum">     148 </span>            :         regular_integrand_for_h,
+<span class="lineNum">     149 </span>            :     const gsl::not_null&lt;SpinWeighted&lt;ComplexDataVector, 0&gt;*&gt; script_aj,
+<span class="lineNum">     150 </span>            :     const gsl::not_null&lt;SpinWeighted&lt;ComplexDataVector, 0&gt;*&gt; script_bj,
+<span class="lineNum">     151 </span>            :     const gsl::not_null&lt;SpinWeighted&lt;ComplexDataVector, 2&gt;*&gt; script_cj,
+<span class="lineNum">     152 </span>            :     const SpinWeighted&lt;ComplexDataVector, 2&gt;&amp; dy_dy_j,
+<span class="lineNum">     153 </span>            :     const SpinWeighted&lt;ComplexDataVector, 2&gt;&amp; dy_j,
+<span class="lineNum">     154 </span>            :     const SpinWeighted&lt;ComplexDataVector, 0&gt;&amp; dy_w,
+<span class="lineNum">     155 </span>            :     const SpinWeighted&lt;ComplexDataVector, 0&gt;&amp; exp_2_beta,
+<span class="lineNum">     156 </span>            :     const SpinWeighted&lt;ComplexDataVector, 2&gt;&amp; j,
+<span class="lineNum">     157 </span>            :     const SpinWeighted&lt;ComplexDataVector, 1&gt;&amp; q,
+<span class="lineNum">     158 </span>            :     const SpinWeighted&lt;ComplexDataVector, 1&gt;&amp; u,
+<span class="lineNum">     159 </span>            :     const SpinWeighted&lt;ComplexDataVector, 0&gt;&amp; w,
+<span class="lineNum">     160 </span>            :     const SpinWeighted&lt;ComplexDataVector, 1&gt;&amp; eth_beta,
+<span class="lineNum">     161 </span>            :     const SpinWeighted&lt;ComplexDataVector, 2&gt;&amp; eth_eth_beta,
+<span class="lineNum">     162 </span>            :     const SpinWeighted&lt;ComplexDataVector, 0&gt;&amp; eth_ethbar_beta,
+<span class="lineNum">     163 </span>            :     const SpinWeighted&lt;ComplexDataVector, 2&gt;&amp; eth_ethbar_j,
+<span class="lineNum">     164 </span>            :     const SpinWeighted&lt;ComplexDataVector, 0&gt;&amp; eth_ethbar_j_jbar,
+<span class="lineNum">     165 </span>            :     const SpinWeighted&lt;ComplexDataVector, 1&gt;&amp; eth_j_jbar,
+<span class="lineNum">     166 </span>            :     const SpinWeighted&lt;ComplexDataVector, 2&gt;&amp; eth_q,
+<span class="lineNum">     167 </span>            :     const SpinWeighted&lt;ComplexDataVector, 2&gt;&amp; eth_u,
+<span class="lineNum">     168 </span>            :     const SpinWeighted&lt;ComplexDataVector, 2&gt;&amp; eth_ubar_dy_j,
+<span class="lineNum">     169 </span>            :     const SpinWeighted&lt;ComplexDataVector, 1&gt;&amp; ethbar_dy_j,
+<span class="lineNum">     170 </span>            :     const SpinWeighted&lt;ComplexDataVector, 0&gt;&amp; ethbar_ethbar_j,
+<span class="lineNum">     171 </span>            :     const SpinWeighted&lt;ComplexDataVector, 1&gt;&amp; ethbar_j,
+<span class="lineNum">     172 </span>            :     const SpinWeighted&lt;ComplexDataVector, -1&gt;&amp; ethbar_jbar_dy_j,
+<span class="lineNum">     173 </span>            :     const SpinWeighted&lt;ComplexDataVector, -2&gt;&amp; ethbar_jbar_q_minus_2_eth_beta,
+<span class="lineNum">     174 </span>            :     const SpinWeighted&lt;ComplexDataVector, 0&gt;&amp; ethbar_q,
+<span class="lineNum">     175 </span>            :     const SpinWeighted&lt;ComplexDataVector, 0&gt;&amp; ethbar_u,
+<span class="lineNum">     176 </span>            :     const SpinWeighted&lt;ComplexDataVector, 0&gt;&amp; du_r_divided_by_r,
+<span class="lineNum">     177 </span>            :     const SpinWeighted&lt;ComplexDataVector, 1&gt;&amp; eth_r_divided_by_r,
+<span class="lineNum">     178 </span>            :     const SpinWeighted&lt;ComplexDataVector, 0&gt;&amp; k,
+<span class="lineNum">     179 </span>            :     const SpinWeighted&lt;ComplexDataVector, 0&gt;&amp; one_minus_y,
+<span class="lineNum">     180 </span>            :     const SpinWeighted&lt;ComplexDataVector, 0&gt;&amp; r) noexcept {
+<span class="lineNum">     181 </span>            :   *script_aj =
+<span class="lineNum">     182 </span>            :       0.25 *
+<span class="lineNum">     183 </span>            :       (conj(ethbar_ethbar_j) -
+<span class="lineNum">     184 </span>            :        0.25 * (4.0 + eth_ethbar_j_jbar - j * conj(eth_ethbar_j)) /
+<span class="lineNum">     185 </span>            :            (k * (1.0 + j * conj(j))) +
+<span class="lineNum">     186 </span>            :        (3.0 - eth_ethbar_beta -
+<span class="lineNum">     187 </span>            :         conj(j) * eth_ethbar_j * (1.0 - 0.25 / (1.0 + j * conj(j)))) /
+<span class="lineNum">     188 </span>            :            k +
+<span class="lineNum">     189 </span>            :        conj(ethbar_j) * (2.0 * eth_beta +
+<span class="lineNum">     190 </span>            :                          0.5 *
+<span class="lineNum">     191 </span>            :                              (j * conj(eth_j_jbar) -
+<span class="lineNum">     192 </span>            :                               ethbar_j * (2.0 * (1.0 + j * conj(j)) - 1.0)) /
+<span class="lineNum">     193 </span>            :                              (k * (1.0 + j * conj(j))) -
+<span class="lineNum">     194 </span>            :                          q));
+<span class="lineNum">     195 </span>            : 
+<span class="lineNum">     196 </span>            :   *script_bj =
+<span class="lineNum">     197 </span>            :       0.25 * (2.0 * dy_w -
+<span class="lineNum">     198 </span>            :               conj(j) * eth_u * (conj(j) * dy_j + j * conj(dy_j)) / k +
+<span class="lineNum">     199 </span>            :               1.0 / r + u * ethbar_j * conj(dy_j) -
+<span class="lineNum">     200 </span>            :               0.5 * u * conj(eth_j_jbar) * (conj(j) * dy_j + j * conj(dy_j)) /
+<span class="lineNum">     201 </span>            :                   (1.0 + j * conj(j)) +
+<span class="lineNum">     202 </span>            :               conj(u) * (conj(ethbar_jbar_dy_j) - j * conj(ethbar_dy_j))) +
+<span class="lineNum">     203 </span>            :       one_minus_y * 0.25 *
+<span class="lineNum">     204 </span>            :           (du_r_divided_by_r * dy_j *
+<span class="lineNum">     205 </span>            :                (conj(j) * (conj(j) * dy_j + j * conj(dy_j)) /
+<span class="lineNum">     206 </span>            :                     (1.0 + j * conj(j)) -
+<span class="lineNum">     207 </span>            :                 2.0 * conj(dy_j)) -
+<span class="lineNum">     208 </span>            :            w * (dy_j * conj(dy_j) -
+<span class="lineNum">     209 </span>            :                 0.25 * square((conj(j) * dy_j + j * conj(dy_j))) /
+<span class="lineNum">     210 </span>            :                     (1.0 + j * conj(j)))) +
+<span class="lineNum">     211 </span>            :       square(one_minus_y) * 0.125 *
+<span class="lineNum">     212 </span>            :           (0.25 * square(conj(j) * dy_j + j * conj(dy_j)) /
+<span class="lineNum">     213 </span>            :                (1.0 + j * conj(j)) -
+<span class="lineNum">     214 </span>            :            dy_j * conj(dy_j)) /
+<span class="lineNum">     215 </span>            :           r;
+<span class="lineNum">     216 </span>            : 
+<span class="lineNum">     217 </span>            :   *script_cj = 0.5 * ethbar_j * k * (eth_beta - 0.5 * q);
+<span class="lineNum">     218 </span>            : 
+<span class="lineNum">     219 </span>            :   *regular_integrand_for_h =
+<span class="lineNum">     220 </span>            :       j * (*script_bj + conj(*script_bj)) -
+<span class="lineNum">     221 </span>            :       0.5 * (eth_ubar_dy_j + u * ethbar_dy_j +
+<span class="lineNum">     222 </span>            :              u * dy_j * conj(eth_r_divided_by_r)) +
+<span class="lineNum">     223 </span>            :       0.5 * exp_2_beta / r *
+<span class="lineNum">     224 </span>            :           (*script_cj + square(j) / (1.0 + j * conj(j)) * conj(*script_cj) -
+<span class="lineNum">     225 </span>            :            j * (*script_aj + conj(*script_aj)) + eth_eth_beta - 0.5 * eth_q +
+<span class="lineNum">     226 </span>            :            0.25 * (conj(ethbar_jbar_q_minus_2_eth_beta) - j * conj(ethbar_q)) /
+<span class="lineNum">     227 </span>            :                k +
+<span class="lineNum">     228 </span>            :            square(eth_beta - 0.5 * q)) -
+<span class="lineNum">     229 </span>            :       dy_j * 0.5 *
+<span class="lineNum">     230 </span>            :           (conj(j) * eth_u / k - j * k * conj(eth_u) +
+<span class="lineNum">     231 </span>            :            0.5 * (1.0 + j * conj(j)) * (conj(ethbar_u) - ethbar_u) +
+<span class="lineNum">     232 </span>            :            conj(u) * eth_r_divided_by_r - w) +
+<span class="lineNum">     233 </span>            :       conj(dy_j) * (0.5 * j * eth_u * (j * conj(j) / k) -
+<span class="lineNum">     234 </span>            :                     0.25 * square(j) * (ethbar_u - conj(ethbar_u))) +
+<span class="lineNum">     235 </span>            :       one_minus_y *
+<span class="lineNum">     236 </span>            :           (0.5 * (dy_dy_j * (w + 2.0 * du_r_divided_by_r) - dy_j / r) +
+<span class="lineNum">     237 </span>            :            0.5 * dy_j * (dy_w + 1.0 / r)) +
+<span class="lineNum">     238 </span>            :       square(one_minus_y) * 0.25 * dy_dy_j / r;
+<span class="lineNum">     239 </span>            : }
+<span class="lineNum">     240 </span>            : 
+<span class="lineNum">     241 </span>            : void ComputeBondiIntegrand&lt;Tags::LinearFactor&lt;Tags::BondiH&gt;&gt;::apply_impl(
+<span class="lineNum">     242 </span>            :     const gsl::not_null&lt;SpinWeighted&lt;ComplexDataVector, 0&gt;*&gt;
+<span class="lineNum">     243 </span>            :         linear_factor_for_h,
+<span class="lineNum">     244 </span>            :     const gsl::not_null&lt;SpinWeighted&lt;ComplexDataVector, 2&gt;*&gt; script_djbar,
+<span class="lineNum">     245 </span>            :     const SpinWeighted&lt;ComplexDataVector, 2&gt;&amp; dy_j,
+<span class="lineNum">     246 </span>            :     const SpinWeighted&lt;ComplexDataVector, 2&gt;&amp; j,
+<span class="lineNum">     247 </span>            :     const SpinWeighted&lt;ComplexDataVector, 0&gt;&amp; one_minus_y) noexcept {
+<span class="lineNum">     248 </span>            :   *script_djbar = 0.25 * one_minus_y *
+<span class="lineNum">     249 </span>            :                   (-2.0 * dy_j +
+<span class="lineNum">     250 </span>            :                    j * (conj(j) * dy_j + j * conj(dy_j)) / (1.0 + j * conj(j)));
+<span class="lineNum">     251 </span>            :   *linear_factor_for_h = 1.0 + j * conj(*script_djbar);
+<span class="lineNum">     252 </span>            : }
+<span class="lineNum">     253 </span>            : 
+<span class="lineNum">     254 </span>            : void ComputeBondiIntegrand&lt;Tags::LinearFactorForConjugate&lt;Tags::BondiH&gt;&gt;::
+<span class="lineNum">     255 </span>            :     apply_impl(
+<span class="lineNum">     256 </span>            :         const gsl::not_null&lt;SpinWeighted&lt;ComplexDataVector, 4&gt;*&gt;
+<span class="lineNum">     257 </span>            :             linear_factor_for_conjugate_h,
+<span class="lineNum">     258 </span>            :         const gsl::not_null&lt;SpinWeighted&lt;ComplexDataVector, 2&gt;*&gt; script_djbar,
+<span class="lineNum">     259 </span>            :         const SpinWeighted&lt;ComplexDataVector, 2&gt;&amp; dy_j,
+<span class="lineNum">     260 </span>            :         const SpinWeighted&lt;ComplexDataVector, 2&gt;&amp; j,
+<span class="lineNum">     261 </span>            :         const SpinWeighted&lt;ComplexDataVector, 0&gt;&amp; one_minus_y) noexcept {
+<span class="lineNum">     262 </span>            :   *script_djbar = 0.25 * one_minus_y *
+<span class="lineNum">     263 </span>            :                   (-2.0 * dy_j +
+<span class="lineNum">     264 </span>            :                    j * (conj(j) * dy_j + j * conj(dy_j)) / (1.0 + j * conj(j)));
+<span class="lineNum">     265 </span>            :   *linear_factor_for_conjugate_h = j * (*script_djbar);
+<span class="lineNum">     266 </span>            : }
+<span class="lineNum">     267 </span>            : /// \endcond
+<span class="lineNum">     268 </span>            : }  // namespace Cce
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../../../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.13</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

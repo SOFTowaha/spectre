@@ -1,0 +1,722 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - 5912ac2e49a80e6a27b3707c9a1e6ce5248b1b2a - Evolution/Systems/Cce/SwshDerivatives.hpp</title>
+  <link rel="stylesheet" type="text/css" href="../../../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title"> SpECTRE Documentation Coverage Report</td></tr>
+    <tr><td class="ruler"><img src="../../../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../../../index.html">top level</a> - <a href="index.html">Evolution/Systems/Cce</a> - SwshDerivatives.hpp</td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+             <td class="headerItem">Commit:</td>
+             <td class="headerValue"><a target="_blank" href="https://github.com/sxs-collaboration/spectre/commit/5912ac2e49a80e6a27b3707c9a1e6ce5248b1b2a">5912ac2e49a80e6a27b3707c9a1e6ce5248b1b2a</a></td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">9</td>
+            <td class="headerCovTableEntry">58</td>
+            <td class="headerCovTableEntryLo">15.5 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2019-12-02 22:01:08</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td class="headerItem">Legend:</td>
+            <td class="headerValueLeg">            Lines:
+            <span class="coverLegendCov">hit</span>
+            <span class="coverLegendNoCov">not hit</span>
+</td>
+            <td></td>
+          </tr>
+          <tr><td><img src="../../../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../../../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">          Line data    Source code</pre>
+<pre class="source">
+<span class="lineNum">       1 </span><span class="lineNoCov">          0 : // Distributed under the MIT License.</span>
+<span class="lineNum">       2 </span>            : // See LICENSE.txt for details.
+<span class="lineNum">       3 </span>            : 
+<span class="lineNum">       4 </span>            : #pragma once
+<span class="lineNum">       5 </span>            : 
+<span class="lineNum">       6 </span>            : #include &lt;cmath&gt;
+<span class="lineNum">       7 </span>            : #include &lt;cstddef&gt;
+<span class="lineNum">       8 </span>            : #include &lt;type_traits&gt;
+<span class="lineNum">       9 </span>            : 
+<span class="lineNum">      10 </span>            : #include &quot;DataStructures/ComplexDataVector.hpp&quot;
+<span class="lineNum">      11 </span>            : #include &quot;DataStructures/DataBox/DataBox.hpp&quot;
+<span class="lineNum">      12 </span>            : #include &quot;DataStructures/Tags.hpp&quot;
+<span class="lineNum">      13 </span>            : #include &quot;DataStructures/Tensor/Tensor.hpp&quot;
+<span class="lineNum">      14 </span>            : #include &quot;DataStructures/Tensor/TypeAliases.hpp&quot;
+<span class="lineNum">      15 </span>            : #include &quot;Domain/Mesh.hpp&quot;
+<span class="lineNum">      16 </span>            : #include &quot;Evolution/Systems/Cce/IntegrandInputSteps.hpp&quot;
+<span class="lineNum">      17 </span>            : #include &quot;Evolution/Systems/Cce/Tags.hpp&quot;
+<span class="lineNum">      18 </span>            : #include &quot;NumericalAlgorithms/Spectral/Spectral.hpp&quot;
+<span class="lineNum">      19 </span>            : #include &quot;NumericalAlgorithms/Spectral/SwshDerivatives.hpp&quot;
+<span class="lineNum">      20 </span>            : #include &quot;NumericalAlgorithms/Spectral/SwshTags.hpp&quot;
+<span class="lineNum">      21 </span>            : #include &quot;Utilities/ForceInline.hpp&quot;
+<span class="lineNum">      22 </span>            : #include &quot;Utilities/Gsl.hpp&quot;
+<span class="lineNum">      23 </span>            : #include &quot;Utilities/TypeTraits.hpp&quot;
+<span class="lineNum">      24 </span>            : 
+<span class="lineNum">      25 </span>            : namespace Cce {
+<span class="lineNum">      26 </span>            : namespace detail {
+<span class="lineNum">      27 </span>            : // Precomputation routines for supplying the additional quantities necessary
+<span class="lineNum">      28 </span>            : // to correct the output of the angular derivative routines from the angular
+<span class="lineNum">      29 </span>            : // derivatives evaluated at constant numerical coordinates (which is what is
+<span class="lineNum">      30 </span>            : // returned after the libsharp evaluation) to the angular derivatives at
+<span class="lineNum">      31 </span>            : // constant Bondi radius (which is what appears in the literature equations
+<span class="lineNum">      32 </span>            : // and is simple to combine to obtain the hypersurface integrands).
+<span class="lineNum">      33 </span>            : //
+<span class="lineNum">      34 </span>            : // Warning: this 'on demand' template is a way of taking advantage of the blaze
+<span class="lineNum">      35 </span>            : // expression templates in a generic, modular way. However, this can be
+<span class="lineNum">      36 </span>            : // dangerous. The returned value MUST be a blaze expression template directly,
+<span class="lineNum">      37 </span>            : // and not a wrapper type (like `SpinWeighted`). Otherwise, some information is
+<span class="lineNum">      38 </span>            : // lost on the stack and the expression template is corrupted. So, in these 'on
+<span class="lineNum">      39 </span>            : // demand' returns, the arguments must be fully unpacked to vector types.
+<span class="lineNum">      40 </span>            : //
+<span class="lineNum">      41 </span>            : // The `Select` operand is a `cpp17::bool_constant` that ensures mutual
+<span class="lineNum">      42 </span>            : // exclusivity of the template specializations.
+<span class="lineNum">      43 </span>            : template &lt;typename Tag, typename SpinConstant, typename Select&gt;
+<span class="lineNum">      44 </span>            : struct OnDemandInputsForSwshJacobianImpl;
+<span class="lineNum">      45 </span>            : 
+<span class="lineNum">      46 </span>            : // default to just retrieving it from the box if not providing an expression
+<span class="lineNum">      47 </span>            : // template shortcut
+<span class="lineNum">      48 </span>            : template &lt;typename Tag&gt;
+<span class="lineNum">      49 </span>            : struct OnDemandInputsForSwshJacobianImpl&lt;
+<span class="lineNum">      50 </span>            :     Tags::Dy&lt;Tag&gt;, std::integral_constant&lt;int, Tag::type::type::spin&gt;,
+<span class="lineNum">      51 </span>            :     cpp17::bool_constant&lt;not tt::is_a_v&lt;::Tags::Multiplies, Tag&gt; and
+<span class="lineNum">      52 </span>            :                          not tt::is_a_v&lt;Tags::Dy, Tag&gt;&gt;&gt; {
+<span class="lineNum">      53 </span>            :   template &lt;typename DataBoxTagList&gt;
+<span class="lineNum">      54 </span>            :   SPECTRE_ALWAYS_INLINE decltype(auto) operator()(
+<span class="lineNum">      55 </span>            :       const db::DataBox&lt;DataBoxTagList&gt;&amp; box) noexcept {
+<span class="lineNum">      56 </span>            :     return get(db::get&lt;Tags::Dy&lt;Tag&gt;&gt;(box)).data();
+<span class="lineNum">      57 </span>            :   }
+<span class="lineNum">      58 </span>            : };
+<span class="lineNum">      59 </span>            : 
+<span class="lineNum">      60 </span>            : // default to retrieving from the box if the requested tag is a second
+<span class="lineNum">      61 </span>            : // derivative without an additional evaluation channel
+<span class="lineNum">      62 </span>            : template &lt;typename Tag&gt;
+<span class="lineNum">      63 </span>            : struct OnDemandInputsForSwshJacobianImpl&lt;
+<span class="lineNum">      64 </span>            :     Tags::Dy&lt;Tags::Dy&lt;Tag&gt;&gt;, std::integral_constant&lt;int, Tag::type::type::spin&gt;,
+<span class="lineNum">      65 </span>            :     cpp17::bool_constant&lt;not tt::is_a_v&lt;::Tags::Multiplies, Tag&gt;&gt;&gt; {
+<span class="lineNum">      66 </span>            :   template &lt;typename DataBoxTagList&gt;
+<span class="lineNum">      67 </span>            :   SPECTRE_ALWAYS_INLINE decltype(auto) operator()(
+<span class="lineNum">      68 </span>            :       const db::DataBox&lt;DataBoxTagList&gt;&amp; box) noexcept {
+<span class="lineNum">      69 </span>            :     return get(db::get&lt;Tags::Dy&lt;Tags::Dy&lt;Tag&gt;&gt;&gt;(box)).data();
+<span class="lineNum">      70 </span>            :   }
+<span class="lineNum">      71 </span>            : };
+<span class="lineNum">      72 </span>            : 
+<span class="lineNum">      73 </span>            : // use the product rule to provide an expression template for derivatives of
+<span class="lineNum">      74 </span>            : // products
+<span class="lineNum">      75 </span>            : template &lt;typename LhsTag, typename RhsTag&gt;
+<span class="lineNum">      76 </span>            : struct OnDemandInputsForSwshJacobianImpl&lt;
+<span class="lineNum">      77 </span>            :     Tags::Dy&lt;::Tags::Multiplies&lt;LhsTag, RhsTag&gt;&gt;,
+<span class="lineNum">      78 </span>            :     std::integral_constant&lt;int,
+<span class="lineNum">      79 </span>            :                            LhsTag::type::type::spin + RhsTag::type::type::spin&gt;,
+<span class="lineNum">      80 </span>            :     cpp17::bool_constant&lt;not cpp17::is_same_v&lt;LhsTag, Tags::BondiJbar&gt; and
+<span class="lineNum">      81 </span>            :                          not cpp17::is_same_v&lt;LhsTag, Tags::BondiUbar&gt; and
+<span class="lineNum">      82 </span>            :                          not cpp17::is_same_v&lt;RhsTag, Tags::BondiJbar&gt;&gt;&gt; {
+<span class="lineNum">      83 </span>            :   template &lt;typename DataBoxTagList&gt;
+<span class="lineNum">      84 </span>            :   SPECTRE_ALWAYS_INLINE decltype(auto) operator()(
+<span class="lineNum">      85 </span>            :       const db::DataBox&lt;DataBoxTagList&gt;&amp; box) noexcept {
+<span class="lineNum">      86 </span>            :     decltype(auto) lhs = get(db::get&lt;LhsTag&gt;(box)).data();
+<span class="lineNum">      87 </span>            :     decltype(auto) dy_lhs = get(db::get&lt;Tags::Dy&lt;LhsTag&gt;&gt;(box)).data();
+<span class="lineNum">      88 </span>            :     decltype(auto) rhs = get(db::get&lt;RhsTag&gt;(box)).data();
+<span class="lineNum">      89 </span>            :     decltype(auto) dy_rhs = get(db::get&lt;Tags::Dy&lt;RhsTag&gt;&gt;(box)).data();
+<span class="lineNum">      90 </span>            :     return lhs * dy_rhs + dy_lhs * rhs;
+<span class="lineNum">      91 </span>            :   }
+<span class="lineNum">      92 </span>            : };
+<span class="lineNum">      93 </span>            : 
+<span class="lineNum">      94 </span>            : // use the product rule and an explicit conjugate to provide an expression
+<span class="lineNum">      95 </span>            : // template for derivatives of products with `Tags::BondiJbar` as the right-hand
+<span class="lineNum">      96 </span>            : // operand
+<span class="lineNum">      97 </span>            : template &lt;typename LhsTag&gt;
+<span class="lineNum">      98 </span>            : struct OnDemandInputsForSwshJacobianImpl&lt;
+<span class="lineNum">      99 </span>            :     Tags::Dy&lt;::Tags::Multiplies&lt;LhsTag, Tags::BondiJbar&gt;&gt;,
+<span class="lineNum">     100 </span>            :     std::integral_constant&lt;int, LhsTag::type::type::spin - 2&gt;, std::true_type&gt; {
+<span class="lineNum">     101 </span>            :   template &lt;typename DataBoxTagList&gt;
+<span class="lineNum">     102 </span>            :   SPECTRE_ALWAYS_INLINE decltype(auto) operator()(
+<span class="lineNum">     103 </span>            :       const db::DataBox&lt;DataBoxTagList&gt;&amp; box) noexcept {
+<span class="lineNum">     104 </span>            :     decltype(auto) lhs = get(get&lt;LhsTag&gt;(box)).data();
+<span class="lineNum">     105 </span>            :     decltype(auto) dy_lhs = get(get&lt;Tags::Dy&lt;LhsTag&gt;&gt;(box)).data();
+<span class="lineNum">     106 </span>            :     decltype(auto) jbar = conj(get(get&lt;Tags::BondiJ&gt;(box)).data());
+<span class="lineNum">     107 </span>            :     decltype(auto) dy_jbar = conj(get(get&lt;Tags::Dy&lt;Tags::BondiJ&gt;&gt;(box)).data());
+<span class="lineNum">     108 </span>            :     return lhs * dy_jbar + dy_lhs * jbar;
+<span class="lineNum">     109 </span>            :   }
+<span class="lineNum">     110 </span>            : };
+<span class="lineNum">     111 </span>            : 
+<span class="lineNum">     112 </span>            : // use the product rule and an explicit conjugate to provide an expression
+<span class="lineNum">     113 </span>            : // template for derivatives of products with `Tags::BondiJbar` as the left-hand
+<span class="lineNum">     114 </span>            : // operand.
+<span class="lineNum">     115 </span>            : template &lt;typename RhsTag&gt;
+<span class="lineNum">     116 </span>            : struct OnDemandInputsForSwshJacobianImpl&lt;
+<span class="lineNum">     117 </span>            :     Tags::Dy&lt;::Tags::Multiplies&lt;Tags::BondiJbar, RhsTag&gt;&gt;,
+<span class="lineNum">     118 </span>            :     std::integral_constant&lt;int, RhsTag::type::type::spin - 2&gt;, std::true_type&gt; {
+<span class="lineNum">     119 </span>            :   template &lt;typename DataBoxTagList&gt;
+<span class="lineNum">     120 </span>            :   SPECTRE_ALWAYS_INLINE decltype(auto) operator()(
+<span class="lineNum">     121 </span>            :       const db::DataBox&lt;DataBoxTagList&gt;&amp; box) noexcept {
+<span class="lineNum">     122 </span>            :     decltype(auto) rhs = get(get&lt;RhsTag&gt;(box)).data();
+<span class="lineNum">     123 </span>            :     decltype(auto) dy_rhs = get(get&lt;Tags::Dy&lt;RhsTag&gt;&gt;(box)).data();
+<span class="lineNum">     124 </span>            :     decltype(auto) jbar = conj(get(get&lt;Tags::BondiJ&gt;(box)).data());
+<span class="lineNum">     125 </span>            :     decltype(auto) dy_jbar = conj(get(get&lt;Tags::Dy&lt;Tags::BondiJ&gt;&gt;(box)).data());
+<span class="lineNum">     126 </span>            :     return dy_jbar * rhs + jbar * dy_rhs;
+<span class="lineNum">     127 </span>            :   }
+<span class="lineNum">     128 </span>            : };
+<span class="lineNum">     129 </span>            : 
+<span class="lineNum">     130 </span>            : // use the product rule and an explicit conjugate to provide an expression
+<span class="lineNum">     131 </span>            : // template for derivatives of products with `Tags::BondiUbar` as the left-hand
+<span class="lineNum">     132 </span>            : // operand.
+<span class="lineNum">     133 </span>            : template &lt;typename RhsTag&gt;
+<span class="lineNum">     134 </span>            : struct OnDemandInputsForSwshJacobianImpl&lt;
+<span class="lineNum">     135 </span>            :     Tags::Dy&lt;::Tags::Multiplies&lt;Tags::BondiUbar, RhsTag&gt;&gt;,
+<span class="lineNum">     136 </span>            :     std::integral_constant&lt;int, RhsTag::type::type::spin - 1&gt;, std::true_type&gt; {
+<span class="lineNum">     137 </span>            :   template &lt;typename DataBoxTagList&gt;
+<span class="lineNum">     138 </span>            :   SPECTRE_ALWAYS_INLINE decltype(auto) operator()(
+<span class="lineNum">     139 </span>            :       const db::DataBox&lt;DataBoxTagList&gt;&amp; box) noexcept {
+<span class="lineNum">     140 </span>            :     decltype(auto) ubar = conj(get(get&lt;Tags::BondiU&gt;(box)).data());
+<span class="lineNum">     141 </span>            :     decltype(auto) dy_ubar = conj(get(get&lt;Tags::Dy&lt;Tags::BondiU&gt;&gt;(box)).data());
+<span class="lineNum">     142 </span>            :     decltype(auto) rhs = get(get&lt;RhsTag&gt;(box)).data();
+<span class="lineNum">     143 </span>            :     decltype(auto) dy_rhs = get(get&lt;Tags::Dy&lt;RhsTag&gt;&gt;(box)).data();
+<span class="lineNum">     144 </span>            :     return ubar * dy_rhs + dy_ubar * rhs;
+<span class="lineNum">     145 </span>            :   }
+<span class="lineNum">     146 </span>            : };
+<span class="lineNum">     147 </span>            : 
+<span class="lineNum">     148 </span>            : // use the product rule and an explicit conjugate to provide an expression
+<span class="lineNum">     149 </span>            : // template for second derivatives of products with `Tags::BondiJbar` as the
+<span class="lineNum">     150 </span>            : // right-hand operand.
+<span class="lineNum">     151 </span>            : template &lt;typename LhsTag&gt;
+<span class="lineNum">     152 </span>            : struct OnDemandInputsForSwshJacobianImpl&lt;
+<span class="lineNum">     153 </span>            :     Tags::Dy&lt;Tags::Dy&lt;::Tags::Multiplies&lt;LhsTag, Tags::BondiJbar&gt;&gt;&gt;,
+<span class="lineNum">     154 </span>            :     std::integral_constant&lt;int, LhsTag::type::type::spin - 2&gt;, std::true_type&gt; {
+<span class="lineNum">     155 </span>            :   template &lt;typename DataBoxTagList&gt;
+<span class="lineNum">     156 </span>            :   SPECTRE_ALWAYS_INLINE decltype(auto) operator()(
+<span class="lineNum">     157 </span>            :       const db::DataBox&lt;DataBoxTagList&gt;&amp; box) noexcept {
+<span class="lineNum">     158 </span>            :     decltype(auto) lhs = get(get&lt;LhsTag&gt;(box)).data();
+<span class="lineNum">     159 </span>            :     decltype(auto) dy_lhs = get(get&lt;Tags::Dy&lt;LhsTag&gt;&gt;(box)).data();
+<span class="lineNum">     160 </span>            :     decltype(auto) dy_dy_lhs = get(get&lt;Tags::Dy&lt;Tags::Dy&lt;LhsTag&gt;&gt;&gt;(box)).data();
+<span class="lineNum">     161 </span>            :     decltype(auto) jbar = conj(get(get&lt;Tags::BondiJ&gt;(box)).data());
+<span class="lineNum">     162 </span>            :     decltype(auto) dy_jbar = conj(get(get&lt;Tags::Dy&lt;Tags::BondiJ&gt;&gt;(box)).data());
+<span class="lineNum">     163 </span>            :     decltype(auto) dy_dy_jbar =
+<span class="lineNum">     164 </span>            :         conj(get(get&lt;Tags::Dy&lt;Tags::Dy&lt;Tags::BondiJ&gt;&gt;&gt;(box)).data());
+<span class="lineNum">     165 </span>            :     return lhs * dy_dy_jbar + 2.0 * dy_lhs * dy_jbar + dy_dy_lhs * jbar;
+<span class="lineNum">     166 </span>            :   }
+<span class="lineNum">     167 </span>            : };
+<span class="lineNum">     168 </span>            : 
+<span class="lineNum">     169 </span>            : // default to extracting directly from the box for spin-weighted derivatives of
+<span class="lineNum">     170 </span>            : // radial (y) derivatives
+<span class="lineNum">     171 </span>            : template &lt;typename Tag, typename DerivKind&gt;
+<span class="lineNum">     172 </span>            : struct OnDemandInputsForSwshJacobianImpl&lt;
+<span class="lineNum">     173 </span>            :     Spectral::Swsh::Tags::Derivative&lt;Tags::Dy&lt;Tag&gt;, DerivKind&gt;,
+<span class="lineNum">     174 </span>            :     std::integral_constant&lt;
+<span class="lineNum">     175 </span>            :         int, Spectral::Swsh::Tags::Derivative&lt;Tags::Dy&lt;Tag&gt;, DerivKind&gt;::spin&gt;,
+<span class="lineNum">     176 </span>            :     std::true_type&gt; {
+<span class="lineNum">     177 </span>            :   template &lt;typename DataBoxTagList&gt;
+<span class="lineNum">     178 </span>            :   SPECTRE_ALWAYS_INLINE decltype(auto) operator()(
+<span class="lineNum">     179 </span>            :       const db::DataBox&lt;DataBoxTagList&gt;&amp; box) noexcept {
+<span class="lineNum">     180 </span>            :     return get(get&lt;Spectral::Swsh::Tags::Derivative&lt;Tags::Dy&lt;Tag&gt;, DerivKind&gt;&gt;(
+<span class="lineNum">     181 </span>            :                    box))
+<span class="lineNum">     182 </span>            :         .data();
+<span class="lineNum">     183 </span>            :   }
+<span class="lineNum">     184 </span>            : };
+<span class="lineNum">     185 </span>            : 
+<span class="lineNum">     186 </span>            : // compute the derivative of the `jbar * (q - 2 eth_beta)` using the product
+<span class="lineNum">     187 </span>            : // rule and the commutation rule for the partials with respect to y and the
+<span class="lineNum">     188 </span>            : // spin_weighted derivatives
+<span class="lineNum">     189 </span>            : template &lt;&gt;
+<span class="lineNum">     190 </span>            : struct OnDemandInputsForSwshJacobianImpl&lt;Tags::Dy&lt;Tags::JbarQMinus2EthBeta&gt;,
+<span class="lineNum">     191 </span>            :                                          std::integral_constant&lt;int, -1&gt;,
+<span class="lineNum">     192 </span>            :                                          std::true_type&gt; {
+<span class="lineNum">     193 </span>            :   template &lt;typename DataBoxTagList&gt;
+<span class="lineNum">     194 </span>            :   SPECTRE_ALWAYS_INLINE decltype(auto) operator()(
+<span class="lineNum">     195 </span>            :       const db::DataBox&lt;DataBoxTagList&gt;&amp; box) noexcept {
+<span class="lineNum">     196 </span>            :     decltype(auto) dy_beta = get(get&lt;Tags::Dy&lt;Tags::BondiBeta&gt;&gt;(box)).data();
+<span class="lineNum">     197 </span>            :     decltype(auto) dy_j = get(get&lt;Tags::Dy&lt;Tags::BondiJ&gt;&gt;(box)).data();
+<span class="lineNum">     198 </span>            :     decltype(auto) dy_q = get(get&lt;Tags::Dy&lt;Tags::BondiQ&gt;&gt;(box)).data();
+<span class="lineNum">     199 </span>            :     decltype(auto) eth_beta =
+<span class="lineNum">     200 </span>            :         get(get&lt;Spectral::Swsh::Tags::Derivative&lt;Tags::BondiBeta,
+<span class="lineNum">     201 </span>            :                                                  Spectral::Swsh::Tags::Eth&gt;&gt;(
+<span class="lineNum">     202 </span>            :                 box))
+<span class="lineNum">     203 </span>            :             .data();
+<span class="lineNum">     204 </span>            :     decltype(auto) eth_dy_beta =
+<span class="lineNum">     205 </span>            :         get(get&lt;Spectral::Swsh::Tags::Derivative&lt;Tags::Dy&lt;Tags::BondiBeta&gt;,
+<span class="lineNum">     206 </span>            :                                                  Spectral::Swsh::Tags::Eth&gt;&gt;(
+<span class="lineNum">     207 </span>            :                 box))
+<span class="lineNum">     208 </span>            :             .data();
+<span class="lineNum">     209 </span>            :     decltype(auto) eth_r_divided_by_r =
+<span class="lineNum">     210 </span>            :         get(get&lt;Tags::EthRDividedByR&gt;(box)).data();
+<span class="lineNum">     211 </span>            :     decltype(auto) j = get(get&lt;Tags::BondiJ&gt;(box)).data();
+<span class="lineNum">     212 </span>            :     decltype(auto) q = get(get&lt;Tags::BondiQ&gt;(box)).data();
+<span class="lineNum">     213 </span>            :     return conj(j) * dy_q + conj(dy_j) * q - 2.0 * conj(j) * eth_dy_beta -
+<span class="lineNum">     214 </span>            :            2.0 * eth_beta * conj(dy_j) -
+<span class="lineNum">     215 </span>            :            2.0 * conj(j) * eth_r_divided_by_r * dy_beta;
+<span class="lineNum">     216 </span>            :   }
+<span class="lineNum">     217 </span>            : };
+<span class="lineNum">     218 </span>            : }  // namespace detail
+<span class="lineNum">     219 </span>            : 
+<span class="lineNum">     220 </span>            : /// Provide an expression template or reference to `Tag`, intended for
+<span class="lineNum">     221 </span>            : /// situations for which a repeated computation is more
+<span class="lineNum">     222 </span>            : /// desirable than storing a value in the \ref DataBoxGroup (e.g. for
+<span class="lineNum">     223 </span>            : /// conjugation and simple product rule expansion).
+<span class="lineNum">     224 </span>            : template &lt;typename Tag&gt;
+<span class="lineNum">     225 </span><span class="lineCov">          1 : using OnDemandInputsForSwshJacobian = detail::OnDemandInputsForSwshJacobianImpl&lt;</span>
+<span class="lineNum">     226 </span>            :     Tag, std::integral_constant&lt;int, Tag::type::type::spin&gt;, std::true_type&gt;;
+<span class="lineNum">     227 </span>            : 
+<span class="lineNum">     228 </span>            : /*!
+<span class="lineNum">     229 </span>            :  * \brief Performs a mutation to a spin-weighted spherical harmonic derivative
+<span class="lineNum">     230 </span>            :  * value from the numerical coordinate (the spin-weighted derivative at
+<span class="lineNum">     231 </span>            :  * fixed \f$y\f$) to the Bondi coordinates (the spin-weighted derivative at
+<span class="lineNum">     232 </span>            :  * fixed \f$r\f$), inplace to the requested tag.
+<span class="lineNum">     233 </span>            :  *
+<span class="lineNum">     234 </span>            :  * \details This should be performed only once for each derivative evaluation
+<span class="lineNum">     235 </span>            :  * for each tag, as a repeated inplace evaluation will compound and result in
+<span class="lineNum">     236 </span>            :  * incorrect values in the \ref DataBoxGroup. This is compatible with acting as
+<span class="lineNum">     237 </span>            :  * a mutation in `db::mutate_apply`.
+<span class="lineNum">     238 </span>            :  * \note In each specialization, there is an additional type alias
+<span class="lineNum">     239 </span>            :  * `on_demand_argument_tags` that contains tags that represent additional
+<span class="lineNum">     240 </span>            :  * quantities to be passed as arguments that need not be in the \ref
+<span class="lineNum">     241 </span>            :  * DataBoxGroup. These quantities are suggested to be evaluated by the 'on
+<span class="lineNum">     242 </span>            :  * demand' mechanism provided by `Cce::OnDemandInputsForSwshJacobian`, which
+<span class="lineNum">     243 </span>            :  * provides the additional quantities as blaze expression templates rather than
+<span class="lineNum">     244 </span>            :  * unnecessarily caching intermediate results that aren't re-used.
+<span class="lineNum">     245 </span>            :  */
+<span class="lineNum">     246 </span>            : template &lt;typename DerivativeTag&gt;
+<span class="lineNum">     247 </span><span class="lineCov">          1 : struct ApplySwshJacobianInplace;</span>
+<span class="lineNum">     248 </span>            : 
+<span class="lineNum">     249 </span>            : /*!
+<span class="lineNum">     250 </span>            :  * \brief Specialization for the spin-weighted derivative \f$\eth\f$.
+<span class="lineNum">     251 </span>            :  *
+<span class="lineNum">     252 </span>            :  * \details The implemented equation is:
+<span class="lineNum">     253 </span>            :  *
+<span class="lineNum">     254 </span>            :  * \f[ \eth F = \eth^\prime F - (1 - y) \frac{\eth R}{R} \partial_y F,
+<span class="lineNum">     255 </span>            :  * \f]
+<span class="lineNum">     256 </span>            :  *
+<span class="lineNum">     257 </span>            :  * where \f$\eth\f$ is the derivative at constant Bondi radius \f$r\f$ and
+<span class="lineNum">     258 </span>            :  * \f$\eth^\prime\f$ is the derivative at constant numerical radius \f$y\f$.
+<span class="lineNum">     259 </span>            :  */
+<span class="lineNum">     260 </span>            : template &lt;typename ArgumentTag&gt;
+<span class="lineNum">     261 </span>            : struct ApplySwshJacobianInplace&lt;
+<span class="lineNum">     262 </span><span class="lineCov">          1 :     Spectral::Swsh::Tags::Derivative&lt;ArgumentTag, Spectral::Swsh::Tags::Eth&gt;&gt; {</span>
+<span class="lineNum">     263 </span><span class="lineNoCov">          0 :   using pre_swsh_derivative_tags = tmpl::list&lt;&gt;;</span>
+<span class="lineNum">     264 </span><span class="lineNoCov">          0 :   using swsh_derivative_tags = tmpl::list&lt;&gt;;</span>
+<span class="lineNum">     265 </span><span class="lineNoCov">          0 :   using integration_independent_tags =</span>
+<span class="lineNum">     266 </span>            :       tmpl::list&lt;Tags::OneMinusY, Tags::EthRDividedByR&gt;;
+<span class="lineNum">     267 </span>            : 
+<span class="lineNum">     268 </span><span class="lineNoCov">          0 :   using return_tags = tmpl::list&lt;</span>
+<span class="lineNum">     269 </span>            :       Spectral::Swsh::Tags::Derivative&lt;ArgumentTag, Spectral::Swsh::Tags::Eth&gt;&gt;;
+<span class="lineNum">     270 </span><span class="lineNoCov">          0 :   using argument_tags = tmpl::append&lt;integration_independent_tags&gt;;</span>
+<span class="lineNum">     271 </span><span class="lineNoCov">          0 :   using on_demand_argument_tags = tmpl::list&lt;Tags::Dy&lt;ArgumentTag&gt;&gt;;</span>
+<span class="lineNum">     272 </span>            : 
+<span class="lineNum">     273 </span><span class="lineNoCov">          0 :   static constexpr int spin =</span>
+<span class="lineNum">     274 </span>            :       Spectral::Swsh::Tags::Derivative&lt;ArgumentTag,
+<span class="lineNum">     275 </span>            :                                        Spectral::Swsh::Tags::Eth&gt;::spin;
+<span class="lineNum">     276 </span>            :   template &lt;typename DyArgumentType&gt;
+<span class="lineNum">     277 </span><span class="lineNoCov">          0 :   static void apply(</span>
+<span class="lineNum">     278 </span>            :       const gsl::not_null&lt;Scalar&lt;SpinWeighted&lt;ComplexDataVector, spin&gt;&gt;*&gt;
+<span class="lineNum">     279 </span>            :           eth_argument,
+<span class="lineNum">     280 </span>            :       const Scalar&lt;SpinWeighted&lt;ComplexDataVector, 0&gt;&gt;&amp; one_minus_y,
+<span class="lineNum">     281 </span>            :       const Scalar&lt;SpinWeighted&lt;ComplexDataVector, 1&gt;&gt;&amp; eth_r_divided_by_r,
+<span class="lineNum">     282 </span>            :       const DyArgumentType&amp; dy_argument) {
+<span class="lineNum">     283 </span>            :     get(*eth_argument) -= get(one_minus_y) * get(eth_r_divided_by_r) *
+<span class="lineNum">     284 </span>            :                           SpinWeighted&lt;DyArgumentType, spin - 1&gt;{dy_argument};
+<span class="lineNum">     285 </span>            :   }
+<span class="lineNum">     286 </span>            : };
+<span class="lineNum">     287 </span>            : 
+<span class="lineNum">     288 </span>            : /*!
+<span class="lineNum">     289 </span>            :  * \brief Specialization for the spin-weighted derivative \f$\bar{\eth}\f$.
+<span class="lineNum">     290 </span>            :  *
+<span class="lineNum">     291 </span>            :  * \details The implemented equation is:
+<span class="lineNum">     292 </span>            :  *
+<span class="lineNum">     293 </span>            :  * \f[
+<span class="lineNum">     294 </span>            :  * \bar{\eth} F = \bar{\eth}^\prime F
+<span class="lineNum">     295 </span>            :  * - (1 - y) \frac{\bar{\eth} R}{R} \partial_y F,
+<span class="lineNum">     296 </span>            :  *\f]
+<span class="lineNum">     297 </span>            :  *
+<span class="lineNum">     298 </span>            :  * where \f$\bar{\eth}\f$ is the derivative at constant Bondi radius \f$r\f$ and
+<span class="lineNum">     299 </span>            :  * \f$\bar{\eth}^\prime\f$ is the derivative at constant numerical radius
+<span class="lineNum">     300 </span>            :  * \f$y\f$.
+<span class="lineNum">     301 </span>            :  */
+<span class="lineNum">     302 </span>            : template &lt;typename ArgumentTag&gt;
+<span class="lineNum">     303 </span>            : struct ApplySwshJacobianInplace&lt;Spectral::Swsh::Tags::Derivative&lt;
+<span class="lineNum">     304 </span><span class="lineCov">          1 :     ArgumentTag, Spectral::Swsh::Tags::Ethbar&gt;&gt; {</span>
+<span class="lineNum">     305 </span><span class="lineNoCov">          0 :   using pre_swsh_derivative_tags = tmpl::list&lt;&gt;;</span>
+<span class="lineNum">     306 </span><span class="lineNoCov">          0 :   using swsh_derivative_tags = tmpl::list&lt;&gt;;</span>
+<span class="lineNum">     307 </span><span class="lineNoCov">          0 :   using integration_independent_tags =</span>
+<span class="lineNum">     308 </span>            :       tmpl::list&lt;Tags::OneMinusY, Tags::EthRDividedByR&gt;;
+<span class="lineNum">     309 </span>            : 
+<span class="lineNum">     310 </span><span class="lineNoCov">          0 :   using return_tags = tmpl::list&lt;Spectral::Swsh::Tags::Derivative&lt;</span>
+<span class="lineNum">     311 </span>            :       ArgumentTag, Spectral::Swsh::Tags::Ethbar&gt;&gt;;
+<span class="lineNum">     312 </span><span class="lineNoCov">          0 :   using argument_tags = tmpl::append&lt;integration_independent_tags&gt;;</span>
+<span class="lineNum">     313 </span><span class="lineNoCov">          0 :   using on_demand_argument_tags = tmpl::list&lt;Tags::Dy&lt;ArgumentTag&gt;&gt;;</span>
+<span class="lineNum">     314 </span>            : 
+<span class="lineNum">     315 </span><span class="lineNoCov">          0 :   static constexpr int spin =</span>
+<span class="lineNum">     316 </span>            :       Spectral::Swsh::Tags::Derivative&lt;ArgumentTag,
+<span class="lineNum">     317 </span>            :                                        Spectral::Swsh::Tags::Ethbar&gt;::spin;
+<span class="lineNum">     318 </span>            :   template &lt;typename DyArgumentType&gt;
+<span class="lineNum">     319 </span><span class="lineNoCov">          0 :   static void apply(</span>
+<span class="lineNum">     320 </span>            :       const gsl::not_null&lt;Scalar&lt;SpinWeighted&lt;ComplexDataVector, spin&gt;&gt;*&gt;
+<span class="lineNum">     321 </span>            :           ethbar_argument,
+<span class="lineNum">     322 </span>            :       const Scalar&lt;SpinWeighted&lt;ComplexDataVector, 0&gt;&gt;&amp; one_minus_y,
+<span class="lineNum">     323 </span>            :       const Scalar&lt;SpinWeighted&lt;ComplexDataVector, 1&gt;&gt;&amp; eth_r_divided_by_r,
+<span class="lineNum">     324 </span>            :       const DyArgumentType&amp; dy_argument) {
+<span class="lineNum">     325 </span>            :     get(*ethbar_argument) -=
+<span class="lineNum">     326 </span>            :         get(one_minus_y) * conj(get(eth_r_divided_by_r)) *
+<span class="lineNum">     327 </span>            :         SpinWeighted&lt;DyArgumentType, spin + 1&gt;{dy_argument};
+<span class="lineNum">     328 </span>            :   }
+<span class="lineNum">     329 </span>            : };
+<span class="lineNum">     330 </span>            : 
+<span class="lineNum">     331 </span>            : /*!
+<span class="lineNum">     332 </span>            :  * \brief Specialization for the spin-weighted derivative \f$\eth \bar{\eth}\f$.
+<span class="lineNum">     333 </span>            :  *
+<span class="lineNum">     334 </span>            :  * \details The implemented equation is:
+<span class="lineNum">     335 </span>            :  *
+<span class="lineNum">     336 </span>            :  * \f[
+<span class="lineNum">     337 </span>            :  * \eth \bar{\eth} F = \eth^\prime \bar{\eth}^\prime F
+<span class="lineNum">     338 </span>            :  * - \frac{\eth R \bar{\eth} R}{R^2} (1 - y)^2 \partial_y^2 F
+<span class="lineNum">     339 </span>            :  * - (1 - y)\left(\frac{\eth R}{R} \bar{\eth} \partial_y F
+<span class="lineNum">     340 </span>            :  * + \frac{\bar{\eth} R}{R} \eth \partial_y F
+<span class="lineNum">     341 </span>            :  * + \frac{\eth \bar\eth R}{R} \partial_y F\right),
+<span class="lineNum">     342 </span>            :  * \f]
+<span class="lineNum">     343 </span>            :  *
+<span class="lineNum">     344 </span>            :  * where \f$\eth \bar{\eth}\f$ is the derivative at constant Bondi radius
+<span class="lineNum">     345 </span>            :  * \f$r\f$ and \f$\eth^\prime \bar{\eth}^\prime\f$ is the derivative at constant
+<span class="lineNum">     346 </span>            :  * numerical radius \f$y\f$.
+<span class="lineNum">     347 </span>            :  */
+<span class="lineNum">     348 </span>            : template &lt;typename ArgumentTag&gt;
+<span class="lineNum">     349 </span>            : struct ApplySwshJacobianInplace&lt;Spectral::Swsh::Tags::Derivative&lt;
+<span class="lineNum">     350 </span><span class="lineCov">          1 :     ArgumentTag, Spectral::Swsh::Tags::EthEthbar&gt;&gt; {</span>
+<span class="lineNum">     351 </span><span class="lineNoCov">          0 :   using pre_swsh_derivative_tags = tmpl::list&lt;&gt;;</span>
+<span class="lineNum">     352 </span><span class="lineNoCov">          0 :   using swsh_derivative_tags = tmpl::list&lt;&gt;;</span>
+<span class="lineNum">     353 </span><span class="lineNoCov">          0 :   using integration_independent_tags =</span>
+<span class="lineNum">     354 </span>            :       tmpl::list&lt;Tags::OneMinusY, Tags::EthRDividedByR,
+<span class="lineNum">     355 </span>            :                  Tags::EthEthbarRDividedByR&gt;;
+<span class="lineNum">     356 </span>            : 
+<span class="lineNum">     357 </span><span class="lineNoCov">          0 :   using return_tags = tmpl::list&lt;Spectral::Swsh::Tags::Derivative&lt;</span>
+<span class="lineNum">     358 </span>            :       ArgumentTag, Spectral::Swsh::Tags::EthEthbar&gt;&gt;;
+<span class="lineNum">     359 </span><span class="lineNoCov">          0 :   using argument_tags = tmpl::append&lt;integration_independent_tags&gt;;</span>
+<span class="lineNum">     360 </span><span class="lineNoCov">          0 :   using on_demand_argument_tags =</span>
+<span class="lineNum">     361 </span>            :       tmpl::list&lt;Tags::Dy&lt;ArgumentTag&gt;, Tags::Dy&lt;Tags::Dy&lt;ArgumentTag&gt;&gt;,
+<span class="lineNum">     362 </span>            :                  Spectral::Swsh::Tags::Derivative&lt;Tags::Dy&lt;ArgumentTag&gt;,
+<span class="lineNum">     363 </span>            :                                                   Spectral::Swsh::Tags::Eth&gt;,
+<span class="lineNum">     364 </span>            :                  Spectral::Swsh::Tags::Derivative&lt;
+<span class="lineNum">     365 </span>            :                      Tags::Dy&lt;ArgumentTag&gt;, Spectral::Swsh::Tags::Ethbar&gt;&gt;;
+<span class="lineNum">     366 </span>            : 
+<span class="lineNum">     367 </span><span class="lineNoCov">          0 :   static constexpr int spin =</span>
+<span class="lineNum">     368 </span>            :       Spectral::Swsh::Tags::Derivative&lt;ArgumentTag,
+<span class="lineNum">     369 </span>            :                                        Spectral::Swsh::Tags::EthEthbar&gt;::spin;
+<span class="lineNum">     370 </span>            :   template &lt;typename DyArgumentType, typename DyDyArgumentType,
+<span class="lineNum">     371 </span>            :             typename EthDyArgumentType, typename EthbarDyArgumentType&gt;
+<span class="lineNum">     372 </span><span class="lineNoCov">          0 :   static void apply(</span>
+<span class="lineNum">     373 </span>            :       const gsl::not_null&lt;Scalar&lt;SpinWeighted&lt;ComplexDataVector, spin&gt;&gt;*&gt;
+<span class="lineNum">     374 </span>            :           eth_ethbar_argument,
+<span class="lineNum">     375 </span>            :       const Scalar&lt;SpinWeighted&lt;ComplexDataVector, 0&gt;&gt;&amp; one_minus_y,
+<span class="lineNum">     376 </span>            :       const Scalar&lt;SpinWeighted&lt;ComplexDataVector, 1&gt;&gt;&amp; eth_r_divided_by_r,
+<span class="lineNum">     377 </span>            :       const Scalar&lt;SpinWeighted&lt;ComplexDataVector, 0&gt;&gt;&amp;
+<span class="lineNum">     378 </span>            :           eth_ethbar_r_divided_by_r,
+<span class="lineNum">     379 </span>            :       const DyArgumentType&amp; dy_argument, const DyDyArgumentType&amp; dy_dy_argument,
+<span class="lineNum">     380 </span>            :       const EthDyArgumentType&amp; eth_dy_argument,
+<span class="lineNum">     381 </span>            :       const EthbarDyArgumentType ethbar_dy_argument) {
+<span class="lineNum">     382 </span>            :     get(*eth_ethbar_argument) -=
+<span class="lineNum">     383 </span>            :         get(eth_r_divided_by_r) * conj(get(eth_r_divided_by_r)) *
+<span class="lineNum">     384 </span>            :             (square(get(one_minus_y)) *
+<span class="lineNum">     385 </span>            :              SpinWeighted&lt;DyDyArgumentType, spin&gt;{dy_dy_argument}) +
+<span class="lineNum">     386 </span>            :         get(one_minus_y) *
+<span class="lineNum">     387 </span>            :             (get(eth_r_divided_by_r) *
+<span class="lineNum">     388 </span>            :                  SpinWeighted&lt;EthbarDyArgumentType, spin - 1&gt;{
+<span class="lineNum">     389 </span>            :                      ethbar_dy_argument} +
+<span class="lineNum">     390 </span>            :              conj(get(eth_r_divided_by_r)) *
+<span class="lineNum">     391 </span>            :                  SpinWeighted&lt;EthDyArgumentType, spin + 1&gt;{eth_dy_argument} +
+<span class="lineNum">     392 </span>            :              get(eth_ethbar_r_divided_by_r) *
+<span class="lineNum">     393 </span>            :                  SpinWeighted&lt;DyArgumentType, spin&gt;{dy_argument});
+<span class="lineNum">     394 </span>            :   }
+<span class="lineNum">     395 </span>            : };
+<span class="lineNum">     396 </span>            : 
+<span class="lineNum">     397 </span>            : /*!
+<span class="lineNum">     398 </span>            :  * \brief Specialization for the spin-weighted derivative \f$\bar{\eth} \eth\f$.
+<span class="lineNum">     399 </span>            :  *
+<span class="lineNum">     400 </span>            :  * \details The implemented equation is:
+<span class="lineNum">     401 </span>            :  *
+<span class="lineNum">     402 </span>            :  * \f[
+<span class="lineNum">     403 </span>            :  * \bar{\eth} \eth F = \bar{\eth}^\prime \eth^\prime F
+<span class="lineNum">     404 </span>            :  * - \frac{\eth R \bar{\eth} R}{R^2} (1 - y)^2 \partial_y^2 F
+<span class="lineNum">     405 </span>            :  * - (1 - y)\left(\frac{\eth R}{R} \bar{\eth} \partial_y F
+<span class="lineNum">     406 </span>            :  * + \frac{\bar{\eth} R}{R} \eth \partial_y F
+<span class="lineNum">     407 </span>            :  * + \frac{\eth \bar\eth R}{R} \partial_y F\right),
+<span class="lineNum">     408 </span>            :  * \f]
+<span class="lineNum">     409 </span>            :  *
+<span class="lineNum">     410 </span>            :  * where \f$\bar{\eth} \eth\f$ is the derivative at constant Bondi radius
+<span class="lineNum">     411 </span>            :  * \f$r\f$ and \f$\bar{\eth}^\prime \eth^\prime\f$ is the derivative at constant
+<span class="lineNum">     412 </span>            :  * numerical radius \f$y\f$.
+<span class="lineNum">     413 </span>            :  */
+<span class="lineNum">     414 </span>            : template &lt;typename ArgumentTag&gt;
+<span class="lineNum">     415 </span>            : struct ApplySwshJacobianInplace&lt;Spectral::Swsh::Tags::Derivative&lt;
+<span class="lineNum">     416 </span><span class="lineCov">          1 :     ArgumentTag, Spectral::Swsh::Tags::EthbarEth&gt;&gt; {</span>
+<span class="lineNum">     417 </span><span class="lineNoCov">          0 :   using pre_swsh_derivative_tags = tmpl::list&lt;&gt;;</span>
+<span class="lineNum">     418 </span><span class="lineNoCov">          0 :   using swsh_derivative_tags = tmpl::list&lt;&gt;;</span>
+<span class="lineNum">     419 </span><span class="lineNoCov">          0 :   using integration_independent_tags =</span>
+<span class="lineNum">     420 </span>            :       tmpl::list&lt;Tags::OneMinusY, Tags::EthRDividedByR,
+<span class="lineNum">     421 </span>            :                  Tags::EthEthbarRDividedByR&gt;;
+<span class="lineNum">     422 </span>            : 
+<span class="lineNum">     423 </span><span class="lineNoCov">          0 :   using return_tags = tmpl::list&lt;Spectral::Swsh::Tags::Derivative&lt;</span>
+<span class="lineNum">     424 </span>            :       ArgumentTag, Spectral::Swsh::Tags::EthbarEth&gt;&gt;;
+<span class="lineNum">     425 </span><span class="lineNoCov">          0 :   using argument_tags = tmpl::append&lt;integration_independent_tags&gt;;</span>
+<span class="lineNum">     426 </span><span class="lineNoCov">          0 :   using on_demand_argument_tags =</span>
+<span class="lineNum">     427 </span>            :       tmpl::list&lt;Tags::Dy&lt;ArgumentTag&gt;, Tags::Dy&lt;Tags::Dy&lt;ArgumentTag&gt;&gt;,
+<span class="lineNum">     428 </span>            :                  Spectral::Swsh::Tags::Derivative&lt;Tags::Dy&lt;ArgumentTag&gt;,
+<span class="lineNum">     429 </span>            :                                                   Spectral::Swsh::Tags::Eth&gt;,
+<span class="lineNum">     430 </span>            :                  Spectral::Swsh::Tags::Derivative&lt;
+<span class="lineNum">     431 </span>            :                      Tags::Dy&lt;ArgumentTag&gt;, Spectral::Swsh::Tags::Ethbar&gt;&gt;;
+<span class="lineNum">     432 </span>            : 
+<span class="lineNum">     433 </span><span class="lineNoCov">          0 :   static constexpr int spin =</span>
+<span class="lineNum">     434 </span>            :       Spectral::Swsh::Tags::Derivative&lt;ArgumentTag,
+<span class="lineNum">     435 </span>            :                                        Spectral::Swsh::Tags::EthbarEth&gt;::spin;
+<span class="lineNum">     436 </span>            :   template &lt;typename DyArgumentType, typename DyDyArgumentType,
+<span class="lineNum">     437 </span>            :             typename EthDyArgumentType, typename EthbarDyArgumentType&gt;
+<span class="lineNum">     438 </span><span class="lineNoCov">          0 :   static void apply(</span>
+<span class="lineNum">     439 </span>            :       const gsl::not_null&lt;Scalar&lt;SpinWeighted&lt;ComplexDataVector, spin&gt;&gt;*&gt;
+<span class="lineNum">     440 </span>            :           ethbar_eth_argument,
+<span class="lineNum">     441 </span>            :       const Scalar&lt;SpinWeighted&lt;ComplexDataVector, 0&gt;&gt;&amp; one_minus_y,
+<span class="lineNum">     442 </span>            :       const Scalar&lt;SpinWeighted&lt;ComplexDataVector, 1&gt;&gt;&amp; eth_r_divided_by_r,
+<span class="lineNum">     443 </span>            :       const Scalar&lt;SpinWeighted&lt;ComplexDataVector, 0&gt;&gt;&amp;
+<span class="lineNum">     444 </span>            :           eth_ethbar_r_divided_by_r,
+<span class="lineNum">     445 </span>            :       const DyArgumentType&amp; dy_argument, const DyDyArgumentType&amp; dy_dy_argument,
+<span class="lineNum">     446 </span>            :       const EthDyArgumentType&amp; eth_dy_argument,
+<span class="lineNum">     447 </span>            :       const EthbarDyArgumentType ethbar_dy_argument) {
+<span class="lineNum">     448 </span>            :     get(*ethbar_eth_argument) -=
+<span class="lineNum">     449 </span>            :         get(eth_r_divided_by_r) * conj(get(eth_r_divided_by_r)) *
+<span class="lineNum">     450 </span>            :             (square(get(one_minus_y)) *
+<span class="lineNum">     451 </span>            :              SpinWeighted&lt;DyDyArgumentType, spin&gt;{dy_dy_argument}) +
+<span class="lineNum">     452 </span>            :         get(one_minus_y) *
+<span class="lineNum">     453 </span>            :             (get(eth_r_divided_by_r) *
+<span class="lineNum">     454 </span>            :                  SpinWeighted&lt;EthbarDyArgumentType, spin - 1&gt;{
+<span class="lineNum">     455 </span>            :                      ethbar_dy_argument} +
+<span class="lineNum">     456 </span>            :              conj(get(eth_r_divided_by_r)) *
+<span class="lineNum">     457 </span>            :                  SpinWeighted&lt;EthDyArgumentType, spin + 1&gt;{eth_dy_argument} +
+<span class="lineNum">     458 </span>            :              get(eth_ethbar_r_divided_by_r) *
+<span class="lineNum">     459 </span>            :                  SpinWeighted&lt;DyArgumentType, spin&gt;{dy_argument});
+<span class="lineNum">     460 </span>            :   }
+<span class="lineNum">     461 </span>            : };
+<span class="lineNum">     462 </span>            : 
+<span class="lineNum">     463 </span>            : /*!
+<span class="lineNum">     464 </span>            :  * \brief Specialization for the spin-weighted derivative \f$\eth \eth\f$.
+<span class="lineNum">     465 </span>            :  *
+<span class="lineNum">     466 </span>            :  * \details The implemented equation is:
+<span class="lineNum">     467 </span>            :  *
+<span class="lineNum">     468 </span>            :  * \f[
+<span class="lineNum">     469 </span>            :  * \eth \eth F = \eth^\prime \eth^\prime F
+<span class="lineNum">     470 </span>            :  * - (1 - y)^2 \frac{(\eth R)^2}{R^2} \partial_y^2 F
+<span class="lineNum">     471 </span>            :  * - (1 - y) \left( 2 \frac{\eth R}{R} \eth \partial_y F
+<span class="lineNum">     472 </span>            :  * + \frac{\eth \eth R}{R} \partial_y F\right),
+<span class="lineNum">     473 </span>            :  * \f]
+<span class="lineNum">     474 </span>            :  *
+<span class="lineNum">     475 </span>            :  * where \f$\eth \eth\f$ is the derivative at constant Bondi radius \f$r\f$ and
+<span class="lineNum">     476 </span>            :  * \f$\eth^\prime \eth^\prime\f$ is the derivative at constant numerical radius
+<span class="lineNum">     477 </span>            :  * \f$y\f$.
+<span class="lineNum">     478 </span>            :  */
+<span class="lineNum">     479 </span>            : template &lt;typename ArgumentTag&gt;
+<span class="lineNum">     480 </span>            : struct ApplySwshJacobianInplace&lt;Spectral::Swsh::Tags::Derivative&lt;
+<span class="lineNum">     481 </span><span class="lineCov">          1 :     ArgumentTag, Spectral::Swsh::Tags::EthEth&gt;&gt; {</span>
+<span class="lineNum">     482 </span><span class="lineNoCov">          0 :   using pre_swsh_derivative_tags = tmpl::list&lt;&gt;;</span>
+<span class="lineNum">     483 </span><span class="lineNoCov">          0 :   using swsh_derivative_tags = tmpl::list&lt;&gt;;</span>
+<span class="lineNum">     484 </span><span class="lineNoCov">          0 :   using integration_independent_tags =</span>
+<span class="lineNum">     485 </span>            :       tmpl::list&lt;Tags::OneMinusY, Tags::EthRDividedByR,
+<span class="lineNum">     486 </span>            :                  Tags::EthEthRDividedByR&gt;;
+<span class="lineNum">     487 </span>            : 
+<span class="lineNum">     488 </span><span class="lineNoCov">          0 :   using return_tags = tmpl::list&lt;Spectral::Swsh::Tags::Derivative&lt;</span>
+<span class="lineNum">     489 </span>            :       ArgumentTag, Spectral::Swsh::Tags::EthEth&gt;&gt;;
+<span class="lineNum">     490 </span><span class="lineNoCov">          0 :   using argument_tags = tmpl::append&lt;integration_independent_tags&gt;;</span>
+<span class="lineNum">     491 </span><span class="lineNoCov">          0 :   using on_demand_argument_tags =</span>
+<span class="lineNum">     492 </span>            :       tmpl::list&lt;Tags::Dy&lt;ArgumentTag&gt;, Tags::Dy&lt;Tags::Dy&lt;ArgumentTag&gt;&gt;,
+<span class="lineNum">     493 </span>            :                  Spectral::Swsh::Tags::Derivative&lt;Tags::Dy&lt;ArgumentTag&gt;,
+<span class="lineNum">     494 </span>            :                                                   Spectral::Swsh::Tags::Eth&gt;&gt;;
+<span class="lineNum">     495 </span>            : 
+<span class="lineNum">     496 </span><span class="lineNoCov">          0 :   static constexpr int spin =</span>
+<span class="lineNum">     497 </span>            :       Spectral::Swsh::Tags::Derivative&lt;ArgumentTag,
+<span class="lineNum">     498 </span>            :                                        Spectral::Swsh::Tags::EthEth&gt;::spin;
+<span class="lineNum">     499 </span>            :   template &lt;typename DyArgumentType, typename DyDyArgumentType,
+<span class="lineNum">     500 </span>            :             typename EthDyArgumentType&gt;
+<span class="lineNum">     501 </span><span class="lineNoCov">          0 :   static void apply(</span>
+<span class="lineNum">     502 </span>            :       const gsl::not_null&lt;Scalar&lt;SpinWeighted&lt;ComplexDataVector, spin&gt;&gt;*&gt;
+<span class="lineNum">     503 </span>            :           eth_eth_argument,
+<span class="lineNum">     504 </span>            :       const Scalar&lt;SpinWeighted&lt;ComplexDataVector, 0&gt;&gt;&amp; one_minus_y,
+<span class="lineNum">     505 </span>            :       const Scalar&lt;SpinWeighted&lt;ComplexDataVector, 1&gt;&gt;&amp; eth_r_divided_by_r,
+<span class="lineNum">     506 </span>            :       const Scalar&lt;SpinWeighted&lt;ComplexDataVector, 2&gt;&gt;&amp; eth_eth_r_divided_by_r,
+<span class="lineNum">     507 </span>            :       const DyArgumentType&amp; dy_argument, const DyDyArgumentType&amp; dy_dy_argument,
+<span class="lineNum">     508 </span>            :       const EthDyArgumentType&amp; eth_dy_argument) {
+<span class="lineNum">     509 </span>            :     get(*eth_eth_argument) -=
+<span class="lineNum">     510 </span>            :         square(get(eth_r_divided_by_r)) *
+<span class="lineNum">     511 </span>            :             (square(get(one_minus_y)) *
+<span class="lineNum">     512 </span>            :              SpinWeighted&lt;DyDyArgumentType, spin - 2&gt;{dy_dy_argument}) +
+<span class="lineNum">     513 </span>            :         get(one_minus_y) *
+<span class="lineNum">     514 </span>            :             (2.0 * get(eth_r_divided_by_r) *
+<span class="lineNum">     515 </span>            :                  SpinWeighted&lt;EthDyArgumentType, spin - 1&gt;{eth_dy_argument} +
+<span class="lineNum">     516 </span>            :              get(eth_eth_r_divided_by_r) *
+<span class="lineNum">     517 </span>            :                  SpinWeighted&lt;DyArgumentType, spin - 2&gt;{dy_argument});
+<span class="lineNum">     518 </span>            :   }
+<span class="lineNum">     519 </span>            : };
+<span class="lineNum">     520 </span>            : 
+<span class="lineNum">     521 </span>            : /*!
+<span class="lineNum">     522 </span>            :  * \brief Specialization for the spin-weighted derivative \f$\bar{\eth}
+<span class="lineNum">     523 </span>            :  * \bar{\eth}\f$.
+<span class="lineNum">     524 </span>            :  *
+<span class="lineNum">     525 </span>            :  * \details The implemented equation is:
+<span class="lineNum">     526 </span>            :  *
+<span class="lineNum">     527 </span>            :  * \f[
+<span class="lineNum">     528 </span>            :  * \bar{\eth} \bar{\eth} F = \bar{\eth}^\prime \bar{\eth}^\prime F
+<span class="lineNum">     529 </span>            :  * - (1 - y)^2 \frac{(\bar{\eth} R)^2}{R^2} \partial_y^2 F
+<span class="lineNum">     530 </span>            :  * - (1 - y) \left( 2 \frac{\bar{\eth} R}{R} \bar{\eth} \partial_y F
+<span class="lineNum">     531 </span>            :  * + \frac{\bar{\eth} \bar{\eth} R}{R} \partial_y F\right),
+<span class="lineNum">     532 </span>            :  * \f]
+<span class="lineNum">     533 </span>            :  *
+<span class="lineNum">     534 </span>            :  * where \f$\bar{\eth} \bar{\eth}\f$ is the derivative at constant Bondi radius
+<span class="lineNum">     535 </span>            :  * \f$r\f$ and \f$\bar{\eth}^\prime \bar{\eth}^\prime\f$ is the derivative at
+<span class="lineNum">     536 </span>            :  * constant numerical radius \f$y\f$.
+<span class="lineNum">     537 </span>            :  */
+<span class="lineNum">     538 </span>            : template &lt;typename ArgumentTag&gt;
+<span class="lineNum">     539 </span>            : struct ApplySwshJacobianInplace&lt;Spectral::Swsh::Tags::Derivative&lt;
+<span class="lineNum">     540 </span><span class="lineCov">          1 :     ArgumentTag, Spectral::Swsh::Tags::EthbarEthbar&gt;&gt; {</span>
+<span class="lineNum">     541 </span><span class="lineNoCov">          0 :   using pre_swsh_derivative_tags = tmpl::list&lt;&gt;;</span>
+<span class="lineNum">     542 </span><span class="lineNoCov">          0 :   using swsh_derivative_tags = tmpl::list&lt;&gt;;</span>
+<span class="lineNum">     543 </span><span class="lineNoCov">          0 :   using integration_independent_tags =</span>
+<span class="lineNum">     544 </span>            :       tmpl::list&lt;Tags::OneMinusY, Tags::EthRDividedByR,
+<span class="lineNum">     545 </span>            :                  Tags::EthEthRDividedByR&gt;;
+<span class="lineNum">     546 </span>            : 
+<span class="lineNum">     547 </span><span class="lineNoCov">          0 :   using return_tags = tmpl::list&lt;Spectral::Swsh::Tags::Derivative&lt;</span>
+<span class="lineNum">     548 </span>            :       ArgumentTag, Spectral::Swsh::Tags::EthbarEthbar&gt;&gt;;
+<span class="lineNum">     549 </span><span class="lineNoCov">          0 :   using argument_tags = tmpl::append&lt;integration_independent_tags&gt;;</span>
+<span class="lineNum">     550 </span><span class="lineNoCov">          0 :   using on_demand_argument_tags =</span>
+<span class="lineNum">     551 </span>            :       tmpl::list&lt;Tags::Dy&lt;ArgumentTag&gt;, Tags::Dy&lt;Tags::Dy&lt;ArgumentTag&gt;&gt;,
+<span class="lineNum">     552 </span>            :                  Spectral::Swsh::Tags::Derivative&lt;
+<span class="lineNum">     553 </span>            :                      Tags::Dy&lt;ArgumentTag&gt;, Spectral::Swsh::Tags::Ethbar&gt;&gt;;
+<span class="lineNum">     554 </span>            : 
+<span class="lineNum">     555 </span><span class="lineNoCov">          0 :   static constexpr int spin = Spectral::Swsh::Tags::Derivative&lt;</span>
+<span class="lineNum">     556 </span>            :       ArgumentTag, Spectral::Swsh::Tags::EthbarEthbar&gt;::spin;
+<span class="lineNum">     557 </span>            :   template &lt;typename DyArgumentType, typename DyDyArgumentType,
+<span class="lineNum">     558 </span>            :             typename EthbarDyArgumentType&gt;
+<span class="lineNum">     559 </span><span class="lineNoCov">          0 :   static void apply(</span>
+<span class="lineNum">     560 </span>            :       const gsl::not_null&lt;Scalar&lt;SpinWeighted&lt;ComplexDataVector, spin&gt;&gt;*&gt;
+<span class="lineNum">     561 </span>            :           ethbar_ethbar_argument,
+<span class="lineNum">     562 </span>            :       const Scalar&lt;SpinWeighted&lt;ComplexDataVector, 0&gt;&gt;&amp; one_minus_y,
+<span class="lineNum">     563 </span>            :       const Scalar&lt;SpinWeighted&lt;ComplexDataVector, 1&gt;&gt;&amp; eth_r_divided_by_r,
+<span class="lineNum">     564 </span>            :       const Scalar&lt;SpinWeighted&lt;ComplexDataVector, 2&gt;&gt;&amp; eth_eth_r_divided_by_r,
+<span class="lineNum">     565 </span>            :       const DyArgumentType&amp; dy_argument, const DyDyArgumentType&amp; dy_dy_argument,
+<span class="lineNum">     566 </span>            :       const EthbarDyArgumentType&amp; ethbar_dy_argument) {
+<span class="lineNum">     567 </span>            :     get(*ethbar_ethbar_argument) -=
+<span class="lineNum">     568 </span>            :         square(conj(get(eth_r_divided_by_r))) *
+<span class="lineNum">     569 </span>            :             (square(get(one_minus_y)) *
+<span class="lineNum">     570 </span>            :              SpinWeighted&lt;DyDyArgumentType, spin + 2&gt;{dy_dy_argument}) +
+<span class="lineNum">     571 </span>            :         get(one_minus_y) *
+<span class="lineNum">     572 </span>            :             (2.0 * conj(get(eth_r_divided_by_r)) *
+<span class="lineNum">     573 </span>            :                  SpinWeighted&lt;EthbarDyArgumentType, spin + 1&gt;{
+<span class="lineNum">     574 </span>            :                      ethbar_dy_argument} +
+<span class="lineNum">     575 </span>            :              conj(get(eth_eth_r_divided_by_r)) *
+<span class="lineNum">     576 </span>            :                  SpinWeighted&lt;DyArgumentType, spin + 2&gt;{dy_argument});
+<span class="lineNum">     577 </span>            :   }
+<span class="lineNum">     578 </span>            : };
+<span class="lineNum">     579 </span>            : 
+<span class="lineNum">     580 </span>            : namespace detail {
+<span class="lineNum">     581 </span>            : // A helper to forward to the `ApplySwshJacobianInplace` mutators that takes
+<span class="lineNum">     582 </span>            : // advantage of the `OnDemandInputsForSwshJacobian`, which computes blaze
+<span class="lineNum">     583 </span>            : // template expressions for those quantities for which it is anticipated to be
+<span class="lineNum">     584 </span>            : // sufficiently cheap to repeatedly compute that it is worth saving the cost of
+<span class="lineNum">     585 </span>            : // additional storage (e.g. conjugates and derivatives for which the product
+<span class="lineNum">     586 </span>            : // rule applies)
+<span class="lineNum">     587 </span>            : template &lt;typename DerivativeTag, typename DataBoxTagList,
+<span class="lineNum">     588 </span>            :           typename... OnDemandTags&gt;
+<span class="lineNum">     589 </span>            : void apply_swsh_jacobian_helper(
+<span class="lineNum">     590 </span>            :     const gsl::not_null&lt;db::DataBox&lt;DataBoxTagList&gt;*&gt; box,
+<span class="lineNum">     591 </span>            :     tmpl::list&lt;OnDemandTags...&gt; /*meta*/) noexcept {
+<span class="lineNum">     592 </span>            :   db::mutate_apply&lt;ApplySwshJacobianInplace&lt;DerivativeTag&gt;&gt;(
+<span class="lineNum">     593 </span>            :       box, OnDemandInputsForSwshJacobian&lt;OnDemandTags&gt;{}(*box)...);
+<span class="lineNum">     594 </span>            : }
+<span class="lineNum">     595 </span>            : }  // namespace detail
+<span class="lineNum">     596 </span>            : 
+<span class="lineNum">     597 </span>            : /*!
+<span class="lineNum">     598 </span>            :  * \brief This routine evaluates the set of inputs to the CCE integrand for
+<span class="lineNum">     599 </span>            :  * `BondiValueTag` which are spin-weighted angular derivatives.
+<span class="lineNum">     600 </span>            : 
+<span class="lineNum">     601 </span>            :  * \details This function is called on the \ref DataBoxGroup holding the
+<span class="lineNum">     602 </span>            :  * relevant CCE data during each hypersurface integration step, after evaluating
+<span class="lineNum">     603 </span>            :  * `mutate_all_pre_swsh_derivatives_for_tag()` with template argument
+<span class="lineNum">     604 </span>            :  * `BondiValueTag` and before evaluating `ComputeBondiIntegrand&lt;BondiValueTag&gt;`.
+<span class="lineNum">     605 </span>            :  * Provided a \ref DataBoxGroup with the appropriate tags (including
+<span class="lineNum">     606 </span>            :  * `Cce::all_pre_swsh_derivative_tags`, `Cce::all_swsh_derivative_tags`,
+<span class="lineNum">     607 </span>            :  * `Cce::all_transform_buffer_tags`,  `Cce::pre_computation_tags`, and
+<span class="lineNum">     608 </span>            :  * `Spectral::Swsh::Tags::LMax`), this function will apply all of the necessary
+<span class="lineNum">     609 </span>            :  * mutations to update
+<span class="lineNum">     610 </span>            :  * `Cce::single_swsh_derivative_tags_to_compute_for&lt;BondiValueTag&gt;` and
+<span class="lineNum">     611 </span>            :  * `Cce::second_swsh_derivative_tags_to_compute_for&lt;BondiValueTag&gt;` to their
+<span class="lineNum">     612 </span>            :  * correct values for the current values of the remaining (input) tags.
+<span class="lineNum">     613 </span>            :  */
+<span class="lineNum">     614 </span>            : template &lt;typename BondiValueTag, typename DataBoxTagList&gt;
+<span class="lineNum">     615 </span><span class="lineCov">          1 : void mutate_all_swsh_derivatives_for_tag(</span>
+<span class="lineNum">     616 </span>            :     const gsl::not_null&lt;db::DataBox&lt;DataBoxTagList&gt;*&gt; box) noexcept {
+<span class="lineNum">     617 </span>            :   // The collection of spin-weighted derivatives cannot be applied as individual
+<span class="lineNum">     618 </span>            :   // compute items, because it is better to aggregate similar spins and dispatch
+<span class="lineNum">     619 </span>            :   // to libsharp in groups. So, we supply a bulk mutate operation which takes in
+<span class="lineNum">     620 </span>            :   // multiple Variables from the presumed DataBox, and alters their values as
+<span class="lineNum">     621 </span>            :   // necessary.
+<span class="lineNum">     622 </span>            :   db::mutate_apply&lt;Spectral::Swsh::AngularDerivatives&lt;
+<span class="lineNum">     623 </span>            :       single_swsh_derivative_tags_to_compute_for_t&lt;BondiValueTag&gt;&gt;&gt;(box);
+<span class="lineNum">     624 </span>            :   tmpl::for_each&lt;single_swsh_derivative_tags_to_compute_for_t&lt;BondiValueTag&gt;&gt;(
+<span class="lineNum">     625 </span>            :       [&amp;box](auto derivative_tag_v) noexcept {
+<span class="lineNum">     626 </span>            :         using derivative_tag = typename decltype(derivative_tag_v)::type;
+<span class="lineNum">     627 </span>            :         detail::apply_swsh_jacobian_helper&lt;derivative_tag&gt;(
+<span class="lineNum">     628 </span>            :             box, typename ApplySwshJacobianInplace&lt;
+<span class="lineNum">     629 </span>            :                      derivative_tag&gt;::on_demand_argument_tags{});
+<span class="lineNum">     630 </span>            :       });
+<span class="lineNum">     631 </span>            : 
+<span class="lineNum">     632 </span>            :   db::mutate_apply&lt;Spectral::Swsh::AngularDerivatives&lt;
+<span class="lineNum">     633 </span>            :       second_swsh_derivative_tags_to_compute_for_t&lt;BondiValueTag&gt;&gt;&gt;(box);
+<span class="lineNum">     634 </span>            :   tmpl::for_each&lt;second_swsh_derivative_tags_to_compute_for_t&lt;BondiValueTag&gt;&gt;(
+<span class="lineNum">     635 </span>            :       [&amp;box](auto derivative_tag_v) noexcept {
+<span class="lineNum">     636 </span>            :         using derivative_tag = typename decltype(derivative_tag_v)::type;
+<span class="lineNum">     637 </span>            :         detail::apply_swsh_jacobian_helper&lt;derivative_tag&gt;(
+<span class="lineNum">     638 </span>            :             box, typename ApplySwshJacobianInplace&lt;
+<span class="lineNum">     639 </span>            :                      derivative_tag&gt;::on_demand_argument_tags{});
+<span class="lineNum">     640 </span>            :       });
+<span class="lineNum">     641 </span>            : }
+<span class="lineNum">     642 </span>            : }  // namespace Cce
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../../../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.13</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

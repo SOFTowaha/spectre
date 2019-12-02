@@ -1,0 +1,153 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - 5912ac2e49a80e6a27b3707c9a1e6ce5248b1b2a - Utilities/VectorAlgebra.hpp</title>
+  <link rel="stylesheet" type="text/css" href="../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title"> SpECTRE Documentation Coverage Report</td></tr>
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../index.html">top level</a> - <a href="index.html">Utilities</a> - VectorAlgebra.hpp</td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+             <td class="headerItem">Commit:</td>
+             <td class="headerValue"><a target="_blank" href="https://github.com/sxs-collaboration/spectre/commit/5912ac2e49a80e6a27b3707c9a1e6ce5248b1b2a">5912ac2e49a80e6a27b3707c9a1e6ce5248b1b2a</a></td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">4</td>
+            <td class="headerCovTableEntry">5</td>
+            <td class="headerCovTableEntryMed">80.0 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2019-12-02 22:01:08</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td class="headerItem">Legend:</td>
+            <td class="headerValueLeg">            Lines:
+            <span class="coverLegendCov">hit</span>
+            <span class="coverLegendNoCov">not hit</span>
+</td>
+            <td></td>
+          </tr>
+          <tr><td><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">          Line data    Source code</pre>
+<pre class="source">
+<span class="lineNum">       1 </span><span class="lineNoCov">          0 : // Distributed under the MIT License.</span>
+<span class="lineNum">       2 </span>            : // See LICENSE.txt for details.
+<span class="lineNum">       3 </span>            : 
+<span class="lineNum">       4 </span>            : #pragma once
+<span class="lineNum">       5 </span>            : 
+<span class="lineNum">       6 </span>            : #include &quot;DataStructures/TempBuffer.hpp&quot;
+<span class="lineNum">       7 </span>            : #include &quot;DataStructures/VectorImpl.hpp&quot;
+<span class="lineNum">       8 </span>            : #include &quot;Utilities/Gsl.hpp&quot;
+<span class="lineNum">       9 </span>            : 
+<span class="lineNum">      10 </span>            : // @{
+<span class="lineNum">      11 </span>            : /// \ingroup UtilitiesGroup
+<span class="lineNum">      12 </span>            : /// \brief Computes the outer product between two vectors.
+<span class="lineNum">      13 </span>            : /// \details For vectors \f$A\f$ and \f$B\f$, the resulting outer product is
+<span class="lineNum">      14 </span>            : /// \f$\{A_1 B_1,\, A_2 B_1\, \dots\, A_N B_1,\, A_1 B_2\, \dots\, A_N B_M\}\f$.
+<span class="lineNum">      15 </span>            : /// This is useful for generating separable volume data from its constituent
+<span class="lineNum">      16 </span>            : /// inputs.
+<span class="lineNum">      17 </span>            : template &lt;typename LhsVectorType, typename RhsVectorType,
+<span class="lineNum">      18 </span>            :           typename ResultVectorType =
+<span class="lineNum">      19 </span>            :               typename blaze::MultTrait&lt;LhsVectorType, RhsVectorType&gt;::Type&gt;
+<span class="lineNum">      20 </span><span class="lineCov">          1 : void outer_product(const gsl::not_null&lt;ResultVectorType*&gt; result,</span>
+<span class="lineNum">      21 </span>            :                    const LhsVectorType&amp; lhs,
+<span class="lineNum">      22 </span>            :                    const RhsVectorType&amp; rhs) noexcept {
+<span class="lineNum">      23 </span>            :   result-&gt;destructive_resize(lhs.size() * rhs.size());
+<span class="lineNum">      24 </span>            :   for (size_t i = 0; i &lt; rhs.size(); ++i) {
+<span class="lineNum">      25 </span>            :     ResultVectorType view{result-&gt;data() + i * lhs.size(), lhs.size()};
+<span class="lineNum">      26 </span>            :     view = rhs[i] * lhs;
+<span class="lineNum">      27 </span>            :   }
+<span class="lineNum">      28 </span>            : }
+<span class="lineNum">      29 </span>            : 
+<span class="lineNum">      30 </span>            : template &lt;typename LhsVectorType, typename RhsVectorType,
+<span class="lineNum">      31 </span>            :           typename ResultVectorType =
+<span class="lineNum">      32 </span>            :               typename blaze::MultTrait&lt;LhsVectorType, RhsVectorType&gt;::Type&gt;
+<span class="lineNum">      33 </span><span class="lineCov">          1 : ResultVectorType outer_product(const LhsVectorType&amp; lhs,</span>
+<span class="lineNum">      34 </span>            :                                const RhsVectorType&amp; rhs) noexcept {
+<span class="lineNum">      35 </span>            :   auto result = ResultVectorType{lhs.size() * rhs.size()};
+<span class="lineNum">      36 </span>            :   outer_product(make_not_null(&amp;result), lhs, rhs);
+<span class="lineNum">      37 </span>            :   return result;
+<span class="lineNum">      38 </span>            : }
+<span class="lineNum">      39 </span>            : // @}
+<span class="lineNum">      40 </span>            : 
+<span class="lineNum">      41 </span>            : // @{
+<span class="lineNum">      42 </span>            : /// \ingroup UtilitiesGroup
+<span class="lineNum">      43 </span>            : /// \brief Creates or fills a vector with data from `to_repeat` copied
+<span class="lineNum">      44 </span>            : /// `times_to_repeat`  times in sequence.
+<span class="lineNum">      45 </span>            : ///
+<span class="lineNum">      46 </span>            : /// \details This can be useful for generating data that consists of the same
+<span class="lineNum">      47 </span>            : /// block of values duplicated a number of times. For instance, this can be used
+<span class="lineNum">      48 </span>            : /// to create a vector representing three-dimensional volume data from a
+<span class="lineNum">      49 </span>            : /// corresponding two-dimensional vector data, if the two-dimensional data
+<span class="lineNum">      50 </span>            : /// corresponds to the two fastest-varying directions of the desired
+<span class="lineNum">      51 </span>            : /// three-dimensional representation. The result would then be uniform in the
+<span class="lineNum">      52 </span>            : /// slowest-varying direction of the three dimensional grid.
+<span class="lineNum">      53 </span>            : template &lt;typename VectorType&gt;
+<span class="lineNum">      54 </span><span class="lineCov">          1 : void fill_with_n_copies(const gsl::not_null&lt;VectorType*&gt; result,</span>
+<span class="lineNum">      55 </span>            :                         const VectorType&amp; to_copy,
+<span class="lineNum">      56 </span>            :                         const size_t times_to_copy) noexcept {
+<span class="lineNum">      57 </span>            :   result-&gt;destructive_resize(to_copy.size() * times_to_copy);
+<span class="lineNum">      58 </span>            :   for (size_t i = 0; i &lt; times_to_copy; ++i) {
+<span class="lineNum">      59 </span>            :     VectorType view{result-&gt;data() + i * to_copy.size(), to_copy.size()};
+<span class="lineNum">      60 </span>            :     view = to_copy;
+<span class="lineNum">      61 </span>            :   }
+<span class="lineNum">      62 </span>            : }
+<span class="lineNum">      63 </span>            : 
+<span class="lineNum">      64 </span>            : // clang-tidy incorrectly believes this to be a forward-declaration
+<span class="lineNum">      65 </span>            : template &lt;typename VectorType&gt;
+<span class="lineNum">      66 </span><span class="lineCov">          1 : VectorType create_vector_of_n_copies(</span>
+<span class="lineNum">      67 </span>            :     const VectorType&amp; to_copy,
+<span class="lineNum">      68 </span>            :     const size_t times_to_copy) noexcept {  // NOLINT
+<span class="lineNum">      69 </span>            :   auto result = VectorType{to_copy.size() * times_to_copy};
+<span class="lineNum">      70 </span>            :   fill_with_n_copies(make_not_null(&amp;result), to_copy, times_to_copy);
+<span class="lineNum">      71 </span>            :   return result;
+<span class="lineNum">      72 </span>            : }
+<span class="lineNum">      73 </span>            : // @}
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.13</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

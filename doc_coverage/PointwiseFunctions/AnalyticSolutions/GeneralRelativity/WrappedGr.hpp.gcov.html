@@ -1,0 +1,237 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - 5912ac2e49a80e6a27b3707c9a1e6ce5248b1b2a - PointwiseFunctions/AnalyticSolutions/GeneralRelativity/WrappedGr.hpp</title>
+  <link rel="stylesheet" type="text/css" href="../../../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title"> SpECTRE Documentation Coverage Report</td></tr>
+    <tr><td class="ruler"><img src="../../../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../../../index.html">top level</a> - <a href="index.html">PointwiseFunctions/AnalyticSolutions/GeneralRelativity</a> - WrappedGr.hpp</td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+             <td class="headerItem">Commit:</td>
+             <td class="headerValue"><a target="_blank" href="https://github.com/sxs-collaboration/spectre/commit/5912ac2e49a80e6a27b3707c9a1e6ce5248b1b2a">5912ac2e49a80e6a27b3707c9a1e6ce5248b1b2a</a></td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">1</td>
+            <td class="headerCovTableEntry">28</td>
+            <td class="headerCovTableEntryLo">3.6 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2019-12-02 22:01:08</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td class="headerItem">Legend:</td>
+            <td class="headerValueLeg">            Lines:
+            <span class="coverLegendCov">hit</span>
+            <span class="coverLegendNoCov">not hit</span>
+</td>
+            <td></td>
+          </tr>
+          <tr><td><img src="../../../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../../../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">          Line data    Source code</pre>
+<pre class="source">
+<span class="lineNum">       1 </span><span class="lineNoCov">          0 : // Distributed under the MIT License.</span>
+<span class="lineNum">       2 </span>            : // See LICENSE.txt for details.
+<span class="lineNum">       3 </span>            : 
+<span class="lineNum">       4 </span>            : #pragma once
+<span class="lineNum">       5 </span>            : 
+<span class="lineNum">       6 </span>            : #include &lt;boost/preprocessor/list/for_each.hpp&gt;
+<span class="lineNum">       7 </span>            : #include &lt;boost/preprocessor/tuple/to_list.hpp&gt;
+<span class="lineNum">       8 </span>            : #include &lt;cstddef&gt;
+<span class="lineNum">       9 </span>            : 
+<span class="lineNum">      10 </span>            : #include &quot;DataStructures/DataBox/Prefixes.hpp&quot;
+<span class="lineNum">      11 </span>            : #include &quot;DataStructures/Tensor/Tensor.hpp&quot;
+<span class="lineNum">      12 </span>            : #include &quot;Evolution/Systems/GeneralizedHarmonic/Tags.hpp&quot;
+<span class="lineNum">      13 </span>            : #include &quot;NumericalAlgorithms/LinearOperators/PartialDerivatives.hpp&quot;  // for tags
+<span class="lineNum">      14 </span>            : #include &quot;Options/Options.hpp&quot;
+<span class="lineNum">      15 </span>            : #include &quot;PointwiseFunctions/GeneralRelativity/Tags.hpp&quot;
+<span class="lineNum">      16 </span>            : #include &quot;Utilities/GenerateInstantiations.hpp&quot;
+<span class="lineNum">      17 </span>            : #include &quot;Utilities/TMPL.hpp&quot;
+<span class="lineNum">      18 </span>            : #include &quot;Utilities/TaggedTuple.hpp&quot;
+<span class="lineNum">      19 </span>            : 
+<span class="lineNum">      20 </span>            : // IWYU pragma: no_forward_declare Tags::deriv
+<span class="lineNum">      21 </span>            : 
+<span class="lineNum">      22 </span>            : /// \cond
+<span class="lineNum">      23 </span>            : class DataVector;
+<span class="lineNum">      24 </span>            : namespace PUP {
+<span class="lineNum">      25 </span>            : class er;
+<span class="lineNum">      26 </span>            : }  // namespace PUP
+<span class="lineNum">      27 </span>            : /// \endcond
+<span class="lineNum">      28 </span>            : 
+<span class="lineNum">      29 </span>            : namespace GeneralizedHarmonic {
+<span class="lineNum">      30 </span><span class="lineNoCov">          0 : namespace Solutions {</span>
+<span class="lineNum">      31 </span>            : 
+<span class="lineNum">      32 </span>            : /*!
+<span class="lineNum">      33 </span>            :  * \brief A wrapper for general-relativity analytic solutions that loads
+<span class="lineNum">      34 </span>            :  * the analytic solution and then adds a function that returns
+<span class="lineNum">      35 </span>            :  * any combination of the generalized-harmonic evolution variables,
+<span class="lineNum">      36 </span>            :  * specifically `gr::Tags::SpacetimeMetric`, `GeneralizedHarmonic::Tags::Pi`,
+<span class="lineNum">      37 </span>            :  * and `GeneralizedHarmonic::Tags::Phi`
+<span class="lineNum">      38 </span>            :  */
+<span class="lineNum">      39 </span>            : template &lt;typename SolutionType&gt;
+<span class="lineNum">      40 </span><span class="lineCov">          1 : class WrappedGr : public SolutionType {</span>
+<span class="lineNum">      41 </span>            :  public:
+<span class="lineNum">      42 </span>            :   using SolutionType::SolutionType;
+<span class="lineNum">      43 </span>            : 
+<span class="lineNum">      44 </span><span class="lineNoCov">          0 :   static constexpr size_t volume_dim = SolutionType::volume_dim;</span>
+<span class="lineNum">      45 </span><span class="lineNoCov">          0 :   using options = typename SolutionType::options;</span>
+<span class="lineNum">      46 </span><span class="lineNoCov">          0 :   static constexpr OptionString help = SolutionType::help;</span>
+<span class="lineNum">      47 </span><span class="lineNoCov">          0 :   static std::string name() noexcept { return option_name&lt;SolutionType&gt;(); }</span>
+<span class="lineNum">      48 </span>            : 
+<span class="lineNum">      49 </span><span class="lineNoCov">          0 :   using DerivLapse = ::Tags::deriv&lt;gr::Tags::Lapse&lt;DataVector&gt;,</span>
+<span class="lineNum">      50 </span>            :                                    tmpl::size_t&lt;volume_dim&gt;, Frame::Inertial&gt;;
+<span class="lineNum">      51 </span><span class="lineNoCov">          0 :   using DerivShift =</span>
+<span class="lineNum">      52 </span>            :       ::Tags::deriv&lt;gr::Tags::Shift&lt;volume_dim, Frame::Inertial, DataVector&gt;,
+<span class="lineNum">      53 </span>            :                     tmpl::size_t&lt;volume_dim&gt;, Frame::Inertial&gt;;
+<span class="lineNum">      54 </span><span class="lineNoCov">          0 :   using DerivSpatialMetric = ::Tags::deriv&lt;</span>
+<span class="lineNum">      55 </span>            :       gr::Tags::SpatialMetric&lt;volume_dim, Frame::Inertial, DataVector&gt;,
+<span class="lineNum">      56 </span>            :       tmpl::size_t&lt;volume_dim&gt;, Frame::Inertial&gt;;
+<span class="lineNum">      57 </span><span class="lineNoCov">          0 :   using TimeDerivLapse = ::Tags::dt&lt;gr::Tags::Lapse&lt;DataVector&gt;&gt;;</span>
+<span class="lineNum">      58 </span><span class="lineNoCov">          0 :   using TimeDerivShift =</span>
+<span class="lineNum">      59 </span>            :       ::Tags::dt&lt;gr::Tags::Shift&lt;volume_dim, Frame::Inertial, DataVector&gt;&gt;;
+<span class="lineNum">      60 </span><span class="lineNoCov">          0 :   using TimeDerivSpatialMetric = ::Tags::dt&lt;</span>
+<span class="lineNum">      61 </span>            :       gr::Tags::SpatialMetric&lt;volume_dim, Frame::Inertial, DataVector&gt;&gt;;
+<span class="lineNum">      62 </span>            : 
+<span class="lineNum">      63 </span><span class="lineNoCov">          0 :   using IntermediateVars = tuples::tagged_tuple_from_typelist&lt;</span>
+<span class="lineNum">      64 </span>            :       typename SolutionType::template tags&lt;DataVector&gt;&gt;;
+<span class="lineNum">      65 </span>            : 
+<span class="lineNum">      66 </span>            :   template &lt;typename... Tags&gt;
+<span class="lineNum">      67 </span><span class="lineNoCov">          0 :   tuples::TaggedTuple&lt;Tags...&gt; variables(</span>
+<span class="lineNum">      68 </span>            :       const tnsr::I&lt;DataVector, volume_dim&gt;&amp; x, double t,
+<span class="lineNum">      69 </span>            :       tmpl::list&lt;Tags...&gt; /*meta*/) const noexcept {
+<span class="lineNum">      70 </span>            :     // Get the underlying solution's variables using the solution's tags list,
+<span class="lineNum">      71 </span>            :     // store in IntermediateVariables
+<span class="lineNum">      72 </span>            :     const IntermediateVars&amp; intermediate_vars = SolutionType::variables(
+<span class="lineNum">      73 </span>            :         x, t, typename SolutionType::template tags&lt;DataVector&gt;{});
+<span class="lineNum">      74 </span>            : 
+<span class="lineNum">      75 </span>            :     return {
+<span class="lineNum">      76 </span>            :         get&lt;Tags&gt;(variables(x, t, tmpl::list&lt;Tags&gt;{}, intermediate_vars))...};
+<span class="lineNum">      77 </span>            :   }
+<span class="lineNum">      78 </span>            : 
+<span class="lineNum">      79 </span>            :   template &lt;typename Tag&gt;
+<span class="lineNum">      80 </span><span class="lineNoCov">          0 :   tuples::TaggedTuple&lt;Tag&gt; variables(const tnsr::I&lt;DataVector, volume_dim&gt;&amp; x,</span>
+<span class="lineNum">      81 </span>            :                                      double t, tmpl::list&lt;Tag&gt; /*meta*/) const
+<span class="lineNum">      82 </span>            :       noexcept {
+<span class="lineNum">      83 </span>            :     const IntermediateVars&amp; intermediate_vars = SolutionType::variables(
+<span class="lineNum">      84 </span>            :         x, t, typename SolutionType::template tags&lt;DataVector&gt;{});
+<span class="lineNum">      85 </span>            :     return {get&lt;Tag&gt;(variables(x, t, tmpl::list&lt;Tag&gt;{}, intermediate_vars))};
+<span class="lineNum">      86 </span>            :   }
+<span class="lineNum">      87 </span>            : 
+<span class="lineNum">      88 </span>            :   // clang-tidy: google-runtime-references
+<span class="lineNum">      89 </span><span class="lineNoCov">          0 :   void pup(PUP::er&amp; p) noexcept { SolutionType::pup(p); }  // NOLINT</span>
+<span class="lineNum">      90 </span>            : 
+<span class="lineNum">      91 </span>            :  private:
+<span class="lineNum">      92 </span>            :   // Preprocessor logic to avoid declaring variables() functions for
+<span class="lineNum">      93 </span>            :   // tags other than the three the wrapper adds (i.e., other than
+<span class="lineNum">      94 </span>            :   // gr::Tags::SpacetimeMetric, GeneralizedHarmonic::Tags::Pi, and
+<span class="lineNum">      95 </span>            :   // GeneralizedHarmonic:Tags::Phi)
+<span class="lineNum">      96 </span><span class="lineNoCov">          0 :   using TagShift = gr::Tags::Shift&lt;volume_dim, Frame::Inertial, DataVector&gt;;</span>
+<span class="lineNum">      97 </span><span class="lineNoCov">          0 :   using TagSpatialMetric =</span>
+<span class="lineNum">      98 </span>            :       gr::Tags::SpatialMetric&lt;volume_dim, Frame::Inertial, DataVector&gt;;
+<span class="lineNum">      99 </span><span class="lineNoCov">          0 :   using TagInverseSpatialMetric =</span>
+<span class="lineNum">     100 </span>            :       gr::Tags::InverseSpatialMetric&lt;volume_dim, Frame::Inertial, DataVector&gt;;
+<span class="lineNum">     101 </span><span class="lineNoCov">          0 :   using TagExCurvature =</span>
+<span class="lineNum">     102 </span>            :       gr::Tags::ExtrinsicCurvature&lt;volume_dim, Frame::Inertial, DataVector&gt;;
+<span class="lineNum">     103 </span>            : 
+<span class="lineNum">     104 </span><span class="lineNoCov">          0 : #define FUNC_DECL(r, data, elem)                                            \</span>
+<span class="lineNum">     105 </span>            :   tuples::TaggedTuple&lt;elem&gt; variables(                                      \
+<span class="lineNum">     106 </span>            :       const tnsr::I&lt;DataVector, volume_dim&gt;&amp; /*x*/, double /*t*/,           \
+<span class="lineNum">     107 </span>            :       tmpl::list&lt;elem&gt; /*meta*/, const IntermediateVars&amp; intermediate_vars) \
+<span class="lineNum">     108 </span>            :       const noexcept;
+<span class="lineNum">     109 </span>            : 
+<span class="lineNum">     110 </span><span class="lineNoCov">          0 : #define MY_LIST                                                              \</span>
+<span class="lineNum">     111 </span>            :   BOOST_PP_TUPLE_TO_LIST(                                                    \
+<span class="lineNum">     112 </span>            :       (gr::Tags::Lapse&lt;DataVector&gt;, TimeDerivLapse, DerivLapse, TagShift,    \
+<span class="lineNum">     113 </span>            :        TimeDerivShift, DerivShift, TagSpatialMetric, TimeDerivSpatialMetric, \
+<span class="lineNum">     114 </span>            :        DerivSpatialMetric, TagInverseSpatialMetric, TagExCurvature,          \
+<span class="lineNum">     115 </span>            :        gr::Tags::SqrtDetSpatialMetric&lt;DataVector&gt;))
+<span class="lineNum">     116 </span>            : 
+<span class="lineNum">     117 </span>            :   BOOST_PP_LIST_FOR_EACH(FUNC_DECL, _, MY_LIST)
+<span class="lineNum">     118 </span>            : #undef MY_LIST
+<span class="lineNum">     119 </span>            : #undef FUNC_DECL
+<span class="lineNum">     120 </span>            : 
+<span class="lineNum">     121 </span>            :   tuples::TaggedTuple&lt;
+<span class="lineNum">     122 </span>            :       gr::Tags::SpacetimeMetric&lt;volume_dim, Frame::Inertial, DataVector&gt;&gt;
+<span class="lineNum">     123 </span><span class="lineNoCov">          0 :   variables(const tnsr::I&lt;DataVector, volume_dim&gt;&amp; /*x*/, double /*t*/,</span>
+<span class="lineNum">     124 </span>            :             tmpl::list&lt;gr::Tags::SpacetimeMetric&lt;volume_dim, Frame::Inertial,
+<span class="lineNum">     125 </span>            :                                                  DataVector&gt;&gt; /*meta*/,
+<span class="lineNum">     126 </span>            :             const IntermediateVars&amp; intermediate_vars) const noexcept;
+<span class="lineNum">     127 </span>            : 
+<span class="lineNum">     128 </span>            :   tuples::TaggedTuple&lt;
+<span class="lineNum">     129 </span>            :       GeneralizedHarmonic::Tags::Pi&lt;volume_dim, Frame::Inertial&gt;&gt;
+<span class="lineNum">     130 </span><span class="lineNoCov">          0 :   variables(const tnsr::I&lt;DataVector, volume_dim&gt;&amp; /*x*/, double /*t*/,</span>
+<span class="lineNum">     131 </span>            :             tmpl::list&lt;GeneralizedHarmonic::Tags::Pi&lt;volume_dim,
+<span class="lineNum">     132 </span>            :                                                      Frame::Inertial&gt;&gt; /*meta*/,
+<span class="lineNum">     133 </span>            :             const IntermediateVars&amp; intermediate_vars) const noexcept;
+<span class="lineNum">     134 </span>            : 
+<span class="lineNum">     135 </span>            :   tuples::TaggedTuple&lt;
+<span class="lineNum">     136 </span>            :       GeneralizedHarmonic::Tags::Phi&lt;volume_dim, Frame::Inertial&gt;&gt;
+<span class="lineNum">     137 </span><span class="lineNoCov">          0 :   variables(</span>
+<span class="lineNum">     138 </span>            :       const tnsr::I&lt;DataVector, volume_dim&gt;&amp; /*x*/, double /*t*/,
+<span class="lineNum">     139 </span>            :       tmpl::list&lt;
+<span class="lineNum">     140 </span>            :           GeneralizedHarmonic::Tags::Phi&lt;volume_dim, Frame::Inertial&gt;&gt; /*meta*/,
+<span class="lineNum">     141 </span>            :       const IntermediateVars&amp; intermediate_vars) const noexcept;
+<span class="lineNum">     142 </span>            : };
+<span class="lineNum">     143 </span>            : 
+<span class="lineNum">     144 </span>            : template &lt;typename SolutionType&gt;
+<span class="lineNum">     145 </span><span class="lineNoCov">          0 : inline constexpr bool operator==(const WrappedGr&lt;SolutionType&gt;&amp; lhs,</span>
+<span class="lineNum">     146 </span>            :                                  const WrappedGr&lt;SolutionType&gt;&amp; rhs) noexcept {
+<span class="lineNum">     147 </span>            :   return dynamic_cast&lt;const SolutionType&amp;&gt;(lhs) ==
+<span class="lineNum">     148 </span>            :          dynamic_cast&lt;const SolutionType&amp;&gt;(rhs);
+<span class="lineNum">     149 </span>            : }
+<span class="lineNum">     150 </span>            : 
+<span class="lineNum">     151 </span>            : template &lt;typename SolutionType&gt;
+<span class="lineNum">     152 </span><span class="lineNoCov">          0 : inline constexpr bool operator!=(const WrappedGr&lt;SolutionType&gt;&amp; lhs,</span>
+<span class="lineNum">     153 </span>            :                                  const WrappedGr&lt;SolutionType&gt;&amp; rhs) noexcept {
+<span class="lineNum">     154 </span>            :   return not(lhs == rhs);
+<span class="lineNum">     155 </span>            : }
+<span class="lineNum">     156 </span>            : }  // namespace Solutions
+<span class="lineNum">     157 </span>            : }  // namespace GeneralizedHarmonic
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../../../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.13</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

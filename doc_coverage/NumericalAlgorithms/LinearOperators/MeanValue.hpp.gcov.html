@@ -1,0 +1,179 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - 5912ac2e49a80e6a27b3707c9a1e6ce5248b1b2a - NumericalAlgorithms/LinearOperators/MeanValue.hpp</title>
+  <link rel="stylesheet" type="text/css" href="../../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title"> SpECTRE Documentation Coverage Report</td></tr>
+    <tr><td class="ruler"><img src="../../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../../index.html">top level</a> - <a href="index.html">NumericalAlgorithms/LinearOperators</a> - MeanValue.hpp</td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+             <td class="headerItem">Commit:</td>
+             <td class="headerValue"><a target="_blank" href="https://github.com/sxs-collaboration/spectre/commit/5912ac2e49a80e6a27b3707c9a1e6ce5248b1b2a">5912ac2e49a80e6a27b3707c9a1e6ce5248b1b2a</a></td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">7</td>
+            <td class="headerCovTableEntry">7</td>
+            <td class="headerCovTableEntryHi">100.0 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2019-12-02 22:01:08</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td class="headerItem">Legend:</td>
+            <td class="headerValueLeg">            Lines:
+            <span class="coverLegendCov">hit</span>
+            <span class="coverLegendNoCov">not hit</span>
+</td>
+            <td></td>
+          </tr>
+          <tr><td><img src="../../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">          Line data    Source code</pre>
+<pre class="source">
+<span class="lineNum">       1 </span><span class="lineCov">          1 : // Distributed under the MIT License.</span>
+<span class="lineNum">       2 </span>            : // See LICENSE.txt for details.
+<span class="lineNum">       3 </span>            : 
+<span class="lineNum">       4 </span>            : /// \file
+<span class="lineNum">       5 </span>            : /// Defines functions mean_value and mean_value_on_boundary.
+<span class="lineNum">       6 </span>            : 
+<span class="lineNum">       7 </span>            : #pragma once
+<span class="lineNum">       8 </span>            : 
+<span class="lineNum">       9 </span>            : #include &lt;cstddef&gt;
+<span class="lineNum">      10 </span>            : #include &lt;utility&gt;
+<span class="lineNum">      11 </span>            : 
+<span class="lineNum">      12 </span>            : #include &quot;Domain/Side.hpp&quot;
+<span class="lineNum">      13 </span>            : #include &quot;NumericalAlgorithms/LinearOperators/DefiniteIntegral.hpp&quot;
+<span class="lineNum">      14 </span>            : #include &quot;Utilities/ConstantExpressions.hpp&quot;
+<span class="lineNum">      15 </span>            : #include &quot;Utilities/Gsl.hpp&quot;
+<span class="lineNum">      16 </span>            : 
+<span class="lineNum">      17 </span>            : /// \cond
+<span class="lineNum">      18 </span>            : class DataVector;
+<span class="lineNum">      19 </span>            : template &lt;size_t&gt;
+<span class="lineNum">      20 </span>            : class Mesh;
+<span class="lineNum">      21 </span>            : /// \endcond
+<span class="lineNum">      22 </span>            : 
+<span class="lineNum">      23 </span>            : /*!
+<span class="lineNum">      24 </span>            :  * \ingroup NumericalAlgorithmsGroup
+<span class="lineNum">      25 </span>            :  * \brief Compute the mean value of a function over a manifold.
+<span class="lineNum">      26 </span>            :  *
+<span class="lineNum">      27 </span>            :  * Given a function \f$f\f$, compute its mean value \f$\bar{f}\f$ with respect
+<span class="lineNum">      28 </span>            :  * to the logical coordinates \f$\boldsymbol{\xi} = (\xi, \eta, \zeta)\f$. E.g.,
+<span class="lineNum">      29 </span>            :  * in 1 dimension, \f$\bar{f} = \int_{-1}^1 f d\xi \Big/ \int_{-1}^1 d\xi\f$.
+<span class="lineNum">      30 </span>            :  *
+<span class="lineNum">      31 </span>            :  * \note
+<span class="lineNum">      32 </span>            :  * The mean w.r.t. a different set of coordinates
+<span class="lineNum">      33 </span>            :  * \f$\boldsymbol{x} = \boldsymbol{x}(\boldsymbol{\xi})\f$ can't be directly
+<span class="lineNum">      34 </span>            :  * computed using this function. Before calling `mean_value`, \f$f\f$ must be
+<span class="lineNum">      35 </span>            :  * pre-multiplied by the Jacobian determinant
+<span class="lineNum">      36 </span>            :  * \f$J = \det d\boldsymbol{x}/d\boldsymbol{\xi}\f$ of the mapping
+<span class="lineNum">      37 </span>            :  * \f$\boldsymbol{x}(\boldsymbol{\xi})\f$. Additionally, the output of
+<span class="lineNum">      38 </span>            :  * `mean_value` must be multiplied by a factor
+<span class="lineNum">      39 </span>            :  * \f$2^{\text{d}} / \int J d^{\text{d}}\xi\f$ (in \f$d\f$ dimensions), to
+<span class="lineNum">      40 </span>            :  * account for the different volume of the manifold in the \f$\boldsymbol{x}\f$
+<span class="lineNum">      41 </span>            :  * coordinates.
+<span class="lineNum">      42 </span>            :  *
+<span class="lineNum">      43 </span>            :  * \param f the function to average.
+<span class="lineNum">      44 </span>            :  * \param mesh the Mesh defining the grid points on the manifold.
+<span class="lineNum">      45 </span>            :  */
+<span class="lineNum">      46 </span>            : template &lt;size_t Dim&gt;
+<span class="lineNum">      47 </span><span class="lineCov">          1 : double mean_value(const DataVector&amp; f, const Mesh&lt;Dim&gt;&amp; mesh) noexcept {</span>
+<span class="lineNum">      48 </span>            :   return definite_integral(f, mesh) / two_to_the(Dim);
+<span class="lineNum">      49 </span>            : }
+<span class="lineNum">      50 </span>            : 
+<span class="lineNum">      51 </span>            : // @{
+<span class="lineNum">      52 </span>            : /*!
+<span class="lineNum">      53 </span>            :  * \ingroup NumericalAlgorithmsGroup
+<span class="lineNum">      54 </span>            :  * \brief Compute the mean value of a function over a boundary of a manifold.
+<span class="lineNum">      55 </span>            :  *
+<span class="lineNum">      56 </span>            :  * Given a function \f$f\f$, compute its mean value \f$\bar{f}\f$, over a
+<span class="lineNum">      57 </span>            :  * boundary, with respect to the logical coordinates
+<span class="lineNum">      58 </span>            :  * \f$\boldsymbol{\xi} = (\xi, \eta, \zeta)\f$.
+<span class="lineNum">      59 </span>            :  *
+<span class="lineNum">      60 </span>            :  * \see `mean_value` for notes about means w.r.t. other coordinates.
+<span class="lineNum">      61 </span>            :  *
+<span class="lineNum">      62 </span>            :  * - `f` the function to average.
+<span class="lineNum">      63 </span>            :  * - `mesh` the Mesh defining the grid points on the manifold.
+<span class="lineNum">      64 </span>            :  * - `d` the dimension which is sliced away to get the boundary.
+<span class="lineNum">      65 </span>            :  * - `side` whether it is the lower or upper boundary in the d-th dimension.
+<span class="lineNum">      66 </span>            :  * - `boundary_buffer` is a pointer to a DataVector of size
+<span class="lineNum">      67 </span>            :  *   `mesh.slice_away(d).number_of_grid_points()` used as a temporary buffer
+<span class="lineNum">      68 </span>            :  *   when slicing the data to the boundary.
+<span class="lineNum">      69 </span>            :  * - `volume_and_slice_indices` a pair of `(volume_index_for_point,
+<span class="lineNum">      70 </span>            :  *   slice_index_for_point)` computed using the `SliceIterator`. Because
+<span class="lineNum">      71 </span>            :  *   `SliceIterator` is somewhat expensive, if computing the mean value on the
+<span class="lineNum">      72 </span>            :  *   same boundary for many different tensor components, prefer computing the
+<span class="lineNum">      73 </span>            :  *   slice indices once.
+<span class="lineNum">      74 </span>            :  */
+<span class="lineNum">      75 </span>            : template &lt;size_t Dim&gt;
+<span class="lineNum">      76 </span><span class="lineCov">          1 : double mean_value_on_boundary(const DataVector&amp; f, const Mesh&lt;Dim&gt;&amp; mesh,</span>
+<span class="lineNum">      77 </span>            :                               size_t d, Side side) noexcept;
+<span class="lineNum">      78 </span>            : 
+<span class="lineNum">      79 </span>            : template &lt;size_t Dim&gt;
+<span class="lineNum">      80 </span><span class="lineCov">          1 : double mean_value_on_boundary(gsl::not_null&lt;DataVector*&gt; boundary_buffer,</span>
+<span class="lineNum">      81 </span>            :                               const DataVector&amp; f, const Mesh&lt;Dim&gt;&amp; mesh,
+<span class="lineNum">      82 </span>            :                               size_t d, Side side) noexcept;
+<span class="lineNum">      83 </span>            : 
+<span class="lineNum">      84 </span><span class="lineCov">          1 : double mean_value_on_boundary(gsl::not_null&lt;DataVector*&gt; /*boundary_buffer*/,</span>
+<span class="lineNum">      85 </span>            :                               const DataVector&amp; f, const Mesh&lt;1&gt;&amp; mesh,
+<span class="lineNum">      86 </span>            :                               size_t d, Side side) noexcept;
+<span class="lineNum">      87 </span>            : 
+<span class="lineNum">      88 </span>            : template &lt;size_t Dim&gt;
+<span class="lineNum">      89 </span><span class="lineCov">          1 : double mean_value_on_boundary(</span>
+<span class="lineNum">      90 </span>            :     gsl::not_null&lt;DataVector*&gt; boundary_buffer,
+<span class="lineNum">      91 </span>            :     gsl::span&lt;std::pair&lt;size_t, size_t&gt;&gt; volume_and_slice_indices,
+<span class="lineNum">      92 </span>            :     const DataVector&amp; f, const Mesh&lt;Dim&gt;&amp; mesh, size_t d,
+<span class="lineNum">      93 </span>            :     Side /*side*/) noexcept;
+<span class="lineNum">      94 </span>            : 
+<span class="lineNum">      95 </span><span class="lineCov">          1 : double mean_value_on_boundary(</span>
+<span class="lineNum">      96 </span>            :     gsl::not_null&lt;DataVector*&gt; /*boundary_buffer*/,
+<span class="lineNum">      97 </span>            :     gsl::span&lt;std::pair&lt;size_t, size_t&gt;&gt; /*volume_and_slice_indices*/,
+<span class="lineNum">      98 </span>            :     const DataVector&amp; f, const Mesh&lt;1&gt;&amp; mesh, size_t d, Side side) noexcept;
+<span class="lineNum">      99 </span>            : // @}
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.13</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

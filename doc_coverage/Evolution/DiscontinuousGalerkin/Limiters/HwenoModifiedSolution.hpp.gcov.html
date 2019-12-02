@@ -1,0 +1,634 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - 5912ac2e49a80e6a27b3707c9a1e6ce5248b1b2a - Evolution/DiscontinuousGalerkin/Limiters/HwenoModifiedSolution.hpp</title>
+  <link rel="stylesheet" type="text/css" href="../../../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title"> SpECTRE Documentation Coverage Report</td></tr>
+    <tr><td class="ruler"><img src="../../../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../../../index.html">top level</a> - <a href="index.html">Evolution/DiscontinuousGalerkin/Limiters</a> - HwenoModifiedSolution.hpp</td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+             <td class="headerItem">Commit:</td>
+             <td class="headerValue"><a target="_blank" href="https://github.com/sxs-collaboration/spectre/commit/5912ac2e49a80e6a27b3707c9a1e6ce5248b1b2a">5912ac2e49a80e6a27b3707c9a1e6ce5248b1b2a</a></td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">1</td>
+            <td class="headerCovTableEntry">3</td>
+            <td class="headerCovTableEntryLo">33.3 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2019-12-02 22:01:08</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td class="headerItem">Legend:</td>
+            <td class="headerValueLeg">            Lines:
+            <span class="coverLegendCov">hit</span>
+            <span class="coverLegendNoCov">not hit</span>
+</td>
+            <td></td>
+          </tr>
+          <tr><td><img src="../../../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../../../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">          Line data    Source code</pre>
+<pre class="source">
+<span class="lineNum">       1 </span><span class="lineNoCov">          0 : // Distributed under the MIT License.</span>
+<span class="lineNum">       2 </span>            : // See LICENSE.txt for details.
+<span class="lineNum">       3 </span>            : 
+<span class="lineNum">       4 </span>            : #pragma once
+<span class="lineNum">       5 </span>            : 
+<span class="lineNum">       6 </span>            : #include &lt;array&gt;
+<span class="lineNum">       7 </span>            : #include &lt;boost/functional/hash.hpp&gt;  // IWYU pragma: keep
+<span class="lineNum">       8 </span>            : #include &lt;cstddef&gt;
+<span class="lineNum">       9 </span>            : #include &lt;functional&gt;
+<span class="lineNum">      10 </span>            : #include &lt;limits&gt;
+<span class="lineNum">      11 </span>            : #include &lt;unordered_map&gt;
+<span class="lineNum">      12 </span>            : #include &lt;utility&gt;
+<span class="lineNum">      13 </span>            : #include &lt;vector&gt;
+<span class="lineNum">      14 </span>            : 
+<span class="lineNum">      15 </span>            : #include &quot;DataStructures/DataBox/DataBoxTag.hpp&quot;
+<span class="lineNum">      16 </span>            : #include &quot;DataStructures/DataVector.hpp&quot;
+<span class="lineNum">      17 </span>            : #include &quot;DataStructures/Index.hpp&quot;
+<span class="lineNum">      18 </span>            : #include &quot;DataStructures/Matrix.hpp&quot;
+<span class="lineNum">      19 </span>            : #include &quot;DataStructures/Tags.hpp&quot;       // IWYU pragma: keep
+<span class="lineNum">      20 </span>            : #include &quot;DataStructures/Variables.hpp&quot;  // IWYU pragma: keep
+<span class="lineNum">      21 </span>            : #include &quot;Domain/Direction.hpp&quot;
+<span class="lineNum">      22 </span>            : #include &quot;Domain/DirectionMap.hpp&quot;
+<span class="lineNum">      23 </span>            : #include &quot;ErrorHandling/Assert.hpp&quot;
+<span class="lineNum">      24 </span>            : #include &quot;Evolution/DiscontinuousGalerkin/Limiters/WenoGridHelpers.hpp&quot;
+<span class="lineNum">      25 </span>            : #include &quot;NumericalAlgorithms/LinearOperators/ApplyMatrices.hpp&quot;
+<span class="lineNum">      26 </span>            : #include &quot;NumericalAlgorithms/LinearOperators/MeanValue.hpp&quot;
+<span class="lineNum">      27 </span>            : #include &quot;Utilities/Algorithm.hpp&quot;
+<span class="lineNum">      28 </span>            : #include &quot;Utilities/EqualWithinRoundoff.hpp&quot;
+<span class="lineNum">      29 </span>            : #include &quot;Utilities/Gsl.hpp&quot;
+<span class="lineNum">      30 </span>            : 
+<span class="lineNum">      31 </span>            : /// \cond
+<span class="lineNum">      32 </span>            : template &lt;size_t VolumeDim&gt;
+<span class="lineNum">      33 </span>            : class Element;
+<span class="lineNum">      34 </span>            : template &lt;size_t VolumeDim&gt;
+<span class="lineNum">      35 </span>            : class ElementId;
+<span class="lineNum">      36 </span>            : template &lt;size_t&gt;
+<span class="lineNum">      37 </span>            : class Mesh;
+<span class="lineNum">      38 </span>            : /// \endcond
+<span class="lineNum">      39 </span>            : 
+<span class="lineNum">      40 </span>            : namespace Limiters {
+<span class="lineNum">      41 </span>            : namespace Hweno_detail {
+<span class="lineNum">      42 </span>            : 
+<span class="lineNum">      43 </span>            : // Caching class that holds various precomputed terms used in the constrained-
+<span class="lineNum">      44 </span>            : // fit algebra on each element.
+<span class="lineNum">      45 </span>            : //
+<span class="lineNum">      46 </span>            : // The terms to precompute and cache depend on the configuration of neighbors to
+<span class="lineNum">      47 </span>            : // the element (how many neighbors, in which directions, of what resolution).
+<span class="lineNum">      48 </span>            : // Each instance of the caching class represents one particular neighbor
+<span class="lineNum">      49 </span>            : // configuration, and typical simulations will create many instances of
+<span class="lineNum">      50 </span>            : // the caching class: one instance for each neighbor-element configuration
+<span class="lineNum">      51 </span>            : // present in the computational domain.
+<span class="lineNum">      52 </span>            : //
+<span class="lineNum">      53 </span>            : // Because the current implementation of the HWENO fitting makes the simplifying
+<span class="lineNum">      54 </span>            : // restrictions of no h/p-refinement, the structure of the caching is also
+<span class="lineNum">      55 </span>            : // simplified. In particular, with no h/p-refinement, the allowable neighbor
+<span class="lineNum">      56 </span>            : // configurations satisfy,
+<span class="lineNum">      57 </span>            : // 1. the element has at most one neighbor per dimension, AND
+<span class="lineNum">      58 </span>            : // 2. the mesh on every neighbor is the same as on the element.
+<span class="lineNum">      59 </span>            : // With these restrictions, the number of independent configurations to be
+<span class="lineNum">      60 </span>            : // cached is greatly reduced. Because an element has 2*VolumeDim boundaries,
+<span class="lineNum">      61 </span>            : // it has 2^(2*VolumeDim) possible configurations of internal/external
+<span class="lineNum">      62 </span>            : // boundaries, and therefore there are 2^(2*VolumeDim) configurations to cache.
+<span class="lineNum">      63 </span>            : // Different elements with the same configuration of internal/external
+<span class="lineNum">      64 </span>            : // boundaries vs. direction can share the same caching-class instance.
+<span class="lineNum">      65 </span>            : //
+<span class="lineNum">      66 </span>            : // Each instance of the caching class holds several terms, some of which also
+<span class="lineNum">      67 </span>            : // depend on the neighbor configuration. The restriction of no h/p-refinement
+<span class="lineNum">      68 </span>            : // therefore simplifies each cache instance, as well as reducing the necessary
+<span class="lineNum">      69 </span>            : // number of instances.
+<span class="lineNum">      70 </span>            : //
+<span class="lineNum">      71 </span>            : // The most complicated term to cache is the A^{-1} matrix. The complexity
+<span class="lineNum">      72 </span>            : // arises because the matrix can take many values depending on (runtime) choices
+<span class="lineNum">      73 </span>            : // made for each individual HWNEO fit: which element is the primary neighbor,
+<span class="lineNum">      74 </span>            : // and which element(s) are the excluded neighbors.
+<span class="lineNum">      75 </span>            : // Fits with one excluded neighbor are overwhelmingly the most likely, and the
+<span class="lineNum">      76 </span>            : // cache is designed for this particular case. Fits with no excluded neighbors
+<span class="lineNum">      77 </span>            : // can arise in elements with only one neighbor (always the primary neighbor);
+<span class="lineNum">      78 </span>            : // these cases are also handled. However, the very rare case in which more than
+<span class="lineNum">      79 </span>            : // one neighbor is excluded is not handled by the cache; the caller must compute
+<span class="lineNum">      80 </span>            : // A^{-1} from scratch if this scenario arises.
+<span class="lineNum">      81 </span>            : template &lt;size_t VolumeDim&gt;
+<span class="lineNum">      82 </span>            : class ConstrainedFitCache {
+<span class="lineNum">      83 </span>            :  public:
+<span class="lineNum">      84 </span>            :   ConstrainedFitCache(const Element&lt;VolumeDim&gt;&amp; element,
+<span class="lineNum">      85 </span>            :                       const Mesh&lt;VolumeDim&gt;&amp; mesh) noexcept;
+<span class="lineNum">      86 </span>            : 
+<span class="lineNum">      87 </span>            :   // Valid calls must satisfy these constraints on directions_to_exclude:
+<span class="lineNum">      88 </span>            :   // - the vector is empty, OR
+<span class="lineNum">      89 </span>            :   // - the vector contains one element, and this element is a direction
+<span class="lineNum">      90 </span>            :   //   different from the direction to the primary neighbor.
+<span class="lineNum">      91 </span>            :   // The very rare case where more than one neighbor is excluded from the fit is
+<span class="lineNum">      92 </span>            :   // not cached. In this case, A^{-1} must be computed from scratch.
+<span class="lineNum">      93 </span>            :   const Matrix&amp; retrieve_inverse_a_matrix(
+<span class="lineNum">      94 </span>            :       const Direction&lt;VolumeDim&gt;&amp; primary_direction,
+<span class="lineNum">      95 </span>            :       const std::vector&lt;Direction&lt;VolumeDim&gt;&gt;&amp; directions_to_exclude) const
+<span class="lineNum">      96 </span>            :       noexcept;
+<span class="lineNum">      97 </span>            : 
+<span class="lineNum">      98 </span>            :   DataVector quadrature_weights;
+<span class="lineNum">      99 </span>            :   DirectionMap&lt;VolumeDim, Matrix&gt; interpolation_matrices;
+<span class="lineNum">     100 </span>            :   DirectionMap&lt;VolumeDim, DataVector&gt;
+<span class="lineNum">     101 </span>            :       quadrature_weights_dot_interpolation_matrices;
+<span class="lineNum">     102 </span>            :   // The many possible values of A^{-1} are stored in a map of maps. The outer
+<span class="lineNum">     103 </span>            :   // map indexes over the primary neighbor, and the inner map indexes over the
+<span class="lineNum">     104 </span>            :   // excluded neighbor.
+<span class="lineNum">     105 </span>            :   // This data structure is not perfect: configurations with only one neighbor
+<span class="lineNum">     106 </span>            :   // (always the primary neighbor) lead to no excluded neighbors, and there is
+<span class="lineNum">     107 </span>            :   // no natural place to hold A^{-1} in the maps. For this case, we simply store
+<span class="lineNum">     108 </span>            :   // the data in the normally-nonsensical slot where
+<span class="lineNum">     109 </span>            :   // excluded_neighbor == primary_neighbor.
+<span class="lineNum">     110 </span>            :   DirectionMap&lt;VolumeDim, DirectionMap&lt;VolumeDim, Matrix&gt;&gt; inverse_a_matrices;
+<span class="lineNum">     111 </span>            : };
+<span class="lineNum">     112 </span>            : 
+<span class="lineNum">     113 </span>            : // Return the appropriate cache for the given element and mesh.
+<span class="lineNum">     114 </span>            : template &lt;size_t VolumeDim&gt;
+<span class="lineNum">     115 </span>            : const ConstrainedFitCache&lt;VolumeDim&gt;&amp; constrained_fit_cache(
+<span class="lineNum">     116 </span>            :     const Element&lt;VolumeDim&gt;&amp; element, const Mesh&lt;VolumeDim&gt;&amp; mesh) noexcept;
+<span class="lineNum">     117 </span>            : 
+<span class="lineNum">     118 </span>            : // Compute the inverse of the matrix A_st for the constrained fit.
+<span class="lineNum">     119 </span>            : // See the documentation of `hweno_modified_neighbor_solution`.
+<span class="lineNum">     120 </span>            : template &lt;size_t VolumeDim&gt;
+<span class="lineNum">     121 </span>            : Matrix inverse_a_matrix(
+<span class="lineNum">     122 </span>            :     const Element&lt;VolumeDim&gt;&amp; element, const Mesh&lt;VolumeDim&gt;&amp; mesh,
+<span class="lineNum">     123 </span>            :     const DataVector&amp; quadrature_weights,
+<span class="lineNum">     124 </span>            :     const DirectionMap&lt;VolumeDim, Matrix&gt;&amp; interpolation_matrices,
+<span class="lineNum">     125 </span>            :     const DirectionMap&lt;VolumeDim, DataVector&gt;&amp;
+<span class="lineNum">     126 </span>            :         quadrature_weights_dot_interpolation_matrices,
+<span class="lineNum">     127 </span>            :     const Direction&lt;VolumeDim&gt;&amp; primary_direction,
+<span class="lineNum">     128 </span>            :     const std::vector&lt;Direction&lt;VolumeDim&gt;&gt;&amp; directions_to_exclude) noexcept;
+<span class="lineNum">     129 </span>            : 
+<span class="lineNum">     130 </span>            : // Not all secondary neighbors (i.e., neighbors that are not the primary) are
+<span class="lineNum">     131 </span>            : // included in the HWENO constrained fit. In particular, for the tensor
+<span class="lineNum">     132 </span>            : // component specified by `Tag` and `tensor_index`, the secondary neighbor whose
+<span class="lineNum">     133 </span>            : // mean is most different from the troubled cell's mean is excluded.
+<span class="lineNum">     134 </span>            : //
+<span class="lineNum">     135 </span>            : // Zhu2016 indicate that when multiple secondary neighbors share the property of
+<span class="lineNum">     136 </span>            : // being &quot;most different&quot; from the troubled cell, then all of these secondary
+<span class="lineNum">     137 </span>            : // neighbors should be excluded from the minimization. The probability of this
+<span class="lineNum">     138 </span>            : // occuring is exceedingly low, but we handle it anyway. We return the excluded
+<span class="lineNum">     139 </span>            : // secondary neighbors in a vector.
+<span class="lineNum">     140 </span>            : //
+<span class="lineNum">     141 </span>            : // Note that if there is only one neighbor, it is the primary neighbor, and so
+<span class="lineNum">     142 </span>            : // there are no secondary neighbors to exclude. We return an empty vector. This
+<span class="lineNum">     143 </span>            : // scenario can arise in various test cases, but is unlikely to arise in science
+<span class="lineNum">     144 </span>            : // cases.
+<span class="lineNum">     145 </span>            : template &lt;typename Tag, size_t VolumeDim, typename Package&gt;
+<span class="lineNum">     146 </span>            : std::vector&lt;std::pair&lt;Direction&lt;VolumeDim&gt;, ElementId&lt;VolumeDim&gt;&gt;&gt;
+<span class="lineNum">     147 </span>            : secondary_neighbors_to_exclude_from_fit(
+<span class="lineNum">     148 </span>            :     const double local_mean, const size_t tensor_index,
+<span class="lineNum">     149 </span>            :     const std::unordered_map&lt;
+<span class="lineNum">     150 </span>            :         std::pair&lt;Direction&lt;VolumeDim&gt;, ElementId&lt;VolumeDim&gt;&gt;, Package,
+<span class="lineNum">     151 </span>            :         boost::hash&lt;std::pair&lt;Direction&lt;VolumeDim&gt;, ElementId&lt;VolumeDim&gt;&gt;&gt;&gt;&amp;
+<span class="lineNum">     152 </span>            :         neighbor_data,
+<span class="lineNum">     153 </span>            :     const std::pair&lt;Direction&lt;VolumeDim&gt;, ElementId&lt;VolumeDim&gt;&gt;&amp;
+<span class="lineNum">     154 </span>            :         primary_neighbor) noexcept {
+<span class="lineNum">     155 </span>            :   // Rare case: with only one neighbor, there is no secondary to exclude
+<span class="lineNum">     156 </span>            :   if (UNLIKELY(neighbor_data.size() == 1)) {
+<span class="lineNum">     157 </span>            :     return std::vector&lt;std::pair&lt;Direction&lt;VolumeDim&gt;, ElementId&lt;VolumeDim&gt;&gt;&gt;{};
+<span class="lineNum">     158 </span>            :   }
+<span class="lineNum">     159 </span>            : 
+<span class="lineNum">     160 </span>            :   // Identify element with maximum mean difference
+<span class="lineNum">     161 </span>            :   const auto mean_difference = [&amp;tensor_index, &amp;local_mean ](
+<span class="lineNum">     162 </span>            :       const std::pair&lt;std::pair&lt;Direction&lt;VolumeDim&gt;, ElementId&lt;VolumeDim&gt;&gt;,
+<span class="lineNum">     163 </span>            :                       Package&gt;&amp; neighbor_and_data) noexcept {
+<span class="lineNum">     164 </span>            :     return fabs(
+<span class="lineNum">     165 </span>            :         get&lt;::Tags::Mean&lt;Tag&gt;&gt;(neighbor_and_data.second.means)[tensor_index] -
+<span class="lineNum">     166 </span>            :         local_mean);
+<span class="lineNum">     167 </span>            :   };
+<span class="lineNum">     168 </span>            : 
+<span class="lineNum">     169 </span>            :   double max_difference = std::numeric_limits&lt;double&gt;::lowest();
+<span class="lineNum">     170 </span>            :   std::pair&lt;Direction&lt;VolumeDim&gt;, ElementId&lt;VolumeDim&gt;&gt;
+<span class="lineNum">     171 </span>            :       neighbor_max_difference{};
+<span class="lineNum">     172 </span>            :   for (const auto&amp; neighbor_and_data : neighbor_data) {
+<span class="lineNum">     173 </span>            :     const auto&amp; neighbor = neighbor_and_data.first;
+<span class="lineNum">     174 </span>            :     if (neighbor == primary_neighbor) {
+<span class="lineNum">     175 </span>            :       continue;
+<span class="lineNum">     176 </span>            :     }
+<span class="lineNum">     177 </span>            :     const double difference = mean_difference(neighbor_and_data);
+<span class="lineNum">     178 </span>            :     if (difference &gt; max_difference) {
+<span class="lineNum">     179 </span>            :       max_difference = difference;
+<span class="lineNum">     180 </span>            :       neighbor_max_difference = neighbor;
+<span class="lineNum">     181 </span>            :     }
+<span class="lineNum">     182 </span>            :   }
+<span class="lineNum">     183 </span>            : 
+<span class="lineNum">     184 </span>            :   std::vector&lt;std::pair&lt;Direction&lt;VolumeDim&gt;, ElementId&lt;VolumeDim&gt;&gt;&gt;
+<span class="lineNum">     185 </span>            :       neighbors_to_exclude{{neighbor_max_difference}};
+<span class="lineNum">     186 </span>            : 
+<span class="lineNum">     187 </span>            :   // See if other elements share this maximum mean difference. This loop should
+<span class="lineNum">     188 </span>            :   // only rarely find other neighbors with the same maximal mean difference to
+<span class="lineNum">     189 </span>            :   // add to the vector, so it will usually not change the vector.
+<span class="lineNum">     190 </span>            :   for (const auto&amp; neighbor_and_data : neighbor_data) {
+<span class="lineNum">     191 </span>            :     const auto&amp; neighbor = neighbor_and_data.first;
+<span class="lineNum">     192 </span>            :     if (neighbor == primary_neighbor or neighbor == neighbor_max_difference) {
+<span class="lineNum">     193 </span>            :       continue;
+<span class="lineNum">     194 </span>            :     }
+<span class="lineNum">     195 </span>            :     const double difference = mean_difference(neighbor_and_data);
+<span class="lineNum">     196 </span>            :     if (UNLIKELY(equal_within_roundoff(difference, max_difference))) {
+<span class="lineNum">     197 </span>            :       neighbors_to_exclude.push_back(neighbor);
+<span class="lineNum">     198 </span>            :     }
+<span class="lineNum">     199 </span>            :   }
+<span class="lineNum">     200 </span>            : 
+<span class="lineNum">     201 </span>            :   ASSERT(not alg::found(neighbors_to_exclude, primary_neighbor),
+<span class="lineNum">     202 </span>            :          &quot;Logical inconsistency: trying to exclude the primary neighbor.&quot;);
+<span class="lineNum">     203 </span>            : 
+<span class="lineNum">     204 </span>            :   return neighbors_to_exclude;
+<span class="lineNum">     205 </span>            : }
+<span class="lineNum">     206 </span>            : 
+<span class="lineNum">     207 </span>            : // Compute the vector b_s for the constrained fit. For details, see the
+<span class="lineNum">     208 </span>            : // documentation of `hweno_modified_neighbor_solution` below.
+<span class="lineNum">     209 </span>            : template &lt;typename Tag, size_t VolumeDim, typename Package&gt;
+<span class="lineNum">     210 </span>            : DataVector b_vector(
+<span class="lineNum">     211 </span>            :     const Mesh&lt;VolumeDim&gt;&amp; mesh, const size_t tensor_index,
+<span class="lineNum">     212 </span>            :     const DataVector&amp; quadrature_weights,
+<span class="lineNum">     213 </span>            :     const DirectionMap&lt;VolumeDim, Matrix&gt;&amp; interpolation_matrices,
+<span class="lineNum">     214 </span>            :     const DirectionMap&lt;VolumeDim, DataVector&gt;&amp;
+<span class="lineNum">     215 </span>            :         quadrature_weights_dot_interpolation_matrices,
+<span class="lineNum">     216 </span>            :     const std::unordered_map&lt;
+<span class="lineNum">     217 </span>            :         std::pair&lt;Direction&lt;VolumeDim&gt;, ElementId&lt;VolumeDim&gt;&gt;, Package,
+<span class="lineNum">     218 </span>            :         boost::hash&lt;std::pair&lt;Direction&lt;VolumeDim&gt;, ElementId&lt;VolumeDim&gt;&gt;&gt;&gt;&amp;
+<span class="lineNum">     219 </span>            :         neighbor_data,
+<span class="lineNum">     220 </span>            :     const std::pair&lt;Direction&lt;VolumeDim&gt;, ElementId&lt;VolumeDim&gt;&gt;&amp;
+<span class="lineNum">     221 </span>            :         primary_neighbor,
+<span class="lineNum">     222 </span>            :     const std::vector&lt;std::pair&lt;Direction&lt;VolumeDim&gt;, ElementId&lt;VolumeDim&gt;&gt;&gt;&amp;
+<span class="lineNum">     223 </span>            :         neighbors_to_exclude) noexcept {
+<span class="lineNum">     224 </span>            :   const size_t number_of_grid_points = mesh.number_of_grid_points();
+<span class="lineNum">     225 </span>            :   DataVector b(number_of_grid_points, 0.);
+<span class="lineNum">     226 </span>            : 
+<span class="lineNum">     227 </span>            :   for (const auto&amp; neighbor_and_data : neighbor_data) {
+<span class="lineNum">     228 </span>            :     // Generally, neighbors_to_exclude contains just one neighbor to exclude,
+<span class="lineNum">     229 </span>            :     // and the loop over neighbor_data will hit this (in 3D) roughly 1/6 times.
+<span class="lineNum">     230 </span>            :     // So the condition is somewhat, but not overwhelmingly, unlikely:
+<span class="lineNum">     231 </span>            :     if (UNLIKELY(alg::found(neighbors_to_exclude, neighbor_and_data.first))) {
+<span class="lineNum">     232 </span>            :       continue;
+<span class="lineNum">     233 </span>            :     }
+<span class="lineNum">     234 </span>            : 
+<span class="lineNum">     235 </span>            :     const auto&amp; direction = neighbor_and_data.first.first;
+<span class="lineNum">     236 </span>            :     ASSERT(interpolation_matrices.contains(direction),
+<span class="lineNum">     237 </span>            :            &quot;interpolation_matrices does not contain key: &quot; &lt;&lt; direction);
+<span class="lineNum">     238 </span>            :     ASSERT(
+<span class="lineNum">     239 </span>            :         quadrature_weights_dot_interpolation_matrices.contains(direction),
+<span class="lineNum">     240 </span>            :         &quot;quadrature_weights_dot_interpolation_matrices does not contain key: &quot;
+<span class="lineNum">     241 </span>            :             &lt;&lt; direction);
+<span class="lineNum">     242 </span>            : 
+<span class="lineNum">     243 </span>            :     const auto&amp; neighbor_mesh = mesh;
+<span class="lineNum">     244 </span>            :     const auto&amp; neighbor_quadrature_weights = quadrature_weights;
+<span class="lineNum">     245 </span>            :     const auto&amp; interpolation_matrix = interpolation_matrices.at(direction);
+<span class="lineNum">     246 </span>            :     const auto&amp; quadrature_weights_dot_interpolation_matrix =
+<span class="lineNum">     247 </span>            :         quadrature_weights_dot_interpolation_matrices.at(direction);
+<span class="lineNum">     248 </span>            : 
+<span class="lineNum">     249 </span>            :     const auto&amp; neighbor_tensor_component =
+<span class="lineNum">     250 </span>            :         get&lt;Tag&gt;(neighbor_and_data.second.volume_data)[tensor_index];
+<span class="lineNum">     251 </span>            : 
+<span class="lineNum">     252 </span>            :     // Add terms from the primary neighbor
+<span class="lineNum">     253 </span>            :     if (neighbor_and_data.first == primary_neighbor) {
+<span class="lineNum">     254 </span>            :       for (size_t r = 0; r &lt; neighbor_mesh.number_of_grid_points(); ++r) {
+<span class="lineNum">     255 </span>            :         for (size_t s = 0; s &lt; number_of_grid_points; ++s) {
+<span class="lineNum">     256 </span>            :           b[s] += neighbor_tensor_component[r] *
+<span class="lineNum">     257 </span>            :                   neighbor_quadrature_weights[r] * interpolation_matrix(r, s);
+<span class="lineNum">     258 </span>            :         }
+<span class="lineNum">     259 </span>            :       }
+<span class="lineNum">     260 </span>            :     }
+<span class="lineNum">     261 </span>            :     // Add terms from the secondary neighbors
+<span class="lineNum">     262 </span>            :     else {
+<span class="lineNum">     263 </span>            :       const double quadrature_weights_dot_u = [&amp;]() noexcept {
+<span class="lineNum">     264 </span>            :         double result = 0.;
+<span class="lineNum">     265 </span>            :         for (size_t r = 0; r &lt; neighbor_mesh.number_of_grid_points(); ++r) {
+<span class="lineNum">     266 </span>            :           result +=
+<span class="lineNum">     267 </span>            :               neighbor_tensor_component[r] * neighbor_quadrature_weights[r];
+<span class="lineNum">     268 </span>            :         }
+<span class="lineNum">     269 </span>            :         return result;
+<span class="lineNum">     270 </span>            :       }
+<span class="lineNum">     271 </span>            :       ();
+<span class="lineNum">     272 </span>            :       b += quadrature_weights_dot_u *
+<span class="lineNum">     273 </span>            :            quadrature_weights_dot_interpolation_matrix;
+<span class="lineNum">     274 </span>            :     }
+<span class="lineNum">     275 </span>            :   }
+<span class="lineNum">     276 </span>            :   return b;
+<span class="lineNum">     277 </span>            : }
+<span class="lineNum">     278 </span>            : 
+<span class="lineNum">     279 </span>            : // Solve the constrained fit problem that gives the HWENO modified solution,
+<span class="lineNum">     280 </span>            : // for one particular tensor component. For details, see documentation of
+<span class="lineNum">     281 </span>            : // `hweno_modified_neighbor_solution` below.
+<span class="lineNum">     282 </span>            : template &lt;typename Tag, size_t VolumeDim, typename Package&gt;
+<span class="lineNum">     283 </span>            : void solve_constrained_fit(
+<span class="lineNum">     284 </span>            :     const gsl::not_null&lt;DataVector*&gt; constrained_fit_result,
+<span class="lineNum">     285 </span>            :     const DataVector&amp; u, const size_t tensor_index,
+<span class="lineNum">     286 </span>            :     const Element&lt;VolumeDim&gt;&amp; element, const Mesh&lt;VolumeDim&gt;&amp; mesh,
+<span class="lineNum">     287 </span>            :     const std::unordered_map&lt;
+<span class="lineNum">     288 </span>            :         std::pair&lt;Direction&lt;VolumeDim&gt;, ElementId&lt;VolumeDim&gt;&gt;, Package,
+<span class="lineNum">     289 </span>            :         boost::hash&lt;std::pair&lt;Direction&lt;VolumeDim&gt;, ElementId&lt;VolumeDim&gt;&gt;&gt;&gt;&amp;
+<span class="lineNum">     290 </span>            :         neighbor_data,
+<span class="lineNum">     291 </span>            :     const std::pair&lt;Direction&lt;VolumeDim&gt;, ElementId&lt;VolumeDim&gt;&gt;&amp;
+<span class="lineNum">     292 </span>            :         primary_neighbor,
+<span class="lineNum">     293 </span>            :     const std::vector&lt;std::pair&lt;Direction&lt;VolumeDim&gt;, ElementId&lt;VolumeDim&gt;&gt;&gt;&amp;
+<span class="lineNum">     294 </span>            :         neighbors_to_exclude) noexcept {
+<span class="lineNum">     295 </span>            :   // Get the cache of linear algebra quantities for this element
+<span class="lineNum">     296 </span>            :   const ConstrainedFitCache&lt;VolumeDim&gt;&amp; cache =
+<span class="lineNum">     297 </span>            :       constrained_fit_cache(element, mesh);
+<span class="lineNum">     298 </span>            : 
+<span class="lineNum">     299 </span>            :   // Because we don't support h-refinement, the direction is the only piece
+<span class="lineNum">     300 </span>            :   // of the neighbor information that we actually need.
+<span class="lineNum">     301 </span>            :   const Direction&lt;VolumeDim&gt; primary_direction = primary_neighbor.first;
+<span class="lineNum">     302 </span>            :   const std::vector&lt;Direction&lt;VolumeDim&gt;&gt;
+<span class="lineNum">     303 </span>            :       directions_to_exclude = [&amp;neighbors_to_exclude]() noexcept {
+<span class="lineNum">     304 </span>            :     std::vector&lt;Direction&lt;VolumeDim&gt;&gt; result(neighbors_to_exclude.size());
+<span class="lineNum">     305 </span>            :     for (size_t i = 0; i &lt; result.size(); ++i) {
+<span class="lineNum">     306 </span>            :       result[i] = neighbors_to_exclude[i].first;
+<span class="lineNum">     307 </span>            :     }
+<span class="lineNum">     308 </span>            :     return result;
+<span class="lineNum">     309 </span>            :   }
+<span class="lineNum">     310 </span>            :   ();
+<span class="lineNum">     311 </span>            : 
+<span class="lineNum">     312 </span>            :   const DataVector&amp; w = cache.quadrature_weights;
+<span class="lineNum">     313 </span>            :   const DirectionMap&lt;VolumeDim, Matrix&gt;&amp; interp_matrices =
+<span class="lineNum">     314 </span>            :       cache.interpolation_matrices;
+<span class="lineNum">     315 </span>            :   const DirectionMap&lt;VolumeDim, DataVector&gt;&amp; w_dot_interp_matrices =
+<span class="lineNum">     316 </span>            :       cache.quadrature_weights_dot_interpolation_matrices;
+<span class="lineNum">     317 </span>            : 
+<span class="lineNum">     318 </span>            :   // Use cache if possible, or compute matrix if we are in edge case
+<span class="lineNum">     319 </span>            :   const Matrix&amp; inverse_a =
+<span class="lineNum">     320 </span>            :       LIKELY(directions_to_exclude.size() &lt; 2)
+<span class="lineNum">     321 </span>            :           ? cache.retrieve_inverse_a_matrix(primary_direction,
+<span class="lineNum">     322 </span>            :                                             directions_to_exclude)
+<span class="lineNum">     323 </span>            :           : Hweno_detail::inverse_a_matrix(
+<span class="lineNum">     324 </span>            :                 element, mesh, w, interp_matrices, w_dot_interp_matrices,
+<span class="lineNum">     325 </span>            :                 primary_direction, directions_to_exclude);
+<span class="lineNum">     326 </span>            : 
+<span class="lineNum">     327 </span>            :   const DataVector b = b_vector&lt;Tag&gt;(mesh, tensor_index, w, interp_matrices,
+<span class="lineNum">     328 </span>            :                                      w_dot_interp_matrices, neighbor_data,
+<span class="lineNum">     329 </span>            :                                      primary_neighbor, neighbors_to_exclude);
+<span class="lineNum">     330 </span>            : 
+<span class="lineNum">     331 </span>            :   const size_t number_of_points = b.size();
+<span class="lineNum">     332 </span>            :   const DataVector inverse_a_times_b = apply_matrices(
+<span class="lineNum">     333 </span>            :       std::array&lt;std::reference_wrapper&lt;const Matrix&gt;, 1&gt;{{inverse_a}}, b,
+<span class="lineNum">     334 </span>            :       Index&lt;1&gt;(number_of_points));
+<span class="lineNum">     335 </span>            :   const DataVector inverse_a_times_w = apply_matrices(
+<span class="lineNum">     336 </span>            :       std::array&lt;std::reference_wrapper&lt;const Matrix&gt;, 1&gt;{{inverse_a}}, w,
+<span class="lineNum">     337 </span>            :       Index&lt;1&gt;(number_of_points));
+<span class="lineNum">     338 </span>            : 
+<span class="lineNum">     339 </span>            :   // Compute Lagrange multiplier:
+<span class="lineNum">     340 </span>            :   // Note: we take w as an argument (instead of as a lambda capture), because
+<span class="lineNum">     341 </span>            :   //       some versions of Clang incorrectly warn about capturing w.
+<span class="lineNum">     342 </span>            :   const double lagrange_multiplier =
+<span class="lineNum">     343 </span>            :       [&amp;number_of_points, &amp;inverse_a_times_b, &amp;inverse_a_times_w, &amp;
+<span class="lineNum">     344 </span>            :        u ](const DataVector&amp; local_w) noexcept {
+<span class="lineNum">     345 </span>            :     double numerator = 0.;
+<span class="lineNum">     346 </span>            :     double denominator = 0.;
+<span class="lineNum">     347 </span>            :     for (size_t s = 0; s &lt; number_of_points; ++s) {
+<span class="lineNum">     348 </span>            :       numerator += local_w[s] * (inverse_a_times_b[s] - u[s]);
+<span class="lineNum">     349 </span>            :       denominator += local_w[s] * inverse_a_times_w[s];
+<span class="lineNum">     350 </span>            :     }
+<span class="lineNum">     351 </span>            :     return -numerator / denominator;
+<span class="lineNum">     352 </span>            :   }
+<span class="lineNum">     353 </span>            :   (w);
+<span class="lineNum">     354 </span>            : 
+<span class="lineNum">     355 </span>            :   // Compute solution:
+<span class="lineNum">     356 </span>            :   *constrained_fit_result =
+<span class="lineNum">     357 </span>            :       inverse_a_times_b + lagrange_multiplier * inverse_a_times_w;
+<span class="lineNum">     358 </span>            : }
+<span class="lineNum">     359 </span>            : 
+<span class="lineNum">     360 </span>            : }  // namespace Hweno_detail
+<span class="lineNum">     361 </span>            : 
+<span class="lineNum">     362 </span>            : template &lt;size_t VolumeDim, typename Package&gt;
+<span class="lineNum">     363 </span><span class="lineNoCov">          0 : using LimiterNeighborData = std::unordered_map&lt;</span>
+<span class="lineNum">     364 </span>            :     std::pair&lt;Direction&lt;VolumeDim&gt;, ElementId&lt;VolumeDim&gt;&gt;, Package,
+<span class="lineNum">     365 </span>            :     boost::hash&lt;std::pair&lt;Direction&lt;VolumeDim&gt;, ElementId&lt;VolumeDim&gt;&gt;&gt;&gt;;
+<span class="lineNum">     366 </span>            : 
+<span class="lineNum">     367 </span>            : /*!
+<span class="lineNum">     368 </span>            :  * \ingroup LimitersGroup
+<span class="lineNum">     369 </span>            :  * \brief Compute the HWENO modified solution for a particular tensor
+<span class="lineNum">     370 </span>            :  * from a particular neighbor element
+<span class="lineNum">     371 </span>            :  *
+<span class="lineNum">     372 </span>            :  * The HWENO limiter reconstructs a new solution from the linear combination of
+<span class="lineNum">     373 </span>            :  * the local DG solution and a &quot;modified&quot; solution from each neighbor element.
+<span class="lineNum">     374 </span>            :  * This function computes the modified solution for a particular tensor and
+<span class="lineNum">     375 </span>            :  * neighbor, following Section 3 of \cite Zhu2016.
+<span class="lineNum">     376 </span>            :  *
+<span class="lineNum">     377 </span>            :  * The modified solution associated with a particular neighbor (the &quot;primary&quot;
+<span class="lineNum">     378 </span>            :  * neighbor) is obtained by solving a constrained fit over the local element,
+<span class="lineNum">     379 </span>            :  * the primary neighbor, and the other (&quot;secondary&quot;) neighbors of the local
+<span class="lineNum">     380 </span>            :  * element. This fit seeks to minimize in a least-squared sense:
+<span class="lineNum">     381 </span>            :  * 1. The distance between the modified solution and the original solution on
+<span class="lineNum">     382 </span>            :  *    the primary neighbor.
+<span class="lineNum">     383 </span>            :  * 2. The distance between the cell average of the modified solution and the
+<span class="lineNum">     384 </span>            :  *    cell average of the original solution on each secondary neighbor. Note
+<span class="lineNum">     385 </span>            :  *    however that one secondary neighbor (or, rarely, several) is excluded from
+<span class="lineNum">     386 </span>            :  *    this minimization: the secondary neighbor(s) where the original solution
+<span class="lineNum">     387 </span>            :  *    has the most different cell average from the local element. This helps to
+<span class="lineNum">     388 </span>            :  *    prevent an outlier (e.g., near a shock) from biasing the fit.
+<span class="lineNum">     389 </span>            :  *
+<span class="lineNum">     390 </span>            :  * The constraint on the minimization is the following: the cell average of the
+<span class="lineNum">     391 </span>            :  * modified solution on the local element must equal the cell average of the
+<span class="lineNum">     392 </span>            :  * local element's original solution.
+<span class="lineNum">     393 </span>            :  *
+<span class="lineNum">     394 </span>            :  * Below we give the mathematical form of the constraints described above and
+<span class="lineNum">     395 </span>            :  * show how these are translated into a numerical algorithm.
+<span class="lineNum">     396 </span>            :  *
+<span class="lineNum">     397 </span>            :  * Consider an element \f$I_0\f$ with neighbors \f$I_1, I_2, ...\f$. For a
+<span class="lineNum">     398 </span>            :  * given tensor component \f$u\f$, the values on each of these elements are
+<span class="lineNum">     399 </span>            :  * \f$u^{(0)}, u^{(1)}, u^{(2)}, ...\f$. Taking for the sake of example the
+<span class="lineNum">     400 </span>            :  * primary neighbor to be \f$I_1\f$, the modified solution \f$\phi\f$ must
+<span class="lineNum">     401 </span>            :  * minimize
+<span class="lineNum">     402 </span>            :  *
+<span class="lineNum">     403 </span>            :  * \f[
+<span class="lineNum">     404 </span>            :  * \chi^2 = \int_{I_1} (\phi - u^{(1)})^2 dV
+<span class="lineNum">     405 </span>            :  *          + \sum_{\ell \in L} \left(
+<span class="lineNum">     406 </span>            :  *                              \int_{I_{\ell}} ( \phi - u^{(\ell)} ) dV
+<span class="lineNum">     407 </span>            :  *                              \right)^2,
+<span class="lineNum">     408 </span>            :  * \f]
+<span class="lineNum">     409 </span>            :  *
+<span class="lineNum">     410 </span>            :  * subject to the constaint
+<span class="lineNum">     411 </span>            :  *
+<span class="lineNum">     412 </span>            :  * \f[
+<span class="lineNum">     413 </span>            :  * C = \int_{I_0} ( \phi - u^{(0)} ) dV = 0.
+<span class="lineNum">     414 </span>            :  * \f]
+<span class="lineNum">     415 </span>            :  *
+<span class="lineNum">     416 </span>            :  * where \f$\ell\f$ ranges over a subset \f$L\f$ of the secondary neighbors.
+<span class="lineNum">     417 </span>            :  * \f$L\f$ excludes the one (or more) secondary neighbor(s) where the mean of
+<span class="lineNum">     418 </span>            :  * \f$u\f$ is the most different from the mean of \f$u^{(0)}\f$. Typically, only
+<span class="lineNum">     419 </span>            :  * one secondary neighbor is excluded, so \f$L\f$ contains two fewer neighbors
+<span class="lineNum">     420 </span>            :  * than the total number of neighbors to the element. Note that in 1D, this
+<span class="lineNum">     421 </span>            :  * implies that \f$L\f$ is the empty set; for each modified solution, one
+<span class="lineNum">     422 </span>            :  * neighbor is the primary neighbor and the other is the excluded neighbor.
+<span class="lineNum">     423 </span>            :  *
+<span class="lineNum">     424 </span>            :  * The integrals are evaluated by quadrature. We denote the quadrature weights
+<span class="lineNum">     425 </span>            :  * by \f$w_s\f$ and the values of some data \f$X\f$ at the quadrature
+<span class="lineNum">     426 </span>            :  * nodes by \f$X_s\f$. We use subscripts \f$r,s\f$ to denote quadrature nodes
+<span class="lineNum">     427 </span>            :  * on the neighbor and local elements, respectively. The minimization becomes
+<span class="lineNum">     428 </span>            :  *
+<span class="lineNum">     429 </span>            :  * \f[
+<span class="lineNum">     430 </span>            :  * \chi^2 = \sum_r w^{(1)}_r ( \phi_r - u^{(1)}_r )^2
+<span class="lineNum">     431 </span>            :  *          + \sum_{\ell \in L} \left(
+<span class="lineNum">     432 </span>            :  *                              \sum_r w^{(\ell)}_r ( \phi_r - u^{(\ell)}_r )
+<span class="lineNum">     433 </span>            :  *                              \right)^2,
+<span class="lineNum">     434 </span>            :  * \f]
+<span class="lineNum">     435 </span>            :  *
+<span class="lineNum">     436 </span>            :  * subject to the constraint
+<span class="lineNum">     437 </span>            :  *
+<span class="lineNum">     438 </span>            :  * \f[
+<span class="lineNum">     439 </span>            :  * C = \sum_s w^{(0)}_s ( \phi_s - u^{(0)}_s ) = 0.
+<span class="lineNum">     440 </span>            :  * \f]
+<span class="lineNum">     441 </span>            :  *
+<span class="lineNum">     442 </span>            :  * Note that \f$\phi\f$ is a function defined on the local element \f$I_0\f$,
+<span class="lineNum">     443 </span>            :  * and so is fully represented by its values \f$\phi_s\f$ at the quadrature
+<span class="lineNum">     444 </span>            :  * points on this element. When evaluating \f$\phi\f$ on element \f$I_{\ell}\f$,
+<span class="lineNum">     445 </span>            :  * we obtain the function values \f$\phi_r\f$ by polynomial extrapolation,
+<span class="lineNum">     446 </span>            :  * \f$\phi_r = \sum_s \mathcal{I}^{(\ell)}_{rs} \phi_s\f$, where
+<span class="lineNum">     447 </span>            :  * \f$\mathcal{I}^{(\ell)}_{rs}\f$ is the interpolation/extrapolation matrix
+<span class="lineNum">     448 </span>            :  * that interpolates data defined at grid points \f$x_s\f$ and evaluates it at
+<span class="lineNum">     449 </span>            :  * grid points \f$x_r\f$ of \f$I_{\ell}\f$. Thus,
+<span class="lineNum">     450 </span>            :  *
+<span class="lineNum">     451 </span>            :  * \f[
+<span class="lineNum">     452 </span>            :  * \chi^2 = \sum_r w^{(1)}_r
+<span class="lineNum">     453 </span>            :  *                 \left(
+<span class="lineNum">     454 </span>            :  *                 \sum_s \mathcal{I}^{(1)}_{rs} \phi_s - u^{(1)}_r
+<span class="lineNum">     455 </span>            :  *                 \right)^2
+<span class="lineNum">     456 </span>            :  *          + \sum_{\ell \in L} \left(
+<span class="lineNum">     457 </span>            :  *                              \sum_r w^{(\ell)}_r
+<span class="lineNum">     458 </span>            :  *                                     \left(
+<span class="lineNum">     459 </span>            :  *                                     \sum_s \mathcal{I}^{(\ell)}_{rs} \phi_s
+<span class="lineNum">     460 </span>            :  *                                             - u^{(\ell)}_r
+<span class="lineNum">     461 </span>            :  *                                     \right)
+<span class="lineNum">     462 </span>            :  *                      \right)^2.
+<span class="lineNum">     463 </span>            :  * \f]
+<span class="lineNum">     464 </span>            :  *
+<span class="lineNum">     465 </span>            :  * The solution to this optimization problem is found in the standard way,
+<span class="lineNum">     466 </span>            :  * using a Lagrange multiplier \f$\lambda\f$ to impose the constraint:
+<span class="lineNum">     467 </span>            :  *
+<span class="lineNum">     468 </span>            :  * \f[
+<span class="lineNum">     469 </span>            :  * 0 = \frac{d}{d \phi_s} \left( \chi^2 + \lambda C \right).
+<span class="lineNum">     470 </span>            :  * \f]
+<span class="lineNum">     471 </span>            :  *
+<span class="lineNum">     472 </span>            :  * Working out the differentiation with respect to \f$\phi_s\f$ leads to the
+<span class="lineNum">     473 </span>            :  * linear problem that must be inverted to obtain the solution,
+<span class="lineNum">     474 </span>            :  *
+<span class="lineNum">     475 </span>            :  * \f[
+<span class="lineNum">     476 </span>            :  * 0 = A_{st} \phi_t - b_s - \lambda w^{(0)}_s,
+<span class="lineNum">     477 </span>            :  * \f]
+<span class="lineNum">     478 </span>            :  *
+<span class="lineNum">     479 </span>            :  * where
+<span class="lineNum">     480 </span>            :  *
+<span class="lineNum">     481 </span>            :  * \f{align*}{
+<span class="lineNum">     482 </span>            :  * A_{st} &amp;= \sum_r \left( w^{(1)}_r
+<span class="lineNum">     483 </span>            :  *                  \mathcal{I}^{(1)}_{rs} \mathcal{I}^{(1)}_{rt}
+<span class="lineNum">     484 </span>            :  *                  \right)
+<span class="lineNum">     485 </span>            :  *          + \sum_{\ell \in L} \left(
+<span class="lineNum">     486 </span>            :  *                              \sum_r \left(
+<span class="lineNum">     487 </span>            :  *                                     w^{(\ell)}_r \mathcal{I}^{(\ell)}_{rt}
+<span class="lineNum">     488 </span>            :  *                                     \right)
+<span class="lineNum">     489 </span>            :  *                              \cdot
+<span class="lineNum">     490 </span>            :  *                              \sum_r \left(
+<span class="lineNum">     491 </span>            :  *                                     w^{(\ell)}_r \mathcal{I}^{(\ell)}_{rs}
+<span class="lineNum">     492 </span>            :  *                                     \right)
+<span class="lineNum">     493 </span>            :  *                              \right)
+<span class="lineNum">     494 </span>            :  * \\
+<span class="lineNum">     495 </span>            :  * b_s &amp;= \sum_r \left( w^{(1)}_r u^{(1)}_r \mathcal{I}^{(1)}_{rs} \right)
+<span class="lineNum">     496 </span>            :  *         + \sum_{\ell \in L} \left(
+<span class="lineNum">     497 </span>            :  *                             \sum_r \left( w^{(\ell)}_r u^{(\ell)}_r \right)
+<span class="lineNum">     498 </span>            :  *                             \cdot
+<span class="lineNum">     499 </span>            :  *                             \sum_r \left(
+<span class="lineNum">     500 </span>            :  *                                    w^{(\ell)}_r \mathcal{I}^{(\ell)}_{rs}
+<span class="lineNum">     501 </span>            :  *                                    \right)
+<span class="lineNum">     502 </span>            :  *                             \right).
+<span class="lineNum">     503 </span>            :  * \f}
+<span class="lineNum">     504 </span>            :  *
+<span class="lineNum">     505 </span>            :  * Finally, the solution to the constrained fit is
+<span class="lineNum">     506 </span>            :  *
+<span class="lineNum">     507 </span>            :  * \f{align*}{
+<span class="lineNum">     508 </span>            :  * \lambda &amp;= - \frac{ \sum_s w^{(0)}_s
+<span class="lineNum">     509 </span>            :  *                            \left( (A^{-1})_{st} b_t - u^{(0)}_s \right)
+<span class="lineNum">     510 </span>            :  *              }{ \sum_s w^{(0)}_s (A^{-1})_{st} w^{(0)}_t }
+<span class="lineNum">     511 </span>            :  * \\
+<span class="lineNum">     512 </span>            :  * \phi_s &amp;= (A^{-1})_{st} ( b_t + \lambda w^{(0)}_t ).
+<span class="lineNum">     513 </span>            :  * \f}
+<span class="lineNum">     514 </span>            :  *
+<span class="lineNum">     515 </span>            :  * Note that the matrix \f$A\f$ does not depend on the values of the tensor
+<span class="lineNum">     516 </span>            :  * \f$u\f$, so its inverse \f$A^{-1}\f$ can be precomputed and stored.
+<span class="lineNum">     517 </span>            :  *
+<span class="lineNum">     518 </span>            :  * \warning
+<span class="lineNum">     519 </span>            :  * Note also that the implementation currently does not support h- or
+<span class="lineNum">     520 </span>            :  * p-refinement; this is checked by some assertions. The implementation is
+<span class="lineNum">     521 </span>            :  * untested for grids where elements are curved, and it should not be expected
+<span class="lineNum">     522 </span>            :  * to work in these cases.
+<span class="lineNum">     523 </span>            :  */
+<span class="lineNum">     524 </span>            : template &lt;typename Tag, size_t VolumeDim, typename Package&gt;
+<span class="lineNum">     525 </span><span class="lineCov">          1 : void hweno_modified_neighbor_solution(</span>
+<span class="lineNum">     526 </span>            :     const gsl::not_null&lt;db::item_type&lt;Tag&gt;*&gt; modified_tensor,
+<span class="lineNum">     527 </span>            :     const db::const_item_type&lt;Tag&gt;&amp; local_tensor,
+<span class="lineNum">     528 </span>            :     const Element&lt;VolumeDim&gt;&amp; element, const Mesh&lt;VolumeDim&gt;&amp; mesh,
+<span class="lineNum">     529 </span>            :     const LimiterNeighborData&lt;VolumeDim, Package&gt;&amp; neighbor_data,
+<span class="lineNum">     530 </span>            :     const std::pair&lt;Direction&lt;VolumeDim&gt;, ElementId&lt;VolumeDim&gt;&gt;&amp;
+<span class="lineNum">     531 </span>            :         primary_neighbor) noexcept {
+<span class="lineNum">     532 </span>            :   ASSERT(Weno_detail::check_element_has_one_similar_neighbor_in_direction(
+<span class="lineNum">     533 </span>            :              element, primary_neighbor.first),
+<span class="lineNum">     534 </span>            :          &quot;Found some amount of h-refinement; this is not supported&quot;);
+<span class="lineNum">     535 </span>            :   alg::for_each(neighbor_data, [&amp;mesh](const auto&amp; neighbor_and_data) noexcept {
+<span class="lineNum">     536 </span>            :     ASSERT(neighbor_and_data.second.mesh == mesh,
+<span class="lineNum">     537 </span>            :            &quot;Found some amount of p-refinement; this is not supported&quot;);
+<span class="lineNum">     538 </span>            :   });
+<span class="lineNum">     539 </span>            : 
+<span class="lineNum">     540 </span>            :   for (size_t tensor_index = 0; tensor_index &lt; local_tensor.size();
+<span class="lineNum">     541 </span>            :        ++tensor_index) {
+<span class="lineNum">     542 </span>            :     const auto&amp; tensor_component = local_tensor[tensor_index];
+<span class="lineNum">     543 </span>            :     const auto neighbors_to_exclude =
+<span class="lineNum">     544 </span>            :         Hweno_detail::secondary_neighbors_to_exclude_from_fit&lt;Tag&gt;(
+<span class="lineNum">     545 </span>            :             mean_value(tensor_component, mesh), tensor_index, neighbor_data,
+<span class="lineNum">     546 </span>            :             primary_neighbor);
+<span class="lineNum">     547 </span>            :     Hweno_detail::solve_constrained_fit&lt;Tag&gt;(
+<span class="lineNum">     548 </span>            :         make_not_null(&amp;(*modified_tensor)[tensor_index]),
+<span class="lineNum">     549 </span>            :         local_tensor[tensor_index], tensor_index, element, mesh, neighbor_data,
+<span class="lineNum">     550 </span>            :         primary_neighbor, neighbors_to_exclude);
+<span class="lineNum">     551 </span>            :   }
+<span class="lineNum">     552 </span>            : }
+<span class="lineNum">     553 </span>            : 
+<span class="lineNum">     554 </span>            : }  // namespace Limiters
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../../../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.13</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

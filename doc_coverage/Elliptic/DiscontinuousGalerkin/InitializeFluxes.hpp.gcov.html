@@ -1,0 +1,181 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - 5912ac2e49a80e6a27b3707c9a1e6ce5248b1b2a - Elliptic/DiscontinuousGalerkin/InitializeFluxes.hpp</title>
+  <link rel="stylesheet" type="text/css" href="../../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title"> SpECTRE Documentation Coverage Report</td></tr>
+    <tr><td class="ruler"><img src="../../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../../index.html">top level</a> - <a href="index.html">Elliptic/DiscontinuousGalerkin</a> - InitializeFluxes.hpp</td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+             <td class="headerItem">Commit:</td>
+             <td class="headerValue"><a target="_blank" href="https://github.com/sxs-collaboration/spectre/commit/5912ac2e49a80e6a27b3707c9a1e6ce5248b1b2a">5912ac2e49a80e6a27b3707c9a1e6ce5248b1b2a</a></td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">1</td>
+            <td class="headerCovTableEntry">11</td>
+            <td class="headerCovTableEntryLo">9.1 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2019-12-02 22:01:08</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td class="headerItem">Legend:</td>
+            <td class="headerValueLeg">            Lines:
+            <span class="coverLegendCov">hit</span>
+            <span class="coverLegendNoCov">not hit</span>
+</td>
+            <td></td>
+          </tr>
+          <tr><td><img src="../../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">          Line data    Source code</pre>
+<pre class="source">
+<span class="lineNum">       1 </span><span class="lineNoCov">          0 : // Distributed under the MIT License.</span>
+<span class="lineNum">       2 </span>            : // See LICENSE.txt for details.
+<span class="lineNum">       3 </span>            : 
+<span class="lineNum">       4 </span>            : #pragma once
+<span class="lineNum">       5 </span>            : 
+<span class="lineNum">       6 </span>            : #include &lt;cstddef&gt;
+<span class="lineNum">       7 </span>            : #include &lt;tuple&gt;
+<span class="lineNum">       8 </span>            : 
+<span class="lineNum">       9 </span>            : #include &quot;DataStructures/DataBox/DataBox.hpp&quot;
+<span class="lineNum">      10 </span>            : #include &quot;DataStructures/DataBox/Prefixes.hpp&quot;
+<span class="lineNum">      11 </span>            : #include &quot;Domain/Tags.hpp&quot;
+<span class="lineNum">      12 </span>            : #include &quot;Elliptic/FirstOrderComputeTags.hpp&quot;
+<span class="lineNum">      13 </span>            : #include &quot;Elliptic/Tags.hpp&quot;
+<span class="lineNum">      14 </span>            : #include &quot;NumericalAlgorithms/DiscontinuousGalerkin/NormalDotFlux.hpp&quot;
+<span class="lineNum">      15 </span>            : #include &quot;NumericalAlgorithms/LinearOperators/Divergence.hpp&quot;
+<span class="lineNum">      16 </span>            : #include &quot;ParallelAlgorithms/Initialization/MergeIntoDataBox.hpp&quot;
+<span class="lineNum">      17 </span>            : #include &quot;Utilities/TMPL.hpp&quot;
+<span class="lineNum">      18 </span>            : 
+<span class="lineNum">      19 </span>            : /// \cond
+<span class="lineNum">      20 </span>            : namespace Parallel {
+<span class="lineNum">      21 </span>            : template &lt;typename Metavariables&gt;
+<span class="lineNum">      22 </span>            : struct ConstGlobalCache;
+<span class="lineNum">      23 </span>            : }  // namespace Parallel
+<span class="lineNum">      24 </span>            : namespace tuples {
+<span class="lineNum">      25 </span>            : template &lt;typename... Tags&gt;
+<span class="lineNum">      26 </span>            : struct TaggedTuple;
+<span class="lineNum">      27 </span>            : }  // namespace tuples
+<span class="lineNum">      28 </span>            : /// \endcond
+<span class="lineNum">      29 </span>            : 
+<span class="lineNum">      30 </span>            : namespace elliptic {
+<span class="lineNum">      31 </span>            : namespace dg {
+<span class="lineNum">      32 </span>            : namespace Actions {
+<span class="lineNum">      33 </span>            : 
+<span class="lineNum">      34 </span>            : /*!
+<span class="lineNum">      35 </span>            :  * \brief Initialize DataBox tags related to discontinuous Galerkin fluxes
+<span class="lineNum">      36 </span>            :  *
+<span class="lineNum">      37 </span>            :  * Uses:
+<span class="lineNum">      38 </span>            :  * - System:
+<span class="lineNum">      39 </span>            :  *   - `volume_dim`
+<span class="lineNum">      40 </span>            :  *   - `variables_tag`
+<span class="lineNum">      41 </span>            :  *   - `fluxes`
+<span class="lineNum">      42 </span>            :  */
+<span class="lineNum">      43 </span>            : template &lt;typename Metavariables&gt;
+<span class="lineNum">      44 </span><span class="lineCov">          1 : struct InitializeFluxes {</span>
+<span class="lineNum">      45 </span>            :  private:
+<span class="lineNum">      46 </span><span class="lineNoCov">          0 :   using system = typename Metavariables::system;</span>
+<span class="lineNum">      47 </span><span class="lineNoCov">          0 :   static constexpr size_t volume_dim = system::volume_dim;</span>
+<span class="lineNum">      48 </span><span class="lineNoCov">          0 :   using vars_tag = typename system::variables_tag;</span>
+<span class="lineNum">      49 </span><span class="lineNoCov">          0 :   using fluxes_tag =</span>
+<span class="lineNum">      50 </span>            :       db::add_tag_prefix&lt;::Tags::Flux, vars_tag, tmpl::size_t&lt;volume_dim&gt;,
+<span class="lineNum">      51 </span>            :                          Frame::Inertial&gt;;
+<span class="lineNum">      52 </span><span class="lineNoCov">          0 :   using div_fluxes_tag = db::add_tag_prefix&lt;::Tags::div, fluxes_tag&gt;;</span>
+<span class="lineNum">      53 </span>            : 
+<span class="lineNum">      54 </span>            :   template &lt;typename Directions&gt;
+<span class="lineNum">      55 </span><span class="lineNoCov">          0 :   using face_tags =</span>
+<span class="lineNum">      56 </span>            :       tmpl::list&lt;::Tags::Slice&lt;Directions, fluxes_tag&gt;,
+<span class="lineNum">      57 </span>            :                  ::Tags::Slice&lt;Directions, div_fluxes_tag&gt;,
+<span class="lineNum">      58 </span>            :                  // For the strong first-order DG scheme we also need the
+<span class="lineNum">      59 </span>            :                  // interface normal dotted into the fluxes
+<span class="lineNum">      60 </span>            :                  ::Tags::InterfaceCompute&lt;
+<span class="lineNum">      61 </span>            :                      Directions, ::Tags::NormalDotFluxCompute&lt;
+<span class="lineNum">      62 </span>            :                                      vars_tag, volume_dim, Frame::Inertial&gt;&gt;&gt;;
+<span class="lineNum">      63 </span>            : 
+<span class="lineNum">      64 </span><span class="lineNoCov">          0 :   using fluxes_compute_tag =</span>
+<span class="lineNum">      65 </span>            :       elliptic::Tags::FirstOrderFluxesCompute&lt;volume_dim, system&gt;;
+<span class="lineNum">      66 </span>            : 
+<span class="lineNum">      67 </span><span class="lineNoCov">          0 :   using exterior_tags = tmpl::list&lt;</span>
+<span class="lineNum">      68 </span>            :       // On exterior (ghost) boundary faces we compute the fluxes from the
+<span class="lineNum">      69 </span>            :       // data that is being set there to impose boundary conditions. Then, we
+<span class="lineNum">      70 </span>            :       // compute their normal-dot-fluxes. The flux divergences are sliced from
+<span class="lineNum">      71 </span>            :       // the volume.
+<span class="lineNum">      72 </span>            :       ::Tags::InterfaceCompute&lt;::Tags::BoundaryDirectionsExterior&lt;volume_dim&gt;,
+<span class="lineNum">      73 </span>            :                                fluxes_compute_tag&gt;,
+<span class="lineNum">      74 </span>            :       ::Tags::InterfaceCompute&lt;
+<span class="lineNum">      75 </span>            :           ::Tags::BoundaryDirectionsExterior&lt;volume_dim&gt;,
+<span class="lineNum">      76 </span>            :           ::Tags::NormalDotFluxCompute&lt;vars_tag, volume_dim, Frame::Inertial&gt;&gt;,
+<span class="lineNum">      77 </span>            :       ::Tags::Slice&lt;::Tags::BoundaryDirectionsExterior&lt;volume_dim&gt;,
+<span class="lineNum">      78 </span>            :                     div_fluxes_tag&gt;&gt;;
+<span class="lineNum">      79 </span>            : 
+<span class="lineNum">      80 </span>            :  public:
+<span class="lineNum">      81 </span>            :   template &lt;typename DbTagsList, typename... InboxTags, typename ArrayIndex,
+<span class="lineNum">      82 </span>            :             typename ActionList, typename ParallelComponent&gt;
+<span class="lineNum">      83 </span><span class="lineNoCov">          0 :   static auto apply(db::DataBox&lt;DbTagsList&gt;&amp; box,</span>
+<span class="lineNum">      84 </span>            :                     const tuples::TaggedTuple&lt;InboxTags...&gt;&amp; /*inboxes*/,
+<span class="lineNum">      85 </span>            :                     const Parallel::ConstGlobalCache&lt;Metavariables&gt;&amp; /*cache*/,
+<span class="lineNum">      86 </span>            :                     const ArrayIndex&amp; /*array_index*/,
+<span class="lineNum">      87 </span>            :                     const ActionList /*meta*/,
+<span class="lineNum">      88 </span>            :                     const ParallelComponent* const /*meta*/) noexcept {
+<span class="lineNum">      89 </span>            :     using compute_tags = tmpl::flatten&lt;
+<span class="lineNum">      90 </span>            :         tmpl::list&lt;face_tags&lt;::Tags::InternalDirections&lt;volume_dim&gt;&gt;,
+<span class="lineNum">      91 </span>            :                    face_tags&lt;::Tags::BoundaryDirectionsInterior&lt;volume_dim&gt;&gt;,
+<span class="lineNum">      92 </span>            :                    exterior_tags&gt;&gt;;
+<span class="lineNum">      93 </span>            :     return std::make_tuple(
+<span class="lineNum">      94 </span>            :         ::Initialization::merge_into_databox&lt;InitializeFluxes,
+<span class="lineNum">      95 </span>            :                                              db::AddSimpleTags&lt;&gt;, compute_tags&gt;(
+<span class="lineNum">      96 </span>            :             std::move(box)));
+<span class="lineNum">      97 </span>            :   }
+<span class="lineNum">      98 </span>            : };
+<span class="lineNum">      99 </span>            : }  // namespace Actions
+<span class="lineNum">     100 </span>            : }  // namespace dg
+<span class="lineNum">     101 </span>            : }  // namespace elliptic
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.13</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

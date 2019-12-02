@@ -1,0 +1,19 @@
+# Distributed under the MIT License.
+# See LICENSE.txt for details.
+
+# Executable: ExportCoordinates1D
+# Check: parse;execute
+# ExpectedOutput:
+#   ExportCoordinates1DVolume0.h5
+
+DomainCreator:
+  Interval:
+    LowerBound: [0]
+    UpperBound: [1]
+    IsPeriodicIn: [false]
+    InitialRefinement: [1]
+    InitialGridPoints: [3]
+
+Observers:
+  VolumeFileName: "ExportCoordinates1DVolume"
+  ReductionFileName: "ExportCoordinates1DReductions"

@@ -1,0 +1,260 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - 5912ac2e49a80e6a27b3707c9a1e6ce5248b1b2a - ParallelAlgorithms/DiscontinuousGalerkin/InitializeMortars.hpp</title>
+  <link rel="stylesheet" type="text/css" href="../../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title"> SpECTRE Documentation Coverage Report</td></tr>
+    <tr><td class="ruler"><img src="../../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../../index.html">top level</a> - <a href="index.html">ParallelAlgorithms/DiscontinuousGalerkin</a> - InitializeMortars.hpp</td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+             <td class="headerItem">Commit:</td>
+             <td class="headerValue"><a target="_blank" href="https://github.com/sxs-collaboration/spectre/commit/5912ac2e49a80e6a27b3707c9a1e6ce5248b1b2a">5912ac2e49a80e6a27b3707c9a1e6ce5248b1b2a</a></td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">1</td>
+            <td class="headerCovTableEntry">9</td>
+            <td class="headerCovTableEntryLo">11.1 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2019-12-02 22:01:08</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td class="headerItem">Legend:</td>
+            <td class="headerValueLeg">            Lines:
+            <span class="coverLegendCov">hit</span>
+            <span class="coverLegendNoCov">not hit</span>
+</td>
+            <td></td>
+          </tr>
+          <tr><td><img src="../../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">          Line data    Source code</pre>
+<pre class="source">
+<span class="lineNum">       1 </span><span class="lineNoCov">          0 : // Distributed under the MIT License.</span>
+<span class="lineNum">       2 </span>            : // See LICENSE.txt for details.
+<span class="lineNum">       3 </span>            : 
+<span class="lineNum">       4 </span>            : #pragma once
+<span class="lineNum">       5 </span>            : 
+<span class="lineNum">       6 </span>            : #include &lt;array&gt;
+<span class="lineNum">       7 </span>            : #include &lt;cstddef&gt;
+<span class="lineNum">       8 </span>            : #include &lt;tuple&gt;
+<span class="lineNum">       9 </span>            : #include &lt;utility&gt;
+<span class="lineNum">      10 </span>            : #include &lt;vector&gt;
+<span class="lineNum">      11 </span>            : 
+<span class="lineNum">      12 </span>            : #include &quot;DataStructures/DataBox/DataBox.hpp&quot;
+<span class="lineNum">      13 </span>            : #include &quot;DataStructures/DataBox/DataBoxTag.hpp&quot;
+<span class="lineNum">      14 </span>            : #include &quot;DataStructures/DataBox/Prefixes.hpp&quot;
+<span class="lineNum">      15 </span>            : #include &quot;DataStructures/Tensor/EagerMath/Magnitude.hpp&quot;
+<span class="lineNum">      16 </span>            : #include &quot;Domain/CreateInitialMesh.hpp&quot;
+<span class="lineNum">      17 </span>            : #include &quot;Domain/Direction.hpp&quot;
+<span class="lineNum">      18 </span>            : #include &quot;Domain/Element.hpp&quot;
+<span class="lineNum">      19 </span>            : #include &quot;Domain/Mesh.hpp&quot;
+<span class="lineNum">      20 </span>            : #include &quot;Domain/Neighbors.hpp&quot;
+<span class="lineNum">      21 </span>            : #include &quot;Domain/OrientationMap.hpp&quot;
+<span class="lineNum">      22 </span>            : #include &quot;Domain/Tags.hpp&quot;
+<span class="lineNum">      23 </span>            : #include &quot;NumericalAlgorithms/DiscontinuousGalerkin/FluxCommunicationTypes.hpp&quot;
+<span class="lineNum">      24 </span>            : #include &quot;NumericalAlgorithms/DiscontinuousGalerkin/MortarHelpers.hpp&quot;
+<span class="lineNum">      25 </span>            : #include &quot;NumericalAlgorithms/DiscontinuousGalerkin/Tags.hpp&quot;
+<span class="lineNum">      26 </span>            : #include &quot;ParallelAlgorithms/Initialization/MergeIntoDataBox.hpp&quot;
+<span class="lineNum">      27 </span>            : #include &quot;Utilities/Gsl.hpp&quot;
+<span class="lineNum">      28 </span>            : #include &quot;Utilities/TMPL.hpp&quot;
+<span class="lineNum">      29 </span>            : 
+<span class="lineNum">      30 </span>            : /// \cond
+<span class="lineNum">      31 </span>            : namespace Frame {
+<span class="lineNum">      32 </span>            : struct Inertial;
+<span class="lineNum">      33 </span>            : }  // namespace Frame
+<span class="lineNum">      34 </span>            : namespace Parallel {
+<span class="lineNum">      35 </span>            : template &lt;typename Metavariables&gt;
+<span class="lineNum">      36 </span>            : class ConstGlobalCache;
+<span class="lineNum">      37 </span>            : }  // namespace Parallel
+<span class="lineNum">      38 </span>            : /// \endcond
+<span class="lineNum">      39 </span>            : 
+<span class="lineNum">      40 </span>            : namespace dg {
+<span class="lineNum">      41 </span>            : namespace Actions {
+<span class="lineNum">      42 </span>            : /*!
+<span class="lineNum">      43 </span>            :  * \ingroup InitializationGroup
+<span class="lineNum">      44 </span>            :  * \brief Initialize mortars between elements for exchanging fluxes.
+<span class="lineNum">      45 </span>            :  *
+<span class="lineNum">      46 </span>            :  * If the template parameter `AddFluxBoundaryConditionMortars`
+<span class="lineNum">      47 </span>            :  * is set to `false` then the mortar data for flux boundary conditions are not
+<span class="lineNum">      48 </span>            :  * initialized and other boundary conditions can be applied. In this case, the
+<span class="lineNum">      49 </span>            :  * `Tags::Mortars` items have no entries for external boundary directions.
+<span class="lineNum">      50 </span>            :  *
+<span class="lineNum">      51 </span>            :  * \note This action assumes that the current state is _before_ any mortar
+<span class="lineNum">      52 </span>            :  * communications take place and the first communication will happen at the
+<span class="lineNum">      53 </span>            :  * `Tags::Next&lt;temporal_id&gt;`.
+<span class="lineNum">      54 </span>            :  *
+<span class="lineNum">      55 </span>            :  * Uses:
+<span class="lineNum">      56 </span>            :  * - Metavariables:
+<span class="lineNum">      57 </span>            :  *   - `temporal_id`
+<span class="lineNum">      58 </span>            :  *   - `local_time_stepping`
+<span class="lineNum">      59 </span>            :  * - System:
+<span class="lineNum">      60 </span>            :  *   - `volume_dim`
+<span class="lineNum">      61 </span>            :  * - DataBox:
+<span class="lineNum">      62 </span>            :  *   - `Tags::Element&lt;Dim&gt;`
+<span class="lineNum">      63 </span>            :  *   - `Tags::Mesh&lt;Dim&gt;`
+<span class="lineNum">      64 </span>            :  *   - `Tags::Next&lt;temporal_id&gt;`
+<span class="lineNum">      65 </span>            :  *   - `Tags::Interface&lt;Tags::InternalDirections&lt;Dim&gt;, Tags::Mesh&lt;Dim - 1&gt;&gt;`
+<span class="lineNum">      66 </span>            :  *   - `Tags::Interface&lt;
+<span class="lineNum">      67 </span>            :  *   Tags::BoundaryDirectionsInterior&lt;Dim&gt;, Tags::Mesh&lt;Dim - 1&gt;&gt;`
+<span class="lineNum">      68 </span>            :  *
+<span class="lineNum">      69 </span>            :  * DataBox changes:
+<span class="lineNum">      70 </span>            :  * - Adds:
+<span class="lineNum">      71 </span>            :  *   - Tags::VariablesBoundaryData
+<span class="lineNum">      72 </span>            :  *   - Tags::Mortars&lt;Tags::Next&lt;temporal_id_tag&gt;, dim&gt;
+<span class="lineNum">      73 </span>            :  *   - Tags::Mortars&lt;Tags::Mesh&lt;dim - 1&gt;, dim&gt;
+<span class="lineNum">      74 </span>            :  *   - Tags::Mortars&lt;Tags::MortarSize&lt;dim - 1&gt;, dim&gt;
+<span class="lineNum">      75 </span>            :  * - Removes: nothing
+<span class="lineNum">      76 </span>            :  * - Modifies: nothing
+<span class="lineNum">      77 </span>            :  */
+<span class="lineNum">      78 </span>            : template &lt;typename Metavariables, bool AddFluxBoundaryConditionMortars = true&gt;
+<span class="lineNum">      79 </span><span class="lineCov">          1 : struct InitializeMortars {</span>
+<span class="lineNum">      80 </span>            :  private:
+<span class="lineNum">      81 </span><span class="lineNoCov">          0 :   static constexpr size_t dim = Metavariables::system::volume_dim;</span>
+<span class="lineNum">      82 </span><span class="lineNoCov">          0 :   using temporal_id_tag = typename Metavariables::temporal_id;</span>
+<span class="lineNum">      83 </span><span class="lineNoCov">          0 :   using flux_comm_types = dg::FluxCommunicationTypes&lt;Metavariables&gt;;</span>
+<span class="lineNum">      84 </span><span class="lineNoCov">          0 :   using mortar_data_tag = tmpl::conditional_t&lt;</span>
+<span class="lineNum">      85 </span>            :       Metavariables::local_time_stepping,
+<span class="lineNum">      86 </span>            :       typename flux_comm_types::local_time_stepping_mortar_data_tag,
+<span class="lineNum">      87 </span>            :       typename flux_comm_types::simple_mortar_data_tag&gt;;
+<span class="lineNum">      88 </span>            : 
+<span class="lineNum">      89 </span>            :  public:
+<span class="lineNum">      90 </span><span class="lineNoCov">          0 :   using initialization_tags = tmpl::list&lt;::Tags::InitialExtents&lt;dim&gt;&gt;;</span>
+<span class="lineNum">      91 </span>            : 
+<span class="lineNum">      92 </span>            :   template &lt;typename DataBox, typename... InboxTags, typename ArrayIndex,
+<span class="lineNum">      93 </span>            :             typename ActionList, typename ParallelComponent,
+<span class="lineNum">      94 </span>            :             Requires&lt;db::tag_is_retrievable_v&lt;::Tags::InitialExtents&lt;dim&gt;,
+<span class="lineNum">      95 </span>            :                                               DataBox&gt;&gt; = nullptr&gt;
+<span class="lineNum">      96 </span><span class="lineNoCov">          0 :   static auto apply(DataBox&amp; box,</span>
+<span class="lineNum">      97 </span>            :                     const tuples::TaggedTuple&lt;InboxTags...&gt;&amp; /*inboxes*/,
+<span class="lineNum">      98 </span>            :                     const Parallel::ConstGlobalCache&lt;Metavariables&gt;&amp; /*cache*/,
+<span class="lineNum">      99 </span>            :                     const ArrayIndex&amp; /*array_index*/, ActionList /*meta*/,
+<span class="lineNum">     100 </span>            :                     const ParallelComponent* const /*meta*/) noexcept {
+<span class="lineNum">     101 </span>            :     const auto&amp; element = db::get&lt;::Tags::Element&lt;dim&gt;&gt;(box);
+<span class="lineNum">     102 </span>            :     const auto&amp; next_temporal_id = get&lt;::Tags::Next&lt;temporal_id_tag&gt;&gt;(box);
+<span class="lineNum">     103 </span>            :     const auto&amp; initial_extents = db::get&lt;::Tags::InitialExtents&lt;dim&gt;&gt;(box);
+<span class="lineNum">     104 </span>            : 
+<span class="lineNum">     105 </span>            :     db::item_type&lt;mortar_data_tag&gt; mortar_data{};
+<span class="lineNum">     106 </span>            :     db::item_type&lt;::Tags::Mortars&lt;::Tags::Next&lt;temporal_id_tag&gt;, dim&gt;&gt;
+<span class="lineNum">     107 </span>            :         mortar_next_temporal_ids{};
+<span class="lineNum">     108 </span>            :     db::item_type&lt;::Tags::Mortars&lt;::Tags::Mesh&lt;dim - 1&gt;, dim&gt;&gt; mortar_meshes{};
+<span class="lineNum">     109 </span>            :     db::item_type&lt;::Tags::Mortars&lt;::Tags::MortarSize&lt;dim - 1&gt;, dim&gt;&gt;
+<span class="lineNum">     110 </span>            :         mortar_sizes{};
+<span class="lineNum">     111 </span>            :     const auto&amp; interface_meshes =
+<span class="lineNum">     112 </span>            :         db::get&lt;::Tags::Interface&lt;::Tags::InternalDirections&lt;dim&gt;,
+<span class="lineNum">     113 </span>            :                                   ::Tags::Mesh&lt;dim - 1&gt;&gt;&gt;(box);
+<span class="lineNum">     114 </span>            :     for (const auto&amp; direction_and_neighbors : element.neighbors()) {
+<span class="lineNum">     115 </span>            :       const auto&amp; direction = direction_and_neighbors.first;
+<span class="lineNum">     116 </span>            :       const auto&amp; neighbors = direction_and_neighbors.second;
+<span class="lineNum">     117 </span>            :       for (const auto&amp; neighbor : neighbors) {
+<span class="lineNum">     118 </span>            :         const auto mortar_id = std::make_pair(direction, neighbor);
+<span class="lineNum">     119 </span>            :         mortar_data[mortar_id];  // Default initialize data
+<span class="lineNum">     120 </span>            :         mortar_next_temporal_ids.insert({mortar_id, next_temporal_id});
+<span class="lineNum">     121 </span>            :         mortar_meshes.emplace(
+<span class="lineNum">     122 </span>            :             mortar_id,
+<span class="lineNum">     123 </span>            :             dg::mortar_mesh(
+<span class="lineNum">     124 </span>            :                 interface_meshes.at(direction),
+<span class="lineNum">     125 </span>            :                 domain::Initialization::create_initial_mesh(
+<span class="lineNum">     126 </span>            :                     initial_extents, neighbor, neighbors.orientation())
+<span class="lineNum">     127 </span>            :                     .slice_away(direction.dimension())));
+<span class="lineNum">     128 </span>            :         mortar_sizes.emplace(
+<span class="lineNum">     129 </span>            :             mortar_id,
+<span class="lineNum">     130 </span>            :             dg::mortar_size(element.id(), neighbor, direction.dimension(),
+<span class="lineNum">     131 </span>            :                             neighbors.orientation()));
+<span class="lineNum">     132 </span>            :       }
+<span class="lineNum">     133 </span>            :     }
+<span class="lineNum">     134 </span>            : 
+<span class="lineNum">     135 </span>            :     if (AddFluxBoundaryConditionMortars) {
+<span class="lineNum">     136 </span>            :       const auto&amp; boundary_meshes =
+<span class="lineNum">     137 </span>            :           db::get&lt;::Tags::Interface&lt;::Tags::BoundaryDirectionsInterior&lt;dim&gt;,
+<span class="lineNum">     138 </span>            :                                     ::Tags::Mesh&lt;dim - 1&gt;&gt;&gt;(box);
+<span class="lineNum">     139 </span>            :       for (const auto&amp; direction : element.external_boundaries()) {
+<span class="lineNum">     140 </span>            :         const auto mortar_id =
+<span class="lineNum">     141 </span>            :             std::make_pair(direction, ElementId&lt;dim&gt;::external_boundary_id());
+<span class="lineNum">     142 </span>            :         mortar_data[mortar_id];  // Default initialize data
+<span class="lineNum">     143 </span>            :         mortar_meshes.emplace(mortar_id, boundary_meshes.at(direction));
+<span class="lineNum">     144 </span>            :         mortar_sizes.emplace(mortar_id,
+<span class="lineNum">     145 </span>            :                              make_array&lt;dim - 1&gt;(Spectral::MortarSize::Full));
+<span class="lineNum">     146 </span>            :         // Since no communication needs to happen for boundary conditions
+<span class="lineNum">     147 </span>            :         // the temporal id is not advanced on the boundary, so we don't need to
+<span class="lineNum">     148 </span>            :         // initialize it.
+<span class="lineNum">     149 </span>            :       }
+<span class="lineNum">     150 </span>            :     }
+<span class="lineNum">     151 </span>            : 
+<span class="lineNum">     152 </span>            :     return std::make_tuple(
+<span class="lineNum">     153 </span>            :         ::Initialization::merge_into_databox&lt;
+<span class="lineNum">     154 </span>            :             InitializeMortars,
+<span class="lineNum">     155 </span>            :             db::AddSimpleTags&lt;
+<span class="lineNum">     156 </span>            :                 mortar_data_tag,
+<span class="lineNum">     157 </span>            :                 ::Tags::Mortars&lt;::Tags::Next&lt;temporal_id_tag&gt;, dim&gt;,
+<span class="lineNum">     158 </span>            :                 ::Tags::Mortars&lt;::Tags::Mesh&lt;dim - 1&gt;, dim&gt;,
+<span class="lineNum">     159 </span>            :                 ::Tags::Mortars&lt;::Tags::MortarSize&lt;dim - 1&gt;, dim&gt;&gt;&gt;(
+<span class="lineNum">     160 </span>            :             std::move(box), std::move(mortar_data),
+<span class="lineNum">     161 </span>            :             std::move(mortar_next_temporal_ids), std::move(mortar_meshes),
+<span class="lineNum">     162 </span>            :             std::move(mortar_sizes)));
+<span class="lineNum">     163 </span>            :   }
+<span class="lineNum">     164 </span>            : 
+<span class="lineNum">     165 </span>            :   template &lt;typename DataBox, typename... InboxTags, typename ArrayIndex,
+<span class="lineNum">     166 </span>            :             typename ActionList, typename ParallelComponent,
+<span class="lineNum">     167 </span>            :             Requires&lt;not db::tag_is_retrievable_v&lt;::Tags::InitialExtents&lt;dim&gt;,
+<span class="lineNum">     168 </span>            :                                                   DataBox&gt;&gt; = nullptr&gt;
+<span class="lineNum">     169 </span><span class="lineNoCov">          0 :   static std::tuple&lt;DataBox&amp;&amp;&gt; apply(</span>
+<span class="lineNum">     170 </span>            :       DataBox&amp; /*box*/, const tuples::TaggedTuple&lt;InboxTags...&gt;&amp; /*inboxes*/,
+<span class="lineNum">     171 </span>            :       const Parallel::ConstGlobalCache&lt;Metavariables&gt;&amp; /*cache*/,
+<span class="lineNum">     172 </span>            :       const ArrayIndex&amp; /*array_index*/, ActionList /*meta*/,
+<span class="lineNum">     173 </span>            :       const ParallelComponent* const /*meta*/) noexcept {
+<span class="lineNum">     174 </span>            :     ERROR(
+<span class="lineNum">     175 </span>            :         &quot;Dependencies not fulfilled. Did you forget to terminate the phase &quot;
+<span class="lineNum">     176 </span>            :         &quot;after removing options?&quot;);
+<span class="lineNum">     177 </span>            :   }
+<span class="lineNum">     178 </span>            : };
+<span class="lineNum">     179 </span>            : }  // namespace Actions
+<span class="lineNum">     180 </span>            : }  // namespace dg
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.13</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

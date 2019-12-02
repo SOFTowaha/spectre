@@ -1,0 +1,154 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - 5912ac2e49a80e6a27b3707c9a1e6ce5248b1b2a - Elliptic/FirstOrderOperator.hpp</title>
+  <link rel="stylesheet" type="text/css" href="../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title"> SpECTRE Documentation Coverage Report</td></tr>
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../index.html">top level</a> - <a href="index.html">Elliptic</a> - FirstOrderOperator.hpp</td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+             <td class="headerItem">Commit:</td>
+             <td class="headerValue"><a target="_blank" href="https://github.com/sxs-collaboration/spectre/commit/5912ac2e49a80e6a27b3707c9a1e6ce5248b1b2a">5912ac2e49a80e6a27b3707c9a1e6ce5248b1b2a</a></td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">1</td>
+            <td class="headerCovTableEntry">9</td>
+            <td class="headerCovTableEntryLo">11.1 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2019-12-02 22:01:08</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td class="headerItem">Legend:</td>
+            <td class="headerValueLeg">            Lines:
+            <span class="coverLegendCov">hit</span>
+            <span class="coverLegendNoCov">not hit</span>
+</td>
+            <td></td>
+          </tr>
+          <tr><td><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">          Line data    Source code</pre>
+<pre class="source">
+<span class="lineNum">       1 </span><span class="lineNoCov">          0 : // Distributed under the MIT License.</span>
+<span class="lineNum">       2 </span>            : // See LICENSE.txt for details.
+<span class="lineNum">       3 </span>            : 
+<span class="lineNum">       4 </span>            : #pragma once
+<span class="lineNum">       5 </span>            : 
+<span class="lineNum">       6 </span>            : #include &lt;cstddef&gt;
+<span class="lineNum">       7 </span>            : 
+<span class="lineNum">       8 </span>            : #include &quot;DataStructures/DataBox/DataBoxTag.hpp&quot;
+<span class="lineNum">       9 </span>            : #include &quot;DataStructures/DataBox/Prefixes.hpp&quot;
+<span class="lineNum">      10 </span>            : #include &quot;NumericalAlgorithms/LinearOperators/Divergence.hpp&quot;
+<span class="lineNum">      11 </span>            : #include &quot;Utilities/Gsl.hpp&quot;
+<span class="lineNum">      12 </span>            : #include &quot;Utilities/TMPL.hpp&quot;
+<span class="lineNum">      13 </span>            : 
+<span class="lineNum">      14 </span>            : namespace elliptic {
+<span class="lineNum">      15 </span>            : 
+<span class="lineNum">      16 </span>            : /*!
+<span class="lineNum">      17 </span>            :  * \ingroup DiscontinuousGalerkinGroup
+<span class="lineNum">      18 </span>            :  * \brief Compute the bulk contribution to the operator represented by the
+<span class="lineNum">      19 </span>            :  * `OperatorTag` applied to the `VarsTag`.
+<span class="lineNum">      20 </span>            :  *
+<span class="lineNum">      21 </span>            :  * This invokable computes \f$A(u)=-\partial_i F^i(u) + S(u)\f$, where \f$F^i\f$
+<span class="lineNum">      22 </span>            :  * and \f$S\f$ are the fluxes and sources of the system of first-order PDEs,
+<span class="lineNum">      23 </span>            :  * respectively. They are defined such that \f$A(u(x))=f(x)\f$ is the full
+<span class="lineNum">      24 </span>            :  * system of equations, with \f$f(x)\f$ representing sources that are
+<span class="lineNum">      25 </span>            :  * independent of the variables \f$u\f$. In a DG setting, boundary contributions
+<span class="lineNum">      26 </span>            :  * can be added to \f$A(u)\f$ to build the full DG operator.
+<span class="lineNum">      27 </span>            :  *
+<span class="lineNum">      28 </span>            :  * We generally build the operator \f$A(u)\f$ to perform elliptic solver
+<span class="lineNum">      29 </span>            :  * iterations. This invokable can be used to build operators for both the linear
+<span class="lineNum">      30 </span>            :  * solver and the nonlinear solver iterations by providing the appropriate
+<span class="lineNum">      31 </span>            :  * `OperatorTag` and `VarsTag`. For example, the `OperatorTag` for the linear
+<span class="lineNum">      32 </span>            :  * solver would typically be `LinearSolver::Tags::OperatorAppliedTo`. It is the
+<span class="lineNum">      33 </span>            :  * elliptic equivalent to the time derivative in evolution schemes. Instead of
+<span class="lineNum">      34 </span>            :  * using it to evolve the variables, the iterative linear solver uses it to
+<span class="lineNum">      35 </span>            :  * compute a better approximation to the equation \f$A(u)=f\f$ (as detailed
+<span class="lineNum">      36 </span>            :  * above).
+<span class="lineNum">      37 </span>            :  *
+<span class="lineNum">      38 </span>            :  * With:
+<span class="lineNum">      39 </span>            :  * - `operator_tag` = `db::add_tag_prefix&lt;OperatorTag, VarsTag&gt;`
+<span class="lineNum">      40 </span>            :  * - `fluxes_tag` = `db::add_tag_prefix&lt;::Tags::Flux, VarsTag,
+<span class="lineNum">      41 </span>            :  * tmpl::size_t&lt;Dim&gt;, Frame::Inertial&gt;`
+<span class="lineNum">      42 </span>            :  * - `div_fluxes_tag` = `db::add_tag_prefix&lt;Tags::div, fluxes_tag&gt;`
+<span class="lineNum">      43 </span>            :  * - `sources_tag` = `db::add_tag_prefix&lt;::Tags::Source, VarsTag&gt;`
+<span class="lineNum">      44 </span>            :  *
+<span class="lineNum">      45 </span>            :  * Uses:
+<span class="lineNum">      46 </span>            :  * - DataBox:
+<span class="lineNum">      47 </span>            :  *   - `div_fluxes_tag`
+<span class="lineNum">      48 </span>            :  *   - `sources_tag`
+<span class="lineNum">      49 </span>            :  *
+<span class="lineNum">      50 </span>            :  * DataBox changes:
+<span class="lineNum">      51 </span>            :  * - Modifies:
+<span class="lineNum">      52 </span>            :  *   - `operator_tag`
+<span class="lineNum">      53 </span>            :  */
+<span class="lineNum">      54 </span>            : template &lt;size_t Dim, template &lt;typename&gt; class OperatorTag, typename VarsTag&gt;
+<span class="lineNum">      55 </span><span class="lineCov">          1 : struct FirstOrderOperator {</span>
+<span class="lineNum">      56 </span>            :  private:
+<span class="lineNum">      57 </span><span class="lineNoCov">          0 :   using operator_tag = db::add_tag_prefix&lt;OperatorTag, VarsTag&gt;;</span>
+<span class="lineNum">      58 </span><span class="lineNoCov">          0 :   using fluxes_tag = db::add_tag_prefix&lt;::Tags::Flux, VarsTag,</span>
+<span class="lineNum">      59 </span>            :                                         tmpl::size_t&lt;Dim&gt;, Frame::Inertial&gt;;
+<span class="lineNum">      60 </span><span class="lineNoCov">          0 :   using div_fluxes_tag = db::add_tag_prefix&lt;::Tags::div, fluxes_tag&gt;;</span>
+<span class="lineNum">      61 </span><span class="lineNoCov">          0 :   using sources_tag = db::add_tag_prefix&lt;::Tags::Source, VarsTag&gt;;</span>
+<span class="lineNum">      62 </span>            : 
+<span class="lineNum">      63 </span>            :  public:
+<span class="lineNum">      64 </span><span class="lineNoCov">          0 :   using return_tags = tmpl::list&lt;operator_tag&gt;;</span>
+<span class="lineNum">      65 </span><span class="lineNoCov">          0 :   using argument_tags = tmpl::list&lt;div_fluxes_tag, sources_tag&gt;;</span>
+<span class="lineNum">      66 </span><span class="lineNoCov">          0 :   static void apply(const gsl::not_null&lt;db::item_type&lt;operator_tag&gt;*&gt;</span>
+<span class="lineNum">      67 </span>            :                         operator_applied_to_vars,
+<span class="lineNum">      68 </span>            :                     const db::const_item_type&lt;div_fluxes_tag&gt;&amp; div_fluxes,
+<span class="lineNum">      69 </span>            :                     const db::const_item_type&lt;sources_tag&gt;&amp; sources) noexcept {
+<span class="lineNum">      70 </span>            :     *operator_applied_to_vars = sources - div_fluxes;
+<span class="lineNum">      71 </span>            :   }
+<span class="lineNum">      72 </span>            : };
+<span class="lineNum">      73 </span>            : 
+<span class="lineNum">      74 </span>            : }  // namespace elliptic
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.13</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

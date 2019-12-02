@@ -1,0 +1,275 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - 5912ac2e49a80e6a27b3707c9a1e6ce5248b1b2a - Evolution/Initialization/DiscontinuousGalerkin.hpp</title>
+  <link rel="stylesheet" type="text/css" href="../../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title"> SpECTRE Documentation Coverage Report</td></tr>
+    <tr><td class="ruler"><img src="../../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../../index.html">top level</a> - <a href="index.html">Evolution/Initialization</a> - DiscontinuousGalerkin.hpp</td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+             <td class="headerItem">Commit:</td>
+             <td class="headerValue"><a target="_blank" href="https://github.com/sxs-collaboration/spectre/commit/5912ac2e49a80e6a27b3707c9a1e6ce5248b1b2a">5912ac2e49a80e6a27b3707c9a1e6ce5248b1b2a</a></td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">1</td>
+            <td class="headerCovTableEntry">21</td>
+            <td class="headerCovTableEntryLo">4.8 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2019-12-02 22:01:08</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td class="headerItem">Legend:</td>
+            <td class="headerValueLeg">            Lines:
+            <span class="coverLegendCov">hit</span>
+            <span class="coverLegendNoCov">not hit</span>
+</td>
+            <td></td>
+          </tr>
+          <tr><td><img src="../../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">          Line data    Source code</pre>
+<pre class="source">
+<span class="lineNum">       1 </span><span class="lineNoCov">          0 : // Distributed under the MIT License.</span>
+<span class="lineNum">       2 </span>            : // See LICENSE.txt for details.
+<span class="lineNum">       3 </span>            : 
+<span class="lineNum">       4 </span>            : #pragma once
+<span class="lineNum">       5 </span>            : 
+<span class="lineNum">       6 </span>            : #include &lt;array&gt;
+<span class="lineNum">       7 </span>            : #include &lt;cstddef&gt;
+<span class="lineNum">       8 </span>            : #include &lt;tuple&gt;
+<span class="lineNum">       9 </span>            : #include &lt;utility&gt;
+<span class="lineNum">      10 </span>            : #include &lt;vector&gt;
+<span class="lineNum">      11 </span>            : 
+<span class="lineNum">      12 </span>            : #include &quot;DataStructures/DataBox/DataBox.hpp&quot;
+<span class="lineNum">      13 </span>            : #include &quot;DataStructures/DataBox/DataBoxTag.hpp&quot;
+<span class="lineNum">      14 </span>            : #include &quot;DataStructures/DataBox/Prefixes.hpp&quot;
+<span class="lineNum">      15 </span>            : #include &quot;DataStructures/Tensor/EagerMath/Magnitude.hpp&quot;
+<span class="lineNum">      16 </span>            : #include &quot;Domain/CreateInitialMesh.hpp&quot;
+<span class="lineNum">      17 </span>            : #include &quot;Domain/Direction.hpp&quot;
+<span class="lineNum">      18 </span>            : #include &quot;Domain/Element.hpp&quot;
+<span class="lineNum">      19 </span>            : #include &quot;Domain/InterfaceComputeTags.hpp&quot;
+<span class="lineNum">      20 </span>            : #include &quot;Domain/Mesh.hpp&quot;
+<span class="lineNum">      21 </span>            : #include &quot;Domain/Neighbors.hpp&quot;
+<span class="lineNum">      22 </span>            : #include &quot;Domain/OrientationMap.hpp&quot;
+<span class="lineNum">      23 </span>            : #include &quot;Domain/Tags.hpp&quot;
+<span class="lineNum">      24 </span>            : #include &quot;NumericalAlgorithms/DiscontinuousGalerkin/FluxCommunicationTypes.hpp&quot;
+<span class="lineNum">      25 </span>            : #include &quot;NumericalAlgorithms/DiscontinuousGalerkin/MortarHelpers.hpp&quot;
+<span class="lineNum">      26 </span>            : #include &quot;NumericalAlgorithms/DiscontinuousGalerkin/NormalDotFlux.hpp&quot;
+<span class="lineNum">      27 </span>            : #include &quot;NumericalAlgorithms/DiscontinuousGalerkin/Tags.hpp&quot;
+<span class="lineNum">      28 </span>            : #include &quot;ParallelAlgorithms/Initialization/MergeIntoDataBox.hpp&quot;
+<span class="lineNum">      29 </span>            : #include &quot;Utilities/Gsl.hpp&quot;
+<span class="lineNum">      30 </span>            : #include &quot;Utilities/TMPL.hpp&quot;
+<span class="lineNum">      31 </span>            : 
+<span class="lineNum">      32 </span>            : /// \cond
+<span class="lineNum">      33 </span>            : namespace Frame {
+<span class="lineNum">      34 </span>            : struct Inertial;
+<span class="lineNum">      35 </span>            : }  // namespace Frame
+<span class="lineNum">      36 </span>            : namespace Parallel {
+<span class="lineNum">      37 </span>            : template &lt;typename Metavariables&gt;
+<span class="lineNum">      38 </span>            : class ConstGlobalCache;
+<span class="lineNum">      39 </span>            : }  // namespace Parallel
+<span class="lineNum">      40 </span>            : /// \endcond
+<span class="lineNum">      41 </span>            : 
+<span class="lineNum">      42 </span>            : namespace Initialization {
+<span class="lineNum">      43 </span>            : namespace Actions {
+<span class="lineNum">      44 </span>            : /// \ingroup InitializationGroup
+<span class="lineNum">      45 </span>            : /// \brief Initialize items related to the discontinuous Galerkin method.
+<span class="lineNum">      46 </span>            : ///
+<span class="lineNum">      47 </span>            : /// Uses:
+<span class="lineNum">      48 </span>            : /// - DataBox:
+<span class="lineNum">      49 </span>            : ///   * `Tags::Element&lt;Dim&gt;`
+<span class="lineNum">      50 </span>            : ///   * `Tags::Mesh&lt;Dim&gt;`
+<span class="lineNum">      51 </span>            : ///   * `Tags::Next&lt;temporal_id_tag&gt;`
+<span class="lineNum">      52 </span>            : ///   * `Tags::Interface&lt;Tags::InternalDirections&lt;Dim&gt;, Tags::Mesh&lt;Dim - 1&gt;&gt;`
+<span class="lineNum">      53 </span>            : ///
+<span class="lineNum">      54 </span>            : /// DataBox changes:
+<span class="lineNum">      55 </span>            : /// - Adds:
+<span class="lineNum">      56 </span>            : ///   * Tags::Interface&lt;Tags::InternalDirections&lt;Dim&gt;,
+<span class="lineNum">      57 </span>            : ///                     typename flux_comm_types::normal_dot_fluxes_tag&gt;
+<span class="lineNum">      58 </span>            : ///   * Tags::Interface&lt;Tags::BoundaryDirectionsInterior&lt;Dim&gt;,
+<span class="lineNum">      59 </span>            : ///                     typename flux_comm_types::normal_dot_fluxes_tag&gt;
+<span class="lineNum">      60 </span>            : ///   * Tags::Interface&lt;Tags::BoundaryDirectionsExterior&lt;Dim&gt;,
+<span class="lineNum">      61 </span>            : ///                     typename flux_comm_types::normal_dot_fluxes_tag&gt;
+<span class="lineNum">      62 </span>            : /// - Removes: nothing
+<span class="lineNum">      63 </span>            : /// - Modifies: nothing
+<span class="lineNum">      64 </span>            : template &lt;typename Metavariables&gt;
+<span class="lineNum">      65 </span><span class="lineCov">          1 : struct DiscontinuousGalerkin {</span>
+<span class="lineNum">      66 </span><span class="lineNoCov">          0 :   static constexpr size_t dim = Metavariables::system::volume_dim;</span>
+<span class="lineNum">      67 </span><span class="lineNoCov">          0 :   using flux_comm_types = dg::FluxCommunicationTypes&lt;Metavariables&gt;;</span>
+<span class="lineNum">      68 </span>            : 
+<span class="lineNum">      69 </span>            :   template &lt;typename Tag&gt;
+<span class="lineNum">      70 </span><span class="lineNoCov">          0 :   using interface_tag = ::Tags::Interface&lt;::Tags::InternalDirections&lt;dim&gt;, Tag&gt;;</span>
+<span class="lineNum">      71 </span>            : 
+<span class="lineNum">      72 </span>            :   template &lt;typename Tag&gt;
+<span class="lineNum">      73 </span><span class="lineNoCov">          0 :   using interior_boundary_tag =</span>
+<span class="lineNum">      74 </span>            :       ::Tags::Interface&lt;::Tags::BoundaryDirectionsInterior&lt;dim&gt;, Tag&gt;;
+<span class="lineNum">      75 </span>            : 
+<span class="lineNum">      76 </span>            :   template &lt;typename Tag&gt;
+<span class="lineNum">      77 </span><span class="lineNoCov">          0 :   using external_boundary_tag =</span>
+<span class="lineNum">      78 </span>            :       ::Tags::Interface&lt;::Tags::BoundaryDirectionsExterior&lt;dim&gt;, Tag&gt;;
+<span class="lineNum">      79 </span>            : 
+<span class="lineNum">      80 </span>            :   template &lt;typename LocalSystem, bool IsInFluxConservativeForm =
+<span class="lineNum">      81 </span>            :                                       LocalSystem::is_in_flux_conservative_form&gt;
+<span class="lineNum">      82 </span><span class="lineNoCov">          0 :   struct Impl {</span>
+<span class="lineNum">      83 </span><span class="lineNoCov">          0 :     using simple_tags = db::AddSimpleTags&lt;</span>
+<span class="lineNum">      84 </span>            :         interface_tag&lt;typename flux_comm_types::normal_dot_fluxes_tag&gt;,
+<span class="lineNum">      85 </span>            :         interior_boundary_tag&lt;typename flux_comm_types::normal_dot_fluxes_tag&gt;,
+<span class="lineNum">      86 </span>            :         external_boundary_tag&lt;typename flux_comm_types::normal_dot_fluxes_tag&gt;&gt;;
+<span class="lineNum">      87 </span><span class="lineNoCov">          0 :     using compute_tags = db::AddComputeTags&lt;&gt;;</span>
+<span class="lineNum">      88 </span>            : 
+<span class="lineNum">      89 </span>            :     template &lt;typename TagsList&gt;
+<span class="lineNum">      90 </span><span class="lineNoCov">          0 :     static auto initialize(db::DataBox&lt;TagsList&gt;&amp;&amp; box) noexcept {</span>
+<span class="lineNum">      91 </span>            :       const auto&amp; internal_directions =
+<span class="lineNum">      92 </span>            :           db::get&lt;::Tags::InternalDirections&lt;dim&gt;&gt;(box);
+<span class="lineNum">      93 </span>            : 
+<span class="lineNum">      94 </span>            :       const auto&amp; boundary_directions =
+<span class="lineNum">      95 </span>            :           db::get&lt;::Tags::BoundaryDirectionsInterior&lt;dim&gt;&gt;(box);
+<span class="lineNum">      96 </span>            : 
+<span class="lineNum">      97 </span>            :       typename interface_tag&lt;typename flux_comm_types::normal_dot_fluxes_tag&gt;::
+<span class="lineNum">      98 </span>            :           type normal_dot_fluxes_interface{};
+<span class="lineNum">      99 </span>            :       for (const auto&amp; direction : internal_directions) {
+<span class="lineNum">     100 </span>            :         const auto&amp; interface_num_points =
+<span class="lineNum">     101 </span>            :             db::get&lt;interface_tag&lt;::Tags::Mesh&lt;dim - 1&gt;&gt;&gt;(box)
+<span class="lineNum">     102 </span>            :                 .at(direction)
+<span class="lineNum">     103 </span>            :                 .number_of_grid_points();
+<span class="lineNum">     104 </span>            :         normal_dot_fluxes_interface[direction].initialize(interface_num_points,
+<span class="lineNum">     105 </span>            :                                                           0.);
+<span class="lineNum">     106 </span>            :       }
+<span class="lineNum">     107 </span>            : 
+<span class="lineNum">     108 </span>            :       typename interior_boundary_tag&lt;
+<span class="lineNum">     109 </span>            :           typename flux_comm_types::normal_dot_fluxes_tag&gt;::type
+<span class="lineNum">     110 </span>            :           normal_dot_fluxes_boundary_exterior{},
+<span class="lineNum">     111 </span>            :           normal_dot_fluxes_boundary_interior{};
+<span class="lineNum">     112 </span>            :       for (const auto&amp; direction : boundary_directions) {
+<span class="lineNum">     113 </span>            :         const auto&amp; boundary_num_points =
+<span class="lineNum">     114 </span>            :             db::get&lt;interior_boundary_tag&lt;::Tags::Mesh&lt;dim - 1&gt;&gt;&gt;(box)
+<span class="lineNum">     115 </span>            :                 .at(direction)
+<span class="lineNum">     116 </span>            :                 .number_of_grid_points();
+<span class="lineNum">     117 </span>            :         normal_dot_fluxes_boundary_exterior[direction].initialize(
+<span class="lineNum">     118 </span>            :             boundary_num_points, 0.);
+<span class="lineNum">     119 </span>            :         normal_dot_fluxes_boundary_interior[direction].initialize(
+<span class="lineNum">     120 </span>            :             boundary_num_points, 0.);
+<span class="lineNum">     121 </span>            :       }
+<span class="lineNum">     122 </span>            : 
+<span class="lineNum">     123 </span>            :       return ::Initialization::merge_into_databox&lt;DiscontinuousGalerkin,
+<span class="lineNum">     124 </span>            :                                                   simple_tags, compute_tags&gt;(
+<span class="lineNum">     125 </span>            :           std::move(box), std::move(normal_dot_fluxes_interface),
+<span class="lineNum">     126 </span>            :           std::move(normal_dot_fluxes_boundary_interior),
+<span class="lineNum">     127 </span>            :           std::move(normal_dot_fluxes_boundary_exterior));
+<span class="lineNum">     128 </span>            :     }
+<span class="lineNum">     129 </span>            :   };
+<span class="lineNum">     130 </span>            : 
+<span class="lineNum">     131 </span>            :   template &lt;typename LocalSystem&gt;
+<span class="lineNum">     132 </span><span class="lineNoCov">          0 :   struct Impl&lt;LocalSystem, true&gt; {</span>
+<span class="lineNum">     133 </span><span class="lineNoCov">          0 :     using simple_tags = db::AddSimpleTags&lt;&gt;;</span>
+<span class="lineNum">     134 </span>            : 
+<span class="lineNum">     135 </span>            :     template &lt;typename Tag&gt;
+<span class="lineNum">     136 </span><span class="lineNoCov">          0 :     using interface_compute_tag =</span>
+<span class="lineNum">     137 </span>            :         ::Tags::InterfaceCompute&lt;::Tags::InternalDirections&lt;dim&gt;, Tag&gt;;
+<span class="lineNum">     138 </span>            : 
+<span class="lineNum">     139 </span>            :     template &lt;typename Tag&gt;
+<span class="lineNum">     140 </span><span class="lineNoCov">          0 :     using boundary_interior_compute_tag =</span>
+<span class="lineNum">     141 </span>            :         ::Tags::InterfaceCompute&lt;::Tags::BoundaryDirectionsInterior&lt;dim&gt;, Tag&gt;;
+<span class="lineNum">     142 </span>            : 
+<span class="lineNum">     143 </span>            :     template &lt;typename Tag&gt;
+<span class="lineNum">     144 </span><span class="lineNoCov">          0 :     using boundary_exterior_compute_tag =</span>
+<span class="lineNum">     145 </span>            :         ::Tags::InterfaceCompute&lt;::Tags::BoundaryDirectionsExterior&lt;dim&gt;, Tag&gt;;
+<span class="lineNum">     146 </span>            : 
+<span class="lineNum">     147 </span><span class="lineNoCov">          0 :     using char_speed_tag = typename LocalSystem::char_speeds_tag;</span>
+<span class="lineNum">     148 </span>            : 
+<span class="lineNum">     149 </span><span class="lineNoCov">          0 :     using compute_tags = db::AddComputeTags&lt;</span>
+<span class="lineNum">     150 </span>            :         ::Tags::Slice&lt;::Tags::InternalDirections&lt;dim&gt;,
+<span class="lineNum">     151 </span>            :                       db::add_tag_prefix&lt;::Tags::Flux,
+<span class="lineNum">     152 </span>            :                                          typename LocalSystem::variables_tag,
+<span class="lineNum">     153 </span>            :                                          tmpl::size_t&lt;dim&gt;, Frame::Inertial&gt;&gt;,
+<span class="lineNum">     154 </span>            :         interface_compute_tag&lt;::Tags::NormalDotFluxCompute&lt;
+<span class="lineNum">     155 </span>            :             typename LocalSystem::variables_tag, dim, Frame::Inertial&gt;&gt;,
+<span class="lineNum">     156 </span>            :         interface_compute_tag&lt;char_speed_tag&gt;,
+<span class="lineNum">     157 </span>            :         ::Tags::Slice&lt;::Tags::BoundaryDirectionsInterior&lt;dim&gt;,
+<span class="lineNum">     158 </span>            :                       db::add_tag_prefix&lt;::Tags::Flux,
+<span class="lineNum">     159 </span>            :                                          typename LocalSystem::variables_tag,
+<span class="lineNum">     160 </span>            :                                          tmpl::size_t&lt;dim&gt;, Frame::Inertial&gt;&gt;,
+<span class="lineNum">     161 </span>            :         boundary_interior_compute_tag&lt;::Tags::NormalDotFluxCompute&lt;
+<span class="lineNum">     162 </span>            :             typename LocalSystem::variables_tag, dim, Frame::Inertial&gt;&gt;,
+<span class="lineNum">     163 </span>            :         boundary_interior_compute_tag&lt;char_speed_tag&gt;,
+<span class="lineNum">     164 </span>            :         ::Tags::Slice&lt;::Tags::BoundaryDirectionsExterior&lt;dim&gt;,
+<span class="lineNum">     165 </span>            :                       db::add_tag_prefix&lt;::Tags::Flux,
+<span class="lineNum">     166 </span>            :                                          typename LocalSystem::variables_tag,
+<span class="lineNum">     167 </span>            :                                          tmpl::size_t&lt;dim&gt;, Frame::Inertial&gt;&gt;,
+<span class="lineNum">     168 </span>            :         boundary_exterior_compute_tag&lt;::Tags::NormalDotFluxCompute&lt;
+<span class="lineNum">     169 </span>            :             typename LocalSystem::variables_tag, dim, Frame::Inertial&gt;&gt;,
+<span class="lineNum">     170 </span>            :         boundary_exterior_compute_tag&lt;char_speed_tag&gt;&gt;;
+<span class="lineNum">     171 </span>            : 
+<span class="lineNum">     172 </span>            :     template &lt;typename TagsList&gt;
+<span class="lineNum">     173 </span><span class="lineNoCov">          0 :     static auto initialize(db::DataBox&lt;TagsList&gt;&amp;&amp; box) noexcept {</span>
+<span class="lineNum">     174 </span>            :       return ::Initialization::merge_into_databox&lt;DiscontinuousGalerkin,
+<span class="lineNum">     175 </span>            :                                                   simple_tags, compute_tags&gt;(
+<span class="lineNum">     176 </span>            :           std::move(box));
+<span class="lineNum">     177 </span>            :     }
+<span class="lineNum">     178 </span>            :   };
+<span class="lineNum">     179 </span>            : 
+<span class="lineNum">     180 </span><span class="lineNoCov">          0 :   using initialization_tags =</span>
+<span class="lineNum">     181 </span>            :       tmpl::list&lt;::Tags::InitialExtents&lt;Metavariables::volume_dim&gt;&gt;;
+<span class="lineNum">     182 </span>            : 
+<span class="lineNum">     183 </span>            :   template &lt;typename DbTagsList, typename... InboxTags, typename ArrayIndex,
+<span class="lineNum">     184 </span>            :             typename ActionList, typename ParallelComponent&gt;
+<span class="lineNum">     185 </span><span class="lineNoCov">          0 :   static auto apply(db::DataBox&lt;DbTagsList&gt;&amp; box,</span>
+<span class="lineNum">     186 </span>            :                     const tuples::TaggedTuple&lt;InboxTags...&gt;&amp; /*inboxes*/,
+<span class="lineNum">     187 </span>            :                     const Parallel::ConstGlobalCache&lt;Metavariables&gt;&amp; /*cache*/,
+<span class="lineNum">     188 </span>            :                     const ArrayIndex&amp; /*array_index*/, ActionList /*meta*/,
+<span class="lineNum">     189 </span>            :                     const ParallelComponent* const /*meta*/) noexcept {
+<span class="lineNum">     190 </span>            :     return std::make_tuple(
+<span class="lineNum">     191 </span>            :         Impl&lt;typename Metavariables::system&gt;::initialize(std::move(box)));
+<span class="lineNum">     192 </span>            :   }
+<span class="lineNum">     193 </span>            : };
+<span class="lineNum">     194 </span>            : }  // namespace Actions
+<span class="lineNum">     195 </span>            : }  // namespace Initialization
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.13</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

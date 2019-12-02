@@ -1,0 +1,1039 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - 5912ac2e49a80e6a27b3707c9a1e6ce5248b1b2a - Evolution/Systems/Cce/Equations.hpp</title>
+  <link rel="stylesheet" type="text/css" href="../../../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title"> SpECTRE Documentation Coverage Report</td></tr>
+    <tr><td class="ruler"><img src="../../../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../../../index.html">top level</a> - <a href="index.html">Evolution/Systems/Cce</a> - Equations.hpp</td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+             <td class="headerItem">Commit:</td>
+             <td class="headerValue"><a target="_blank" href="https://github.com/sxs-collaboration/spectre/commit/5912ac2e49a80e6a27b3707c9a1e6ce5248b1b2a">5912ac2e49a80e6a27b3707c9a1e6ce5248b1b2a</a></td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">12</td>
+            <td class="headerCovTableEntry">93</td>
+            <td class="headerCovTableEntryLo">12.9 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2019-12-02 22:01:08</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td class="headerItem">Legend:</td>
+            <td class="headerValueLeg">            Lines:
+            <span class="coverLegendCov">hit</span>
+            <span class="coverLegendNoCov">not hit</span>
+</td>
+            <td></td>
+          </tr>
+          <tr><td><img src="../../../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../../../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">          Line data    Source code</pre>
+<pre class="source">
+<span class="lineNum">       1 </span><span class="lineNoCov">          0 : // Distributed under the MIT License.</span>
+<span class="lineNum">       2 </span>            : // See LICENSE.txt for details.
+<span class="lineNum">       3 </span>            : 
+<span class="lineNum">       4 </span>            : #pragma once
+<span class="lineNum">       5 </span>            : 
+<span class="lineNum">       6 </span>            : #include &lt;type_traits&gt;
+<span class="lineNum">       7 </span>            : 
+<span class="lineNum">       8 </span>            : #include &quot;DataStructures/SpinWeighted.hpp&quot;  // IWYU pragma: keep
+<span class="lineNum">       9 </span>            : #include &quot;DataStructures/Tags.hpp&quot;
+<span class="lineNum">      10 </span>            : #include &quot;DataStructures/Tensor/Tensor.hpp&quot;
+<span class="lineNum">      11 </span>            : #include &quot;DataStructures/Variables.hpp&quot;
+<span class="lineNum">      12 </span>            : #include &quot;Evolution/Systems/Cce/Tags.hpp&quot;  // IWYU pragma: keep
+<span class="lineNum">      13 </span>            : #include &quot;NumericalAlgorithms/Spectral/SwshTags.hpp&quot;
+<span class="lineNum">      14 </span>            : #include &quot;Utilities/Gsl.hpp&quot;
+<span class="lineNum">      15 </span>            : #include &quot;Utilities/TMPL.hpp&quot;
+<span class="lineNum">      16 </span>            : 
+<span class="lineNum">      17 </span>            : // IWYU pragma: no_forward_declare Cce::Tags::BondiBeta
+<span class="lineNum">      18 </span>            : // IWYU pragma: no_forward_declare Cce::Tags::DuRDividedByR
+<span class="lineNum">      19 </span>            : // IWYU pragma: no_forward_declare Cce::Tags::EthRDividedByR
+<span class="lineNum">      20 </span>            : // IWYU pragma: no_forward_declare Cce::Tags::Exp2Beta
+<span class="lineNum">      21 </span>            : // IWYU pragma: no_forward_declare Cce::Tags::BondiH
+<span class="lineNum">      22 </span>            : // IWYU pragma: no_forward_declare Cce::Tags::BondiJ
+<span class="lineNum">      23 </span>            : // IWYU pragma: no_forward_declare Cce::Tags::BondiJbar
+<span class="lineNum">      24 </span>            : // IWYU pragma: no_forward_declare Cce::Tags::JbarQMinus2EthBeta
+<span class="lineNum">      25 </span>            : // IWYU pragma: no_forward_declare Cce::Tags::BondiK
+<span class="lineNum">      26 </span>            : // IWYU pragma: no_forward_declare Cce::Tags::OneMinusY
+<span class="lineNum">      27 </span>            : // IWYU pragma: no_forward_declare Cce::Tags::BondiQ
+<span class="lineNum">      28 </span>            : // IWYU pragma: no_forward_declare Cce::Tags::BondiR
+<span class="lineNum">      29 </span>            : // IWYU pragma: no_forward_declare Cce::Tags::BondiU
+<span class="lineNum">      30 </span>            : // IWYU pragma: no_forward_declare Cce::Tags::BondiUbar
+<span class="lineNum">      31 </span>            : // IWYU pragma: no_forward_declare Cce::Tags::BondiW
+<span class="lineNum">      32 </span>            : // IWYU pragma: no_forward_declare ::Tags::Multiplies
+<span class="lineNum">      33 </span>            : // IWYU pragma: no_forward_declare Cce::Tags::Dy
+<span class="lineNum">      34 </span>            : // IWYU pragma: no_forward_declare Cce::Tags::Integrand
+<span class="lineNum">      35 </span>            : // IWYU pragma: no_forward_declare Cce::Tags::LinearFactor
+<span class="lineNum">      36 </span>            : // IWYU pragma: no_forward_declare Cce::Tags::LinearFactorForConjugate
+<span class="lineNum">      37 </span>            : // IWYU pragma: no_forward_declare Cce::Tags::PoleOfIntegrand
+<span class="lineNum">      38 </span>            : // IWYU pragma: no_forward_declare Cce::Tags::RegularIntegrand
+<span class="lineNum">      39 </span>            : // IWYU pragma: no_forward_declare Spectral::Swsh::Tags::Eth
+<span class="lineNum">      40 </span>            : // IWYU pragma: no_forward_declare Spectral::Swsh::Tags::EthEth
+<span class="lineNum">      41 </span>            : // IWYU pragma: no_forward_declare Spectral::Swsh::Tags::EthEthbar
+<span class="lineNum">      42 </span>            : // IWYU pragma: no_forward_declare Spectral::Swsh::Tags::Ethbar
+<span class="lineNum">      43 </span>            : // IWYU pragma: no_forward_declare Spectral::Swsh::Tags::EthbarEthbar
+<span class="lineNum">      44 </span>            : // IWYU pragma: no_forward_declare Spectral::Swsh::Tags::Derivative
+<span class="lineNum">      45 </span>            : // IWYU pragma: no_forward_declare Tags::TempTensor
+<span class="lineNum">      46 </span>            : // IWYU pragma: no_forward_declare Tags::SpinWeighted
+<span class="lineNum">      47 </span>            : // IWYU pragma: no_forward_declare SpinWeighted
+<span class="lineNum">      48 </span>            : // IWYU pragma: no_forward_declare Tensor
+<span class="lineNum">      49 </span>            : 
+<span class="lineNum">      50 </span>            : /// \cond
+<span class="lineNum">      51 </span>            : class ComplexDataVector;
+<span class="lineNum">      52 </span>            : /// \endcond
+<span class="lineNum">      53 </span>            : 
+<span class="lineNum">      54 </span>            : /// Contains functionality for Cauchy Characteristic Extraction
+<span class="lineNum">      55 </span>            : namespace Cce {
+<span class="lineNum">      56 </span>            : 
+<span class="lineNum">      57 </span>            : namespace detail {
+<span class="lineNum">      58 </span>            : template &lt;typename BondiVariable&gt;
+<span class="lineNum">      59 </span>            : struct integrand_terms_to_compute_for_bondi_variable_impl;
+<span class="lineNum">      60 </span>            : 
+<span class="lineNum">      61 </span>            : // template specializations for the individual tags
+<span class="lineNum">      62 </span>            : template &lt;&gt;
+<span class="lineNum">      63 </span>            : struct integrand_terms_to_compute_for_bondi_variable_impl&lt;Tags::BondiBeta&gt; {
+<span class="lineNum">      64 </span>            :   using type = tmpl::list&lt;Tags::Integrand&lt;Tags::BondiBeta&gt;&gt;;
+<span class="lineNum">      65 </span>            : };
+<span class="lineNum">      66 </span>            : template &lt;&gt;
+<span class="lineNum">      67 </span>            : struct integrand_terms_to_compute_for_bondi_variable_impl&lt;Tags::BondiQ&gt; {
+<span class="lineNum">      68 </span>            :   using type = tmpl::list&lt;Tags::PoleOfIntegrand&lt;Tags::BondiQ&gt;,
+<span class="lineNum">      69 </span>            :                           Tags::RegularIntegrand&lt;Tags::BondiQ&gt;&gt;;
+<span class="lineNum">      70 </span>            : };
+<span class="lineNum">      71 </span>            : template &lt;&gt;
+<span class="lineNum">      72 </span>            : struct integrand_terms_to_compute_for_bondi_variable_impl&lt;Tags::BondiU&gt; {
+<span class="lineNum">      73 </span>            :   using type = tmpl::list&lt;Tags::Integrand&lt;Tags::BondiU&gt;&gt;;
+<span class="lineNum">      74 </span>            : };
+<span class="lineNum">      75 </span>            : template &lt;&gt;
+<span class="lineNum">      76 </span>            : struct integrand_terms_to_compute_for_bondi_variable_impl&lt;Tags::BondiW&gt; {
+<span class="lineNum">      77 </span>            :   using type = tmpl::list&lt;Tags::PoleOfIntegrand&lt;Tags::BondiW&gt;,
+<span class="lineNum">      78 </span>            :                           Tags::RegularIntegrand&lt;Tags::BondiW&gt;&gt;;
+<span class="lineNum">      79 </span>            : };
+<span class="lineNum">      80 </span>            : template &lt;&gt;
+<span class="lineNum">      81 </span>            : struct integrand_terms_to_compute_for_bondi_variable_impl&lt;Tags::BondiH&gt; {
+<span class="lineNum">      82 </span>            :   using type = tmpl::list&lt;Tags::PoleOfIntegrand&lt;Tags::BondiH&gt;,
+<span class="lineNum">      83 </span>            :                           Tags::RegularIntegrand&lt;Tags::BondiH&gt;,
+<span class="lineNum">      84 </span>            :                           Tags::LinearFactor&lt;Tags::BondiH&gt;,
+<span class="lineNum">      85 </span>            :                           Tags::LinearFactorForConjugate&lt;Tags::BondiH&gt;&gt;;
+<span class="lineNum">      86 </span>            : };
+<span class="lineNum">      87 </span>            : }  // namespace detail
+<span class="lineNum">      88 </span>            : 
+<span class="lineNum">      89 </span>            : /// \brief A struct for providing a `tmpl::list` of integrand tags that need to
+<span class="lineNum">      90 </span>            : /// be computed before integration can proceed for a given Bondi variable tag.
+<span class="lineNum">      91 </span>            : template &lt;typename BondiVariable&gt;
+<span class="lineNum">      92 </span><span class="lineCov">          1 : using integrand_terms_to_compute_for_bondi_variable =</span>
+<span class="lineNum">      93 </span>            :     typename detail::integrand_terms_to_compute_for_bondi_variable_impl&lt;
+<span class="lineNum">      94 </span>            :         BondiVariable&gt;::type;
+<span class="lineNum">      95 </span>            : 
+<span class="lineNum">      96 </span>            : /*!
+<span class="lineNum">      97 </span>            :  * \brief Computes one of the inputs for the integration of one of the
+<span class="lineNum">      98 </span>            :  * Characteristic hypersurface equations.
+<span class="lineNum">      99 </span>            :  *
+<span class="lineNum">     100 </span>            :  * \details The template argument must be one of the integrand-related prefix
+<span class="lineNum">     101 </span>            :  * tags templated on a Bondi quantity tag for which that integrand is required.
+<span class="lineNum">     102 </span>            :  * The relevant prefix tags are `Tags::Integrand`, `Tags::PoleOfIntegrand`,
+<span class="lineNum">     103 </span>            :  * `Tags::RegularIntegrand`, `Tags::LinearFactor`, and
+<span class="lineNum">     104 </span>            :  * `Tags::LinearFactorForConjugate`. The Bondi quantity tags that these tags may
+<span class="lineNum">     105 </span>            :  * wrap are `Tags::BondiBeta`, `Tags::BondiQ`, `Tags::BondiU`, `Tags::BondiW`,
+<span class="lineNum">     106 </span>            :  * and `Tags::BondiH`.
+<span class="lineNum">     107 </span>            :  *
+<span class="lineNum">     108 </span>            :  * The integrand terms which may be computed for a given Bondi variable are
+<span class="lineNum">     109 </span>            :  * enumerated in the type alias `integrand_terms_to_compute_for_bondi_variable`,
+<span class="lineNum">     110 </span>            :  * which takes as a single template argument the tag for which integrand terms
+<span class="lineNum">     111 </span>            :  * would be computed, and is a `tmpl::list` of the integrand terms needed.
+<span class="lineNum">     112 </span>            :  *
+<span class="lineNum">     113 </span>            :  * The resulting quantity is returned by `not_null` pointer, and the required
+<span class="lineNum">     114 </span>            :  * argument tags are given in `return_tags` and `argument_tags` type aliases,
+<span class="lineNum">     115 </span>            :  * where the `return_tags` are passed by `not_null` pointer (so include
+<span class="lineNum">     116 </span>            :  * temporary buffers) and the `argument_tags` are passed by const reference.
+<span class="lineNum">     117 </span>            :  *
+<span class="lineNum">     118 </span>            :  * Additional mathematical details for each of the computations can be found in
+<span class="lineNum">     119 </span>            :  * the template specializations of this struct. All of the specializations have
+<span class="lineNum">     120 </span>            :  * a static `apply` function which takes as arguments
+<span class="lineNum">     121 </span>            :  * `SpinWeighted&lt;ComplexDataVector, N&gt;`s for each of the Bondi arguments.
+<span class="lineNum">     122 </span>            :  */
+<span class="lineNum">     123 </span>            : template &lt;typename IntegrandTag&gt;
+<span class="lineNum">     124 </span><span class="lineCov">          1 : struct ComputeBondiIntegrand;</span>
+<span class="lineNum">     125 </span>            : 
+<span class="lineNum">     126 </span>            : /*!
+<span class="lineNum">     127 </span>            :  * \brief Computes the integrand (right-hand side) of the equation which
+<span class="lineNum">     128 </span>            :  * determines the radial (y) dependence of the Bondi quantity \f$\beta\f$.
+<span class="lineNum">     129 </span>            :  *
+<span class="lineNum">     130 </span>            :  * \details The quantity \f$\beta\f$ is defined via the Bondi form of the
+<span class="lineNum">     131 </span>            :  * metric:
+<span class="lineNum">     132 </span>            :  * \f[
+<span class="lineNum">     133 </span>            :  * ds^2 = - \left(e^{2 \beta} (1 + r W) - r^2 h_{AB} U^A U^B\right) du^2 - 2
+<span class="lineNum">     134 </span>            :  * e^{2 \beta} du dr - 2 r^2 h_{AB} U^B du dx^A + r^2 h_{A B} dx^A dx^B. \f]
+<span class="lineNum">     135 </span>            :  * Additional quantities \f$J\f$ and \f$K\f$ are defined using a spherical
+<span class="lineNum">     136 </span>            :  * angular dyad \f$q^A\f$:
+<span class="lineNum">     137 </span>            :  * \f[ J \equiv h_{A B} q^A q^B, K \equiv h_{A B} q^A
+<span class="lineNum">     138 </span>            :  * \bar{q}^B.\f]
+<span class="lineNum">     139 </span>            :  * See \cite Bishop1997ik \cite Handmer2014qha for full details.
+<span class="lineNum">     140 </span>            :  *
+<span class="lineNum">     141 </span>            :  * We write the equations of motion in the compactified coordinate \f$ y \equiv
+<span class="lineNum">     142 </span>            :  * 1 - 2 R/ r\f$, where \f$r(u, \theta, \phi)\f$ is the Bondi radius of the
+<span class="lineNum">     143 </span>            :  * \f$y=\f$ constant surface and \f$R(u,\theta,\phi)\f$ is the Bondi radius of
+<span class="lineNum">     144 </span>            :  * the worldtube. The equation which determines \f$\beta\f$ on a surface of
+<span class="lineNum">     145 </span>            :  * constant \f$u\f$ given \f$J\f$ on the same surface is
+<span class="lineNum">     146 </span>            :  * \f[\partial_y (\beta) =
+<span class="lineNum">     147 </span>            :  * \frac{1}{8} (-1 + y) \left(\partial_y (J) \partial_y(\bar{J})
+<span class="lineNum">     148 </span>            :  * - \frac{(\partial_y (J \bar{J}))^2}{4 K^2}\right). \f]
+<span class="lineNum">     149 </span>            :  */
+<span class="lineNum">     150 </span>            : template &lt;&gt;
+<span class="lineNum">     151 </span><span class="lineCov">          1 : struct ComputeBondiIntegrand&lt;Tags::Integrand&lt;Tags::BondiBeta&gt;&gt; {</span>
+<span class="lineNum">     152 </span>            :  public:
+<span class="lineNum">     153 </span><span class="lineNoCov">          0 :   using pre_swsh_derivative_tags =</span>
+<span class="lineNum">     154 </span>            :       tmpl::list&lt;Tags::Dy&lt;Tags::BondiJ&gt;, Tags::BondiJ&gt;;
+<span class="lineNum">     155 </span><span class="lineNoCov">          0 :   using swsh_derivative_tags = tmpl::list&lt;&gt;;</span>
+<span class="lineNum">     156 </span><span class="lineNoCov">          0 :   using integration_independent_tags = tmpl::list&lt;Tags::OneMinusY&gt;;</span>
+<span class="lineNum">     157 </span><span class="lineNoCov">          0 :   using temporary_tags = tmpl::list&lt;&gt;;</span>
+<span class="lineNum">     158 </span>            : 
+<span class="lineNum">     159 </span><span class="lineNoCov">          0 :   using return_tags = tmpl::append&lt;tmpl::list&lt;Tags::Integrand&lt;Tags::BondiBeta&gt;&gt;,</span>
+<span class="lineNum">     160 </span>            :                                    temporary_tags&gt;;
+<span class="lineNum">     161 </span><span class="lineNoCov">          0 :   using argument_tags =</span>
+<span class="lineNum">     162 </span>            :       tmpl::append&lt;pre_swsh_derivative_tags, swsh_derivative_tags,
+<span class="lineNum">     163 </span>            :                    integration_independent_tags&gt;;
+<span class="lineNum">     164 </span>            : 
+<span class="lineNum">     165 </span>            :   template &lt;typename... Args&gt;
+<span class="lineNum">     166 </span><span class="lineNoCov">          0 :   static void apply(</span>
+<span class="lineNum">     167 </span>            :       const gsl::not_null&lt;Scalar&lt;SpinWeighted&lt;ComplexDataVector, 0&gt;&gt;*&gt;
+<span class="lineNum">     168 </span>            :           integrand_for_beta,
+<span class="lineNum">     169 </span>            :       const Args&amp;... args) noexcept {
+<span class="lineNum">     170 </span>            :     apply_impl(make_not_null(&amp;get(*integrand_for_beta)), get(args)...);
+<span class="lineNum">     171 </span>            :   }
+<span class="lineNum">     172 </span>            : 
+<span class="lineNum">     173 </span>            :  private:
+<span class="lineNum">     174 </span><span class="lineNoCov">          0 :   static void apply_impl(</span>
+<span class="lineNum">     175 </span>            :       gsl::not_null&lt;SpinWeighted&lt;ComplexDataVector, 0&gt;*&gt; integrand_for_beta,
+<span class="lineNum">     176 </span>            :       const SpinWeighted&lt;ComplexDataVector, 2&gt;&amp; dy_j,
+<span class="lineNum">     177 </span>            :       const SpinWeighted&lt;ComplexDataVector, 2&gt;&amp; j,
+<span class="lineNum">     178 </span>            :       const SpinWeighted&lt;ComplexDataVector, 0&gt;&amp; one_minus_y) noexcept;
+<span class="lineNum">     179 </span>            : };
+<span class="lineNum">     180 </span>            : 
+<span class="lineNum">     181 </span>            : /*!
+<span class="lineNum">     182 </span>            :  * \brief Computes the pole part of the integrand (right-hand side) of the
+<span class="lineNum">     183 </span>            :  * equation which determines the radial (y) dependence of the Bondi quantity
+<span class="lineNum">     184 </span>            :  * \f$Q\f$.
+<span class="lineNum">     185 </span>            :  *
+<span class="lineNum">     186 </span>            :  * \details The quantity \f$Q\f$ is defined via the Bondi form of the metric:
+<span class="lineNum">     187 </span>            :  * \f[ds^2 = - \left(e^{2 \beta} (1 + r W) - r^2 h_{AB} U^A U^B\right) du^2 - 2
+<span class="lineNum">     188 </span>            :  * e^{2 \beta} du dr - 2 r^2 h_{AB} U^B du dx^A + r^2 h_{A B} dx^A dx^B. \f]
+<span class="lineNum">     189 </span>            :  * Additional quantities \f$J\f$ and \f$K\f$ are defined using a spherical
+<span class="lineNum">     190 </span>            :  * angular dyad \f$q^A\f$:
+<span class="lineNum">     191 </span>            :  * \f[ J \equiv h_{A B} q^A q^B, K \equiv h_{A B} q^A \bar{q}^B,\f]
+<span class="lineNum">     192 </span>            :  * and \f$Q\f$ is defined as a supplemental variable for radial integration of
+<span class="lineNum">     193 </span>            :  * \f$U\f$:
+<span class="lineNum">     194 </span>            :  * \f[ Q_A = r^2 e^{-2\beta} h_{AB} \partial_r U^B\f]
+<span class="lineNum">     195 </span>            :  * and \f$Q = Q_A q^A\f$. See \cite Bishop1997ik \cite Handmer2014qha for full
+<span class="lineNum">     196 </span>            :  * details.
+<span class="lineNum">     197 </span>            :  *
+<span class="lineNum">     198 </span>            :  * We write the equations of motion in the compactified coordinate \f$ y \equiv
+<span class="lineNum">     199 </span>            :  * 1 - 2 R/ r\f$, where \f$r(u, \theta, \phi)\f$ is the Bondi radius of the
+<span class="lineNum">     200 </span>            :  * \f$y=\f$ constant surface and \f$R(u,\theta,\phi)\f$ is the Bondi radius of
+<span class="lineNum">     201 </span>            :  * the worldtube. The equation which determines \f$Q\f$ on a surface of constant
+<span class="lineNum">     202 </span>            :  * \f$u\f$ given \f$J\f$ and \f$\beta\f$ on the same surface is written as
+<span class="lineNum">     203 </span>            :  * \f[(1 - y) \partial_y Q + 2 Q = A_Q + (1 - y) B_Q.\f]
+<span class="lineNum">     204 </span>            :  * We refer to \f$A_Q\f$ as the &quot;pole part&quot; of the integrand and \f$B_Q\f$
+<span class="lineNum">     205 </span>            :  * as the &quot;regular part&quot;. The pole part is computed by this function, and has
+<span class="lineNum">     206 </span>            :  * the expression
+<span class="lineNum">     207 </span>            :  * \f[A_Q = -4 \eth \beta.\f]
+<span class="lineNum">     208 </span>            :  */
+<span class="lineNum">     209 </span>            : template &lt;&gt;
+<span class="lineNum">     210 </span><span class="lineCov">          1 : struct ComputeBondiIntegrand&lt;Tags::PoleOfIntegrand&lt;Tags::BondiQ&gt;&gt; {</span>
+<span class="lineNum">     211 </span>            :  public:
+<span class="lineNum">     212 </span><span class="lineNoCov">          0 :   using pre_swsh_derivative_tags = tmpl::list&lt;&gt;;</span>
+<span class="lineNum">     213 </span><span class="lineNoCov">          0 :   using swsh_derivative_tags =</span>
+<span class="lineNum">     214 </span>            :       tmpl::list&lt;Spectral::Swsh::Tags::Derivative&lt;Tags::BondiBeta,
+<span class="lineNum">     215 </span>            :                                                   Spectral::Swsh::Tags::Eth&gt;&gt;;
+<span class="lineNum">     216 </span><span class="lineNoCov">          0 :   using integration_independent_tags = tmpl::list&lt;&gt;;</span>
+<span class="lineNum">     217 </span><span class="lineNoCov">          0 :   using temporary_tags = tmpl::list&lt;&gt;;</span>
+<span class="lineNum">     218 </span>            : 
+<span class="lineNum">     219 </span><span class="lineNoCov">          0 :   using return_tags =</span>
+<span class="lineNum">     220 </span>            :       tmpl::append&lt;tmpl::list&lt;Tags::PoleOfIntegrand&lt;Tags::BondiQ&gt;&gt;,
+<span class="lineNum">     221 </span>            :                    temporary_tags&gt;;
+<span class="lineNum">     222 </span><span class="lineNoCov">          0 :   using argument_tags =</span>
+<span class="lineNum">     223 </span>            :       tmpl::append&lt;pre_swsh_derivative_tags, swsh_derivative_tags,
+<span class="lineNum">     224 </span>            :                    integration_independent_tags&gt;;
+<span class="lineNum">     225 </span>            : 
+<span class="lineNum">     226 </span>            :   template &lt;typename... Args&gt;
+<span class="lineNum">     227 </span><span class="lineNoCov">          0 :   static void apply(</span>
+<span class="lineNum">     228 </span>            :       const gsl::not_null&lt;Scalar&lt;SpinWeighted&lt;ComplexDataVector, 1&gt;&gt;*&gt;
+<span class="lineNum">     229 </span>            :           pole_of_integrand_for_q,
+<span class="lineNum">     230 </span>            :       const Args&amp;... args) noexcept {
+<span class="lineNum">     231 </span>            :     apply_impl(make_not_null(&amp;get(*pole_of_integrand_for_q)), get(args)...);
+<span class="lineNum">     232 </span>            :   }
+<span class="lineNum">     233 </span>            : 
+<span class="lineNum">     234 </span>            :  private:
+<span class="lineNum">     235 </span><span class="lineNoCov">          0 :   static void apply_impl(</span>
+<span class="lineNum">     236 </span>            :       gsl::not_null&lt;SpinWeighted&lt;ComplexDataVector, 1&gt;*&gt;
+<span class="lineNum">     237 </span>            :           pole_of_integrand_for_q,
+<span class="lineNum">     238 </span>            :       const SpinWeighted&lt;ComplexDataVector, 1&gt;&amp; eth_beta) noexcept;
+<span class="lineNum">     239 </span>            : };
+<span class="lineNum">     240 </span>            : 
+<span class="lineNum">     241 </span>            : /*!
+<span class="lineNum">     242 </span>            :  * \brief Computes the regular part of the integrand (right-hand side) of the
+<span class="lineNum">     243 </span>            :  * equation which determines the radial (y) dependence of the Bondi quantity
+<span class="lineNum">     244 </span>            :  * \f$Q\f$.
+<span class="lineNum">     245 </span>            :  *
+<span class="lineNum">     246 </span>            :  * \details The quantity \f$Q\f$ is defined via the Bondi form of the metric:
+<span class="lineNum">     247 </span>            :  * \f[ds^2 = - \left(e^{2 \beta} (1 + r W) - r^2 h_{AB} U^A U^B\right) du^2 - 2
+<span class="lineNum">     248 </span>            :  * e^{2 \beta} du dr - 2 r^2 h_{AB} U^B du dx^A + r^2 h_{A B} dx^A dx^B. \f]
+<span class="lineNum">     249 </span>            :  * Additional quantities \f$J\f$ and \f$K\f$ are defined using a spherical
+<span class="lineNum">     250 </span>            :  * angular dyad \f$q^A\f$:
+<span class="lineNum">     251 </span>            :  * \f[ J \equiv h_{A B} q^A q^B, K \equiv h_{A B} q^A \bar{q}^B,\f]
+<span class="lineNum">     252 </span>            :  * and \f$Q\f$ is defined as a supplemental variable for radial integration of
+<span class="lineNum">     253 </span>            :  * \f$U\f$:
+<span class="lineNum">     254 </span>            :  * \f[ Q_A = r^2 e^{-2\beta} h_{AB} \partial_r U^B\f]
+<span class="lineNum">     255 </span>            :  * and \f$Q = Q_A q^A\f$. See \cite Bishop1997ik \cite Handmer2014qha for
+<span class="lineNum">     256 </span>            :  * full details.
+<span class="lineNum">     257 </span>            :  *
+<span class="lineNum">     258 </span>            :  * We write the equations of motion in the compactified coordinate \f$ y \equiv
+<span class="lineNum">     259 </span>            :  * 1 - 2 R/ r\f$, where \f$r(u, \theta, \phi)\f$ is the Bondi radius of the
+<span class="lineNum">     260 </span>            :  * \f$y=\f$ constant surface and \f$R(u,\theta,\phi)\f$ is the Bondi radius of
+<span class="lineNum">     261 </span>            :  * the worldtube. The equation which determines \f$Q\f$ on a surface of constant
+<span class="lineNum">     262 </span>            :  * \f$u\f$ given \f$J\f$ and \f$\beta\f$ on the same surface is written as
+<span class="lineNum">     263 </span>            :  * \f[(1 - y) \partial_y Q + 2 Q = A_Q + (1 - y) B_Q. \f]
+<span class="lineNum">     264 </span>            :  * We refer to \f$A_Q\f$ as the &quot;pole part&quot; of the integrand and \f$B_Q\f$ as
+<span class="lineNum">     265 </span>            :  * the &quot;regular part&quot;. The regular part is computed by this function, and has
+<span class="lineNum">     266 </span>            :  * the expression
+<span class="lineNum">     267 </span>            :  * \f[  B_Q = - \left(2 \mathcal{A}_Q + \frac{2
+<span class="lineNum">     268 </span>            :  * \bar{\mathcal{A}_Q} J}{K} -  2 \partial_y (\eth (\beta)) +
+<span class="lineNum">     269 </span>            :  * \frac{\partial_y (\bar{\eth} (J))}{K}\right), \f]
+<span class="lineNum">     270 </span>            :  * where
+<span class="lineNum">     271 </span>            :  * \f[ \mathcal{A}_Q = - \tfrac{1}{4} \eth (\bar{J} \partial_y (J)) +
+<span class="lineNum">     272 </span>            :  * \tfrac{1}{4} J \partial_y (\eth (\bar{J})) -  \tfrac{1}{4} \eth (\bar{J})
+<span class="lineNum">     273 </span>            :  * \partial_y (J) + \frac{\eth (J \bar{J}) \partial_y (J \bar{J})}{8 K^2} -
+<span class="lineNum">     274 </span>            :  * \frac{\bar{J} \eth (R) \partial_y (J)}{4 R}. \f].
+<span class="lineNum">     275 </span>            :  */
+<span class="lineNum">     276 </span>            : template &lt;&gt;
+<span class="lineNum">     277 </span><span class="lineCov">          1 : struct ComputeBondiIntegrand&lt;Tags::RegularIntegrand&lt;Tags::BondiQ&gt;&gt; {</span>
+<span class="lineNum">     278 </span>            :  public:
+<span class="lineNum">     279 </span><span class="lineNoCov">          0 :   using pre_swsh_derivative_tags =</span>
+<span class="lineNum">     280 </span>            :       tmpl::list&lt;Tags::Dy&lt;Tags::BondiBeta&gt;, Tags::Dy&lt;Tags::BondiJ&gt;,
+<span class="lineNum">     281 </span>            :                  Tags::BondiJ&gt;;
+<span class="lineNum">     282 </span><span class="lineNoCov">          0 :   using swsh_derivative_tags = tmpl::list&lt;</span>
+<span class="lineNum">     283 </span>            :       Spectral::Swsh::Tags::Derivative&lt;Tags::Dy&lt;Tags::BondiBeta&gt;,
+<span class="lineNum">     284 </span>            :                                        Spectral::Swsh::Tags::Eth&gt;,
+<span class="lineNum">     285 </span>            :       Spectral::Swsh::Tags::Derivative&lt;
+<span class="lineNum">     286 </span>            :           ::Tags::Multiplies&lt;Tags::BondiJ, Tags::BondiJbar&gt;,
+<span class="lineNum">     287 </span>            :           Spectral::Swsh::Tags::Eth&gt;,
+<span class="lineNum">     288 </span>            :       Spectral::Swsh::Tags::Derivative&lt;
+<span class="lineNum">     289 </span>            :           ::Tags::Multiplies&lt;Tags::BondiJbar, Tags::Dy&lt;Tags::BondiJ&gt;&gt;,
+<span class="lineNum">     290 </span>            :           Spectral::Swsh::Tags::Eth&gt;,
+<span class="lineNum">     291 </span>            :       Spectral::Swsh::Tags::Derivative&lt;Tags::Dy&lt;Tags::BondiJ&gt;,
+<span class="lineNum">     292 </span>            :                                        Spectral::Swsh::Tags::Ethbar&gt;,
+<span class="lineNum">     293 </span>            :       Spectral::Swsh::Tags::Derivative&lt;Tags::BondiJ,
+<span class="lineNum">     294 </span>            :                                        Spectral::Swsh::Tags::Ethbar&gt;&gt;;
+<span class="lineNum">     295 </span><span class="lineNoCov">          0 :   using integration_independent_tags =</span>
+<span class="lineNum">     296 </span>            :       tmpl::list&lt;Tags::EthRDividedByR, Tags::BondiK&gt;;
+<span class="lineNum">     297 </span><span class="lineNoCov">          0 :   using temporary_tags =</span>
+<span class="lineNum">     298 </span>            :       tmpl::list&lt;::Tags::SpinWeighted&lt;::Tags::TempScalar&lt;0, ComplexDataVector&gt;,
+<span class="lineNum">     299 </span>            :                                       std::integral_constant&lt;int, 1&gt;&gt;&gt;;
+<span class="lineNum">     300 </span>            : 
+<span class="lineNum">     301 </span><span class="lineNoCov">          0 :   using return_tags =</span>
+<span class="lineNum">     302 </span>            :       tmpl::append&lt;tmpl::list&lt;Tags::RegularIntegrand&lt;Tags::BondiQ&gt;&gt;,
+<span class="lineNum">     303 </span>            :                    temporary_tags&gt;;
+<span class="lineNum">     304 </span><span class="lineNoCov">          0 :   using argument_tags =</span>
+<span class="lineNum">     305 </span>            :       tmpl::append&lt;pre_swsh_derivative_tags, swsh_derivative_tags,
+<span class="lineNum">     306 </span>            :                    integration_independent_tags&gt;;
+<span class="lineNum">     307 </span>            : 
+<span class="lineNum">     308 </span>            :   template &lt;typename... Args&gt;
+<span class="lineNum">     309 </span><span class="lineNoCov">          0 :   static void apply(</span>
+<span class="lineNum">     310 </span>            :       const gsl::not_null&lt;Scalar&lt;SpinWeighted&lt;ComplexDataVector, 1&gt;&gt;*&gt;
+<span class="lineNum">     311 </span>            :           regular_integrand_for_q,
+<span class="lineNum">     312 </span>            :       const gsl::not_null&lt;Scalar&lt;SpinWeighted&lt;ComplexDataVector, 1&gt;&gt;*&gt;
+<span class="lineNum">     313 </span>            :           script_aq,
+<span class="lineNum">     314 </span>            :       const Args&amp;... args) noexcept {
+<span class="lineNum">     315 </span>            :     apply_impl(make_not_null(&amp;get(*regular_integrand_for_q)),
+<span class="lineNum">     316 </span>            :                make_not_null(&amp;get(*script_aq)), get(args)...);
+<span class="lineNum">     317 </span>            :   }
+<span class="lineNum">     318 </span>            : 
+<span class="lineNum">     319 </span>            :  private:
+<span class="lineNum">     320 </span><span class="lineNoCov">          0 :   static void apply_impl(</span>
+<span class="lineNum">     321 </span>            :       gsl::not_null&lt;SpinWeighted&lt;ComplexDataVector, 1&gt;*&gt;
+<span class="lineNum">     322 </span>            :           regular_integrand_for_q,
+<span class="lineNum">     323 </span>            :       gsl::not_null&lt;SpinWeighted&lt;ComplexDataVector, 1&gt;*&gt; script_aq,
+<span class="lineNum">     324 </span>            :       const SpinWeighted&lt;ComplexDataVector, 0&gt;&amp; dy_beta,
+<span class="lineNum">     325 </span>            :       const SpinWeighted&lt;ComplexDataVector, 2&gt;&amp; dy_j,
+<span class="lineNum">     326 </span>            :       const SpinWeighted&lt;ComplexDataVector, 2&gt;&amp; j,
+<span class="lineNum">     327 </span>            :       const SpinWeighted&lt;ComplexDataVector, 1&gt;&amp; eth_dy_beta,
+<span class="lineNum">     328 </span>            :       const SpinWeighted&lt;ComplexDataVector, 1&gt;&amp; eth_j_jbar,
+<span class="lineNum">     329 </span>            :       const SpinWeighted&lt;ComplexDataVector, 1&gt;&amp; eth_jbar_dy_j,
+<span class="lineNum">     330 </span>            :       const SpinWeighted&lt;ComplexDataVector, 1&gt;&amp; ethbar_dy_j,
+<span class="lineNum">     331 </span>            :       const SpinWeighted&lt;ComplexDataVector, 1&gt;&amp; ethbar_j,
+<span class="lineNum">     332 </span>            :       const SpinWeighted&lt;ComplexDataVector, 1&gt;&amp; eth_r_divided_by_r,
+<span class="lineNum">     333 </span>            :       const SpinWeighted&lt;ComplexDataVector, 0&gt;&amp; k) noexcept;
+<span class="lineNum">     334 </span>            : };
+<span class="lineNum">     335 </span>            : 
+<span class="lineNum">     336 </span>            : /*!
+<span class="lineNum">     337 </span>            :  * \brief Computes the integrand (right-hand side) of the equation which
+<span class="lineNum">     338 </span>            :  * determines the radial (y) dependence of the Bondi quantity \f$U\f$.
+<span class="lineNum">     339 </span>            :  *
+<span class="lineNum">     340 </span>            :  * \details The quantity \f$U\f$ is defined via the Bondi form of the metric:
+<span class="lineNum">     341 </span>            :  * \f[ds^2 = - \left(e^{2 \beta} (1 + r W) - r^2 h_{AB} U^A U^B\right) du^2 - 2
+<span class="lineNum">     342 </span>            :  * e^{2 \beta} du dr - 2 r^2 h_{AB} U^B du dx^A + r^2 h_{A B} dx^A dx^B. \f]
+<span class="lineNum">     343 </span>            :  * Additional quantities \f$J\f$ and \f$K\f$ are defined using a spherical
+<span class="lineNum">     344 </span>            :  * angular dyad \f$q^A\f$:
+<span class="lineNum">     345 </span>            :  * \f[ J \equiv h_{A B} q^A q^B, K \equiv h_{A B} q^A \bar{q}^B,\f]
+<span class="lineNum">     346 </span>            :  * and \f$Q\f$ is defined as a supplemental variable for radial integration of
+<span class="lineNum">     347 </span>            :  * \f$U\f$:
+<span class="lineNum">     348 </span>            :  * \f[ Q_A = r^2 e^{-2\beta} h_{AB} \partial_r U^B\f]
+<span class="lineNum">     349 </span>            :  * and \f$U = U_A q^A\f$. See \cite Bishop1997ik \cite Handmer2014qha for full
+<span class="lineNum">     350 </span>            :  * details.
+<span class="lineNum">     351 </span>            :  *
+<span class="lineNum">     352 </span>            :  * We write the equations of motion in the compactified coordinate \f$ y \equiv
+<span class="lineNum">     353 </span>            :  * 1 - 2 R/ r\f$, where \f$r(u, \theta, \phi)\f$ is the Bondi radius of the
+<span class="lineNum">     354 </span>            :  * \f$y=\f$ constant surface and \f$R(u,\theta,\phi)\f$ is the Bondi radius of
+<span class="lineNum">     355 </span>            :  * the worldtube. The equation which determines \f$U\f$ on a surface of constant
+<span class="lineNum">     356 </span>            :  * \f$u\f$ given \f$J\f$, \f$\beta\f$, and \f$Q\f$ on the same surface is
+<span class="lineNum">     357 </span>            :  * written as
+<span class="lineNum">     358 </span>            :  * \f[\partial_y U = \frac{e^{2\beta}}{2 R} (K Q - J \bar{Q}). \f]
+<span class="lineNum">     359 </span>            :  */
+<span class="lineNum">     360 </span>            : template &lt;&gt;
+<span class="lineNum">     361 </span><span class="lineCov">          1 : struct ComputeBondiIntegrand&lt;Tags::Integrand&lt;Tags::BondiU&gt;&gt; {</span>
+<span class="lineNum">     362 </span>            :  public:
+<span class="lineNum">     363 </span><span class="lineNoCov">          0 :   using pre_swsh_derivative_tags =</span>
+<span class="lineNum">     364 </span>            :       tmpl::list&lt;Tags::Exp2Beta, Tags::BondiJ, Tags::BondiQ&gt;;
+<span class="lineNum">     365 </span><span class="lineNoCov">          0 :   using swsh_derivative_tags = tmpl::list&lt;&gt;;</span>
+<span class="lineNum">     366 </span><span class="lineNoCov">          0 :   using integration_independent_tags = tmpl::list&lt;Tags::BondiK, Tags::BondiR&gt;;</span>
+<span class="lineNum">     367 </span><span class="lineNoCov">          0 :   using temporary_tags = tmpl::list&lt;&gt;;</span>
+<span class="lineNum">     368 </span>            : 
+<span class="lineNum">     369 </span><span class="lineNoCov">          0 :   using return_tags =</span>
+<span class="lineNum">     370 </span>            :       tmpl::append&lt;tmpl::list&lt;Tags::Integrand&lt;Tags::BondiU&gt;&gt;, temporary_tags&gt;;
+<span class="lineNum">     371 </span><span class="lineNoCov">          0 :   using argument_tags =</span>
+<span class="lineNum">     372 </span>            :       tmpl::append&lt;pre_swsh_derivative_tags, swsh_derivative_tags,
+<span class="lineNum">     373 </span>            :                    integration_independent_tags&gt;;
+<span class="lineNum">     374 </span>            : 
+<span class="lineNum">     375 </span>            :   template &lt;typename... Args&gt;
+<span class="lineNum">     376 </span><span class="lineNoCov">          0 :   static void apply(</span>
+<span class="lineNum">     377 </span>            :       const gsl::not_null&lt;Scalar&lt;SpinWeighted&lt;ComplexDataVector, 1&gt;&gt;*&gt;
+<span class="lineNum">     378 </span>            :           regular_integrand_for_u,
+<span class="lineNum">     379 </span>            :       const Args&amp;... args) noexcept {
+<span class="lineNum">     380 </span>            :     apply_impl(make_not_null(&amp;get(*regular_integrand_for_u)), get(args)...);
+<span class="lineNum">     381 </span>            :   }
+<span class="lineNum">     382 </span>            : 
+<span class="lineNum">     383 </span>            :  private:
+<span class="lineNum">     384 </span><span class="lineNoCov">          0 :   static void apply_impl(gsl::not_null&lt;SpinWeighted&lt;ComplexDataVector, 1&gt;*&gt;</span>
+<span class="lineNum">     385 </span>            :                              regular_integrand_for_u,
+<span class="lineNum">     386 </span>            :                          const SpinWeighted&lt;ComplexDataVector, 0&gt;&amp; exp_2_beta,
+<span class="lineNum">     387 </span>            :                          const SpinWeighted&lt;ComplexDataVector, 2&gt;&amp; j,
+<span class="lineNum">     388 </span>            :                          const SpinWeighted&lt;ComplexDataVector, 1&gt;&amp; q,
+<span class="lineNum">     389 </span>            :                          const SpinWeighted&lt;ComplexDataVector, 0&gt;&amp; k,
+<span class="lineNum">     390 </span>            :                          const SpinWeighted&lt;ComplexDataVector, 0&gt;&amp; r) noexcept;
+<span class="lineNum">     391 </span>            : };
+<span class="lineNum">     392 </span>            : 
+<span class="lineNum">     393 </span>            : /*!
+<span class="lineNum">     394 </span>            :  * \brief Computes the pole part of the integrand (right-hand side) of the
+<span class="lineNum">     395 </span>            :  * equation which determines the radial (y) dependence of the Bondi quantity
+<span class="lineNum">     396 </span>            :  * \f$W\f$.
+<span class="lineNum">     397 </span>            :  *
+<span class="lineNum">     398 </span>            :  * \details The quantity \f$W\f$ is defined via the Bondi form of the metric:
+<span class="lineNum">     399 </span>            :  * \f[ds^2 = - \left(e^{2 \beta} (1 + r W) - r^2 h_{AB} U^A U^B\right) du^2 - 2
+<span class="lineNum">     400 </span>            :  * e^{2 \beta} du dr - 2 r^2 h_{AB} U^B du dx^A + r^2 h_{A B} dx^A dx^B. \f]
+<span class="lineNum">     401 </span>            :  * Additional quantities \f$J\f$ and \f$K\f$ are defined using a spherical
+<span class="lineNum">     402 </span>            :  * angular dyad \f$q^A\f$:
+<span class="lineNum">     403 </span>            :  * \f[ J \equiv h_{A B} q^A q^B, K \equiv h_{A B} q^A \bar{q}^B.\f]
+<span class="lineNum">     404 </span>            :  * See \cite Bishop1997ik \cite Handmer2014qha for full details.
+<span class="lineNum">     405 </span>            :  *
+<span class="lineNum">     406 </span>            :  * We write the equations of motion in the compactified coordinate \f$ y \equiv
+<span class="lineNum">     407 </span>            :  * 1 - 2 R/ r\f$, where \f$r(u, \theta, \phi)\f$ is the Bondi radius of the
+<span class="lineNum">     408 </span>            :  * \f$y=\f$ constant surface and \f$R(u,\theta,\phi)\f$ is the Bondi radius of
+<span class="lineNum">     409 </span>            :  * the worldtube. The equation which determines \f$W\f$ on a surface of constant
+<span class="lineNum">     410 </span>            :  * \f$u\f$ given \f$J\f$,\f$\beta\f$, \f$Q\f$, and \f$U\f$ on the same surface
+<span class="lineNum">     411 </span>            :  * is written as
+<span class="lineNum">     412 </span>            :  * \f[(1 - y) \partial_y W + 2 W = A_W + (1 - y) B_W.\f] We refer
+<span class="lineNum">     413 </span>            :  * to \f$A_W\f$ as the &quot;pole part&quot; of the integrand and \f$B_W\f$ as the
+<span class="lineNum">     414 </span>            :  * &quot;regular part&quot;. The pole part is computed by this function, and has the
+<span class="lineNum">     415 </span>            :  * expression
+<span class="lineNum">     416 </span>            :  * \f[A_W = \eth (\bar{U}) + \bar{\eth} (U).\f]
+<span class="lineNum">     417 </span>            :  */
+<span class="lineNum">     418 </span>            : template &lt;&gt;
+<span class="lineNum">     419 </span><span class="lineCov">          1 : struct ComputeBondiIntegrand&lt;Tags::PoleOfIntegrand&lt;Tags::BondiW&gt;&gt; {</span>
+<span class="lineNum">     420 </span>            :  public:
+<span class="lineNum">     421 </span><span class="lineNoCov">          0 :   using pre_swsh_derivative_tags = tmpl::list&lt;&gt;;</span>
+<span class="lineNum">     422 </span><span class="lineNoCov">          0 :   using swsh_derivative_tags = tmpl::list&lt;Spectral::Swsh::Tags::Derivative&lt;</span>
+<span class="lineNum">     423 </span>            :       Tags::BondiU, Spectral::Swsh::Tags::Ethbar&gt;&gt;;
+<span class="lineNum">     424 </span><span class="lineNoCov">          0 :   using integration_independent_tags = tmpl::list&lt;&gt;;</span>
+<span class="lineNum">     425 </span><span class="lineNoCov">          0 :   using temporary_tags = tmpl::list&lt;&gt;;</span>
+<span class="lineNum">     426 </span>            : 
+<span class="lineNum">     427 </span><span class="lineNoCov">          0 :   using return_tags =</span>
+<span class="lineNum">     428 </span>            :       tmpl::append&lt;tmpl::list&lt;Tags::PoleOfIntegrand&lt;Tags::BondiW&gt;&gt;,
+<span class="lineNum">     429 </span>            :                    temporary_tags&gt;;
+<span class="lineNum">     430 </span><span class="lineNoCov">          0 :   using argument_tags =</span>
+<span class="lineNum">     431 </span>            :       tmpl::append&lt;pre_swsh_derivative_tags, swsh_derivative_tags,
+<span class="lineNum">     432 </span>            :                    integration_independent_tags&gt;;
+<span class="lineNum">     433 </span>            : 
+<span class="lineNum">     434 </span>            :   template &lt;typename... Args&gt;
+<span class="lineNum">     435 </span><span class="lineNoCov">          0 :   static void apply(</span>
+<span class="lineNum">     436 </span>            :       const gsl::not_null&lt;Scalar&lt;SpinWeighted&lt;ComplexDataVector, 0&gt;&gt;*&gt;
+<span class="lineNum">     437 </span>            :           pole_of_integrand_for_w,
+<span class="lineNum">     438 </span>            :       const Args&amp;... args) noexcept {
+<span class="lineNum">     439 </span>            :     apply_impl(make_not_null(&amp;get(*pole_of_integrand_for_w)), get(args)...);
+<span class="lineNum">     440 </span>            :   }
+<span class="lineNum">     441 </span>            : 
+<span class="lineNum">     442 </span>            :  private:
+<span class="lineNum">     443 </span><span class="lineNoCov">          0 :   static void apply_impl(</span>
+<span class="lineNum">     444 </span>            :       gsl::not_null&lt;SpinWeighted&lt;ComplexDataVector, 0&gt;*&gt;
+<span class="lineNum">     445 </span>            :           pole_of_integrand_for_w,
+<span class="lineNum">     446 </span>            :       const SpinWeighted&lt;ComplexDataVector, 0&gt;&amp; ethbar_u) noexcept;
+<span class="lineNum">     447 </span>            : };
+<span class="lineNum">     448 </span>            : 
+<span class="lineNum">     449 </span>            : /*!
+<span class="lineNum">     450 </span>            :  * \brief Computes the regular part of the integrand (right-hand side) of the
+<span class="lineNum">     451 </span>            :  * equation which determines the radial (y) dependence of the Bondi quantity
+<span class="lineNum">     452 </span>            :  * \f$W\f$.
+<span class="lineNum">     453 </span>            :  *
+<span class="lineNum">     454 </span>            :  * \details The quantity \f$W\f$ is defined via the Bondi form of the metric:
+<span class="lineNum">     455 </span>            :  * \f[ds^2 = - \left(e^{2 \beta} (1 + r W) - r^2 h_{AB} U^A U^B\right) du^2 - 2
+<span class="lineNum">     456 </span>            :  * e^{2 \beta} du dr - 2 r^2 h_{AB} U^B du dx^A + r^2 h_{A B} dx^A dx^B. \f]
+<span class="lineNum">     457 </span>            :  * Additional quantities \f$J\f$ and \f$K\f$ are defined using a spherical
+<span class="lineNum">     458 </span>            :  * angular dyad \f$q^A\f$:
+<span class="lineNum">     459 </span>            :  * \f[ J \equiv h_{A B} q^A q^B, K \equiv h_{A B} q^A \bar{q}^B,\f]
+<span class="lineNum">     460 </span>            :  * See \cite Bishop1997ik \cite Handmer2014qha for full details.
+<span class="lineNum">     461 </span>            :  *
+<span class="lineNum">     462 </span>            :  * We write the equations of motion in the compactified coordinate \f$ y \equiv
+<span class="lineNum">     463 </span>            :  * 1 - 2 R/ r\f$, where \f$r(u, \theta, \phi)\f$ is the Bondi radius of the
+<span class="lineNum">     464 </span>            :  * \f$y=\f$ constant surface and \f$R(u,\theta,\phi)\f$ is the Bondi radius of
+<span class="lineNum">     465 </span>            :  * the worldtube. The equation which determines \f$W\f$ on a surface of constant
+<span class="lineNum">     466 </span>            :  * \f$u\f$ given \f$J\f$, \f$\beta\f$, \f$Q\f$, \f$U\f$ on the same surface is
+<span class="lineNum">     467 </span>            :  * written as
+<span class="lineNum">     468 </span>            :  * \f[(1 - y) \partial_y W + 2 W = A_W + (1 - y) B_W. \f]
+<span class="lineNum">     469 </span>            :  * We refer to \f$A_W\f$ as the &quot;pole part&quot; of the integrand and \f$B_W\f$ as
+<span class="lineNum">     470 </span>            :  * the &quot;regular part&quot;. The regular part is computed by this function, and has
+<span class="lineNum">     471 </span>            :  * the expression
+<span class="lineNum">     472 </span>            :  * \f[  B_W = \tfrac{1}{4} \partial_y (\eth (\bar{U})) + \tfrac{1}{4} \partial_y
+<span class="lineNum">     473 </span>            :  * (\bar{\eth} (U)) -  \frac{1}{2 R} + \frac{e^{2 \beta} (\mathcal{A}_W +
+<span class="lineNum">     474 </span>            :  * \bar{\mathcal{A}_W})}{4 R}, \f]
+<span class="lineNum">     475 </span>            :  * where
+<span class="lineNum">     476 </span>            :  * \f{align*}
+<span class="lineNum">     477 </span>            :  * \mathcal{A}_W =&amp; - \eth (\beta) \eth (\bar{J}) + \tfrac{1}{2} \bar{\eth}
+<span class="lineNum">     478 </span>            :  * (\bar{\eth} (J)) + 2 \bar{\eth} (\beta) \bar{\eth} (J) + (\bar{\eth}
+<span class="lineNum">     479 </span>            :  * (\beta))^2 J + \bar{\eth}
+<span class="lineNum">     480 </span>            :  * (\bar{\eth} (\beta)) J + \frac{\eth (J \bar{J}) \bar{\eth} (J \bar{J})}{8
+<span class="lineNum">     481 </span>            :  * K^3} + \frac{1}{2 K} -  \frac{\eth (\bar{\eth} (J \bar{J}))}{8 K} -
+<span class="lineNum">     482 </span>            :  * \frac{\eth (J
+<span class="lineNum">     483 </span>            :  * \bar{J}) \bar{\eth} (\beta)}{2 K} \nonumber \\
+<span class="lineNum">     484 </span>            :  * &amp;-  \frac{\eth (\bar{J}) \bar{\eth} (J)}{4 K} -  \frac{\eth (\bar{\eth} (J))
+<span class="lineNum">     485 </span>            :  * \bar{J}}{4 K} + \tfrac{1}{2} K  -  \eth (\bar{\eth} (\beta)) K -  \eth
+<span class="lineNum">     486 </span>            :  * (\beta) \bar{\eth} (\beta) K + \tfrac{1}{4} (- K Q \bar{Q} + J \bar{Q}^2).
+<span class="lineNum">     487 </span>            :  * \f}
+<span class="lineNum">     488 </span>            :  */
+<span class="lineNum">     489 </span>            : template &lt;&gt;
+<span class="lineNum">     490 </span><span class="lineCov">          1 : struct ComputeBondiIntegrand&lt;Tags::RegularIntegrand&lt;Tags::BondiW&gt;&gt; {</span>
+<span class="lineNum">     491 </span>            :  public:
+<span class="lineNum">     492 </span><span class="lineNoCov">          0 :   using pre_swsh_derivative_tags =</span>
+<span class="lineNum">     493 </span>            :       tmpl::list&lt;Tags::Dy&lt;Tags::BondiU&gt;, Tags::Exp2Beta, Tags::BondiJ,
+<span class="lineNum">     494 </span>            :                  Tags::BondiQ&gt;;
+<span class="lineNum">     495 </span><span class="lineNoCov">          0 :   using swsh_derivative_tags = tmpl::list&lt;</span>
+<span class="lineNum">     496 </span>            :       Spectral::Swsh::Tags::Derivative&lt;Tags::BondiBeta,
+<span class="lineNum">     497 </span>            :                                        Spectral::Swsh::Tags::Eth&gt;,
+<span class="lineNum">     498 </span>            :       Spectral::Swsh::Tags::Derivative&lt;Tags::BondiBeta,
+<span class="lineNum">     499 </span>            :                                        Spectral::Swsh::Tags::EthEth&gt;,
+<span class="lineNum">     500 </span>            :       Spectral::Swsh::Tags::Derivative&lt;Tags::BondiBeta,
+<span class="lineNum">     501 </span>            :                                        Spectral::Swsh::Tags::EthEthbar&gt;,
+<span class="lineNum">     502 </span>            :       Spectral::Swsh::Tags::Derivative&lt;
+<span class="lineNum">     503 </span>            :           Spectral::Swsh::Tags::Derivative&lt;Tags::BondiJ,
+<span class="lineNum">     504 </span>            :                                            Spectral::Swsh::Tags::Ethbar&gt;,
+<span class="lineNum">     505 </span>            :           Spectral::Swsh::Tags::Eth&gt;,
+<span class="lineNum">     506 </span>            :       Spectral::Swsh::Tags::Derivative&lt;
+<span class="lineNum">     507 </span>            :           ::Tags::Multiplies&lt;Tags::BondiJ, Tags::BondiJbar&gt;,
+<span class="lineNum">     508 </span>            :           Spectral::Swsh::Tags::EthEthbar&gt;,
+<span class="lineNum">     509 </span>            :       Spectral::Swsh::Tags::Derivative&lt;
+<span class="lineNum">     510 </span>            :           ::Tags::Multiplies&lt;Tags::BondiJ, Tags::BondiJbar&gt;,
+<span class="lineNum">     511 </span>            :           Spectral::Swsh::Tags::Eth&gt;,
+<span class="lineNum">     512 </span>            :       Spectral::Swsh::Tags::Derivative&lt;Tags::Dy&lt;Tags::BondiU&gt;,
+<span class="lineNum">     513 </span>            :                                        Spectral::Swsh::Tags::Ethbar&gt;,
+<span class="lineNum">     514 </span>            :       Spectral::Swsh::Tags::Derivative&lt;Tags::BondiJ,
+<span class="lineNum">     515 </span>            :                                        Spectral::Swsh::Tags::EthbarEthbar&gt;,
+<span class="lineNum">     516 </span>            :       Spectral::Swsh::Tags::Derivative&lt;Tags::BondiJ,
+<span class="lineNum">     517 </span>            :                                        Spectral::Swsh::Tags::Ethbar&gt;&gt;;
+<span class="lineNum">     518 </span><span class="lineNoCov">          0 :   using integration_independent_tags =</span>
+<span class="lineNum">     519 </span>            :       tmpl::list&lt;Tags::EthRDividedByR, Tags::BondiK, Tags::BondiR&gt;;
+<span class="lineNum">     520 </span><span class="lineNoCov">          0 :   using temporary_tags =</span>
+<span class="lineNum">     521 </span>            :       tmpl::list&lt;::Tags::SpinWeighted&lt;::Tags::TempScalar&lt;0, ComplexDataVector&gt;,
+<span class="lineNum">     522 </span>            :                                       std::integral_constant&lt;int, 0&gt;&gt;&gt;;
+<span class="lineNum">     523 </span>            : 
+<span class="lineNum">     524 </span><span class="lineNoCov">          0 :   using return_tags =</span>
+<span class="lineNum">     525 </span>            :       tmpl::append&lt;tmpl::list&lt;Tags::RegularIntegrand&lt;Tags::BondiW&gt;&gt;,
+<span class="lineNum">     526 </span>            :                    temporary_tags&gt;;
+<span class="lineNum">     527 </span><span class="lineNoCov">          0 :   using argument_tags =</span>
+<span class="lineNum">     528 </span>            :       tmpl::append&lt;pre_swsh_derivative_tags, swsh_derivative_tags,
+<span class="lineNum">     529 </span>            :                    integration_independent_tags&gt;;
+<span class="lineNum">     530 </span>            : 
+<span class="lineNum">     531 </span>            :   template &lt;typename... Args&gt;
+<span class="lineNum">     532 </span><span class="lineNoCov">          0 :   static void apply(</span>
+<span class="lineNum">     533 </span>            :       const gsl::not_null&lt;Scalar&lt;SpinWeighted&lt;ComplexDataVector, 0&gt;&gt;*&gt;
+<span class="lineNum">     534 </span>            :           regular_integrand_for_w,
+<span class="lineNum">     535 </span>            :       const gsl::not_null&lt;Scalar&lt;SpinWeighted&lt;ComplexDataVector, 0&gt;&gt;*&gt;
+<span class="lineNum">     536 </span>            :           script_av,
+<span class="lineNum">     537 </span>            :       const Args&amp;... args) noexcept {
+<span class="lineNum">     538 </span>            :     apply_impl(make_not_null(&amp;get(*regular_integrand_for_w)),
+<span class="lineNum">     539 </span>            :                make_not_null(&amp;get(*script_av)), get(args)...);
+<span class="lineNum">     540 </span>            :   }
+<span class="lineNum">     541 </span>            : 
+<span class="lineNum">     542 </span>            :  private:
+<span class="lineNum">     543 </span><span class="lineNoCov">          0 :   static void apply_impl(</span>
+<span class="lineNum">     544 </span>            :       gsl::not_null&lt;SpinWeighted&lt;ComplexDataVector, 0&gt;*&gt;
+<span class="lineNum">     545 </span>            :           regular_integrand_for_w,
+<span class="lineNum">     546 </span>            :       gsl::not_null&lt;SpinWeighted&lt;ComplexDataVector, 0&gt;*&gt; script_av,
+<span class="lineNum">     547 </span>            :       const SpinWeighted&lt;ComplexDataVector, 1&gt;&amp; dy_u,
+<span class="lineNum">     548 </span>            :       const SpinWeighted&lt;ComplexDataVector, 0&gt;&amp; exp_2_beta,
+<span class="lineNum">     549 </span>            :       const SpinWeighted&lt;ComplexDataVector, 2&gt;&amp; j,
+<span class="lineNum">     550 </span>            :       const SpinWeighted&lt;ComplexDataVector, 1&gt;&amp; q,
+<span class="lineNum">     551 </span>            :       const SpinWeighted&lt;ComplexDataVector, 1&gt;&amp; eth_beta,
+<span class="lineNum">     552 </span>            :       const SpinWeighted&lt;ComplexDataVector, 2&gt;&amp; eth_eth_beta,
+<span class="lineNum">     553 </span>            :       const SpinWeighted&lt;ComplexDataVector, 0&gt;&amp; eth_ethbar_beta,
+<span class="lineNum">     554 </span>            :       const SpinWeighted&lt;ComplexDataVector, 2&gt;&amp; eth_ethbar_j,
+<span class="lineNum">     555 </span>            :       const SpinWeighted&lt;ComplexDataVector, 0&gt;&amp; eth_ethbar_j_jbar,
+<span class="lineNum">     556 </span>            :       const SpinWeighted&lt;ComplexDataVector, 1&gt;&amp; eth_j_jbar,
+<span class="lineNum">     557 </span>            :       const SpinWeighted&lt;ComplexDataVector, 0&gt;&amp; ethbar_dy_u,
+<span class="lineNum">     558 </span>            :       const SpinWeighted&lt;ComplexDataVector, 0&gt;&amp; ethbar_ethbar_j,
+<span class="lineNum">     559 </span>            :       const SpinWeighted&lt;ComplexDataVector, 1&gt;&amp; ethbar_j,
+<span class="lineNum">     560 </span>            :       const SpinWeighted&lt;ComplexDataVector, 1&gt;&amp; eth_r_divided_by_r,
+<span class="lineNum">     561 </span>            :       const SpinWeighted&lt;ComplexDataVector, 0&gt;&amp; k,
+<span class="lineNum">     562 </span>            :       const SpinWeighted&lt;ComplexDataVector, 0&gt;&amp; r) noexcept;
+<span class="lineNum">     563 </span>            : };
+<span class="lineNum">     564 </span>            : 
+<span class="lineNum">     565 </span>            : /*!
+<span class="lineNum">     566 </span>            :  * \brief Computes the pole part of the integrand (right-hand side) of the
+<span class="lineNum">     567 </span>            :  * equation which determines the radial (y) dependence of the Bondi quantity
+<span class="lineNum">     568 </span>            :  * \f$H\f$.
+<span class="lineNum">     569 </span>            :  *
+<span class="lineNum">     570 </span>            :  * \details The quantity \f$H \equiv \partial_u J\f$ (evaluated at constant y)
+<span class="lineNum">     571 </span>            :  * is defined via the Bondi form of the metric:
+<span class="lineNum">     572 </span>            :  * \f[ds^2 = - \left(e^{2 \beta} (1 + r W) - r^2 h_{AB} U^A U^B\right) du^2 - 2
+<span class="lineNum">     573 </span>            :  * e^{2 \beta} du dr - 2 r^2 h_{AB} U^B du dx^A + r^2 h_{A B} dx^A dx^B. \f]
+<span class="lineNum">     574 </span>            :  * Additional quantities \f$J\f$ and \f$K\f$ are defined using a spherical
+<span class="lineNum">     575 </span>            :  * angular dyad \f$q^A\f$:
+<span class="lineNum">     576 </span>            :  * \f[ J \equiv h_{A B} q^A q^B, K \equiv h_{A B} q^A \bar{q}^B.\f]
+<span class="lineNum">     577 </span>            :  * See \cite Bishop1997ik \cite Handmer2014qha for full details.
+<span class="lineNum">     578 </span>            :  *
+<span class="lineNum">     579 </span>            :  * We write the equations of motion in the compactified coordinate \f$ y \equiv
+<span class="lineNum">     580 </span>            :  * 1 - 2 R/ r\f$, where \f$r(u, \theta, \phi)\f$ is the Bondi radius of the
+<span class="lineNum">     581 </span>            :  * \f$y=\f$ constant surface and \f$R(u,\theta,\phi)\f$ is the Bondi radius of
+<span class="lineNum">     582 </span>            :  * the worldtube. The equation which determines \f$W\f$ on a surface of constant
+<span class="lineNum">     583 </span>            :  * \f$u\f$ given \f$J\f$,\f$\beta\f$, \f$Q\f$, \f$U\f$, and \f$W\f$ on the same
+<span class="lineNum">     584 </span>            :  * surface is written as
+<span class="lineNum">     585 </span>            :  * \f[(1 - y) \partial_y H + H + (1 - y)(\mathcal{D}_J H
+<span class="lineNum">     586 </span>            :  * + \bar{\mathcal{D}}_J \bar{H}) = A_J + (1 - y) B_J.\f]
+<span class="lineNum">     587 </span>            :  *
+<span class="lineNum">     588 </span>            :  * We refer to \f$A_J\f$ as the &quot;pole part&quot; of the integrand
+<span class="lineNum">     589 </span>            :  * and \f$B_J\f$ as the &quot;regular part&quot;. The pole part is computed by this
+<span class="lineNum">     590 </span>            :  * function, and has the expression
+<span class="lineNum">     591 </span>            :  * \f{align*}
+<span class="lineNum">     592 </span>            :  * A_J =&amp; - \tfrac{1}{2} \eth (J \bar{U}) -  \eth (\bar{U}) J -  \tfrac{1}{2}
+<span class="lineNum">     593 </span>            :  * \bar{\eth} (U) J -  \eth (U) K -  \tfrac{1}{2} (\bar{\eth} (J) U) + 2 J W
+<span class="lineNum">     594 </span>            :  * \f}
+<span class="lineNum">     595 </span>            :  */
+<span class="lineNum">     596 </span>            : template &lt;&gt;
+<span class="lineNum">     597 </span><span class="lineCov">          1 : struct ComputeBondiIntegrand&lt;Tags::PoleOfIntegrand&lt;Tags::BondiH&gt;&gt; {</span>
+<span class="lineNum">     598 </span>            :  public:
+<span class="lineNum">     599 </span><span class="lineNoCov">          0 :   using pre_swsh_derivative_tags =</span>
+<span class="lineNum">     600 </span>            :       tmpl::list&lt;Tags::BondiJ, Tags::BondiU, Tags::BondiW&gt;;
+<span class="lineNum">     601 </span><span class="lineNoCov">          0 :   using swsh_derivative_tags = tmpl::list&lt;</span>
+<span class="lineNum">     602 </span>            :       Spectral::Swsh::Tags::Derivative&lt;Tags::BondiU, Spectral::Swsh::Tags::Eth&gt;,
+<span class="lineNum">     603 </span>            :       Spectral::Swsh::Tags::Derivative&lt;Tags::BondiJ,
+<span class="lineNum">     604 </span>            :                                        Spectral::Swsh::Tags::Ethbar&gt;,
+<span class="lineNum">     605 </span>            :       Spectral::Swsh::Tags::Derivative&lt;
+<span class="lineNum">     606 </span>            :           ::Tags::Multiplies&lt;Tags::BondiJbar, Tags::BondiU&gt;,
+<span class="lineNum">     607 </span>            :           Spectral::Swsh::Tags::Ethbar&gt;,
+<span class="lineNum">     608 </span>            :       Spectral::Swsh::Tags::Derivative&lt;Tags::BondiU,
+<span class="lineNum">     609 </span>            :                                        Spectral::Swsh::Tags::Ethbar&gt;&gt;;
+<span class="lineNum">     610 </span><span class="lineNoCov">          0 :   using integration_independent_tags = tmpl::list&lt;Tags::BondiK&gt;;</span>
+<span class="lineNum">     611 </span><span class="lineNoCov">          0 :   using temporary_tags = tmpl::list&lt;&gt;;</span>
+<span class="lineNum">     612 </span>            : 
+<span class="lineNum">     613 </span><span class="lineNoCov">          0 :   using return_tags =</span>
+<span class="lineNum">     614 </span>            :       tmpl::append&lt;tmpl::list&lt;Tags::PoleOfIntegrand&lt;Tags::BondiH&gt;&gt;,
+<span class="lineNum">     615 </span>            :                    temporary_tags&gt;;
+<span class="lineNum">     616 </span><span class="lineNoCov">          0 :   using argument_tags =</span>
+<span class="lineNum">     617 </span>            :       tmpl::append&lt;pre_swsh_derivative_tags, swsh_derivative_tags,
+<span class="lineNum">     618 </span>            :                    integration_independent_tags&gt;;
+<span class="lineNum">     619 </span>            : 
+<span class="lineNum">     620 </span>            :   template &lt;typename... Args&gt;
+<span class="lineNum">     621 </span><span class="lineNoCov">          0 :   static void apply(</span>
+<span class="lineNum">     622 </span>            :       const gsl::not_null&lt;Scalar&lt;SpinWeighted&lt;ComplexDataVector, 2&gt;&gt;*&gt;
+<span class="lineNum">     623 </span>            :           pole_of_integrand_for_h,
+<span class="lineNum">     624 </span>            :       const Args&amp;... args) noexcept {
+<span class="lineNum">     625 </span>            :     apply_impl(make_not_null(&amp;get(*pole_of_integrand_for_h)), get(args)...);
+<span class="lineNum">     626 </span>            :   }
+<span class="lineNum">     627 </span>            : 
+<span class="lineNum">     628 </span>            :  private:
+<span class="lineNum">     629 </span><span class="lineNoCov">          0 :   static void apply_impl(</span>
+<span class="lineNum">     630 </span>            :       gsl::not_null&lt;SpinWeighted&lt;ComplexDataVector, 2&gt;*&gt;
+<span class="lineNum">     631 </span>            :           pole_of_integrand_for_h,
+<span class="lineNum">     632 </span>            :       const SpinWeighted&lt;ComplexDataVector, 2&gt;&amp; j,
+<span class="lineNum">     633 </span>            :       const SpinWeighted&lt;ComplexDataVector, 1&gt;&amp; u,
+<span class="lineNum">     634 </span>            :       const SpinWeighted&lt;ComplexDataVector, 0&gt;&amp; w,
+<span class="lineNum">     635 </span>            :       const SpinWeighted&lt;ComplexDataVector, 2&gt;&amp; eth_u,
+<span class="lineNum">     636 </span>            :       const SpinWeighted&lt;ComplexDataVector, 1&gt;&amp; ethbar_j,
+<span class="lineNum">     637 </span>            :       const SpinWeighted&lt;ComplexDataVector, -2&gt;&amp; ethbar_jbar_u,
+<span class="lineNum">     638 </span>            :       const SpinWeighted&lt;ComplexDataVector, 0&gt;&amp; ethbar_u,
+<span class="lineNum">     639 </span>            :       const SpinWeighted&lt;ComplexDataVector, 0&gt;&amp; k) noexcept;
+<span class="lineNum">     640 </span>            : };
+<span class="lineNum">     641 </span>            : 
+<span class="lineNum">     642 </span>            : /*!
+<span class="lineNum">     643 </span>            :  * \brief Computes the pole part of the integrand (right-hand side) of the
+<span class="lineNum">     644 </span>            :  * equation which determines the radial (y) dependence of the Bondi quantity
+<span class="lineNum">     645 </span>            :  * \f$H\f$.
+<span class="lineNum">     646 </span>            :  *
+<span class="lineNum">     647 </span>            :  * \details The quantity \f$H \equiv \partial_u J\f$ (evaluated at constant y)
+<span class="lineNum">     648 </span>            :  * is defined via the Bondi form of the metric:
+<span class="lineNum">     649 </span>            :  * \f[ds^2 = - \left(e^{2 \beta} (1 + r W) - r^2 h_{AB} U^A U^B\right) du^2 - 2
+<span class="lineNum">     650 </span>            :  * e^{2 \beta} du dr - 2 r^2 h_{AB} U^B du dx^A + r^2 h_{A B} dx^A dx^B. \f]
+<span class="lineNum">     651 </span>            :  * Additional quantities \f$J\f$ and \f$K\f$ are defined using a spherical
+<span class="lineNum">     652 </span>            :  * angular dyad \f$q^A\f$:
+<span class="lineNum">     653 </span>            :  * \f[ J \equiv h_{A B} q^A q^B, K \equiv h_{A B} q^A \bar{q}^B.\f]
+<span class="lineNum">     654 </span>            :  * See \cite Bishop1997ik \cite Handmer2014qha for full details.
+<span class="lineNum">     655 </span>            :  *
+<span class="lineNum">     656 </span>            :  * We write the equations of motion in the compactified coordinate \f$ y \equiv
+<span class="lineNum">     657 </span>            :  * 1 - 2 R/ r\f$, where \f$r(u, \theta, \phi)\f$ is the Bondi radius of the
+<span class="lineNum">     658 </span>            :  * \f$y=\f$ constant surface and \f$R(u,\theta,\phi)\f$ is the Bondi radius of
+<span class="lineNum">     659 </span>            :  * the worldtube. The equation which determines \f$H\f$ on a surface of constant
+<span class="lineNum">     660 </span>            :  * \f$u\f$ given \f$J\f$,\f$\beta\f$, \f$Q\f$, \f$U\f$, and \f$W\f$ on the same
+<span class="lineNum">     661 </span>            :  * surface is written as
+<span class="lineNum">     662 </span>            :  * \f[(1 - y) \partial_y H + H + (1 - y)(\mathcal{D}_J H + \bar{\mathcal{D}}_J
+<span class="lineNum">     663 </span>            :  * \bar{H}) = A_J + (1 - y) B_J.\f]
+<span class="lineNum">     664 </span>            :  * We refer to \f$A_J\f$ as the &quot;pole part&quot; of the integrand
+<span class="lineNum">     665 </span>            :  * and \f$B_J\f$ as the &quot;regular part&quot;. The pole part is computed by this
+<span class="lineNum">     666 </span>            :  * function, and has the expression
+<span class="lineNum">     667 </span>            :  * \f{align*}
+<span class="lineNum">     668 </span>            :  * B_J =&amp; -\tfrac{1}{2} \left(\eth(\partial_y (J) \bar{U}) +  \partial_y
+<span class="lineNum">     669 </span>            :  * (\bar{\eth} (J)) U \right) + J (\mathcal{B}_J + \bar{\mathcal{B}}_J) \notag\\
+<span class="lineNum">     670 </span>            :  * &amp;+ \frac{e^{2 \beta}}{2 R} \left(\mathcal{C}_J + \eth (\eth (\beta)) -
+<span class="lineNum">     671 </span>            :  * \tfrac{1}{2} \eth (Q) -  (\mathcal{A}_J + \bar{\mathcal{A}_J}) J +
+<span class="lineNum">     672 </span>            :  * \frac{\bar{\mathcal{C}_J} J^2}{K^2} + \frac{\eth (J (-2 \bar{\eth} (\beta) +
+<span class="lineNum">     673 </span>            :  * \bar{Q}))}{4 K} -  \frac{\eth (\bar{Q}) J}{4 K} + (\eth (\beta) -
+<span class="lineNum">     674 </span>            :  * \tfrac{1}{2} Q)^2\right) \notag\\
+<span class="lineNum">     675 </span>            :  * &amp;-  \partial_y (J)  \left(\frac{\eth (U) \bar{J}}{2 K} -  \tfrac{1}{2}
+<span class="lineNum">     676 </span>            :  * \bar{\eth} (\bar{U}) J K + \tfrac{1}{4} (\eth (\bar{U}) -  \bar{\eth} (U))
+<span class="lineNum">     677 </span>            :  * K^2 + \frac{1}{2} \frac{\eth (R) \bar{U}}{R} -  \frac{1}{2}
+<span class="lineNum">     678 </span>            :  * W\right)\notag\\
+<span class="lineNum">     679 </span>            :  * &amp;+  \partial_y (\bar{J}) \left(- \tfrac{1}{4} (- \eth (\bar{U}) + \bar{\eth}
+<span class="lineNum">     680 </span>            :  * (U)) J^2 + \eth (U) J \left(- \frac{1}{2 K} + \tfrac{1}{2}
+<span class="lineNum">     681 </span>            :  * K\right)\right)\notag\\
+<span class="lineNum">     682 </span>            :  * &amp;+ (1 - y) \bigg[\frac{1}{2} \left(- \frac{\partial_y (J)}{R} + \frac{2
+<span class="lineNum">     683 </span>            :  * \partial_{u} (R) \partial_y (\partial_y (J))}{R} + \partial_y
+<span class="lineNum">     684 </span>            :  * (\partial_y (J)) W\right)  + \partial_y (J) \left(\tfrac{1}{2} \partial_y (W)
+<span class="lineNum">     685 </span>            :  * + \frac{1}{2 R}\right)\bigg]\notag\\
+<span class="lineNum">     686 </span>            :  * &amp;+ (1 - y)^2 \bigg[ \frac{\partial_y (\partial_y (J)) }{4 R} \bigg],
+<span class="lineNum">     687 </span>            :  * \f}
+<span class="lineNum">     688 </span>            :  * where
+<span class="lineNum">     689 </span>            :  * \f{align*}
+<span class="lineNum">     690 </span>            :  * \mathcal{A}_J =&amp; \tfrac{1}{4} \eth (\eth (\bar{J})) -  \frac{1}{4 K^3} -
+<span class="lineNum">     691 </span>            :  * \frac{\eth (\bar{\eth} (J \bar{J})) -  (\eth (\bar{\eth} (\bar{J})) - 4
+<span class="lineNum">     692 </span>            :  \bar{J})
+<span class="lineNum">     693 </span>            :  * J}{16 K^3} + \frac{3}{4 K} -  \frac{\eth (\bar{\eth} (\beta))}{4 K} \notag\\
+<span class="lineNum">     694 </span>            :  * &amp;-  \frac{\eth (\bar{\eth} (J)) \bar{J} (1 -  \frac{1}{4 K^2})}{4 K} +
+<span class="lineNum">     695 </span>            :  * \tfrac{1}{2} \eth (\bar{J}) \left(\eth (\beta) + \frac{\bar{\eth} (J \bar{J})
+<span class="lineNum">     696 </span>            :  * J}{4 K^3} -  \frac{\bar{\eth} (J) (-1 + 2 K^2)}{4 K^3} -  \tfrac{1}{2}
+<span class="lineNum">     697 </span>            :  * Q\right)\\
+<span class="lineNum">     698 </span>            :  * \mathcal{B}_J =&amp; - \frac{\eth (U) \bar{J} \partial_y (J \bar{J})}{4 K} +
+<span class="lineNum">     699 </span>            :  * \tfrac{1}{2} \partial_y (W) + \frac{1}{4 R} + \tfrac{1}{4} \bar{\eth} (J)
+<span class="lineNum">     700 </span>            :  * \partial_y (\bar{J}) U -  \frac{\bar{\eth} (J \bar{J}) \partial_y (J \bar{J})
+<span class="lineNum">     701 </span>            :  * U}{8 K^2} \notag\\&amp;-  \tfrac{1}{4} J \partial_y (\eth (\bar{J})) \bar{U} +
+<span class="lineNum">     702 </span>            :  * \tfrac{1}{4} (\eth (J \partial_y (\bar{J})) + \frac{J \eth (R)
+<span class="lineNum">     703 </span>            :  * \partial_y(\bar{J})}{R}) \bar{U} \\
+<span class="lineNum">     704 </span>            :  * &amp;+ (1 - y) \bigg[ \frac{\mathcal{D}_J \partial_{u} (R)
+<span class="lineNum">     705 </span>            :  * \partial_y (J)}{R} -  \tfrac{1}{4} \partial_y (J) \partial_y (\bar{J}) W +
+<span class="lineNum">     706 </span>            :  * \frac{(\partial_y (J \bar{J}))^2 W}{16 K^2} \bigg] \\
+<span class="lineNum">     707 </span>            :  * &amp;+ (1 - y)^2 \bigg[ - \frac{\partial_y (J) \partial_y (\bar{J})}{8 R} +
+<span class="lineNum">     708 </span>            :  * \frac{(\partial_y (J \bar{J}))^2}{32 K^2 R} \bigg]\\
+<span class="lineNum">     709 </span>            :  * \mathcal{C}_J =&amp; \tfrac{1}{2} \bar{\eth} (J) K (\eth (\beta) -  \tfrac{1}{2}
+<span class="lineNum">     710 </span>            :  * Q)\\ \mathcal{D}_J =&amp; \tfrac{1}{4} \left(-2 \partial_y (\bar{J}) +
+<span class="lineNum">     711 </span>            :  * \frac{\bar{J} \partial_y (J \bar{J})}{K^2}\right)
+<span class="lineNum">     712 </span>            :  * \f}
+<span class="lineNum">     713 </span>            :  */
+<span class="lineNum">     714 </span>            : template &lt;&gt;
+<span class="lineNum">     715 </span><span class="lineCov">          1 : struct ComputeBondiIntegrand&lt;Tags::RegularIntegrand&lt;Tags::BondiH&gt;&gt; {</span>
+<span class="lineNum">     716 </span>            :  public:
+<span class="lineNum">     717 </span><span class="lineNoCov">          0 :   using pre_swsh_derivative_tags =</span>
+<span class="lineNum">     718 </span>            :       tmpl::list&lt;Tags::Dy&lt;Tags::Dy&lt;Tags::BondiJ&gt;&gt;, Tags::Dy&lt;Tags::BondiJ&gt;,
+<span class="lineNum">     719 </span>            :                  Tags::Dy&lt;Tags::BondiW&gt;, Tags::Exp2Beta, Tags::BondiJ,
+<span class="lineNum">     720 </span>            :                  Tags::BondiQ, Tags::BondiU, Tags::BondiW&gt;;
+<span class="lineNum">     721 </span><span class="lineNoCov">          0 :   using swsh_derivative_tags = tmpl::list&lt;</span>
+<span class="lineNum">     722 </span>            :       Spectral::Swsh::Tags::Derivative&lt;Tags::BondiBeta,
+<span class="lineNum">     723 </span>            :                                        Spectral::Swsh::Tags::Eth&gt;,
+<span class="lineNum">     724 </span>            :       Spectral::Swsh::Tags::Derivative&lt;Tags::BondiBeta,
+<span class="lineNum">     725 </span>            :                                        Spectral::Swsh::Tags::EthEth&gt;,
+<span class="lineNum">     726 </span>            :       Spectral::Swsh::Tags::Derivative&lt;Tags::BondiBeta,
+<span class="lineNum">     727 </span>            :                                        Spectral::Swsh::Tags::EthEthbar&gt;,
+<span class="lineNum">     728 </span>            :       Spectral::Swsh::Tags::Derivative&lt;
+<span class="lineNum">     729 </span>            :           Spectral::Swsh::Tags::Derivative&lt;Tags::BondiJ,
+<span class="lineNum">     730 </span>            :                                            Spectral::Swsh::Tags::Ethbar&gt;,
+<span class="lineNum">     731 </span>            :           Spectral::Swsh::Tags::Eth&gt;,
+<span class="lineNum">     732 </span>            :       Spectral::Swsh::Tags::Derivative&lt;
+<span class="lineNum">     733 </span>            :           ::Tags::Multiplies&lt;Tags::BondiJ, Tags::BondiJbar&gt;,
+<span class="lineNum">     734 </span>            :           Spectral::Swsh::Tags::EthEthbar&gt;,
+<span class="lineNum">     735 </span>            :       Spectral::Swsh::Tags::Derivative&lt;
+<span class="lineNum">     736 </span>            :           ::Tags::Multiplies&lt;Tags::BondiJ, Tags::BondiJbar&gt;,
+<span class="lineNum">     737 </span>            :           Spectral::Swsh::Tags::Eth&gt;,
+<span class="lineNum">     738 </span>            :       Spectral::Swsh::Tags::Derivative&lt;Tags::BondiQ, Spectral::Swsh::Tags::Eth&gt;,
+<span class="lineNum">     739 </span>            :       Spectral::Swsh::Tags::Derivative&lt;Tags::BondiU, Spectral::Swsh::Tags::Eth&gt;,
+<span class="lineNum">     740 </span>            :       Spectral::Swsh::Tags::Derivative&lt;
+<span class="lineNum">     741 </span>            :           ::Tags::Multiplies&lt;Tags::BondiUbar, Tags::Dy&lt;Tags::BondiJ&gt;&gt;,
+<span class="lineNum">     742 </span>            :           Spectral::Swsh::Tags::Eth&gt;,
+<span class="lineNum">     743 </span>            :       Spectral::Swsh::Tags::Derivative&lt;Tags::Dy&lt;Tags::BondiJ&gt;,
+<span class="lineNum">     744 </span>            :                                        Spectral::Swsh::Tags::Ethbar&gt;,
+<span class="lineNum">     745 </span>            :       Spectral::Swsh::Tags::Derivative&lt;Tags::BondiJ,
+<span class="lineNum">     746 </span>            :                                        Spectral::Swsh::Tags::EthbarEthbar&gt;,
+<span class="lineNum">     747 </span>            :       Spectral::Swsh::Tags::Derivative&lt;Tags::BondiJ,
+<span class="lineNum">     748 </span>            :                                        Spectral::Swsh::Tags::Ethbar&gt;,
+<span class="lineNum">     749 </span>            :       Spectral::Swsh::Tags::Derivative&lt;
+<span class="lineNum">     750 </span>            :           ::Tags::Multiplies&lt;Tags::BondiJbar, Tags::Dy&lt;Tags::BondiJ&gt;&gt;,
+<span class="lineNum">     751 </span>            :           Spectral::Swsh::Tags::Ethbar&gt;,
+<span class="lineNum">     752 </span>            :       Spectral::Swsh::Tags::Derivative&lt;Tags::JbarQMinus2EthBeta,
+<span class="lineNum">     753 </span>            :                                        Spectral::Swsh::Tags::Ethbar&gt;,
+<span class="lineNum">     754 </span>            :       Spectral::Swsh::Tags::Derivative&lt;Tags::BondiQ,
+<span class="lineNum">     755 </span>            :                                        Spectral::Swsh::Tags::Ethbar&gt;,
+<span class="lineNum">     756 </span>            :       Spectral::Swsh::Tags::Derivative&lt;Tags::BondiU,
+<span class="lineNum">     757 </span>            :                                        Spectral::Swsh::Tags::Ethbar&gt;&gt;;
+<span class="lineNum">     758 </span><span class="lineNoCov">          0 :   using integration_independent_tags =</span>
+<span class="lineNum">     759 </span>            :       tmpl::list&lt;Tags::DuRDividedByR, Tags::EthRDividedByR, Tags::BondiK,
+<span class="lineNum">     760 </span>            :                  Tags::OneMinusY, Tags::BondiR&gt;;
+<span class="lineNum">     761 </span><span class="lineNoCov">          0 :   using temporary_tags =</span>
+<span class="lineNum">     762 </span>            :       tmpl::list&lt;::Tags::SpinWeighted&lt;::Tags::TempScalar&lt;0, ComplexDataVector&gt;,
+<span class="lineNum">     763 </span>            :                                       std::integral_constant&lt;int, 0&gt;&gt;,
+<span class="lineNum">     764 </span>            :                  ::Tags::SpinWeighted&lt;::Tags::TempScalar&lt;1, ComplexDataVector&gt;,
+<span class="lineNum">     765 </span>            :                                       std::integral_constant&lt;int, 0&gt;&gt;,
+<span class="lineNum">     766 </span>            :                  ::Tags::SpinWeighted&lt;::Tags::TempScalar&lt;0, ComplexDataVector&gt;,
+<span class="lineNum">     767 </span>            :                                       std::integral_constant&lt;int, 2&gt;&gt;&gt;;
+<span class="lineNum">     768 </span>            : 
+<span class="lineNum">     769 </span><span class="lineNoCov">          0 :   using return_tags =</span>
+<span class="lineNum">     770 </span>            :       tmpl::append&lt;tmpl::list&lt;Tags::RegularIntegrand&lt;Tags::BondiH&gt;&gt;,
+<span class="lineNum">     771 </span>            :                    temporary_tags&gt;;
+<span class="lineNum">     772 </span><span class="lineNoCov">          0 :   using argument_tags =</span>
+<span class="lineNum">     773 </span>            :       tmpl::append&lt;pre_swsh_derivative_tags, swsh_derivative_tags,
+<span class="lineNum">     774 </span>            :                    integration_independent_tags&gt;;
+<span class="lineNum">     775 </span>            : 
+<span class="lineNum">     776 </span>            :   template &lt;typename... Args&gt;
+<span class="lineNum">     777 </span><span class="lineNoCov">          0 :   static void apply(</span>
+<span class="lineNum">     778 </span>            :       const gsl::not_null&lt;Scalar&lt;SpinWeighted&lt;ComplexDataVector, 2&gt;&gt;*&gt;
+<span class="lineNum">     779 </span>            :           regular_integrand_for_h,
+<span class="lineNum">     780 </span>            :       const gsl::not_null&lt;Scalar&lt;SpinWeighted&lt;ComplexDataVector, 0&gt;&gt;*&gt;
+<span class="lineNum">     781 </span>            :           script_aj,
+<span class="lineNum">     782 </span>            :       const gsl::not_null&lt;Scalar&lt;SpinWeighted&lt;ComplexDataVector, 0&gt;&gt;*&gt;
+<span class="lineNum">     783 </span>            :           script_bj,
+<span class="lineNum">     784 </span>            :       const gsl::not_null&lt;Scalar&lt;SpinWeighted&lt;ComplexDataVector, 2&gt;&gt;*&gt;
+<span class="lineNum">     785 </span>            :           script_cj,
+<span class="lineNum">     786 </span>            :       const Args&amp;... args) noexcept {
+<span class="lineNum">     787 </span>            :     apply_impl(make_not_null(&amp;get(*regular_integrand_for_h)),
+<span class="lineNum">     788 </span>            :                make_not_null(&amp;get(*script_aj)), make_not_null(&amp;get(*script_bj)),
+<span class="lineNum">     789 </span>            :                make_not_null(&amp;get(*script_cj)), get(args)...);
+<span class="lineNum">     790 </span>            :   }
+<span class="lineNum">     791 </span>            : 
+<span class="lineNum">     792 </span>            :  private:
+<span class="lineNum">     793 </span><span class="lineNoCov">          0 :   static void apply_impl(</span>
+<span class="lineNum">     794 </span>            :       gsl::not_null&lt;SpinWeighted&lt;ComplexDataVector, 2&gt;*&gt;
+<span class="lineNum">     795 </span>            :           regular_integrand_for_h,
+<span class="lineNum">     796 </span>            :       gsl::not_null&lt;SpinWeighted&lt;ComplexDataVector, 0&gt;*&gt; script_aj,
+<span class="lineNum">     797 </span>            :       gsl::not_null&lt;SpinWeighted&lt;ComplexDataVector, 0&gt;*&gt; script_bj,
+<span class="lineNum">     798 </span>            :       gsl::not_null&lt;SpinWeighted&lt;ComplexDataVector, 2&gt;*&gt; script_cj,
+<span class="lineNum">     799 </span>            :       const SpinWeighted&lt;ComplexDataVector, 2&gt;&amp; dy_dy_j,
+<span class="lineNum">     800 </span>            :       const SpinWeighted&lt;ComplexDataVector, 2&gt;&amp; dy_j,
+<span class="lineNum">     801 </span>            :       const SpinWeighted&lt;ComplexDataVector, 0&gt;&amp; dy_w,
+<span class="lineNum">     802 </span>            :       const SpinWeighted&lt;ComplexDataVector, 0&gt;&amp; exp_2_beta,
+<span class="lineNum">     803 </span>            :       const SpinWeighted&lt;ComplexDataVector, 2&gt;&amp; j,
+<span class="lineNum">     804 </span>            :       const SpinWeighted&lt;ComplexDataVector, 1&gt;&amp; q,
+<span class="lineNum">     805 </span>            :       const SpinWeighted&lt;ComplexDataVector, 1&gt;&amp; u,
+<span class="lineNum">     806 </span>            :       const SpinWeighted&lt;ComplexDataVector, 0&gt;&amp; w,
+<span class="lineNum">     807 </span>            :       const SpinWeighted&lt;ComplexDataVector, 1&gt;&amp; eth_beta,
+<span class="lineNum">     808 </span>            :       const SpinWeighted&lt;ComplexDataVector, 2&gt;&amp; eth_eth_beta,
+<span class="lineNum">     809 </span>            :       const SpinWeighted&lt;ComplexDataVector, 0&gt;&amp; eth_ethbar_beta,
+<span class="lineNum">     810 </span>            :       const SpinWeighted&lt;ComplexDataVector, 2&gt;&amp; eth_ethbar_j,
+<span class="lineNum">     811 </span>            :       const SpinWeighted&lt;ComplexDataVector, 0&gt;&amp; eth_ethbar_j_jbar,
+<span class="lineNum">     812 </span>            :       const SpinWeighted&lt;ComplexDataVector, 1&gt;&amp; eth_j_jbar,
+<span class="lineNum">     813 </span>            :       const SpinWeighted&lt;ComplexDataVector, 2&gt;&amp; eth_q,
+<span class="lineNum">     814 </span>            :       const SpinWeighted&lt;ComplexDataVector, 2&gt;&amp; eth_u,
+<span class="lineNum">     815 </span>            :       const SpinWeighted&lt;ComplexDataVector, 2&gt;&amp; eth_ubar_dy_j,
+<span class="lineNum">     816 </span>            :       const SpinWeighted&lt;ComplexDataVector, 1&gt;&amp; ethbar_dy_j,
+<span class="lineNum">     817 </span>            :       const SpinWeighted&lt;ComplexDataVector, 0&gt;&amp; ethbar_ethbar_j,
+<span class="lineNum">     818 </span>            :       const SpinWeighted&lt;ComplexDataVector, 1&gt;&amp; ethbar_j,
+<span class="lineNum">     819 </span>            :       const SpinWeighted&lt;ComplexDataVector, -1&gt;&amp; ethbar_jbar_dy_j,
+<span class="lineNum">     820 </span>            :       const SpinWeighted&lt;ComplexDataVector, -2&gt;&amp; ethbar_jbar_q_minus_2_eth_beta,
+<span class="lineNum">     821 </span>            :       const SpinWeighted&lt;ComplexDataVector, 0&gt;&amp; ethbar_q,
+<span class="lineNum">     822 </span>            :       const SpinWeighted&lt;ComplexDataVector, 0&gt;&amp; ethbar_u,
+<span class="lineNum">     823 </span>            :       const SpinWeighted&lt;ComplexDataVector, 0&gt;&amp; du_r_divided_by_r,
+<span class="lineNum">     824 </span>            :       const SpinWeighted&lt;ComplexDataVector, 1&gt;&amp; eth_r_divided_by_r,
+<span class="lineNum">     825 </span>            :       const SpinWeighted&lt;ComplexDataVector, 0&gt;&amp; k,
+<span class="lineNum">     826 </span>            :       const SpinWeighted&lt;ComplexDataVector, 0&gt;&amp; one_minus_y,
+<span class="lineNum">     827 </span>            :       const SpinWeighted&lt;ComplexDataVector, 0&gt;&amp; r) noexcept;
+<span class="lineNum">     828 </span>            : };
+<span class="lineNum">     829 </span>            : 
+<span class="lineNum">     830 </span>            : /*!
+<span class="lineNum">     831 </span>            :  * \brief Computes the linear factor which multiplies \f$H\f$ in the
+<span class="lineNum">     832 </span>            :  * equation which determines the radial (y) dependence of the Bondi quantity
+<span class="lineNum">     833 </span>            :  * \f$H\f$.
+<span class="lineNum">     834 </span>            :  *
+<span class="lineNum">     835 </span>            :  * \details The quantity \f$H \equiv \partial_u J\f$ (evaluated at constant y)
+<span class="lineNum">     836 </span>            :  * is defined via the Bondi form of the metric:
+<span class="lineNum">     837 </span>            :  * \f[ds^2 = - \left(e^{2 \beta} (1 + r W) - r^2 h_{AB} U^A U^B\right) du^2 - 2
+<span class="lineNum">     838 </span>            :  * e^{2 \beta} du dr - 2 r^2 h_{AB} U^B du dx^A + r^2 h_{A B} dx^A dx^B. \f]
+<span class="lineNum">     839 </span>            :  * Additional quantities \f$J\f$ and \f$K\f$ are defined using a spherical
+<span class="lineNum">     840 </span>            :  * angular dyad \f$q^A\f$:
+<span class="lineNum">     841 </span>            :  * \f[ J \equiv h_{A B} q^A q^B, K \equiv h_{A B} q^A \bar{q}^B.\f]
+<span class="lineNum">     842 </span>            :  * See \cite Bishop1997ik \cite Handmer2014qha for full details.
+<span class="lineNum">     843 </span>            :  *
+<span class="lineNum">     844 </span>            :  * We write the equations of motion in the compactified coordinate \f$ y \equiv
+<span class="lineNum">     845 </span>            :  * 1 - 2 R/ r\f$, where \f$r(u, \theta, \phi)\f$ is the Bondi radius of the
+<span class="lineNum">     846 </span>            :  * \f$y=\f$ constant surface and \f$R(u,\theta,\phi)\f$ is the Bondi radius of
+<span class="lineNum">     847 </span>            :  * the worldtube. The equation which determines \f$H\f$ on a surface of constant
+<span class="lineNum">     848 </span>            :  * \f$u\f$ given \f$J\f$,\f$\beta\f$, \f$Q\f$, \f$U\f$, and \f$W\f$ on the same
+<span class="lineNum">     849 </span>            :  * surface is written as
+<span class="lineNum">     850 </span>            :  * \f[(1 - y) \partial_y H + H + (1 - y) J (\mathcal{D}_J
+<span class="lineNum">     851 </span>            :  * H + \bar{\mathcal{D}}_J \bar{H}) = A_J + (1 - y) B_J.\f]
+<span class="lineNum">     852 </span>            :  * The quantity \f$1 +(1 - y) J \mathcal{D}_J\f$ is the linear factor
+<span class="lineNum">     853 </span>            :  * for the non-conjugated \f$H\f$, and is computed from the equation:
+<span class="lineNum">     854 </span>            :  * \f[\mathcal{D}_J = \frac{1}{4}(-2 \partial_y \bar{J} + \frac{\bar{J}
+<span class="lineNum">     855 </span>            :  * \partial_y (J \bar{J})}{K^2})\f]
+<span class="lineNum">     856 </span>            :  */
+<span class="lineNum">     857 </span>            : template &lt;&gt;
+<span class="lineNum">     858 </span><span class="lineCov">          1 : struct ComputeBondiIntegrand&lt;Tags::LinearFactor&lt;Tags::BondiH&gt;&gt; {</span>
+<span class="lineNum">     859 </span>            :  public:
+<span class="lineNum">     860 </span><span class="lineNoCov">          0 :   using pre_swsh_derivative_tags =</span>
+<span class="lineNum">     861 </span>            :       tmpl::list&lt;Tags::Dy&lt;Tags::BondiJ&gt;, Tags::BondiJ&gt;;
+<span class="lineNum">     862 </span><span class="lineNoCov">          0 :   using swsh_derivative_tags = tmpl::list&lt;&gt;;</span>
+<span class="lineNum">     863 </span><span class="lineNoCov">          0 :   using integration_independent_tags = tmpl::list&lt;Tags::OneMinusY&gt;;</span>
+<span class="lineNum">     864 </span><span class="lineNoCov">          0 :   using temporary_tags =</span>
+<span class="lineNum">     865 </span>            :       tmpl::list&lt;::Tags::SpinWeighted&lt;::Tags::TempScalar&lt;0, ComplexDataVector&gt;,
+<span class="lineNum">     866 </span>            :                                       std::integral_constant&lt;int, 2&gt;&gt;&gt;;
+<span class="lineNum">     867 </span>            : 
+<span class="lineNum">     868 </span><span class="lineNoCov">          0 :   using return_tags = tmpl::append&lt;tmpl::list&lt;Tags::LinearFactor&lt;Tags::BondiH&gt;&gt;,</span>
+<span class="lineNum">     869 </span>            :                                    temporary_tags&gt;;
+<span class="lineNum">     870 </span><span class="lineNoCov">          0 :   using argument_tags =</span>
+<span class="lineNum">     871 </span>            :       tmpl::append&lt;pre_swsh_derivative_tags, swsh_derivative_tags,
+<span class="lineNum">     872 </span>            :                    integration_independent_tags&gt;;
+<span class="lineNum">     873 </span>            : 
+<span class="lineNum">     874 </span>            :   template &lt;typename... Args&gt;
+<span class="lineNum">     875 </span><span class="lineNoCov">          0 :   static void apply(</span>
+<span class="lineNum">     876 </span>            :       const gsl::not_null&lt;Scalar&lt;SpinWeighted&lt;ComplexDataVector, 0&gt;&gt;*&gt;
+<span class="lineNum">     877 </span>            :           linear_factor_for_h,
+<span class="lineNum">     878 </span>            :       const gsl::not_null&lt;Scalar&lt;SpinWeighted&lt;ComplexDataVector, 2&gt;&gt;*&gt;
+<span class="lineNum">     879 </span>            :           script_djbar,
+<span class="lineNum">     880 </span>            :       const Args&amp;... args) noexcept {
+<span class="lineNum">     881 </span>            :     apply_impl(make_not_null(&amp;get(*linear_factor_for_h)),
+<span class="lineNum">     882 </span>            :                make_not_null(&amp;get(*script_djbar)), get(args)...);
+<span class="lineNum">     883 </span>            :   }
+<span class="lineNum">     884 </span>            : 
+<span class="lineNum">     885 </span>            :  private:
+<span class="lineNum">     886 </span><span class="lineNoCov">          0 :   static void apply_impl(</span>
+<span class="lineNum">     887 </span>            :       gsl::not_null&lt;SpinWeighted&lt;ComplexDataVector, 0&gt;*&gt; linear_factor_for_h,
+<span class="lineNum">     888 </span>            :       gsl::not_null&lt;SpinWeighted&lt;ComplexDataVector, 2&gt;*&gt; script_djbar,
+<span class="lineNum">     889 </span>            :       const SpinWeighted&lt;ComplexDataVector, 2&gt;&amp; dy_j,
+<span class="lineNum">     890 </span>            :       const SpinWeighted&lt;ComplexDataVector, 2&gt;&amp; j,
+<span class="lineNum">     891 </span>            :       const SpinWeighted&lt;ComplexDataVector, 0&gt;&amp; one_minus_y) noexcept;
+<span class="lineNum">     892 </span>            : };
+<span class="lineNum">     893 </span>            : 
+<span class="lineNum">     894 </span>            : /*!
+<span class="lineNum">     895 </span>            :  * \brief Computes the linear factor which multiplies \f$\bar{H}\f$ in the
+<span class="lineNum">     896 </span>            :  * equation which determines the radial (y) dependence of the Bondi quantity
+<span class="lineNum">     897 </span>            :  * \f$H\f$.
+<span class="lineNum">     898 </span>            :  *
+<span class="lineNum">     899 </span>            :  * \details The quantity \f$H \equiv \partial_u J\f$ (evaluated at constant y)
+<span class="lineNum">     900 </span>            :  * is defined via the Bondi form of the metric:
+<span class="lineNum">     901 </span>            :  * \f[ds^2 = - \left(e^{2 \beta} (1 + r W) - r^2 h_{AB} U^A U^B\right) du^2 - 2
+<span class="lineNum">     902 </span>            :  * e^{2 \beta} du dr - 2 r^2 h_{AB} U^B du dx^A + r^2 h_{A B} dx^A dx^B. \f]
+<span class="lineNum">     903 </span>            :  * Additional quantities \f$J\f$ and \f$K\f$ are defined using a spherical
+<span class="lineNum">     904 </span>            :  * angular dyad \f$q^A\f$:
+<span class="lineNum">     905 </span>            :  * \f[ J \equiv h_{A B} q^A q^B, K \equiv h_{A B} q^A \bar{q}^B.\f]
+<span class="lineNum">     906 </span>            :  * See \cite Bishop1997ik \cite Handmer2014qha for full details.
+<span class="lineNum">     907 </span>            :  *
+<span class="lineNum">     908 </span>            :  * We write the equations of motion in the compactified coordinate \f$ y \equiv
+<span class="lineNum">     909 </span>            :  * 1 - 2 R/ r\f$, where \f$r(u, \theta, \phi)\f$ is the Bondi radius of the
+<span class="lineNum">     910 </span>            :  * \f$y=\f$ constant surface and \f$R(u,\theta,\phi)\f$ is the Bondi radius of
+<span class="lineNum">     911 </span>            :  * the worldtube. The equation which determines \f$H\f$ on a surface of constant
+<span class="lineNum">     912 </span>            :  * \f$u\f$ given \f$J\f$,\f$\beta\f$, \f$Q\f$, \f$U\f$, and \f$W\f$ on the same
+<span class="lineNum">     913 </span>            :  * surface is written as
+<span class="lineNum">     914 </span>            :  * \f[(1 - y) \partial_y H + H + (1 - y) J (\mathcal{D}_J H +
+<span class="lineNum">     915 </span>            :  * \bar{\mathcal{D}}_J \bar{H}) = A_J + (1 - y) B_J.\f]
+<span class="lineNum">     916 </span>            :  * The quantity \f$ (1 - y) J \bar{\mathcal{D}}_J\f$ is the linear factor
+<span class="lineNum">     917 </span>            :  * for the non-conjugated \f$H\f$, and is computed from the equation:
+<span class="lineNum">     918 </span>            :  * \f[\mathcal{D}_J = \frac{1}{4}(-2 \partial_y \bar{J} + \frac{\bar{J}
+<span class="lineNum">     919 </span>            :  * \partial_y (J \bar{J})}{K^2})\f]
+<span class="lineNum">     920 </span>            :  */
+<span class="lineNum">     921 </span>            : template &lt;&gt;
+<span class="lineNum">     922 </span><span class="lineCov">          1 : struct ComputeBondiIntegrand&lt;Tags::LinearFactorForConjugate&lt;Tags::BondiH&gt;&gt; {</span>
+<span class="lineNum">     923 </span>            :  public:
+<span class="lineNum">     924 </span><span class="lineNoCov">          0 :   using pre_swsh_derivative_tags =</span>
+<span class="lineNum">     925 </span>            :       tmpl::list&lt;Tags::Dy&lt;Tags::BondiJ&gt;, Tags::BondiJ&gt;;
+<span class="lineNum">     926 </span><span class="lineNoCov">          0 :   using swsh_derivative_tags = tmpl::list&lt;&gt;;</span>
+<span class="lineNum">     927 </span><span class="lineNoCov">          0 :   using integration_independent_tags = tmpl::list&lt;Tags::OneMinusY&gt;;</span>
+<span class="lineNum">     928 </span><span class="lineNoCov">          0 :   using temporary_tags =</span>
+<span class="lineNum">     929 </span>            :       tmpl::list&lt;::Tags::SpinWeighted&lt;::Tags::TempScalar&lt;0, ComplexDataVector&gt;,
+<span class="lineNum">     930 </span>            :                                       std::integral_constant&lt;int, 2&gt;&gt;&gt;;
+<span class="lineNum">     931 </span>            : 
+<span class="lineNum">     932 </span><span class="lineNoCov">          0 :   using return_tags =</span>
+<span class="lineNum">     933 </span>            :       tmpl::append&lt;tmpl::list&lt;Tags::LinearFactorForConjugate&lt;Tags::BondiH&gt;&gt;,
+<span class="lineNum">     934 </span>            :                    temporary_tags&gt;;
+<span class="lineNum">     935 </span><span class="lineNoCov">          0 :   using argument_tags =</span>
+<span class="lineNum">     936 </span>            :       tmpl::append&lt;pre_swsh_derivative_tags, swsh_derivative_tags,
+<span class="lineNum">     937 </span>            :                    integration_independent_tags&gt;;
+<span class="lineNum">     938 </span>            : 
+<span class="lineNum">     939 </span>            :   template &lt;typename... Args&gt;
+<span class="lineNum">     940 </span><span class="lineNoCov">          0 :   static void apply(</span>
+<span class="lineNum">     941 </span>            :       const gsl::not_null&lt;Scalar&lt;SpinWeighted&lt;ComplexDataVector, 4&gt;&gt;*&gt;
+<span class="lineNum">     942 </span>            :           linear_factor_for_conjugate_h,
+<span class="lineNum">     943 </span>            :       const gsl::not_null&lt;Scalar&lt;SpinWeighted&lt;ComplexDataVector, 2&gt;&gt;*&gt;
+<span class="lineNum">     944 </span>            :           script_djbar,
+<span class="lineNum">     945 </span>            :       const Args&amp;... args) noexcept {
+<span class="lineNum">     946 </span>            :     apply_impl(make_not_null(&amp;get(*linear_factor_for_conjugate_h)),
+<span class="lineNum">     947 </span>            :                make_not_null(&amp;get(*script_djbar)), get(args)...);
+<span class="lineNum">     948 </span>            :   }
+<span class="lineNum">     949 </span>            : 
+<span class="lineNum">     950 </span>            :  private:
+<span class="lineNum">     951 </span><span class="lineNoCov">          0 :   static void apply_impl(</span>
+<span class="lineNum">     952 </span>            :       gsl::not_null&lt;SpinWeighted&lt;ComplexDataVector, 4&gt;*&gt;
+<span class="lineNum">     953 </span>            :           linear_factor_for_conjugate_h,
+<span class="lineNum">     954 </span>            :       gsl::not_null&lt;SpinWeighted&lt;ComplexDataVector, 2&gt;*&gt; script_djbar,
+<span class="lineNum">     955 </span>            :       const SpinWeighted&lt;ComplexDataVector, 2&gt;&amp; dy_j,
+<span class="lineNum">     956 </span>            :       const SpinWeighted&lt;ComplexDataVector, 2&gt;&amp; j,
+<span class="lineNum">     957 </span>            :       const SpinWeighted&lt;ComplexDataVector, 0&gt;&amp; one_minus_y) noexcept;
+<span class="lineNum">     958 </span>            : };
+<span class="lineNum">     959 </span>            : }  // namespace Cce
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../../../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.13</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

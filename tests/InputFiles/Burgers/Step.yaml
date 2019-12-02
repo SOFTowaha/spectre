@@ -1,0 +1,41 @@
+# Distributed under the MIT License.
+# See LICENSE.txt for details.
+
+# Executable: EvolveBurgers
+# Check: parse;execute
+
+AnalyticSolution:
+  Step:
+    LeftValue: 2.
+    RightValue: 1.
+    InitialPosition: -0.5
+
+Evolution:
+  InitialTime: 0.0
+  InitialTimeStep: 0.001
+  TimeStepper:
+    AdamsBashforthN:
+      Order: 3
+
+DomainCreator:
+  Interval:
+    LowerBound: [-1.0]
+    UpperBound: [1.0]
+    IsPeriodicIn: [false]
+    InitialRefinement: [2]
+    InitialGridPoints: [7]
+
+NumericalFlux:
+  LocalLaxFriedrichs:
+
+Limiter:
+  Minmod:
+    Type: LambdaPi1
+
+EventsAndTriggers:
+  ? PastTime: 0.1
+  : - Completion
+
+Observers:
+  VolumeFileName: "BurgersVolume"
+  ReductionFileName: "BurgersReductions"

@@ -1,0 +1,41 @@
+# Distributed under the MIT License.
+# See LICENSE.txt for details.
+
+# Executable: SolvePoissonProblem1D
+# Check: parse;execute
+# ExpectedOutput:
+#   Poisson1DReductions.h5
+#   Poisson1DVolume0.h5
+
+AnalyticSolution:
+  ProductOfSinusoids:
+    WaveNumbers: [1]
+
+DomainCreator:
+  Interval:
+    LowerBound: [0]
+    UpperBound: [3.141592653589793]
+    IsPeriodicIn: [false]
+    InitialRefinement: [1]
+    InitialGridPoints: [3]
+
+NumericalFlux:
+  InternalPenalty:
+    PenaltyParameter: 5.729577951308232 # p^2 / h
+
+Observers:
+  VolumeFileName: "Poisson1DVolume"
+  ReductionFileName: "Poisson1DReductions"
+
+LinearSolver:
+  ConvergenceCriteria:
+    MaxIterations: 1
+    AbsoluteResidual: 0
+    RelativeResidual: 0
+  Verbosity: Verbose
+
+EventsAndTriggers:
+  ? EveryNIterations:
+      N: 1
+  : - ObserveErrorNorms
+    - ObserveFields

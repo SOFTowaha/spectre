@@ -1,0 +1,366 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - 5912ac2e49a80e6a27b3707c9a1e6ce5248b1b2a - PointwiseFunctions/AnalyticSolutions/GeneralRelativity/Tov.cpp</title>
+  <link rel="stylesheet" type="text/css" href="../../../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title"> SpECTRE Documentation Coverage Report</td></tr>
+    <tr><td class="ruler"><img src="../../../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../../../index.html">top level</a> - <a href="index.html">PointwiseFunctions/AnalyticSolutions/GeneralRelativity</a> - Tov.cpp</td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+             <td class="headerItem">Commit:</td>
+             <td class="headerValue"><a target="_blank" href="https://github.com/sxs-collaboration/spectre/commit/5912ac2e49a80e6a27b3707c9a1e6ce5248b1b2a">5912ac2e49a80e6a27b3707c9a1e6ce5248b1b2a</a></td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntry">4</td>
+            <td class="headerCovTableEntryLo">0.0 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2019-12-02 22:01:08</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td class="headerItem">Legend:</td>
+            <td class="headerValueLeg">            Lines:
+            <span class="coverLegendCov">hit</span>
+            <span class="coverLegendNoCov">not hit</span>
+</td>
+            <td></td>
+          </tr>
+          <tr><td><img src="../../../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../../../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">          Line data    Source code</pre>
+<pre class="source">
+<span class="lineNum">       1 </span><span class="lineNoCov">          0 : // Distributed under the MIT License.</span>
+<span class="lineNum">       2 </span>            : // See LICENSE.txt for details.
+<span class="lineNum">       3 </span>            : 
+<span class="lineNum">       4 </span>            : #include &quot;PointwiseFunctions/AnalyticSolutions/GeneralRelativity/Tov.hpp&quot;
+<span class="lineNum">       5 </span>            : 
+<span class="lineNum">       6 </span>            : // Need Boost MultiArray because it is used internally by ODEINT
+<span class="lineNum">       7 </span>            : #include &quot;DataStructures/BoostMultiArray.hpp&quot;  // IWYU pragma: keep
+<span class="lineNum">       8 </span>            : 
+<span class="lineNum">       9 </span>            : #include &lt;algorithm&gt;
+<span class="lineNum">      10 </span>            : #include &lt;array&gt;
+<span class="lineNum">      11 </span>            : #include &lt;boost/numeric/odeint.hpp&gt;  // IWYU pragma: keep
+<span class="lineNum">      12 </span>            : #include &lt;cmath&gt;
+<span class="lineNum">      13 </span>            : #include &lt;cstddef&gt;
+<span class="lineNum">      14 </span>            : #include &lt;functional&gt;
+<span class="lineNum">      15 </span>            : #include &lt;ostream&gt;
+<span class="lineNum">      16 </span>            : #include &lt;pup.h&gt;
+<span class="lineNum">      17 </span>            : #include &lt;vector&gt;
+<span class="lineNum">      18 </span>            : 
+<span class="lineNum">      19 </span>            : #include &quot;DataStructures/DataVector.hpp&quot;
+<span class="lineNum">      20 </span>            : #include &quot;DataStructures/Tensor/EagerMath/Magnitude.hpp&quot;
+<span class="lineNum">      21 </span>            : #include &quot;ErrorHandling/Assert.hpp&quot;
+<span class="lineNum">      22 </span>            : #include &quot;Utilities/ConstantExpressions.hpp&quot;
+<span class="lineNum">      23 </span>            : #include &quot;Utilities/ContainerHelpers.hpp&quot;
+<span class="lineNum">      24 </span>            : #include &quot;Utilities/Gsl.hpp&quot;
+<span class="lineNum">      25 </span>            : #include &quot;Utilities/MakeWithValue.hpp&quot;
+<span class="lineNum">      26 </span>            : 
+<span class="lineNum">      27 </span>            : // IWYU pragma: no_include &lt;boost/numeric/odeint/integrate/integrate_adaptive.hpp&gt;
+<span class="lineNum">      28 </span>            : // IWYU pragma: no_include &lt;boost/numeric/odeint/stepper/controlled_runge_kutta.hpp&gt;
+<span class="lineNum">      29 </span>            : // IWYU pragma: no_include &lt;boost/numeric/odeint/stepper/dense_output_runge_kutta.hpp&gt;
+<span class="lineNum">      30 </span>            : // IWYU pragma: no_include &lt;boost/numeric/odeint/stepper/generation/make_dense_output.hpp&gt;
+<span class="lineNum">      31 </span>            : // IWYU pragma: no_include &lt;boost/numeric/odeint/stepper/runge_kutta_dopri5.hpp&gt;
+<span class="lineNum">      32 </span>            : // IWYU pragma: no_include &lt;complex&gt;
+<span class="lineNum">      33 </span>            : 
+<span class="lineNum">      34 </span>            : // IWYU pragma: no_forward_declare boost::numeric::odeint::controlled_runge_kutta
+<span class="lineNum">      35 </span>            : // IWYU pragma: no_forward_declare EquationsOfState::EquationOfState
+<span class="lineNum">      36 </span>            : // IWYU pragma: no_forward_declare Tensor
+<span class="lineNum">      37 </span>            : 
+<span class="lineNum">      38 </span><span class="lineNoCov">          0 : namespace {</span>
+<span class="lineNum">      39 </span>            : 
+<span class="lineNum">      40 </span>            : void lindblom_rhs(const gsl::not_null&lt;std::array&lt;double, 2&gt;*&gt; dvars,
+<span class="lineNum">      41 </span>            :                   const std::array&lt;double, 2&gt;&amp; vars, const double log_enthalpy,
+<span class="lineNum">      42 </span>            :                   const EquationsOfState::EquationOfState&lt;true, 1&gt;&amp;
+<span class="lineNum">      43 </span>            :                       equation_of_state) noexcept {
+<span class="lineNum">      44 </span>            :   const double&amp; radius_squared = vars[0];
+<span class="lineNum">      45 </span>            :   const double&amp; mass_over_radius = vars[1];
+<span class="lineNum">      46 </span>            :   double&amp; d_radius_squared = (*dvars)[0];
+<span class="lineNum">      47 </span>            :   double&amp; d_mass_over_radius = (*dvars)[1];
+<span class="lineNum">      48 </span>            :   const double specific_enthalpy = std::exp(log_enthalpy);
+<span class="lineNum">      49 </span>            :   const double rest_mass_density =
+<span class="lineNum">      50 </span>            :       get(equation_of_state.rest_mass_density_from_enthalpy(
+<span class="lineNum">      51 </span>            :           Scalar&lt;double&gt;{specific_enthalpy}));
+<span class="lineNum">      52 </span>            :   const double pressure = get(equation_of_state.pressure_from_density(
+<span class="lineNum">      53 </span>            :       Scalar&lt;double&gt;{rest_mass_density}));
+<span class="lineNum">      54 </span>            :   const double energy_density =
+<span class="lineNum">      55 </span>            :       specific_enthalpy * rest_mass_density - pressure;
+<span class="lineNum">      56 </span>            : 
+<span class="lineNum">      57 </span>            :   // At the center of the star: (u,v) = (0,0)
+<span class="lineNum">      58 </span>            :   if (UNLIKELY((radius_squared == 0.0) and (mass_over_radius == 0.0))) {
+<span class="lineNum">      59 </span>            :     d_radius_squared = -3.0 / (2.0 * M_PI * (energy_density + 3.0 * pressure));
+<span class="lineNum">      60 </span>            :     d_mass_over_radius =
+<span class="lineNum">      61 </span>            :         -2.0 * energy_density / (energy_density + 3.0 * pressure);
+<span class="lineNum">      62 </span>            :   } else {
+<span class="lineNum">      63 </span>            :     const double common_factor =
+<span class="lineNum">      64 </span>            :         (1.0 - 2.0 * mass_over_radius) /
+<span class="lineNum">      65 </span>            :         (4.0 * M_PI * radius_squared * pressure + mass_over_radius);
+<span class="lineNum">      66 </span>            :     d_radius_squared = -2.0 * radius_squared * common_factor;
+<span class="lineNum">      67 </span>            :     d_mass_over_radius =
+<span class="lineNum">      68 </span>            :         -(4.0 * M_PI * radius_squared * energy_density - mass_over_radius) *
+<span class="lineNum">      69 </span>            :         common_factor;
+<span class="lineNum">      70 </span>            :   }
+<span class="lineNum">      71 </span>            : }
+<span class="lineNum">      72 </span>            : 
+<span class="lineNum">      73 </span>            : class Observer {
+<span class="lineNum">      74 </span>            :  public:
+<span class="lineNum">      75 </span>            :   void operator()(const std::array&lt;double, 2&gt;&amp; vars,
+<span class="lineNum">      76 </span>            :                   const double current_log_enthalpy) noexcept {
+<span class="lineNum">      77 </span>            :     radius.push_back(std::sqrt(vars[0]));
+<span class="lineNum">      78 </span>            :     mass_over_radius.push_back(vars[1]);
+<span class="lineNum">      79 </span>            :     log_enthalpy.push_back(current_log_enthalpy);
+<span class="lineNum">      80 </span>            :   }
+<span class="lineNum">      81 </span>            :   std::vector&lt;double&gt; radius;
+<span class="lineNum">      82 </span>            :   std::vector&lt;double&gt; mass_over_radius;
+<span class="lineNum">      83 </span>            :   std::vector&lt;double&gt; log_enthalpy;
+<span class="lineNum">      84 </span>            : };
+<span class="lineNum">      85 </span>            : 
+<span class="lineNum">      86 </span>            : template &lt;typename DataType&gt;
+<span class="lineNum">      87 </span>            : RelativisticEuler::Solutions::TovStar&lt;
+<span class="lineNum">      88 </span>            :     gr::Solutions::TovSolution&gt;::RadialVariables&lt;DataType&gt;
+<span class="lineNum">      89 </span>            : interior_solution(
+<span class="lineNum">      90 </span>            :     const EquationsOfState::EquationOfState&lt;true, 1&gt;&amp; equation_of_state,
+<span class="lineNum">      91 </span>            :     const DataType&amp; radius, const DataType&amp; mass_over_radius,
+<span class="lineNum">      92 </span>            :     const DataType&amp; log_specific_enthalpy,
+<span class="lineNum">      93 </span>            :     const double log_lapse_at_outer_radius) noexcept {
+<span class="lineNum">      94 </span>            :   RelativisticEuler::Solutions::TovStar&lt;
+<span class="lineNum">      95 </span>            :       gr::Solutions::TovSolution&gt;::RadialVariables&lt;DataType&gt;
+<span class="lineNum">      96 </span>            :       result(radius);
+<span class="lineNum">      97 </span>            :   result.specific_enthalpy = Scalar&lt;DataType&gt;{exp(log_specific_enthalpy)};
+<span class="lineNum">      98 </span>            :   result.rest_mass_density = equation_of_state.rest_mass_density_from_enthalpy(
+<span class="lineNum">      99 </span>            :       result.specific_enthalpy);
+<span class="lineNum">     100 </span>            :   result.pressure =
+<span class="lineNum">     101 </span>            :       equation_of_state.pressure_from_density(result.rest_mass_density);
+<span class="lineNum">     102 </span>            :   result.specific_internal_energy =
+<span class="lineNum">     103 </span>            :       equation_of_state.specific_internal_energy_from_density(
+<span class="lineNum">     104 </span>            :           result.rest_mass_density);
+<span class="lineNum">     105 </span>            :   result.metric_time_potential =
+<span class="lineNum">     106 </span>            :       log_lapse_at_outer_radius - log_specific_enthalpy;
+<span class="lineNum">     107 </span>            :   result.dr_metric_time_potential =
+<span class="lineNum">     108 </span>            :       (mass_over_radius / radius + 4.0 * M_PI * get(result.pressure) * radius) /
+<span class="lineNum">     109 </span>            :       (1.0 - 2.0 * mass_over_radius);
+<span class="lineNum">     110 </span>            :   result.metric_radial_potential = -0.5 * log(1.0 - 2.0 * mass_over_radius);
+<span class="lineNum">     111 </span>            :   result.dr_metric_radial_potential =
+<span class="lineNum">     112 </span>            :       (4.0 * M_PI * radius *
+<span class="lineNum">     113 </span>            :            (get(result.specific_enthalpy) * get(result.rest_mass_density) -
+<span class="lineNum">     114 </span>            :             get(result.pressure)) -
+<span class="lineNum">     115 </span>            :        mass_over_radius / radius) /
+<span class="lineNum">     116 </span>            :       (1.0 - 2.0 * mass_over_radius);
+<span class="lineNum">     117 </span>            :   result.metric_angular_potential = make_with_value&lt;DataType&gt;(radius, 0.0);
+<span class="lineNum">     118 </span>            :   result.dr_metric_angular_potential = make_with_value&lt;DataType&gt;(radius, 0.0);
+<span class="lineNum">     119 </span>            :   return result;
+<span class="lineNum">     120 </span>            : }
+<span class="lineNum">     121 </span>            : 
+<span class="lineNum">     122 </span>            : template &lt;typename DataType&gt;
+<span class="lineNum">     123 </span>            : RelativisticEuler::Solutions::TovStar&lt;
+<span class="lineNum">     124 </span>            :     gr::Solutions::TovSolution&gt;::RadialVariables&lt;DataType&gt;
+<span class="lineNum">     125 </span>            : vacuum_solution(const DataType&amp; radius, const double total_mass) noexcept {
+<span class="lineNum">     126 </span>            :   RelativisticEuler::Solutions::TovStar&lt;
+<span class="lineNum">     127 </span>            :       gr::Solutions::TovSolution&gt;::RadialVariables&lt;DataType&gt;
+<span class="lineNum">     128 </span>            :       result(radius);
+<span class="lineNum">     129 </span>            :   result.specific_enthalpy = make_with_value&lt;Scalar&lt;DataType&gt;&gt;(radius, 1.0);
+<span class="lineNum">     130 </span>            :   result.rest_mass_density = make_with_value&lt;Scalar&lt;DataType&gt;&gt;(radius, 0.0);
+<span class="lineNum">     131 </span>            :   result.pressure = make_with_value&lt;Scalar&lt;DataType&gt;&gt;(radius, 0.0);
+<span class="lineNum">     132 </span>            :   result.specific_internal_energy =
+<span class="lineNum">     133 </span>            :       make_with_value&lt;Scalar&lt;DataType&gt;&gt;(radius, 0.0);
+<span class="lineNum">     134 </span>            :   const DataType one_minus_two_m_over_r = 1.0 - 2.0 * total_mass / radius;
+<span class="lineNum">     135 </span>            :   result.metric_time_potential = 0.5 * log(one_minus_two_m_over_r);
+<span class="lineNum">     136 </span>            :   result.dr_metric_time_potential =
+<span class="lineNum">     137 </span>            :       total_mass / square(radius) / one_minus_two_m_over_r;
+<span class="lineNum">     138 </span>            :   result.metric_radial_potential = -result.metric_time_potential;
+<span class="lineNum">     139 </span>            :   result.dr_metric_radial_potential = -result.dr_metric_time_potential;
+<span class="lineNum">     140 </span>            :   result.metric_angular_potential = make_with_value&lt;DataType&gt;(radius, 0.0);
+<span class="lineNum">     141 </span>            :   result.dr_metric_angular_potential = make_with_value&lt;DataType&gt;(radius, 0.0);
+<span class="lineNum">     142 </span>            :   return result;
+<span class="lineNum">     143 </span>            : }
+<span class="lineNum">     144 </span>            : 
+<span class="lineNum">     145 </span>            : }  // namespace
+<span class="lineNum">     146 </span>            : 
+<span class="lineNum">     147 </span>            : namespace gr {
+<span class="lineNum">     148 </span>            : namespace Solutions {
+<span class="lineNum">     149 </span>            : 
+<span class="lineNum">     150 </span>            : TovSolution::TovSolution(
+<span class="lineNum">     151 </span>            :     const EquationsOfState::EquationOfState&lt;true, 1&gt;&amp; equation_of_state,
+<span class="lineNum">     152 </span>            :     const double central_mass_density,
+<span class="lineNum">     153 </span>            :     const double log_enthalpy_at_outer_radius, const double absolute_tolerance,
+<span class="lineNum">     154 </span>            :     const double relative_tolerance) {
+<span class="lineNum">     155 </span>            :   std::array&lt;double, 2&gt; u_and_v = {{0.0, 0.0}};
+<span class="lineNum">     156 </span>            :   std::array&lt;double, 2&gt; dudh_and_dvdh{};
+<span class="lineNum">     157 </span>            :   const double central_log_enthalpy =
+<span class="lineNum">     158 </span>            :       std::log(get(equation_of_state.specific_enthalpy_from_density(
+<span class="lineNum">     159 </span>            :           Scalar&lt;double&gt;{central_mass_density})));
+<span class="lineNum">     160 </span>            :   lindblom_rhs(&amp;dudh_and_dvdh, u_and_v, central_log_enthalpy,
+<span class="lineNum">     161 </span>            :                equation_of_state);
+<span class="lineNum">     162 </span>            :   const double initial_step = -std::min(std::abs(1.0 / dudh_and_dvdh[0]),
+<span class="lineNum">     163 </span>            :                                         std::abs(1.0 / dudh_and_dvdh[1]));
+<span class="lineNum">     164 </span>            :   using StateDopri5 =
+<span class="lineNum">     165 </span>            :       boost::numeric::odeint::runge_kutta_dopri5&lt;std::array&lt;double, 2&gt;&gt;;
+<span class="lineNum">     166 </span>            :   boost::numeric::odeint::dense_output_runge_kutta&lt;
+<span class="lineNum">     167 </span>            :       boost::numeric::odeint::controlled_runge_kutta&lt;StateDopri5&gt;&gt;
+<span class="lineNum">     168 </span>            :       dopri5 = make_dense_output(absolute_tolerance, relative_tolerance,
+<span class="lineNum">     169 </span>            :                                  StateDopri5{});
+<span class="lineNum">     170 </span>            :   Observer observer{};
+<span class="lineNum">     171 </span>            :   boost::numeric::odeint::integrate_adaptive(
+<span class="lineNum">     172 </span>            :       dopri5,
+<span class="lineNum">     173 </span>            :       [&amp;equation_of_state](const std::array&lt;double, 2&gt;&amp; lindblom_u_and_v,
+<span class="lineNum">     174 </span>            :                            std::array&lt;double, 2&gt;&amp; lindblom_dudh_and_dvdh,
+<span class="lineNum">     175 </span>            :                            const double lindblom_enthalpy) noexcept {
+<span class="lineNum">     176 </span>            :         return lindblom_rhs(&amp;lindblom_dudh_and_dvdh, lindblom_u_and_v,
+<span class="lineNum">     177 </span>            :                             lindblom_enthalpy, equation_of_state);
+<span class="lineNum">     178 </span>            :       },
+<span class="lineNum">     179 </span>            :       u_and_v, central_log_enthalpy, log_enthalpy_at_outer_radius, initial_step,
+<span class="lineNum">     180 </span>            :       std::ref(observer));
+<span class="lineNum">     181 </span>            :   outer_radius_ = observer.radius.back();
+<span class="lineNum">     182 </span>            :   const double total_mass_over_radius = observer.mass_over_radius.back();
+<span class="lineNum">     183 </span>            :   total_mass_ = total_mass_over_radius * outer_radius_;
+<span class="lineNum">     184 </span>            :   log_lapse_at_outer_radius_ = 0.5 * log(1.0 - 2.0 * total_mass_over_radius);
+<span class="lineNum">     185 </span>            :   mass_over_radius_interpolant_ =
+<span class="lineNum">     186 </span>            :       intrp::BarycentricRational(observer.radius, observer.mass_over_radius, 5);
+<span class="lineNum">     187 </span>            :   // log_enthalpy(radius) is almost linear so an interpolant of order 3
+<span class="lineNum">     188 </span>            :   // maximizes precision
+<span class="lineNum">     189 </span>            :   log_enthalpy_interpolant_ =
+<span class="lineNum">     190 </span>            :       intrp::BarycentricRational(observer.radius, observer.log_enthalpy, 3);
+<span class="lineNum">     191 </span>            : }
+<span class="lineNum">     192 </span>            : 
+<span class="lineNum">     193 </span>            : double TovSolution::outer_radius() const noexcept { return outer_radius_; }
+<span class="lineNum">     194 </span>            : 
+<span class="lineNum">     195 </span>            : double TovSolution::mass_over_radius(const double r) const noexcept {
+<span class="lineNum">     196 </span>            :   ASSERT(r &gt;= 0.0 and r &lt;= outer_radius_,
+<span class="lineNum">     197 </span>            :          &quot;Invalid radius: &quot; &lt;&lt; r &lt;&lt; &quot; not in [0.0, &quot; &lt;&lt; outer_radius_ &lt;&lt; &quot;]\n&quot;);
+<span class="lineNum">     198 </span>            :   return mass_over_radius_interpolant_(r);
+<span class="lineNum">     199 </span>            : }
+<span class="lineNum">     200 </span>            : 
+<span class="lineNum">     201 </span>            : double TovSolution::mass(const double r) const noexcept {
+<span class="lineNum">     202 </span>            :   return mass_over_radius(r) * r;
+<span class="lineNum">     203 </span>            : }
+<span class="lineNum">     204 </span>            : 
+<span class="lineNum">     205 </span>            : double TovSolution::log_specific_enthalpy(const double r) const noexcept {
+<span class="lineNum">     206 </span>            :   ASSERT(r &gt;= 0.0 and r &lt;= outer_radius_,
+<span class="lineNum">     207 </span>            :          &quot;Invalid radius: &quot; &lt;&lt; r &lt;&lt; &quot; not in [0.0, &quot; &lt;&lt; outer_radius_ &lt;&lt; &quot;]\n&quot;);
+<span class="lineNum">     208 </span>            :   return log_enthalpy_interpolant_(r);
+<span class="lineNum">     209 </span>            : }
+<span class="lineNum">     210 </span>            : 
+<span class="lineNum">     211 </span>            : template &lt;&gt;
+<span class="lineNum">     212 </span>            : RelativisticEuler::Solutions::TovStar&lt;TovSolution&gt;::RadialVariables&lt;double&gt;
+<span class="lineNum">     213 </span><span class="lineNoCov">          0 : TovSolution::radial_variables(</span>
+<span class="lineNum">     214 </span>            :     const EquationsOfState::EquationOfState&lt;true, 1&gt;&amp; equation_of_state,
+<span class="lineNum">     215 </span>            :     const tnsr::I&lt;double, 3&gt;&amp; x) const noexcept {
+<span class="lineNum">     216 </span>            :   // add small number to avoid FPEs at origin
+<span class="lineNum">     217 </span>            :   const double radius = get(magnitude(x)) + 1.e-30 * outer_radius_;
+<span class="lineNum">     218 </span>            :   if (radius &gt;= outer_radius_) {
+<span class="lineNum">     219 </span>            :     return vacuum_solution(radius, total_mass_);
+<span class="lineNum">     220 </span>            :   }
+<span class="lineNum">     221 </span>            :   return interior_solution(equation_of_state, radius, mass_over_radius(radius),
+<span class="lineNum">     222 </span>            :                            log_specific_enthalpy(radius),
+<span class="lineNum">     223 </span>            :                            log_lapse_at_outer_radius_);
+<span class="lineNum">     224 </span>            : }
+<span class="lineNum">     225 </span>            : 
+<span class="lineNum">     226 </span>            : template &lt;&gt;
+<span class="lineNum">     227 </span>            : RelativisticEuler::Solutions::TovStar&lt;TovSolution&gt;::RadialVariables&lt;DataVector&gt;
+<span class="lineNum">     228 </span><span class="lineNoCov">          0 : TovSolution::radial_variables(</span>
+<span class="lineNum">     229 </span>            :     const EquationsOfState::EquationOfState&lt;true, 1&gt;&amp; equation_of_state,
+<span class="lineNum">     230 </span>            :     const tnsr::I&lt;DataVector, 3&gt;&amp; x) const noexcept {
+<span class="lineNum">     231 </span>            :   // add small number to avoid FPEs at origin
+<span class="lineNum">     232 </span>            :   const DataVector radius = get(magnitude(x)) + 1.e-30 * outer_radius_;
+<span class="lineNum">     233 </span>            :   if (min(radius) &gt;= outer_radius_) {
+<span class="lineNum">     234 </span>            :     return vacuum_solution(radius, total_mass_);
+<span class="lineNum">     235 </span>            :   }
+<span class="lineNum">     236 </span>            :   if (max(radius) &lt;= outer_radius_) {
+<span class="lineNum">     237 </span>            :     DataVector mass_over_radius_data(radius.size());
+<span class="lineNum">     238 </span>            :     DataVector log_of_specific_enthalpy(radius.size());
+<span class="lineNum">     239 </span>            :     for (size_t i = 0; i &lt; get_size(radius); i++) {
+<span class="lineNum">     240 </span>            :       const double r = get_element(radius, i);
+<span class="lineNum">     241 </span>            :       get_element(mass_over_radius_data, i) = mass_over_radius(r);
+<span class="lineNum">     242 </span>            :       get_element(log_of_specific_enthalpy, i) = log_specific_enthalpy(r);
+<span class="lineNum">     243 </span>            :     }
+<span class="lineNum">     244 </span>            :     return interior_solution(equation_of_state, radius, mass_over_radius_data,
+<span class="lineNum">     245 </span>            :                              log_of_specific_enthalpy,
+<span class="lineNum">     246 </span>            :                              log_lapse_at_outer_radius_);
+<span class="lineNum">     247 </span>            :   }
+<span class="lineNum">     248 </span>            :   RelativisticEuler::Solutions::TovStar&lt;TovSolution&gt;::RadialVariables&lt;
+<span class="lineNum">     249 </span>            :       DataVector&gt;
+<span class="lineNum">     250 </span>            :       result(radius);
+<span class="lineNum">     251 </span>            :   for (size_t i = 0; i &lt; radius.size(); i++) {
+<span class="lineNum">     252 </span>            :     const double r = radius[i];
+<span class="lineNum">     253 </span>            :     auto radial_vars_at_r =
+<span class="lineNum">     254 </span>            :         (r &lt;= outer_radius_
+<span class="lineNum">     255 </span>            :              ? interior_solution(equation_of_state, r, mass_over_radius(r),
+<span class="lineNum">     256 </span>            :                                  log_specific_enthalpy(r),
+<span class="lineNum">     257 </span>            :                                  log_lapse_at_outer_radius_)
+<span class="lineNum">     258 </span>            :              : vacuum_solution(r, total_mass_));
+<span class="lineNum">     259 </span>            :     get(result.rest_mass_density)[i] = get(radial_vars_at_r.rest_mass_density);
+<span class="lineNum">     260 </span>            :     get(result.pressure)[i] = get(radial_vars_at_r.pressure);
+<span class="lineNum">     261 </span>            :     get(result.specific_internal_energy)[i] =
+<span class="lineNum">     262 </span>            :         get(radial_vars_at_r.specific_internal_energy);
+<span class="lineNum">     263 </span>            :     get(result.specific_enthalpy)[i] = get(radial_vars_at_r.specific_enthalpy);
+<span class="lineNum">     264 </span>            :     result.metric_time_potential[i] = radial_vars_at_r.metric_time_potential;
+<span class="lineNum">     265 </span>            :     result.dr_metric_time_potential[i] =
+<span class="lineNum">     266 </span>            :         radial_vars_at_r.dr_metric_time_potential;
+<span class="lineNum">     267 </span>            :     result.metric_radial_potential[i] =
+<span class="lineNum">     268 </span>            :         radial_vars_at_r.metric_radial_potential;
+<span class="lineNum">     269 </span>            :     result.dr_metric_radial_potential[i] =
+<span class="lineNum">     270 </span>            :         radial_vars_at_r.dr_metric_radial_potential;
+<span class="lineNum">     271 </span>            :   }
+<span class="lineNum">     272 </span>            :   result.metric_angular_potential = make_with_value&lt;DataVector&gt;(radius, 0.0);
+<span class="lineNum">     273 </span>            :   result.dr_metric_angular_potential = make_with_value&lt;DataVector&gt;(radius, 0.0);
+<span class="lineNum">     274 </span>            :   return result;
+<span class="lineNum">     275 </span>            : }
+<span class="lineNum">     276 </span>            : 
+<span class="lineNum">     277 </span>            : void TovSolution::pup(PUP::er&amp; p) noexcept {  // NOLINT
+<span class="lineNum">     278 </span>            :   p | outer_radius_;
+<span class="lineNum">     279 </span>            :   p | total_mass_;
+<span class="lineNum">     280 </span>            :   p | log_lapse_at_outer_radius_;
+<span class="lineNum">     281 </span>            :   p | mass_over_radius_interpolant_;
+<span class="lineNum">     282 </span>            :   p | log_enthalpy_interpolant_;
+<span class="lineNum">     283 </span>            : }
+<span class="lineNum">     284 </span>            : 
+<span class="lineNum">     285 </span>            : }  // namespace Solutions
+<span class="lineNum">     286 </span>            : }  // namespace gr
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../../../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.13</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

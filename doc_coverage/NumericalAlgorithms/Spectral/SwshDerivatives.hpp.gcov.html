@@ -1,0 +1,567 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - 5912ac2e49a80e6a27b3707c9a1e6ce5248b1b2a - NumericalAlgorithms/Spectral/SwshDerivatives.hpp</title>
+  <link rel="stylesheet" type="text/css" href="../../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title"> SpECTRE Documentation Coverage Report</td></tr>
+    <tr><td class="ruler"><img src="../../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../../index.html">top level</a> - <a href="index.html">NumericalAlgorithms/Spectral</a> - SwshDerivatives.hpp</td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+             <td class="headerItem">Commit:</td>
+             <td class="headerValue"><a target="_blank" href="https://github.com/sxs-collaboration/spectre/commit/5912ac2e49a80e6a27b3707c9a1e6ce5248b1b2a">5912ac2e49a80e6a27b3707c9a1e6ce5248b1b2a</a></td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">3</td>
+            <td class="headerCovTableEntry">4</td>
+            <td class="headerCovTableEntryMed">75.0 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2019-12-02 22:01:08</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td class="headerItem">Legend:</td>
+            <td class="headerValueLeg">            Lines:
+            <span class="coverLegendCov">hit</span>
+            <span class="coverLegendNoCov">not hit</span>
+</td>
+            <td></td>
+          </tr>
+          <tr><td><img src="../../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">          Line data    Source code</pre>
+<pre class="source">
+<span class="lineNum">       1 </span><span class="lineNoCov">          0 : // Distributed under the MIT License.</span>
+<span class="lineNum">       2 </span>            : // See LICENSE.txt for details.
+<span class="lineNum">       3 </span>            : 
+<span class="lineNum">       4 </span>            : #pragma once
+<span class="lineNum">       5 </span>            : 
+<span class="lineNum">       6 </span>            : #include &lt;complex&gt;
+<span class="lineNum">       7 </span>            : #include &lt;cstddef&gt;
+<span class="lineNum">       8 </span>            : 
+<span class="lineNum">       9 </span>            : #include &quot;DataStructures/ComplexDataVector.hpp&quot;  // IWYU pragma: keep
+<span class="lineNum">      10 </span>            : #include &quot;DataStructures/ComplexDiagonalModalOperator.hpp&quot;
+<span class="lineNum">      11 </span>            : #include &quot;DataStructures/ComplexModalVector.hpp&quot;  // IWYU pragma: keep
+<span class="lineNum">      12 </span>            : #include &quot;DataStructures/DataVector.hpp&quot;
+<span class="lineNum">      13 </span>            : #include &quot;DataStructures/SpinWeighted.hpp&quot;
+<span class="lineNum">      14 </span>            : #include &quot;DataStructures/TempBuffer.hpp&quot;  // IWYU pragma: keep
+<span class="lineNum">      15 </span>            : #include &quot;DataStructures/Variables.hpp&quot;
+<span class="lineNum">      16 </span>            : #include &quot;NumericalAlgorithms/Spectral/ComplexDataView.hpp&quot;
+<span class="lineNum">      17 </span>            : #include &quot;NumericalAlgorithms/Spectral/SwshCoefficients.hpp&quot;
+<span class="lineNum">      18 </span>            : #include &quot;NumericalAlgorithms/Spectral/SwshCollocation.hpp&quot;
+<span class="lineNum">      19 </span>            : #include &quot;NumericalAlgorithms/Spectral/SwshSettings.hpp&quot;
+<span class="lineNum">      20 </span>            : #include &quot;NumericalAlgorithms/Spectral/SwshTags.hpp&quot;
+<span class="lineNum">      21 </span>            : #include &quot;NumericalAlgorithms/Spectral/SwshTransform.hpp&quot;
+<span class="lineNum">      22 </span>            : #include &quot;Utilities/ForceInline.hpp&quot;
+<span class="lineNum">      23 </span>            : #include &quot;Utilities/Gsl.hpp&quot;
+<span class="lineNum">      24 </span>            : #include &quot;Utilities/TMPL.hpp&quot;
+<span class="lineNum">      25 </span>            : 
+<span class="lineNum">      26 </span>            : // IWYU pragma: no_forward_declare ComplexDataVector
+<span class="lineNum">      27 </span>            : // IWYU pragma: no_forward_declare SpinWeighted
+<span class="lineNum">      28 </span>            : // IWYU pragma: no_forward_declare Variables
+<span class="lineNum">      29 </span>            : 
+<span class="lineNum">      30 </span>            : namespace Spectral {
+<span class="lineNum">      31 </span>            : namespace Swsh {
+<span class="lineNum">      32 </span>            : namespace detail {
+<span class="lineNum">      33 </span>            : 
+<span class="lineNum">      34 </span>            : // Factors that appear in the modal representation of spin-weighted angular
+<span class="lineNum">      35 </span>            : // derivatives, needed for compute_coefficients_of_derivative
+<span class="lineNum">      36 </span>            : template &lt;typename DerivativeKind&gt;
+<span class="lineNum">      37 </span>            : SPECTRE_ALWAYS_INLINE std::complex&lt;double&gt; derivative_factor(int l,
+<span class="lineNum">      38 </span>            :                                                              int s) noexcept;
+<span class="lineNum">      39 </span>            : 
+<span class="lineNum">      40 </span>            : template &lt;&gt;
+<span class="lineNum">      41 </span>            : SPECTRE_ALWAYS_INLINE std::complex&lt;double&gt; derivative_factor&lt;Tags::Eth&gt;(
+<span class="lineNum">      42 </span>            :     const int l, const int s) noexcept {
+<span class="lineNum">      43 </span>            :   return sqrt(static_cast&lt;std::complex&lt;double&gt;&gt;((l - s) * (l + s + 1)));
+<span class="lineNum">      44 </span>            : }
+<span class="lineNum">      45 </span>            : 
+<span class="lineNum">      46 </span>            : template &lt;&gt;
+<span class="lineNum">      47 </span>            : SPECTRE_ALWAYS_INLINE std::complex&lt;double&gt; derivative_factor&lt;Tags::Ethbar&gt;(
+<span class="lineNum">      48 </span>            :     const int l, const int s) noexcept {
+<span class="lineNum">      49 </span>            :   return -sqrt(static_cast&lt;std::complex&lt;double&gt;&gt;((l + s) * (l - s + 1)));
+<span class="lineNum">      50 </span>            : }
+<span class="lineNum">      51 </span>            : 
+<span class="lineNum">      52 </span>            : template &lt;&gt;
+<span class="lineNum">      53 </span>            : SPECTRE_ALWAYS_INLINE std::complex&lt;double&gt; derivative_factor&lt;Tags::EthEth&gt;(
+<span class="lineNum">      54 </span>            :     const int l, const int s) noexcept {
+<span class="lineNum">      55 </span>            :   return sqrt(static_cast&lt;std::complex&lt;double&gt;&gt;((l - s - 1) * (l + s + 2) *
+<span class="lineNum">      56 </span>            :                                                 (l - s) * (l + s + 1)));
+<span class="lineNum">      57 </span>            : }
+<span class="lineNum">      58 </span>            : 
+<span class="lineNum">      59 </span>            : template &lt;&gt;
+<span class="lineNum">      60 </span>            : SPECTRE_ALWAYS_INLINE std::complex&lt;double&gt;
+<span class="lineNum">      61 </span>            : derivative_factor&lt;Tags::EthbarEthbar&gt;(const int l, const int s) noexcept {
+<span class="lineNum">      62 </span>            :   return sqrt(static_cast&lt;std::complex&lt;double&gt;&gt;((l + s - 1) * (l - s + 2) *
+<span class="lineNum">      63 </span>            :                                                 (l + s) * (l - s + 1)));
+<span class="lineNum">      64 </span>            : }
+<span class="lineNum">      65 </span>            : 
+<span class="lineNum">      66 </span>            : template &lt;&gt;
+<span class="lineNum">      67 </span>            : SPECTRE_ALWAYS_INLINE std::complex&lt;double&gt; derivative_factor&lt;Tags::EthbarEth&gt;(
+<span class="lineNum">      68 </span>            :     const int l, const int s) noexcept {
+<span class="lineNum">      69 </span>            :   return static_cast&lt;std::complex&lt;double&gt;&gt;(-(l - s) * (l + s + 1));
+<span class="lineNum">      70 </span>            : }
+<span class="lineNum">      71 </span>            : 
+<span class="lineNum">      72 </span>            : template &lt;&gt;
+<span class="lineNum">      73 </span>            : SPECTRE_ALWAYS_INLINE std::complex&lt;double&gt; derivative_factor&lt;Tags::EthEthbar&gt;(
+<span class="lineNum">      74 </span>            :     const int l, const int s) noexcept {
+<span class="lineNum">      75 </span>            :   return static_cast&lt;std::complex&lt;double&gt;&gt;(-(l + s) * (l - s + 1));
+<span class="lineNum">      76 </span>            : }
+<span class="lineNum">      77 </span>            : 
+<span class="lineNum">      78 </span>            : // For a particular derivative represented by `DerivativeKind` and input spin
+<span class="lineNum">      79 </span>            : // `Spin`, multiplies the derivative spectral factors with
+<span class="lineNum">      80 </span>            : // `pre_derivative_modes`, returning by pointer via parameter `derivative_modes`
+<span class="lineNum">      81 </span>            : template &lt;typename DerivativeKind, int Spin&gt;
+<span class="lineNum">      82 </span>            : void compute_coefficients_of_derivative(
+<span class="lineNum">      83 </span>            :     gsl::not_null&lt;
+<span class="lineNum">      84 </span>            :         SpinWeighted&lt;ComplexModalVector,
+<span class="lineNum">      85 </span>            :                      Spin + Tags::derivative_spin_weight&lt;DerivativeKind&gt;&gt;*&gt;
+<span class="lineNum">      86 </span>            :         derivative_modes,
+<span class="lineNum">      87 </span>            :     gsl::not_null&lt;SpinWeighted&lt;ComplexModalVector, Spin&gt;*&gt; pre_derivative_modes,
+<span class="lineNum">      88 </span>            :     size_t l_max, size_t number_of_radial_points) noexcept;
+<span class="lineNum">      89 </span>            : 
+<span class="lineNum">      90 </span>            : // Helper function for dealing with the parameter packs in the utilities which
+<span class="lineNum">      91 </span>            : // evaluate several spin-weighted derivatives at once. The `apply` function of
+<span class="lineNum">      92 </span>            : // this struct locates the appropriate mode buffer in the input tuple
+<span class="lineNum">      93 </span>            : // `pre_derivative_mode_tuple`, and calls `compute_coefficients_of_derivative`,
+<span class="lineNum">      94 </span>            : // deriving the coefficients for `DerivativeTag` and returning by pointer.
+<span class="lineNum">      95 </span>            : template &lt;typename DerivativeTag, typename PreDerivativeTagList&gt;
+<span class="lineNum">      96 </span>            : struct dispatch_to_compute_coefficients_of_derivative;
+<span class="lineNum">      97 </span>            : 
+<span class="lineNum">      98 </span>            : template &lt;typename DerivativeTag, typename... PreDerivativeTags&gt;
+<span class="lineNum">      99 </span>            : struct dispatch_to_compute_coefficients_of_derivative&lt;
+<span class="lineNum">     100 </span>            :     DerivativeTag, tmpl::list&lt;PreDerivativeTags...&gt;&gt; {
+<span class="lineNum">     101 </span>            :   template &lt;int Spin, typename... ModalTypes&gt;
+<span class="lineNum">     102 </span>            :   static void apply(const gsl::not_null&lt;SpinWeighted&lt;ComplexModalVector, Spin&gt;*&gt;
+<span class="lineNum">     103 </span>            :                         derivative_modes,
+<span class="lineNum">     104 </span>            :                     const std::tuple&lt;ModalTypes...&gt;&amp; pre_derivative_mode_tuple,
+<span class="lineNum">     105 </span>            :                     const size_t l_max,
+<span class="lineNum">     106 </span>            :                     const size_t number_of_radial_points) noexcept {
+<span class="lineNum">     107 </span>            :     compute_coefficients_of_derivative&lt;typename DerivativeTag::derivative_kind&gt;(
+<span class="lineNum">     108 </span>            :         derivative_modes,
+<span class="lineNum">     109 </span>            :         get&lt;tmpl::position_of_first_v&lt;tmpl::list&lt;PreDerivativeTags...&gt;,
+<span class="lineNum">     110 </span>            :                                       typename DerivativeTag::derivative_of&gt;&gt;(
+<span class="lineNum">     111 </span>            :             pre_derivative_mode_tuple),
+<span class="lineNum">     112 </span>            :         l_max, number_of_radial_points);
+<span class="lineNum">     113 </span>            :   }
+<span class="lineNum">     114 </span>            : };
+<span class="lineNum">     115 </span>            : 
+<span class="lineNum">     116 </span>            : // Helper function for dealing with the parameter packs in the utilities which
+<span class="lineNum">     117 </span>            : // evaluate several spin-weighted derivatives at once. The `apply` function of
+<span class="lineNum">     118 </span>            : // this struct locates the like-spin set of paired modes and nodes, and calls
+<span class="lineNum">     119 </span>            : // the member function of `SwshTransform` or `InverseSwshTransform` to perform
+<span class="lineNum">     120 </span>            : // the spin-weighted transform. This function is a friend of both
+<span class="lineNum">     121 </span>            : // `SwshTransform` and `InverseSwshTransform` to gain access to the private
+<span class="lineNum">     122 </span>            : // `apply_to_vectors`.
+<span class="lineNum">     123 </span>            : // The calling code will pass as tuples a superset of the quantities to be
+<span class="lineNum">     124 </span>            : // transformed, in the same order as the tags provided to `TagList`. The
+<span class="lineNum">     125 </span>            : // `modal_tuple` must be the storage destinations of the transforms in the
+<span class="lineNum">     126 </span>            : // same order as the `nodal_tuple`. The set of nodal tags to be transformed are
+<span class="lineNum">     127 </span>            : // the `TransformTags...` determined by the `SwshTransform` or
+<span class="lineNum">     128 </span>            : // `InverseSwshTransform`. The reason for using `tuple`s rather than
+<span class="lineNum">     129 </span>            : // `TaggedTuple`s or similar is to pass around spin-weighted vectors directly,
+<span class="lineNum">     130 </span>            : // rather than `Scalar`s, which allows for more condensed forwarding code.
+<span class="lineNum">     131 </span>            : template &lt;typename Transform, typename TagList&gt;
+<span class="lineNum">     132 </span>            : struct dispatch_to_transform;
+<span class="lineNum">     133 </span>            : 
+<span class="lineNum">     134 </span>            : template &lt;ComplexRepresentation Representation, typename... TransformTags,
+<span class="lineNum">     135 </span>            :           typename... Tags&gt;
+<span class="lineNum">     136 </span>            : struct dispatch_to_transform&lt;
+<span class="lineNum">     137 </span>            :     SwshTransform&lt;tmpl::list&lt;TransformTags...&gt;, Representation&gt;,
+<span class="lineNum">     138 </span>            :     tmpl::list&lt;Tags...&gt;&gt; {
+<span class="lineNum">     139 </span>            :   template &lt;typename... ModalTypes, typename... NodalTypes&gt;
+<span class="lineNum">     140 </span>            :   static void apply(const gsl::not_null&lt;std::tuple&lt;ModalTypes...&gt;*&gt; modal_tuple,
+<span class="lineNum">     141 </span>            :                     const std::tuple&lt;NodalTypes...&gt;&amp; nodal_tuple,
+<span class="lineNum">     142 </span>            :                     const size_t l_max,
+<span class="lineNum">     143 </span>            :                     const size_t number_of_radial_points) noexcept {
+<span class="lineNum">     144 </span>            :     SwshTransform&lt;tmpl::list&lt;TransformTags...&gt;, Representation&gt;::
+<span class="lineNum">     145 </span>            :         apply_to_vectors(
+<span class="lineNum">     146 </span>            :             get&lt;tmpl::position_of_first_v&lt;tmpl::list&lt;Tags...&gt;, TransformTags&gt;&gt;(
+<span class="lineNum">     147 </span>            :                 *modal_tuple)...,
+<span class="lineNum">     148 </span>            :             get&lt;tmpl::position_of_first_v&lt;tmpl::list&lt;Tags...&gt;, TransformTags&gt;&gt;(
+<span class="lineNum">     149 </span>            :                 nodal_tuple)...,
+<span class="lineNum">     150 </span>            :             l_max, number_of_radial_points);
+<span class="lineNum">     151 </span>            :   }
+<span class="lineNum">     152 </span>            : };
+<span class="lineNum">     153 </span>            : 
+<span class="lineNum">     154 </span>            : template &lt;ComplexRepresentation Representation, typename... TransformTags,
+<span class="lineNum">     155 </span>            :           typename... Tags&gt;
+<span class="lineNum">     156 </span>            : struct dispatch_to_transform&lt;
+<span class="lineNum">     157 </span>            :     InverseSwshTransform&lt;tmpl::list&lt;TransformTags...&gt;, Representation&gt;,
+<span class="lineNum">     158 </span>            :     tmpl::list&lt;Tags...&gt;&gt; {
+<span class="lineNum">     159 </span>            :   template &lt;typename... NodalTypes, typename... ModalTypes&gt;
+<span class="lineNum">     160 </span>            :   static void apply(const gsl::not_null&lt;std::tuple&lt;NodalTypes...&gt;*&gt; nodal_tuple,
+<span class="lineNum">     161 </span>            :                     const std::tuple&lt;ModalTypes...&gt;&amp; modal_tuple,
+<span class="lineNum">     162 </span>            :                     const size_t l_max,
+<span class="lineNum">     163 </span>            :                     const size_t number_of_radial_points) noexcept {
+<span class="lineNum">     164 </span>            :     InverseSwshTransform&lt;tmpl::list&lt;TransformTags...&gt;, Representation&gt;::
+<span class="lineNum">     165 </span>            :         apply_to_vectors(
+<span class="lineNum">     166 </span>            :             get&lt;tmpl::position_of_first_v&lt;tmpl::list&lt;Tags...&gt;, TransformTags&gt;&gt;(
+<span class="lineNum">     167 </span>            :                 *nodal_tuple)...,
+<span class="lineNum">     168 </span>            :             *get&lt;tmpl::position_of_first_v&lt;tmpl::list&lt;Tags...&gt;, TransformTags&gt;&gt;(
+<span class="lineNum">     169 </span>            :                 modal_tuple)...,
+<span class="lineNum">     170 </span>            :             l_max, number_of_radial_points);
+<span class="lineNum">     171 </span>            :   }
+<span class="lineNum">     172 </span>            : };
+<span class="lineNum">     173 </span>            : 
+<span class="lineNum">     174 </span>            : // template 'implementation' for the DataBox mutate-compatible interface to
+<span class="lineNum">     175 </span>            : // spin-weighted derivative evaluation. This impl version is needed to have easy
+<span class="lineNum">     176 </span>            : // access to the `DeDuplicatedDifferentiatedFromTagList` as a parameter pack
+<span class="lineNum">     177 </span>            : template &lt;typename DerivativeTagList,
+<span class="lineNum">     178 </span>            :           typename DeDuplicatedDifferentiatedFromTagList,
+<span class="lineNum">     179 </span>            :           ComplexRepresentation Representation&gt;
+<span class="lineNum">     180 </span>            : struct AngularDerivativesImpl;
+<span class="lineNum">     181 </span>            : 
+<span class="lineNum">     182 </span>            : template &lt;typename... DerivativeTags,
+<span class="lineNum">     183 </span>            :           typename... DeDuplicatedDifferentiatedFromTags,
+<span class="lineNum">     184 </span>            :           ComplexRepresentation Representation&gt;
+<span class="lineNum">     185 </span>            : struct AngularDerivativesImpl&lt;tmpl::list&lt;DerivativeTags...&gt;,
+<span class="lineNum">     186 </span>            :                               tmpl::list&lt;DeDuplicatedDifferentiatedFromTags...&gt;,
+<span class="lineNum">     187 </span>            :                               Representation&gt; {
+<span class="lineNum">     188 </span>            :   using return_tags =
+<span class="lineNum">     189 </span>            :       tmpl::list&lt;DerivativeTags..., Tags::SwshTransform&lt;DerivativeTags&gt;...,
+<span class="lineNum">     190 </span>            :                  Tags::SwshTransform&lt;DeDuplicatedDifferentiatedFromTags&gt;...&gt;;
+<span class="lineNum">     191 </span>            :   using argument_tags = tmpl::list&lt;DeDuplicatedDifferentiatedFromTags...,
+<span class="lineNum">     192 </span>            :                                    Tags::LMax, Tags::NumberOfRadialPoints&gt;;
+<span class="lineNum">     193 </span>            : 
+<span class="lineNum">     194 </span>            :   static void apply(
+<span class="lineNum">     195 </span>            :       const gsl::not_null&lt;db::item_type&lt;DerivativeTags&gt;*&gt;... derivative_scalars,
+<span class="lineNum">     196 </span>            :       const gsl::not_null&lt;db::item_type&lt;Tags::SwshTransform&lt;
+<span class="lineNum">     197 </span>            :           DerivativeTags&gt;&gt;*&gt;... transform_of_derivative_scalars,
+<span class="lineNum">     198 </span>            :       const gsl::not_null&lt;db::item_type&lt;Tags::SwshTransform&lt;
+<span class="lineNum">     199 </span>            :           DeDuplicatedDifferentiatedFromTags&gt;&gt;*&gt;... transform_of_input_scalars,
+<span class="lineNum">     200 </span>            :       const db::const_item_type&lt;DeDuplicatedDifferentiatedFromTags&gt;&amp;...
+<span class="lineNum">     201 </span>            :           input_scalars,
+<span class="lineNum">     202 </span>            :       const size_t l_max, const size_t number_of_radial_points) noexcept {
+<span class="lineNum">     203 </span>            :     apply_to_vectors(make_not_null(&amp;get(*transform_of_derivative_scalars))...,
+<span class="lineNum">     204 </span>            :                      make_not_null(&amp;get(*transform_of_input_scalars))...,
+<span class="lineNum">     205 </span>            :                      make_not_null(&amp;get(*derivative_scalars))...,
+<span class="lineNum">     206 </span>            :                      get(input_scalars)..., l_max, number_of_radial_points);
+<span class="lineNum">     207 </span>            :   }
+<span class="lineNum">     208 </span>            : 
+<span class="lineNum">     209 </span>            :   template &lt;ComplexRepresentation FriendRepresentation,
+<span class="lineNum">     210 </span>            :             typename... DerivativeKinds, typename... ArgumentTypes,
+<span class="lineNum">     211 </span>            :             size_t... Is&gt;
+<span class="lineNum">     212 </span>            :   // NOLINTNEXTLINE(readability-redundant-declaratioon)
+<span class="lineNum">     213 </span>            :   friend void angular_derivatives_impl(const std::tuple&lt;ArgumentTypes...&gt;&amp;,
+<span class="lineNum">     214 </span>            :                                        size_t, size_t,
+<span class="lineNum">     215 </span>            :                                        std::index_sequence&lt;Is...&gt;,
+<span class="lineNum">     216 </span>            :                                        tmpl::list&lt;DerivativeKinds...&gt;,
+<span class="lineNum">     217 </span>            :                                        cpp17::bool_constant&lt;true&gt;) noexcept;
+<span class="lineNum">     218 </span>            : 
+<span class="lineNum">     219 </span>            :  private:
+<span class="lineNum">     220 </span>            :   // note inputs reordered to accommodate the alternative tag-free functions
+<span class="lineNum">     221 </span>            :   // which call into this function.
+<span class="lineNum">     222 </span>            :   static void apply_to_vectors(
+<span class="lineNum">     223 </span>            :       const gsl::not_null&lt;typename db::item_type&lt;Tags::SwshTransform&lt;
+<span class="lineNum">     224 </span>            :           DerivativeTags&gt;&gt;::type*&gt;... transform_of_derivatives,
+<span class="lineNum">     225 </span>            :       const gsl::not_null&lt;typename db::item_type&lt;Tags::SwshTransform&lt;
+<span class="lineNum">     226 </span>            :           DeDuplicatedDifferentiatedFromTags&gt;&gt;::type*&gt;... transform_of_inputs,
+<span class="lineNum">     227 </span>            :       const gsl::not_null&lt;
+<span class="lineNum">     228 </span>            :           typename db::const_item_type&lt;DerivativeTags&gt;::type*&gt;... derivatives,
+<span class="lineNum">     229 </span>            :       const typename db::const_item_type&lt;
+<span class="lineNum">     230 </span>            :           DeDuplicatedDifferentiatedFromTags&gt;::type&amp;... inputs,
+<span class="lineNum">     231 </span>            :       const size_t l_max, const size_t number_of_radial_points) noexcept {
+<span class="lineNum">     232 </span>            :     // perform the forward transform on the minimal set of input nodal
+<span class="lineNum">     233 </span>            :     // quantities to obtain all of the requested derivatives
+<span class="lineNum">     234 </span>            :     using ForwardTransformList =
+<span class="lineNum">     235 </span>            :         make_transform_list_from_derivative_tags&lt;Representation,
+<span class="lineNum">     236 </span>            :                                                  tmpl::list&lt;DerivativeTags...&gt;&gt;;
+<span class="lineNum">     237 </span>            : 
+<span class="lineNum">     238 </span>            :     tmpl::for_each&lt;ForwardTransformList&gt;([
+<span class="lineNum">     239 </span>            :       &amp;number_of_radial_points, &amp;l_max, &amp;inputs..., &amp;transform_of_inputs...
+<span class="lineNum">     240 </span>            :     ](auto transform_v) noexcept {
+<span class="lineNum">     241 </span>            :       using transform = typename decltype(transform_v)::type;
+<span class="lineNum">     242 </span>            :       auto input_transforms = std::make_tuple(transform_of_inputs...);
+<span class="lineNum">     243 </span>            :       dispatch_to_transform&lt;transform,
+<span class="lineNum">     244 </span>            :                             tmpl::list&lt;DeDuplicatedDifferentiatedFromTags...&gt;&gt;::
+<span class="lineNum">     245 </span>            :           apply(make_not_null(&amp;input_transforms),
+<span class="lineNum">     246 </span>            :                 std::forward_as_tuple(inputs...), l_max,
+<span class="lineNum">     247 </span>            :                 number_of_radial_points);
+<span class="lineNum">     248 </span>            :     });
+<span class="lineNum">     249 </span>            : 
+<span class="lineNum">     250 </span>            :     // apply the modal derivative factors and place the result in the
+<span class="lineNum">     251 </span>            :     // `transform_of_derivatives`
+<span class="lineNum">     252 </span>            :     EXPAND_PACK_LEFT_TO_RIGHT(
+<span class="lineNum">     253 </span>            :         dispatch_to_compute_coefficients_of_derivative&lt;
+<span class="lineNum">     254 </span>            :             DerivativeTags, tmpl::list&lt;DeDuplicatedDifferentiatedFromTags...&gt;&gt;::
+<span class="lineNum">     255 </span>            :             apply(transform_of_derivatives,
+<span class="lineNum">     256 </span>            :                   std::make_tuple(transform_of_inputs...), l_max,
+<span class="lineNum">     257 </span>            :                   number_of_radial_points));
+<span class="lineNum">     258 </span>            : 
+<span class="lineNum">     259 </span>            :     // perform the inverse transform on the derivative results, placing the
+<span class="lineNum">     260 </span>            :     // result in the nodal `derivatives` passed by pointer.
+<span class="lineNum">     261 </span>            :     using InverseTransformList =
+<span class="lineNum">     262 </span>            :         make_inverse_transform_list&lt;Representation,
+<span class="lineNum">     263 </span>            :                                     tmpl::list&lt;DerivativeTags...&gt;&gt;;
+<span class="lineNum">     264 </span>            : 
+<span class="lineNum">     265 </span>            :     tmpl::for_each&lt;InverseTransformList&gt;([
+<span class="lineNum">     266 </span>            :       &amp;number_of_radial_points, &amp;l_max, &amp;derivatives...,
+<span class="lineNum">     267 </span>            :       &amp;transform_of_derivatives...
+<span class="lineNum">     268 </span>            :     ](auto transform_v) noexcept {
+<span class="lineNum">     269 </span>            :       using transform = typename decltype(transform_v)::type;
+<span class="lineNum">     270 </span>            :       auto derivative_tuple = std::make_tuple(derivatives...);
+<span class="lineNum">     271 </span>            :       dispatch_to_transform&lt;transform, tmpl::list&lt;DerivativeTags...&gt;&gt;::apply(
+<span class="lineNum">     272 </span>            :           make_not_null(&amp;derivative_tuple),
+<span class="lineNum">     273 </span>            :           std::make_tuple(transform_of_derivatives...), l_max,
+<span class="lineNum">     274 </span>            :           number_of_radial_points);
+<span class="lineNum">     275 </span>            :     });
+<span class="lineNum">     276 </span>            :   }
+<span class="lineNum">     277 </span>            : };
+<span class="lineNum">     278 </span>            : 
+<span class="lineNum">     279 </span>            : // metafunction for determining the tags needed to evaluate the derivative tags
+<span class="lineNum">     280 </span>            : // in `DerivativeTagList`, removing all duplicate tags.
+<span class="lineNum">     281 </span>            : template &lt;typename DerivativeTagList&gt;
+<span class="lineNum">     282 </span>            : struct unique_derived_from_list;
+<span class="lineNum">     283 </span>            : 
+<span class="lineNum">     284 </span>            : template &lt;typename... DerivativeTags&gt;
+<span class="lineNum">     285 </span>            : struct unique_derived_from_list&lt;tmpl::list&lt;DerivativeTags...&gt;&gt; {
+<span class="lineNum">     286 </span>            :   using type = tmpl::remove_duplicates&lt;
+<span class="lineNum">     287 </span>            :       tmpl::list&lt;typename DerivativeTags::derivative_of...&gt;&gt;;
+<span class="lineNum">     288 </span>            : };
+<span class="lineNum">     289 </span>            : }  // namespace detail
+<span class="lineNum">     290 </span>            : 
+<span class="lineNum">     291 </span>            : /*!
+<span class="lineNum">     292 </span>            :  * \ingroup SpectralGroup
+<span class="lineNum">     293 </span>            :  * \brief A \ref DataBoxGroup mutate-compatible computational struct for
+<span class="lineNum">     294 </span>            :  * computing a set of spin-weighted spherical harmonic derivatives by
+<span class="lineNum">     295 </span>            :  * grouping and batch-computing spin-weighted spherical harmonic transforms.
+<span class="lineNum">     296 </span>            :  *
+<span class="lineNum">     297 </span>            :  * \details A derivative is evaluated for each tag in `DerivativeTagList`. All
+<span class="lineNum">     298 </span>            :  * entries in `DerivativeTagList` must be the tag
+<span class="lineNum">     299 </span>            :  * `Spectral::Swsh::Tags::Derivative&lt;Tag, DerivativeKind&gt;` prefixing the `Tag`
+<span class="lineNum">     300 </span>            :  * to be differentiated, and indicating the spin-weighted derivative
+<span class="lineNum">     301 </span>            :  * `DerivativeKind` to be taken. A \ref DataBoxGroup on which this struct is
+<span class="lineNum">     302 </span>            :  * invoked must contain:
+<span class="lineNum">     303 </span>            :  * - each of the tags in `DerivativeTagList` (the results of the computation)
+<span class="lineNum">     304 </span>            :  * - each of the tags `Tag` prefixed by `Spectral::Swsh::Tags::Derivative` in
+<span class="lineNum">     305 </span>            :  * `DerivativeTagList` (the inputs of the computation).
+<span class="lineNum">     306 </span>            :  * - each of the tags `Spectral::Swsh::Tags::SwshTransform&lt;DerivativeTag&gt;` for
+<span class="lineNum">     307 </span>            :  *  `DerivativeTag`in `DerivativeTagList` (the buffers for the derivative
+<span class="lineNum">     308 </span>            :  * applied to the modes)
+<span class="lineNum">     309 </span>            :  * - each of the tags `Spectral::Swsh::Tags::SwshTransform&lt;Tag&gt;` for `Tag`
+<span class="lineNum">     310 </span>            :  * prefixed by any `DerivativeTag` in `DerivativeTagList` (the buffers for the
+<span class="lineNum">     311 </span>            :  * transforms of the input data).
+<span class="lineNum">     312 </span>            :  *
+<span class="lineNum">     313 </span>            :  * This function optimizes the derivative taking process by clustering like
+<span class="lineNum">     314 </span>            :  * spins of tags, forward-transforming each spin cluster together, applying the
+<span class="lineNum">     315 </span>            :  * factor for the derivative to each modal vector, re-clustering according to
+<span class="lineNum">     316 </span>            :  * the new spin weights (the derivatives alter the spin weights), and finally
+<span class="lineNum">     317 </span>            :  * inverse-transforming in clusters.
+<span class="lineNum">     318 </span>            :  */
+<span class="lineNum">     319 </span>            : template &lt;typename DerivativeTagList, ComplexRepresentation Representation =
+<span class="lineNum">     320 </span>            :                                           ComplexRepresentation::Interleaved&gt;
+<span class="lineNum">     321 </span><span class="lineCov">          1 : using AngularDerivatives = detail::AngularDerivativesImpl&lt;</span>
+<span class="lineNum">     322 </span>            :     DerivativeTagList,
+<span class="lineNum">     323 </span>            :     typename detail::unique_derived_from_list&lt;DerivativeTagList&gt;::type,
+<span class="lineNum">     324 </span>            :     Representation&gt;;
+<span class="lineNum">     325 </span>            : 
+<span class="lineNum">     326 </span>            : /*!
+<span class="lineNum">     327 </span>            :  * \ingroup SpectralGroup
+<span class="lineNum">     328 </span>            :  * \brief Produces a `SpinWeighted&lt;ComplexModalVector, Spin&gt;` of the appropriate
+<span class="lineNum">     329 </span>            :  * size to be used as a modal buffer for `Spectral::Swsh::AngularDerivatives` or
+<span class="lineNum">     330 </span>            :  * `Spectral::Swsh::angular_derivatives`.
+<span class="lineNum">     331 </span>            :  *
+<span class="lineNum">     332 </span>            :  * \details The `Spectral::Swsh::angular_derivatives` and
+<span class="lineNum">     333 </span>            :  * `Spectral::Swsh::AngularDerivatives` interfaces require that calling code
+<span class="lineNum">     334 </span>            :  * provides a buffer for the intermediate transform results, to ensure that
+<span class="lineNum">     335 </span>            :  * callers are aware of the allocations and can suitably reuse buffers if
+<span class="lineNum">     336 </span>            :  * possible. This utility eases the creation of those buffers.
+<span class="lineNum">     337 </span>            :  */
+<span class="lineNum">     338 </span>            : template &lt;int Spin&gt;
+<span class="lineNum">     339 </span><span class="lineCov">          1 : auto swsh_buffer(const size_t l_max,</span>
+<span class="lineNum">     340 </span>            :                  const size_t number_of_radial_points) noexcept {
+<span class="lineNum">     341 </span>            :   return SpinWeighted&lt;ComplexModalVector, Spin&gt;{
+<span class="lineNum">     342 </span>            :       size_of_libsharp_coefficient_vector(l_max) * number_of_radial_points};
+<span class="lineNum">     343 </span>            : }
+<span class="lineNum">     344 </span>            : 
+<span class="lineNum">     345 </span>            : namespace detail {
+<span class="lineNum">     346 </span>            : // template 'implementation' for the `angular_derivatives` function below which
+<span class="lineNum">     347 </span>            : // evaluates an arbitrary number of derivatives, and places them in the set of
+<span class="lineNum">     348 </span>            : // nodal containers passed by pointer.
+<span class="lineNum">     349 </span>            : template &lt;ComplexRepresentation Representation, typename... DerivativeKinds,
+<span class="lineNum">     350 </span>            :           typename... ArgumentTypes, size_t... Is&gt;
+<span class="lineNum">     351 </span>            : void angular_derivatives_impl(
+<span class="lineNum">     352 </span>            :     const std::tuple&lt;ArgumentTypes...&gt;&amp; argument_tuple, const size_t l_max,
+<span class="lineNum">     353 </span>            :     const size_t number_of_radial_points, std::index_sequence&lt;Is...&gt; /*meta*/,
+<span class="lineNum">     354 </span>            :     tmpl::list&lt;DerivativeKinds...&gt; /*meta*/,
+<span class="lineNum">     355 </span>            :     cpp17::bool_constant&lt;true&gt; /*buffers_included_in_arguments*/) noexcept {
+<span class="lineNum">     356 </span>            :   AngularDerivatives&lt;
+<span class="lineNum">     357 </span>            :       tmpl::list&lt;Tags::Derivative&lt;
+<span class="lineNum">     358 </span>            :           ::Tags::SpinWeighted&lt;
+<span class="lineNum">     359 </span>            :               ::Tags::TempScalar&lt;Is, ComplexDataVector&gt;,
+<span class="lineNum">     360 </span>            :               std::integral_constant&lt;
+<span class="lineNum">     361 </span>            :                   int, std::decay_t&lt;decltype(get&lt;Is + 3 * sizeof...(Is)&gt;(
+<span class="lineNum">     362 </span>            :                            argument_tuple))&gt;::spin&gt;&gt;,
+<span class="lineNum">     363 </span>            :           DerivativeKinds&gt;...&gt;,
+<span class="lineNum">     364 </span>            :       Representation&gt;::apply_to_vectors(get&lt;Is&gt;(argument_tuple)...,
+<span class="lineNum">     365 </span>            :                                         get&lt;Is + sizeof...(Is)&gt;(
+<span class="lineNum">     366 </span>            :                                             argument_tuple)...,
+<span class="lineNum">     367 </span>            :                                         get&lt;Is + 2 * sizeof...(Is)&gt;(
+<span class="lineNum">     368 </span>            :                                             argument_tuple)...,
+<span class="lineNum">     369 </span>            :                                         get&lt;Is + 3 * sizeof...(Is)&gt;(
+<span class="lineNum">     370 </span>            :                                             argument_tuple)...,
+<span class="lineNum">     371 </span>            :                                         l_max, number_of_radial_points);
+<span class="lineNum">     372 </span>            : }
+<span class="lineNum">     373 </span>            : 
+<span class="lineNum">     374 </span>            : template &lt;ComplexRepresentation Representation, typename... DerivativeKinds,
+<span class="lineNum">     375 </span>            :           typename... ArgumentTypes, size_t... Is&gt;
+<span class="lineNum">     376 </span>            : void angular_derivatives_impl(
+<span class="lineNum">     377 </span>            :     const std::tuple&lt;ArgumentTypes...&gt;&amp; argument_tuple, const size_t l_max,
+<span class="lineNum">     378 </span>            :     const size_t number_of_radial_points,
+<span class="lineNum">     379 </span>            :     std::index_sequence&lt;Is...&gt; index_sequence,
+<span class="lineNum">     380 </span>            :     tmpl::list&lt;DerivativeKinds...&gt; derivative_kinds,
+<span class="lineNum">     381 </span>            :     cpp17::bool_constant&lt;false&gt; /*buffers_included_in_arguments*/) noexcept {
+<span class="lineNum">     382 </span>            :   auto derivative_buffer_tuple = std::make_tuple(
+<span class="lineNum">     383 </span>            :       swsh_buffer&lt;std::decay_t&lt;decltype(*get&lt;Is&gt;(argument_tuple))&gt;::spin&gt;(
+<span class="lineNum">     384 </span>            :           l_max, number_of_radial_points)...);
+<span class="lineNum">     385 </span>            :   auto input_buffer_tuple = std::make_tuple(
+<span class="lineNum">     386 </span>            :       swsh_buffer&lt;std::decay_t&lt;decltype(get&lt;Is + sizeof...(Is)&gt;(
+<span class="lineNum">     387 </span>            :           argument_tuple))&gt;::spin&gt;(l_max, number_of_radial_points)...);
+<span class="lineNum">     388 </span>            :   angular_derivatives_impl&lt;Representation&gt;(
+<span class="lineNum">     389 </span>            :       std::forward_as_tuple(make_not_null(&amp;get&lt;Is&gt;(derivative_buffer_tuple))...,
+<span class="lineNum">     390 </span>            :                             make_not_null(&amp;get&lt;Is&gt;(input_buffer_tuple))...,
+<span class="lineNum">     391 </span>            :                             get&lt;Is&gt;(argument_tuple)...,
+<span class="lineNum">     392 </span>            :                             get&lt;Is + sizeof...(Is)&gt;(argument_tuple)...),
+<span class="lineNum">     393 </span>            :       l_max, number_of_radial_points, index_sequence, derivative_kinds,
+<span class="lineNum">     394 </span>            :       cpp17::bool_constant&lt;true&gt;{});
+<span class="lineNum">     395 </span>            : }
+<span class="lineNum">     396 </span>            : }  // namespace detail
+<span class="lineNum">     397 </span>            : 
+<span class="lineNum">     398 </span>            : /*!
+<span class="lineNum">     399 </span>            :  * \ingroup SpectralGroup
+<span class="lineNum">     400 </span>            :  * \brief Evaluate all of the spin-weighted derivatives in `DerivKindList` on
+<span class="lineNum">     401 </span>            :  * input `SpinWeighted&lt;ComplexDataVector, Spin&gt;` collocation data, returning by
+<span class="lineNum">     402 </span>            :  * pointer.
+<span class="lineNum">     403 </span>            :  *
+<span class="lineNum">     404 </span>            :  * \details This function provides two interfaces, one in which the caller
+<span class="lineNum">     405 </span>            :  * provides the intermediate coefficient buffers needed during the computation
+<span class="lineNum">     406 </span>            :  * of the derivatives, and one in which those buffers are temporarily allocated
+<span class="lineNum">     407 </span>            :  * during the derivative function calls.
+<span class="lineNum">     408 </span>            :  *
+<span class="lineNum">     409 </span>            :  * For the interface in which the caller does not provide buffers, the arguments
+<span class="lineNum">     410 </span>            :  * must take the following structure (enforced by internal function calls):
+<span class="lineNum">     411 </span>            :  *
+<span class="lineNum">     412 </span>            :  * - `size_t l_max` : angular resolution for the spherical representation
+<span class="lineNum">     413 </span>            :  * - `size_t number_of_radial_points` : radial resolution (number of consecutive
+<span class="lineNum">     414 </span>            :  * blocks to evaluate derivatives, for each input vector )
+<span class="lineNum">     415 </span>            :  * - for each `DerivKind` in `DerivKindList`, a
+<span class="lineNum">     416 </span>            :  * `gsl::not_null&lt;SpinWeighted&lt;ComplexDataVector, Spin +
+<span class="lineNum">     417 </span>            :  * Tags::derivative_spin_weight&lt;DerivKind&gt;&gt;&gt;` : the output of the derivative
+<span class="lineNum">     418 </span>            :  * evaluation
+<span class="lineNum">     419 </span>            :  * - for each `DerivKind` in `DerivKindList`, a `const
+<span class="lineNum">     420 </span>            :  * SpinWeighted&lt;ComplexDataVector, Spin&gt;&amp;` (where the `Spin` for these arguments
+<span class="lineNum">     421 </span>            :  * matches the corresponding vector from the previous set) : the input to the
+<span class="lineNum">     422 </span>            :  * derivative evaluation.
+<span class="lineNum">     423 </span>            :  *
+<span class="lineNum">     424 </span>            :  * For the interface in which the caller does provide buffers, the arguments
+<span class="lineNum">     425 </span>            :  * must take the following structure (enforced by internal function calls):
+<span class="lineNum">     426 </span>            :  *
+<span class="lineNum">     427 </span>            :  * - `size_t l_max` : angular resolution for the spherical representation
+<span class="lineNum">     428 </span>            :  * - `size_t number_of_radial_points` : radial resolution (number of consecutive
+<span class="lineNum">     429 </span>            :  * blocks to evaluate derivatives, for each input vector )
+<span class="lineNum">     430 </span>            :  * - for each `DerivKind` in `DerivKindList`, a
+<span class="lineNum">     431 </span>            :  * `gsl::not_null&lt;SpinWeighted&lt;ComplexModalVector, Spin +
+<span class="lineNum">     432 </span>            :  * Tags::derivative_spin_weight&lt;DerivKind&gt;&gt;&gt;` : the buffer for the spin-weighted
+<span class="lineNum">     433 </span>            :  * spherical harmonic modes of the derivative quantities.
+<span class="lineNum">     434 </span>            :  * - for each `DerivKind` in `DerivKindList`, a `const
+<span class="lineNum">     435 </span>            :  * SpinWeighted&lt;ComplexModalVector, Spin&gt;` (where the `Spin` for these arguments
+<span class="lineNum">     436 </span>            :  * matches the corresponding vector from the previous set) : the buffer for the
+<span class="lineNum">     437 </span>            :  * spin-weighted spherical harmonic modes of the input quantities.
+<span class="lineNum">     438 </span>            :  * - for each `DerivKind` in `DerivKindList`, a
+<span class="lineNum">     439 </span>            :  * `gsl::not_null&lt;SpinWeighted&lt;ComplexDataVector, Spin +
+<span class="lineNum">     440 </span>            :  * Tags::derivative_spin_weight&lt;DerivKind&gt;&gt;&gt;` : the output of the derivative
+<span class="lineNum">     441 </span>            :  * evaluation
+<span class="lineNum">     442 </span>            :  * - for each `DerivKind` in `DerivKindList`, a `const
+<span class="lineNum">     443 </span>            :  * SpinWeighted&lt;ComplexDataVector, Spin&gt;` (where the `Spin` for these arguments
+<span class="lineNum">     444 </span>            :  * matches the corresponding vector from the previous set) : the input to the
+<span class="lineNum">     445 </span>            :  * derivative evaluation.
+<span class="lineNum">     446 </span>            :  *
+<span class="lineNum">     447 </span>            :  * The function `swsh_buffer` assists in generating the modal buffers of
+<span class="lineNum">     448 </span>            :  * appropriate size.
+<span class="lineNum">     449 </span>            :  */
+<span class="lineNum">     450 </span>            : template &lt;
+<span class="lineNum">     451 </span>            :     typename DerivativeKindList,
+<span class="lineNum">     452 </span>            :     ComplexRepresentation Representation = ComplexRepresentation::Interleaved,
+<span class="lineNum">     453 </span>            :     typename... ArgumentTypes&gt;
+<span class="lineNum">     454 </span><span class="lineCov">          1 : void angular_derivatives(const size_t l_max,</span>
+<span class="lineNum">     455 </span>            :                          const size_t number_of_radial_points,
+<span class="lineNum">     456 </span>            :                          const ArgumentTypes&amp;... arguments) noexcept {
+<span class="lineNum">     457 </span>            :   static_assert(
+<span class="lineNum">     458 </span>            :       tmpl::size&lt;DerivativeKindList&gt;::value * 2 == sizeof...(ArgumentTypes) or
+<span class="lineNum">     459 </span>            :           tmpl::size&lt;DerivativeKindList&gt;::value * 4 == sizeof...(ArgumentTypes),
+<span class="lineNum">     460 </span>            :       &quot;When using the tagless `angular_derivatives` interface, you must &quot;
+<span class="lineNum">     461 </span>            :       &quot;provide either one nodal input and one nodal output per derivative &quot;
+<span class="lineNum">     462 </span>            :       &quot;or one nodal input, one nodal output, and two appropriate &quot;
+<span class="lineNum">     463 </span>            :       &quot;intermediate transform buffers per derivative.&quot;);
+<span class="lineNum">     464 </span>            : 
+<span class="lineNum">     465 </span>            :   detail::angular_derivatives_impl&lt;Representation&gt;(
+<span class="lineNum">     466 </span>            :       std::forward_as_tuple(arguments...), l_max, number_of_radial_points,
+<span class="lineNum">     467 </span>            :       std::make_index_sequence&lt;tmpl::size&lt;DerivativeKindList&gt;::value&gt;{},
+<span class="lineNum">     468 </span>            :       DerivativeKindList{},
+<span class="lineNum">     469 </span>            :       cpp17::bool_constant&lt;tmpl::size&lt;DerivativeKindList&gt;::value * 4 ==
+<span class="lineNum">     470 </span>            :                            sizeof...(ArgumentTypes)&gt;{});
+<span class="lineNum">     471 </span>            : }
+<span class="lineNum">     472 </span>            : 
+<span class="lineNum">     473 </span>            : /*!
+<span class="lineNum">     474 </span>            :  * \ingroup SpectralGroup
+<span class="lineNum">     475 </span>            :  * \brief Evaluate the spin-weighted derivative `DerivKind` on the provided
+<span class="lineNum">     476 </span>            :  * `SpinWeighted&lt;ComplexDataVector, Spin&gt;` collocation data, returning by value.
+<span class="lineNum">     477 </span>            :  */
+<span class="lineNum">     478 </span>            : template &lt;
+<span class="lineNum">     479 </span>            :     typename DerivKind,
+<span class="lineNum">     480 </span>            :     ComplexRepresentation Representation = ComplexRepresentation::Interleaved,
+<span class="lineNum">     481 </span>            :     int Spin&gt;
+<span class="lineNum">     482 </span>            : SpinWeighted&lt;ComplexDataVector, Tags::derivative_spin_weight&lt;DerivKind&gt; + Spin&gt;
+<span class="lineNum">     483 </span>            : angular_derivative(
+<span class="lineNum">     484 </span>            :     size_t l_max, size_t number_of_radial_points,
+<span class="lineNum">     485 </span>            :     const SpinWeighted&lt;ComplexDataVector, Spin&gt;&amp; to_differentiate) noexcept;
+<span class="lineNum">     486 </span>            : }  // namespace Swsh
+<span class="lineNum">     487 </span>            : }  // namespace Spectral
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.13</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

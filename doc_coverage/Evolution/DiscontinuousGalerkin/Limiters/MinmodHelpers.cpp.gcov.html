@@ -1,0 +1,220 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - 5912ac2e49a80e6a27b3707c9a1e6ce5248b1b2a - Evolution/DiscontinuousGalerkin/Limiters/MinmodHelpers.cpp</title>
+  <link rel="stylesheet" type="text/css" href="../../../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title"> SpECTRE Documentation Coverage Report</td></tr>
+    <tr><td class="ruler"><img src="../../../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../../../index.html">top level</a> - <a href="index.html">Evolution/DiscontinuousGalerkin/Limiters</a> - MinmodHelpers.cpp</td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+             <td class="headerItem">Commit:</td>
+             <td class="headerValue"><a target="_blank" href="https://github.com/sxs-collaboration/spectre/commit/5912ac2e49a80e6a27b3707c9a1e6ce5248b1b2a">5912ac2e49a80e6a27b3707c9a1e6ce5248b1b2a</a></td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntry">3</td>
+            <td class="headerCovTableEntryLo">0.0 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2019-12-02 22:01:08</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td class="headerItem">Legend:</td>
+            <td class="headerValueLeg">            Lines:
+            <span class="coverLegendCov">hit</span>
+            <span class="coverLegendNoCov">not hit</span>
+</td>
+            <td></td>
+          </tr>
+          <tr><td><img src="../../../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../../../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">          Line data    Source code</pre>
+<pre class="source">
+<span class="lineNum">       1 </span><span class="lineNoCov">          0 : // Distributed under the MIT License.</span>
+<span class="lineNum">       2 </span>            : // See LICENSE.txt for details.
+<span class="lineNum">       3 </span>            : 
+<span class="lineNum">       4 </span>            : #include &quot;Evolution/DiscontinuousGalerkin/Limiters/MinmodHelpers.hpp&quot;
+<span class="lineNum">       5 </span>            : 
+<span class="lineNum">       6 </span>            : #include &lt;algorithm&gt;
+<span class="lineNum">       7 </span>            : #include &lt;array&gt;
+<span class="lineNum">       8 </span>            : #include &lt;cmath&gt;
+<span class="lineNum">       9 </span>            : 
+<span class="lineNum">      10 </span>            : #include &quot;DataStructures/DataVector.hpp&quot;  // IWYU pragma: keep
+<span class="lineNum">      11 </span>            : #include &quot;Domain/Element.hpp&quot;             // IWYU pragma: keep
+<span class="lineNum">      12 </span>            : #include &quot;Domain/Mesh.hpp&quot;                // IWYU pragma: keep
+<span class="lineNum">      13 </span>            : #include &quot;Domain/Side.hpp&quot;
+<span class="lineNum">      14 </span>            : #include &quot;Utilities/GenerateInstantiations.hpp&quot;
+<span class="lineNum">      15 </span>            : #include &quot;Utilities/Gsl.hpp&quot;
+<span class="lineNum">      16 </span>            : #include &quot;Utilities/Literals.hpp&quot;
+<span class="lineNum">      17 </span>            : #include &quot;Utilities/Numeric.hpp&quot;
+<span class="lineNum">      18 </span>            : 
+<span class="lineNum">      19 </span>            : namespace Limiters {
+<span class="lineNum">      20 </span>            : namespace Minmod_detail {
+<span class="lineNum">      21 </span>            : 
+<span class="lineNum">      22 </span>            : MinmodResult minmod_tvbm(const double a, const double b, const double c,
+<span class="lineNum">      23 </span>            :                          const double tvbm_scale) noexcept {
+<span class="lineNum">      24 </span>            :   if (fabs(a) &lt;= tvbm_scale) {
+<span class="lineNum">      25 </span>            :     return {a, false};
+<span class="lineNum">      26 </span>            :   }
+<span class="lineNum">      27 </span>            :   if ((std::signbit(a) == std::signbit(b)) and
+<span class="lineNum">      28 </span>            :       (std::signbit(a) == std::signbit(c))) {
+<span class="lineNum">      29 </span>            :     // The if/else group below could be more simply written as
+<span class="lineNum">      30 </span>            :     //   std::copysign(std::min({fabs(a), fabs(b), fabs(c)}), a);
+<span class="lineNum">      31 </span>            :     // however, by separating different cases, we gain the ability to
+<span class="lineNum">      32 </span>            :     // distinguish whether or not the limiter activated.
+<span class="lineNum">      33 </span>            :     if (fabs(a) &lt;= fabs(b) and fabs(a) &lt;= fabs(c)) {
+<span class="lineNum">      34 </span>            :       return {a, false};
+<span class="lineNum">      35 </span>            :     } else {
+<span class="lineNum">      36 </span>            :       return {std::copysign(std::min(fabs(b), fabs(c)), a), true};
+<span class="lineNum">      37 </span>            :     }
+<span class="lineNum">      38 </span>            :   } else {
+<span class="lineNum">      39 </span>            :     return {0.0, true};
+<span class="lineNum">      40 </span>            :   }
+<span class="lineNum">      41 </span>            : }
+<span class="lineNum">      42 </span>            : 
+<span class="lineNum">      43 </span>            : template &lt;size_t VolumeDim&gt;
+<span class="lineNum">      44 </span>            : void allocate_buffers(
+<span class="lineNum">      45 </span>            :     const gsl::not_null&lt;std::unique_ptr&lt;double[], decltype(&amp;free)&gt;*&gt;
+<span class="lineNum">      46 </span>            :         contiguous_buffer,
+<span class="lineNum">      47 </span>            :     const gsl::not_null&lt;std::array&lt;DataVector, VolumeDim&gt;*&gt; boundary_buffer,
+<span class="lineNum">      48 </span>            :     const Mesh&lt;VolumeDim&gt;&amp; mesh) noexcept {
+<span class="lineNum">      49 </span>            :   const size_t half_number_boundary_points = alg::accumulate(
+<span class="lineNum">      50 </span>            :       alg::iota(std::array&lt;size_t, VolumeDim&gt;{{}}, 0_st),
+<span class="lineNum">      51 </span>            :       0_st, [&amp;mesh](const size_t state, const size_t d) noexcept {
+<span class="lineNum">      52 </span>            :         return state + mesh.slice_away(d).number_of_grid_points();
+<span class="lineNum">      53 </span>            :       });
+<span class="lineNum">      54 </span>            :   contiguous_buffer-&gt;reset(static_cast&lt;double*&gt;(
+<span class="lineNum">      55 </span>            :       // clang-tidy incorrectly thinks this is a 0-byte malloc
+<span class="lineNum">      56 </span>            :       // NOLINTNEXTLINE(clang-analyzer-unix.API)
+<span class="lineNum">      57 </span>            :       malloc(sizeof(double) * half_number_boundary_points)));
+<span class="lineNum">      58 </span>            :   size_t alloc_offset = 0;
+<span class="lineNum">      59 </span>            :   for (size_t d = 0; d &lt; VolumeDim; ++d) {
+<span class="lineNum">      60 </span>            :     const size_t num_points = mesh.slice_away(d).number_of_grid_points();
+<span class="lineNum">      61 </span>            :     gsl::at(*boundary_buffer, d)
+<span class="lineNum">      62 </span>            :         .set_data_ref(contiguous_buffer-&gt;get() + alloc_offset, num_points);
+<span class="lineNum">      63 </span>            :     alloc_offset += num_points;
+<span class="lineNum">      64 </span>            :   }
+<span class="lineNum">      65 </span>            : }
+<span class="lineNum">      66 </span>            : 
+<span class="lineNum">      67 </span>            : template &lt;size_t VolumeDim&gt;
+<span class="lineNum">      68 </span>            : void allocate_buffers(
+<span class="lineNum">      69 </span>            :     const gsl::not_null&lt;std::unique_ptr&lt;double[], decltype(&amp;free)&gt;*&gt;
+<span class="lineNum">      70 </span>            :         contiguous_buffer,
+<span class="lineNum">      71 </span>            :     const gsl::not_null&lt;DataVector*&gt; u_lin_buffer,
+<span class="lineNum">      72 </span>            :     const gsl::not_null&lt;std::array&lt;DataVector, VolumeDim&gt;*&gt; boundary_buffer,
+<span class="lineNum">      73 </span>            :     const Mesh&lt;VolumeDim&gt;&amp; mesh) noexcept {
+<span class="lineNum">      74 </span>            :   const size_t half_number_boundary_points = alg::accumulate(
+<span class="lineNum">      75 </span>            :       alg::iota(std::array&lt;size_t, VolumeDim&gt;{{}}, 0_st),
+<span class="lineNum">      76 </span>            :       0_st, [&amp;mesh](const size_t state, const size_t d) noexcept {
+<span class="lineNum">      77 </span>            :         return state + mesh.slice_away(d).number_of_grid_points();
+<span class="lineNum">      78 </span>            :       });
+<span class="lineNum">      79 </span>            :   contiguous_buffer-&gt;reset(static_cast&lt;double*&gt;(
+<span class="lineNum">      80 </span>            :       malloc(sizeof(double) *
+<span class="lineNum">      81 </span>            :              (mesh.number_of_grid_points() + half_number_boundary_points))));
+<span class="lineNum">      82 </span>            :   size_t alloc_offset = 0;
+<span class="lineNum">      83 </span>            :   u_lin_buffer-&gt;set_data_ref(contiguous_buffer-&gt;get() + alloc_offset,
+<span class="lineNum">      84 </span>            :                              mesh.number_of_grid_points());
+<span class="lineNum">      85 </span>            :   alloc_offset += mesh.number_of_grid_points();
+<span class="lineNum">      86 </span>            :   for (size_t d = 0; d &lt; VolumeDim; ++d) {
+<span class="lineNum">      87 </span>            :     const size_t num_points = mesh.slice_away(d).number_of_grid_points();
+<span class="lineNum">      88 </span>            :     gsl::at(*boundary_buffer, d)
+<span class="lineNum">      89 </span>            :         .set_data_ref(contiguous_buffer-&gt;get() + alloc_offset, num_points);
+<span class="lineNum">      90 </span>            :     alloc_offset += num_points;
+<span class="lineNum">      91 </span>            :   }
+<span class="lineNum">      92 </span>            : }
+<span class="lineNum">      93 </span>            : 
+<span class="lineNum">      94 </span>            : template &lt;size_t VolumeDim&gt;
+<span class="lineNum">      95 </span>            : double effective_difference_to_neighbor(
+<span class="lineNum">      96 </span>            :     const double u_mean, const Element&lt;VolumeDim&gt;&amp; element,
+<span class="lineNum">      97 </span>            :     const std::array&lt;double, VolumeDim&gt;&amp; element_size,
+<span class="lineNum">      98 </span>            :     const DirectionMap&lt;VolumeDim, double&gt;&amp; effective_neighbor_means,
+<span class="lineNum">      99 </span>            :     const DirectionMap&lt;VolumeDim, double&gt;&amp; effective_neighbor_sizes,
+<span class="lineNum">     100 </span>            :     const size_t dim, const Side&amp; side) noexcept {
+<span class="lineNum">     101 </span>            :   const auto&amp; externals = element.external_boundaries();
+<span class="lineNum">     102 </span>            :   const auto dir = Direction&lt;VolumeDim&gt;(dim, side);
+<span class="lineNum">     103 </span>            :   const bool has_neighbors = (externals.find(dir) == externals.end());
+<span class="lineNum">     104 </span>            :   if (has_neighbors) {
+<span class="lineNum">     105 </span>            :     const double neighbor_mean = effective_neighbor_means.at(dir);
+<span class="lineNum">     106 </span>            :     const double neighbor_size = effective_neighbor_sizes.at(dir);
+<span class="lineNum">     107 </span>            :     const double distance_factor =
+<span class="lineNum">     108 </span>            :         0.5 * (1.0 + neighbor_size / gsl::at(element_size, dim));
+<span class="lineNum">     109 </span>            :     return (side == Side::Lower ? -1.0 : 1.0) * (neighbor_mean - u_mean) /
+<span class="lineNum">     110 </span>            :            distance_factor;
+<span class="lineNum">     111 </span>            :   } else {
+<span class="lineNum">     112 </span>            :     return 0.0;
+<span class="lineNum">     113 </span>            :   }
+<span class="lineNum">     114 </span>            : }
+<span class="lineNum">     115 </span>            : 
+<span class="lineNum">     116 </span>            : // Explicit instantiations
+<span class="lineNum">     117 </span><span class="lineNoCov">          0 : #define DIM(data) BOOST_PP_TUPLE_ELEM(0, data)</span>
+<span class="lineNum">     118 </span>            : 
+<span class="lineNum">     119 </span><span class="lineNoCov">          0 : #define INSTANTIATE(_, data)                                                   \</span>
+<span class="lineNum">     120 </span>            :   template void allocate_buffers&lt;DIM(data)&gt;(                                   \
+<span class="lineNum">     121 </span>            :       const gsl::not_null&lt;std::unique_ptr&lt;double[], decltype(&amp;free)&gt;*&gt;,        \
+<span class="lineNum">     122 </span>            :       const gsl::not_null&lt;std::array&lt;DataVector, DIM(data)&gt;*&gt;,                 \
+<span class="lineNum">     123 </span>            :       const Mesh&lt;DIM(data)&gt;&amp;) noexcept;                                        \
+<span class="lineNum">     124 </span>            :   template void allocate_buffers&lt;DIM(data)&gt;(                                   \
+<span class="lineNum">     125 </span>            :       const gsl::not_null&lt;std::unique_ptr&lt;double[], decltype(&amp;free)&gt;*&gt;,        \
+<span class="lineNum">     126 </span>            :       const gsl::not_null&lt;DataVector*&gt;,                                        \
+<span class="lineNum">     127 </span>            :       const gsl::not_null&lt;std::array&lt;DataVector, DIM(data)&gt;*&gt;,                 \
+<span class="lineNum">     128 </span>            :       const Mesh&lt;DIM(data)&gt;&amp;) noexcept;                                        \
+<span class="lineNum">     129 </span>            :   template double effective_difference_to_neighbor&lt;DIM(data)&gt;(                 \
+<span class="lineNum">     130 </span>            :       double, const Element&lt;DIM(data)&gt;&amp;, const std::array&lt;double, DIM(data)&gt;&amp;, \
+<span class="lineNum">     131 </span>            :       const DirectionMap&lt;DIM(data), double&gt;&amp;,                                  \
+<span class="lineNum">     132 </span>            :       const DirectionMap&lt;DIM(data), double&gt;&amp;, size_t, const Side&amp;) noexcept;
+<span class="lineNum">     133 </span>            : 
+<span class="lineNum">     134 </span>            : GENERATE_INSTANTIATIONS(INSTANTIATE, (1, 2, 3))
+<span class="lineNum">     135 </span>            : 
+<span class="lineNum">     136 </span>            : #undef DIM
+<span class="lineNum">     137 </span>            : #undef INSTANTIATE
+<span class="lineNum">     138 </span>            : 
+<span class="lineNum">     139 </span>            : }  // namespace Minmod_detail
+<span class="lineNum">     140 </span>            : }  // namespace Limiters
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../../../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.13</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

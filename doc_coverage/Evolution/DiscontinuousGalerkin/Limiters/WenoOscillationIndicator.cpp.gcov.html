@@ -1,0 +1,325 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - 5912ac2e49a80e6a27b3707c9a1e6ce5248b1b2a - Evolution/DiscontinuousGalerkin/Limiters/WenoOscillationIndicator.cpp</title>
+  <link rel="stylesheet" type="text/css" href="../../../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title"> SpECTRE Documentation Coverage Report</td></tr>
+    <tr><td class="ruler"><img src="../../../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../../../index.html">top level</a> - <a href="index.html">Evolution/DiscontinuousGalerkin/Limiters</a> - WenoOscillationIndicator.cpp</td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+             <td class="headerItem">Commit:</td>
+             <td class="headerValue"><a target="_blank" href="https://github.com/sxs-collaboration/spectre/commit/5912ac2e49a80e6a27b3707c9a1e6ce5248b1b2a">5912ac2e49a80e6a27b3707c9a1e6ce5248b1b2a</a></td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntry">4</td>
+            <td class="headerCovTableEntryLo">0.0 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2019-12-02 22:01:08</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td class="headerItem">Legend:</td>
+            <td class="headerValueLeg">            Lines:
+            <span class="coverLegendCov">hit</span>
+            <span class="coverLegendNoCov">not hit</span>
+</td>
+            <td></td>
+          </tr>
+          <tr><td><img src="../../../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../../../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">          Line data    Source code</pre>
+<pre class="source">
+<span class="lineNum">       1 </span><span class="lineNoCov">          0 : // Distributed under the MIT License.</span>
+<span class="lineNum">       2 </span>            : // See LICENSE.txt for details.
+<span class="lineNum">       3 </span>            : 
+<span class="lineNum">       4 </span>            : #include &quot;Evolution/DiscontinuousGalerkin/Limiters/WenoOscillationIndicator.hpp&quot;
+<span class="lineNum">       5 </span>            : 
+<span class="lineNum">       6 </span>            : #include &lt;array&gt;
+<span class="lineNum">       7 </span>            : #include &lt;cmath&gt;
+<span class="lineNum">       8 </span>            : #include &lt;cstddef&gt;
+<span class="lineNum">       9 </span>            : 
+<span class="lineNum">      10 </span>            : #include &quot;DataStructures/DataVector.hpp&quot;
+<span class="lineNum">      11 </span>            : #include &quot;DataStructures/IndexIterator.hpp&quot;  // IWYU pragma: keep
+<span class="lineNum">      12 </span>            : #include &quot;DataStructures/Matrix.hpp&quot;
+<span class="lineNum">      13 </span>            : #include &quot;DataStructures/ModalVector.hpp&quot;
+<span class="lineNum">      14 </span>            : #include &quot;Domain/Mesh.hpp&quot;  // IWYU pragma: keep
+<span class="lineNum">      15 </span>            : #include &quot;ErrorHandling/Assert.hpp&quot;
+<span class="lineNum">      16 </span>            : #include &quot;ErrorHandling/Error.hpp&quot;
+<span class="lineNum">      17 </span>            : #include &quot;NumericalAlgorithms/LinearOperators/CoefficientTransforms.hpp&quot;
+<span class="lineNum">      18 </span>            : #include &quot;NumericalAlgorithms/Spectral/Spectral.hpp&quot;
+<span class="lineNum">      19 </span>            : #include &quot;Utilities/ConstantExpressions.hpp&quot;
+<span class="lineNum">      20 </span>            : #include &quot;Utilities/GenerateInstantiations.hpp&quot;
+<span class="lineNum">      21 </span>            : #include &quot;Utilities/Gsl.hpp&quot;
+<span class="lineNum">      22 </span>            : #include &quot;Utilities/MakeArray.hpp&quot;
+<span class="lineNum">      23 </span>            : #include &quot;Utilities/StaticCache.hpp&quot;
+<span class="lineNum">      24 </span>            : 
+<span class="lineNum">      25 </span><span class="lineNoCov">          0 : namespace {</span>
+<span class="lineNum">      26 </span>            : // Given the modal expansion corresponding to some function f(x), compute the
+<span class="lineNum">      27 </span>            : // modal expansion corresponding to the derivative d/dx f(x), where x are the
+<span class="lineNum">      28 </span>            : // logical coordinates.
+<span class="lineNum">      29 </span>            : //
+<span class="lineNum">      30 </span>            : // Note: this function assumes a Legendre basis, i.e., assumes that the modes
+<span class="lineNum">      31 </span>            : // are the amplitudes of a Legendre polynomial expansion.
+<span class="lineNum">      32 </span>            : ModalVector modal_derivative(const ModalVector&amp; coeffs) noexcept {
+<span class="lineNum">      33 </span>            :   const size_t number_of_modes = coeffs.size();
+<span class="lineNum">      34 </span>            :   ModalVector deriv_coeffs(number_of_modes, 0.);
+<span class="lineNum">      35 </span>            :   for (size_t i = 0; i &lt; number_of_modes; ++i) {
+<span class="lineNum">      36 </span>            :     for (size_t j = (i % 2 == 0 ? 1 : 0); j &lt; i; j += 2) {
+<span class="lineNum">      37 </span>            :       deriv_coeffs[j] += coeffs[i] * (2. * j + 1.);
+<span class="lineNum">      38 </span>            :     }
+<span class="lineNum">      39 </span>            :   }
+<span class="lineNum">      40 </span>            :   return deriv_coeffs;
+<span class="lineNum">      41 </span>            : }
+<span class="lineNum">      42 </span>            : 
+<span class="lineNum">      43 </span>            : // For a given pair of Legendre polynomial basis functions (P_m, P_n), compute
+<span class="lineNum">      44 </span>            : // the sum of the integrals of all their derivatives:
+<span class="lineNum">      45 </span>            : // \sum_{l=0}^{N} w(l) \int d^(l)/dx^(l) P_m(x) * d^(l)/dx^(l) P_n(x) * dx
+<span class="lineNum">      46 </span>            : // where w(l) is some weight given to each term in the sum.
+<span class="lineNum">      47 </span>            : //
+<span class="lineNum">      48 </span>            : // The implemented algorithm computes the l'th derivative of P_m (and P_n) as a
+<span class="lineNum">      49 </span>            : // modal expansion in lower-order Legendre polynomials. The integrals can be
+<span class="lineNum">      50 </span>            : // carried out using the orthogonality relations between these basis functions.
+<span class="lineNum">      51 </span>            : double compute_sum_of_legendre_derivs(
+<span class="lineNum">      52 </span>            :     const size_t number_of_modes, const size_t m, const size_t n,
+<span class="lineNum">      53 </span>            :     const std::array&lt;
+<span class="lineNum">      54 </span>            :         double, Spectral::maximum_number_of_points&lt;Spectral::Basis::Legendre&gt;&gt;&amp;
+<span class="lineNum">      55 </span>            :         weights_for_derivatives) noexcept {
+<span class="lineNum">      56 </span>            :   ModalVector coeffs_m(number_of_modes, 0.);
+<span class="lineNum">      57 </span>            :   coeffs_m[m] = 1.;
+<span class="lineNum">      58 </span>            :   ModalVector coeffs_n(number_of_modes, 0.);
+<span class="lineNum">      59 </span>            :   coeffs_n[n] = 1.;
+<span class="lineNum">      60 </span>            :   double result = 0.;
+<span class="lineNum">      61 </span>            :   // This is the l == 0 term of the sum
+<span class="lineNum">      62 </span>            :   if (m == n) {
+<span class="lineNum">      63 </span>            :     result += weights_for_derivatives[0] *
+<span class="lineNum">      64 </span>            :               Spectral::compute_basis_function_normalization_square&lt;
+<span class="lineNum">      65 </span>            :                   Spectral::Basis::Legendre&gt;(m);
+<span class="lineNum">      66 </span>            :   }
+<span class="lineNum">      67 </span>            :   // This is the main l &gt; 0 part of the sum
+<span class="lineNum">      68 </span>            :   for (size_t l = 1; l &lt; number_of_modes; ++l) {
+<span class="lineNum">      69 </span>            :     const double weight = gsl::at(weights_for_derivatives, l);
+<span class="lineNum">      70 </span>            :     coeffs_m = modal_derivative(coeffs_m);
+<span class="lineNum">      71 </span>            :     coeffs_n = modal_derivative(coeffs_n);
+<span class="lineNum">      72 </span>            :     for (size_t i = 0; i &lt; number_of_modes; ++i) {
+<span class="lineNum">      73 </span>            :       result += weight * coeffs_m[i] * coeffs_n[i] *
+<span class="lineNum">      74 </span>            :                 Spectral::compute_basis_function_normalization_square&lt;
+<span class="lineNum">      75 </span>            :                     Spectral::Basis::Legendre&gt;(i);
+<span class="lineNum">      76 </span>            :     }
+<span class="lineNum">      77 </span>            :   }
+<span class="lineNum">      78 </span>            :   return result;
+<span class="lineNum">      79 </span>            : }
+<span class="lineNum">      80 </span>            : 
+<span class="lineNum">      81 </span>            : // Compute the indicator matrix, similar to that of Dumbser2007 Eq. 25, but
+<span class="lineNum">      82 </span>            : // adapted for use on square/cube grids.
+<span class="lineNum">      83 </span>            : //
+<span class="lineNum">      84 </span>            : // The reference computes the indicator on a triangle/tetdrahedral grid, so
+<span class="lineNum">      85 </span>            : // the basis functions (and their derivatives) do not factor into a tensor
+<span class="lineNum">      86 </span>            : // product across dimensions. We instead compute the indicator on a square/cube
+<span class="lineNum">      87 </span>            : // grid, where the basis functions (and their derivatives) do factor. We use
+<span class="lineNum">      88 </span>            : // this factoring to write the indicator as a product of 1D contributions from
+<span class="lineNum">      89 </span>            : // each xi/eta/zeta component of the basis function.
+<span class="lineNum">      90 </span>            : //
+<span class="lineNum">      91 </span>            : // Note that we compute the product using derivatives 0...N in each dimension.
+<span class="lineNum">      92 </span>            : // We then subtract off the term with 0 derivatives in all dimensions, because
+<span class="lineNum">      93 </span>            : // that term is just the original data and should be omitted.
+<span class="lineNum">      94 </span>            : //
+<span class="lineNum">      95 </span>            : // Note also that because the mean value of the data does not contribute to its
+<span class="lineNum">      96 </span>            : // oscillation content, any matrix element associated with basis functions
+<span class="lineNum">      97 </span>            : // m == 0 or n == 0 vanishes. We thus slightly reduce the necessary storage by
+<span class="lineNum">      98 </span>            : // computing only the (N-1)^2 matrix where we start at m, n &gt;= 1.
+<span class="lineNum">      99 </span>            : template &lt;size_t VolumeDim&gt;
+<span class="lineNum">     100 </span>            : Matrix compute_indicator_matrix(
+<span class="lineNum">     101 </span>            :     const Mesh&lt;VolumeDim&gt;&amp; mesh,
+<span class="lineNum">     102 </span>            :     const Limiters::Weno_detail::DerivativeWeight derivative_weight) noexcept {
+<span class="lineNum">     103 </span>            :   ASSERT(mesh.basis() == make_array&lt;VolumeDim&gt;(Spectral::Basis::Legendre),
+<span class="lineNum">     104 </span>            :          &quot;No implementation for mesh: &quot; &lt;&lt; mesh);
+<span class="lineNum">     105 </span>            :   Matrix result(mesh.number_of_grid_points() - 1,
+<span class="lineNum">     106 </span>            :                 mesh.number_of_grid_points() - 1);
+<span class="lineNum">     107 </span>            : 
+<span class="lineNum">     108 </span>            :   const std::array&lt;
+<span class="lineNum">     109 </span>            :       double, Spectral::maximum_number_of_points&lt;Spectral::Basis::Legendre&gt;&gt;
+<span class="lineNum">     110 </span>            :       weights_for_derivatives = [&amp;derivative_weight]() noexcept {
+<span class="lineNum">     111 </span>            :     auto weights = make_array&lt;
+<span class="lineNum">     112 </span>            :         Spectral::maximum_number_of_points&lt;Spectral::Basis::Legendre&gt;&gt;(1.);
+<span class="lineNum">     113 </span>            :     if (derivative_weight ==
+<span class="lineNum">     114 </span>            :         Limiters::Weno_detail::DerivativeWeight::PowTwoEll) {
+<span class="lineNum">     115 </span>            :       for (size_t l = 0; l &lt; weights.size(); ++l) {
+<span class="lineNum">     116 </span>            :         gsl::at(weights, l) = pow(2., 2. * l - 1.);
+<span class="lineNum">     117 </span>            :       }
+<span class="lineNum">     118 </span>            :     } else if (derivative_weight == Limiters::Weno_detail::DerivativeWeight::
+<span class="lineNum">     119 </span>            :                                         PowTwoEllOverEllFactorial) {
+<span class="lineNum">     120 </span>            :       for (size_t l = 0; l &lt; weights.size(); ++l) {
+<span class="lineNum">     121 </span>            :         gsl::at(weights, l) = 0.5 * square(pow(2., l) / factorial(l));
+<span class="lineNum">     122 </span>            :       }
+<span class="lineNum">     123 </span>            :     }
+<span class="lineNum">     124 </span>            :     return weights;
+<span class="lineNum">     125 </span>            :   }
+<span class="lineNum">     126 </span>            :   ();
+<span class="lineNum">     127 </span>            : 
+<span class="lineNum">     128 </span>            :   for (IndexIterator&lt;VolumeDim&gt; m(mesh.extents()); m; ++m) {
+<span class="lineNum">     129 </span>            :     if (m.collapsed_index() == 0) {
+<span class="lineNum">     130 </span>            :       // Skip the terms associated with the cell average of the data
+<span class="lineNum">     131 </span>            :       continue;
+<span class="lineNum">     132 </span>            :     }
+<span class="lineNum">     133 </span>            :     for (IndexIterator&lt;VolumeDim&gt; n(mesh.extents()); n; ++n) {
+<span class="lineNum">     134 </span>            :       if (n.collapsed_index() == 0) {
+<span class="lineNum">     135 </span>            :         // Skip the terms associated with the cell average of the data
+<span class="lineNum">     136 </span>            :         continue;
+<span class="lineNum">     137 </span>            :       }
+<span class="lineNum">     138 </span>            :       // Compute each indicator matrix term by tensor-product of 1D Legendre
+<span class="lineNum">     139 </span>            :       // polynomial math
+<span class="lineNum">     140 </span>            :       auto&amp; result_mn =
+<span class="lineNum">     141 </span>            :           result(m.collapsed_index() - 1, n.collapsed_index() - 1);
+<span class="lineNum">     142 </span>            :       result_mn = compute_sum_of_legendre_derivs(
+<span class="lineNum">     143 </span>            :           mesh.extents(0), m()[0], n()[0], weights_for_derivatives);
+<span class="lineNum">     144 </span>            :       for (size_t dim = 1; dim &lt; VolumeDim; ++dim) {
+<span class="lineNum">     145 </span>            :         result_mn *= compute_sum_of_legendre_derivs(
+<span class="lineNum">     146 </span>            :             mesh.extents(dim), m()[dim], n()[dim], weights_for_derivatives);
+<span class="lineNum">     147 </span>            :       }
+<span class="lineNum">     148 </span>            :     }
+<span class="lineNum">     149 </span>            :     // Subtract the tensor-product term that has no derivatives
+<span class="lineNum">     150 </span>            :     double term_with_no_derivs =
+<span class="lineNum">     151 </span>            :         weights_for_derivatives[0] *
+<span class="lineNum">     152 </span>            :         Spectral::compute_basis_function_normalization_square&lt;
+<span class="lineNum">     153 </span>            :             Spectral::Basis::Legendre&gt;(m()[0]);
+<span class="lineNum">     154 </span>            :     for (size_t dim = 1; dim &lt; VolumeDim; ++dim) {
+<span class="lineNum">     155 </span>            :       term_with_no_derivs *=
+<span class="lineNum">     156 </span>            :           weights_for_derivatives[0] *
+<span class="lineNum">     157 </span>            :           Spectral::compute_basis_function_normalization_square&lt;
+<span class="lineNum">     158 </span>            :               Spectral::Basis::Legendre&gt;(m()[dim]);
+<span class="lineNum">     159 </span>            :     }
+<span class="lineNum">     160 </span>            :     result(m.collapsed_index() - 1, m.collapsed_index() - 1) -=
+<span class="lineNum">     161 </span>            :         term_with_no_derivs;
+<span class="lineNum">     162 </span>            :   }
+<span class="lineNum">     163 </span>            :   return result;
+<span class="lineNum">     164 </span>            : }
+<span class="lineNum">     165 </span>            : 
+<span class="lineNum">     166 </span>            : }  // namespace
+<span class="lineNum">     167 </span>            : 
+<span class="lineNum">     168 </span>            : namespace Limiters {
+<span class="lineNum">     169 </span>            : namespace Weno_detail {
+<span class="lineNum">     170 </span>            : 
+<span class="lineNum">     171 </span>            : std::ostream&amp; operator&lt;&lt;(std::ostream&amp; os,
+<span class="lineNum">     172 </span>            :                          DerivativeWeight derivative_weight) noexcept {
+<span class="lineNum">     173 </span>            :   switch (derivative_weight) {
+<span class="lineNum">     174 </span>            :     case DerivativeWeight::Unity:
+<span class="lineNum">     175 </span>            :       return os &lt;&lt; &quot;Unity&quot;;
+<span class="lineNum">     176 </span>            :     case DerivativeWeight::PowTwoEll:
+<span class="lineNum">     177 </span>            :       return os &lt;&lt; &quot;PowTwoEll&quot;;
+<span class="lineNum">     178 </span>            :     case DerivativeWeight::PowTwoEllOverEllFactorial:
+<span class="lineNum">     179 </span>            :       return os &lt;&lt; &quot;PowTwoEllOverEllFactorial&quot;;
+<span class="lineNum">     180 </span>            :     default:
+<span class="lineNum">     181 </span>            :       ERROR(&quot;Unknown DerivativeWeight&quot;);
+<span class="lineNum">     182 </span>            :   }
+<span class="lineNum">     183 </span>            : }
+<span class="lineNum">     184 </span>            : 
+<span class="lineNum">     185 </span>            : template &lt;size_t VolumeDim&gt;
+<span class="lineNum">     186 </span>            : double oscillation_indicator(
+<span class="lineNum">     187 </span>            :     const DataVector&amp; data, const Mesh&lt;VolumeDim&gt;&amp; mesh,
+<span class="lineNum">     188 </span>            :     const DerivativeWeight derivative_weight) noexcept {
+<span class="lineNum">     189 </span>            :   ASSERT(mesh.basis() == make_array&lt;VolumeDim&gt;(Spectral::Basis::Legendre),
+<span class="lineNum">     190 </span>            :          &quot;No implementation for mesh: &quot; &lt;&lt; mesh);
+<span class="lineNum">     191 </span>            : 
+<span class="lineNum">     192 </span>            :   // Optimization: cache the indicator matrix, because it does not depend on the
+<span class="lineNum">     193 </span>            :   // data. This caching will have to be generalized to handle simulations with
+<span class="lineNum">     194 </span>            :   // more than one mesh.
+<span class="lineNum">     195 </span>            :   const auto cache = make_static_cache&lt;CacheEnumeration&lt;
+<span class="lineNum">     196 </span>            :       DerivativeWeight, DerivativeWeight::Unity, DerivativeWeight::PowTwoEll,
+<span class="lineNum">     197 </span>            :       DerivativeWeight::PowTwoEllOverEllFactorial&gt;&gt;(
+<span class="lineNum">     198 </span>            :       [&amp;mesh](const DerivativeWeight dw) noexcept-&gt;Matrix {
+<span class="lineNum">     199 </span>            :         return compute_indicator_matrix(mesh, dw);
+<span class="lineNum">     200 </span>            :       });
+<span class="lineNum">     201 </span>            :   const Matrix indicator_matrix = cache(derivative_weight);
+<span class="lineNum">     202 </span>            : 
+<span class="lineNum">     203 </span>            :   // Check there is only one mesh, i.e., that we satisfy the cache assumptions.
+<span class="lineNum">     204 </span>            :   static const Mesh&lt;VolumeDim&gt; mesh_for_cached_matrix = mesh;
+<span class="lineNum">     205 </span>            :   ASSERT(
+<span class="lineNum">     206 </span>            :       mesh_for_cached_matrix == mesh,
+<span class="lineNum">     207 </span>            :       &quot;This call to oscillation_indicator received as argument a different\n&quot;
+<span class="lineNum">     208 </span>            :       &quot;Mesh than was previously cached, suggesting that multiple meshes are\n&quot;
+<span class="lineNum">     209 </span>            :       &quot;used in the computational domain. This is not (yet) supported.\n&quot;
+<span class="lineNum">     210 </span>            :       &quot;Cached mesh: &quot;
+<span class="lineNum">     211 </span>            :           &lt;&lt; mesh_for_cached_matrix
+<span class="lineNum">     212 </span>            :           &lt;&lt; &quot;\n&quot;
+<span class="lineNum">     213 </span>            :              &quot;Argument mesh: &quot;
+<span class="lineNum">     214 </span>            :           &lt;&lt; mesh);
+<span class="lineNum">     215 </span>            : 
+<span class="lineNum">     216 </span>            :   const ModalVector coeffs = to_modal_coefficients(data, mesh);
+<span class="lineNum">     217 </span>            : 
+<span class="lineNum">     218 </span>            :   double result = 0.;
+<span class="lineNum">     219 </span>            :   // Note: because the 0'th modal coefficient encodes the mean of the data and
+<span class="lineNum">     220 </span>            :   // does not contribute to the oscillation, it is safe to exclude it from the
+<span class="lineNum">     221 </span>            :   // sum and start summing at m == 1, n == 1. Note also that the indicator
+<span class="lineNum">     222 </span>            :   // matrix is computed excluding the m == 0, n == 0 elements, so the indexing
+<span class="lineNum">     223 </span>            :   // is offset by 1.
+<span class="lineNum">     224 </span>            :   for (size_t m = 1; m &lt; mesh.number_of_grid_points(); ++m) {
+<span class="lineNum">     225 </span>            :     for (size_t n = 1; n &lt; mesh.number_of_grid_points(); ++n) {
+<span class="lineNum">     226 </span>            :       result += coeffs[m] * coeffs[n] * indicator_matrix(m - 1, n - 1);
+<span class="lineNum">     227 </span>            :     }
+<span class="lineNum">     228 </span>            :   }
+<span class="lineNum">     229 </span>            :   return result;
+<span class="lineNum">     230 </span>            : }
+<span class="lineNum">     231 </span>            : 
+<span class="lineNum">     232 </span>            : // Explicit instantiations
+<span class="lineNum">     233 </span><span class="lineNoCov">          0 : #define DIM(data) BOOST_PP_TUPLE_ELEM(0, data)</span>
+<span class="lineNum">     234 </span>            : 
+<span class="lineNum">     235 </span><span class="lineNoCov">          0 : #define INSTANTIATE(_, data)                        \</span>
+<span class="lineNum">     236 </span>            :   template double oscillation_indicator&lt;DIM(data)&gt;( \
+<span class="lineNum">     237 </span>            :       const DataVector&amp;, const Mesh&lt;DIM(data)&gt;&amp;, DerivativeWeight) noexcept;
+<span class="lineNum">     238 </span>            : 
+<span class="lineNum">     239 </span>            : GENERATE_INSTANTIATIONS(INSTANTIATE, (1, 2, 3))
+<span class="lineNum">     240 </span>            : 
+<span class="lineNum">     241 </span>            : #undef DIM
+<span class="lineNum">     242 </span>            : #undef INSTANTIATE
+<span class="lineNum">     243 </span>            : 
+<span class="lineNum">     244 </span>            : }  // namespace Weno_detail
+<span class="lineNum">     245 </span>            : }  // namespace Limiters
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../../../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.13</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

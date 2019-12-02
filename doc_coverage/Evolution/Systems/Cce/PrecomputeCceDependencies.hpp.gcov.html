@@ -1,0 +1,343 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - 5912ac2e49a80e6a27b3707c9a1e6ce5248b1b2a - Evolution/Systems/Cce/PrecomputeCceDependencies.hpp</title>
+  <link rel="stylesheet" type="text/css" href="../../../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title"> SpECTRE Documentation Coverage Report</td></tr>
+    <tr><td class="ruler"><img src="../../../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../../../index.html">top level</a> - <a href="index.html">Evolution/Systems/Cce</a> - PrecomputeCceDependencies.hpp</td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+             <td class="headerItem">Commit:</td>
+             <td class="headerValue"><a target="_blank" href="https://github.com/sxs-collaboration/spectre/commit/5912ac2e49a80e6a27b3707c9a1e6ce5248b1b2a">5912ac2e49a80e6a27b3707c9a1e6ce5248b1b2a</a></td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">9</td>
+            <td class="headerCovTableEntry">52</td>
+            <td class="headerCovTableEntryLo">17.3 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2019-12-02 22:01:08</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td class="headerItem">Legend:</td>
+            <td class="headerValueLeg">            Lines:
+            <span class="coverLegendCov">hit</span>
+            <span class="coverLegendNoCov">not hit</span>
+</td>
+            <td></td>
+          </tr>
+          <tr><td><img src="../../../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../../../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">          Line data    Source code</pre>
+<pre class="source">
+<span class="lineNum">       1 </span><span class="lineNoCov">          0 : // Distributed under the MIT License.</span>
+<span class="lineNum">       2 </span>            : // See LICENSE.txt for details.
+<span class="lineNum">       3 </span>            : 
+<span class="lineNum">       4 </span>            : #pragma once
+<span class="lineNum">       5 </span>            : 
+<span class="lineNum">       6 </span>            : #include &lt;cstddef&gt;
+<span class="lineNum">       7 </span>            : 
+<span class="lineNum">       8 </span>            : #include &quot;DataStructures/ComplexDataVector.hpp&quot;
+<span class="lineNum">       9 </span>            : #include &quot;DataStructures/SpinWeighted.hpp&quot;
+<span class="lineNum">      10 </span>            : #include &quot;Evolution/Systems/Cce/IntegrandInputSteps.hpp&quot;
+<span class="lineNum">      11 </span>            : #include &quot;Evolution/Systems/Cce/Tags.hpp&quot;
+<span class="lineNum">      12 </span>            : #include &quot;NumericalAlgorithms/Spectral/Spectral.hpp&quot;
+<span class="lineNum">      13 </span>            : #include &quot;NumericalAlgorithms/Spectral/SwshCollocation.hpp&quot;
+<span class="lineNum">      14 </span>            : #include &quot;NumericalAlgorithms/Spectral/SwshTags.hpp&quot;
+<span class="lineNum">      15 </span>            : #include &quot;Utilities/Gsl.hpp&quot;
+<span class="lineNum">      16 </span>            : #include &quot;Utilities/TMPL.hpp&quot;
+<span class="lineNum">      17 </span>            : #include &quot;Utilities/VectorAlgebra.hpp&quot;
+<span class="lineNum">      18 </span>            : 
+<span class="lineNum">      19 </span>            : namespace Cce {
+<span class="lineNum">      20 </span>            : 
+<span class="lineNum">      21 </span>            : namespace detail {
+<span class="lineNum">      22 </span>            : // A convenience function for computing the spin-weighted derivatives of \f$R\f$
+<span class="lineNum">      23 </span>            : // divided by \f$R\f$, which appears often in Jacobians to transform between
+<span class="lineNum">      24 </span>            : // Bondi coordinates and the numerical coordinates used in CCE.
+<span class="lineNum">      25 </span>            : template &lt;typename DerivKind&gt;
+<span class="lineNum">      26 </span>            : void angular_derivative_of_r_divided_by_r_impl(
+<span class="lineNum">      27 </span>            :     gsl::not_null&lt;
+<span class="lineNum">      28 </span>            :         SpinWeighted&lt;ComplexDataVector,
+<span class="lineNum">      29 </span>            :                      Spectral::Swsh::Tags::derivative_spin_weight&lt;DerivKind&gt;&gt;*&gt;
+<span class="lineNum">      30 </span>            :         d_r_divided_by_r,
+<span class="lineNum">      31 </span>            :     const SpinWeighted&lt;ComplexDataVector, 0&gt;&amp; boundary_r, size_t l_max,
+<span class="lineNum">      32 </span>            :     size_t number_of_radial_points) noexcept;
+<span class="lineNum">      33 </span>            : 
+<span class="lineNum">      34 </span>            : }  // namespace detail
+<span class="lineNum">      35 </span>            : 
+<span class="lineNum">      36 </span>            : /*!
+<span class="lineNum">      37 </span>            :  * \brief A set of procedures for computing the set of inputs to the CCE
+<span class="lineNum">      38 </span>            :  * integrand computations that can be computed before any of the intermediate
+<span class="lineNum">      39 </span>            :  * integrands are evaluated.
+<span class="lineNum">      40 </span>            :  *
+<span class="lineNum">      41 </span>            :  * \details The template specializations of this template are
+<span class="lineNum">      42 </span>            :  * compatible with acting as a the mutator in a \ref DataBoxGroup
+<span class="lineNum">      43 </span>            :  * `db::mutate_apply` operation. For flexibility in defining the \ref
+<span class="lineNum">      44 </span>            :  * DataBoxGroup structure, the tags for `Tensor`s used in these functions are
+<span class="lineNum">      45 </span>            :  * also organized into type lists:
+<span class="lineNum">      46 </span>            :  * -  type alias `integration_independent_tags`: with a subset of
+<span class="lineNum">      47 </span>            :  * `Cce::pre_computation_tags`, used for both input and output.
+<span class="lineNum">      48 </span>            :  * -  type alias `boundary_values`: with a subset of
+<span class="lineNum">      49 </span>            :  *   `Cce::pre_computation_boundary_tags`, used only for input.
+<span class="lineNum">      50 </span>            :  * - type alias `pre_swsh_derivatives` containing hypersurface quantities. For
+<span class="lineNum">      51 </span>            :  * this struct, it will only ever contain `Cce::Tags::BondiJ`, and is used as
+<span class="lineNum">      52 </span>            :  * input.
+<span class="lineNum">      53 </span>            :  *
+<span class="lineNum">      54 </span>            :  * The `BoundaryPrefix` tag allows easy switching between the
+<span class="lineNum">      55 </span>            :  * regularity-preserving version and standard CCE
+<span class="lineNum">      56 </span>            :  *
+<span class="lineNum">      57 </span>            :  */
+<span class="lineNum">      58 </span>            : template &lt;template &lt;typename&gt; class BoundaryPrefix, typename Tag&gt;
+<span class="lineNum">      59 </span><span class="lineCov">          1 : struct PrecomputeCceDependencies;</span>
+<span class="lineNum">      60 </span>            : 
+<span class="lineNum">      61 </span>            : /// Computes \f$1 - y\f$ for the CCE system.
+<span class="lineNum">      62 </span>            : template &lt;template &lt;typename&gt; class BoundaryPrefix&gt;
+<span class="lineNum">      63 </span><span class="lineCov">          1 : struct PrecomputeCceDependencies&lt;BoundaryPrefix, Tags::OneMinusY&gt; {</span>
+<span class="lineNum">      64 </span><span class="lineNoCov">          0 :   using boundary_tags = tmpl::list&lt;&gt;;</span>
+<span class="lineNum">      65 </span><span class="lineNoCov">          0 :   using pre_swsh_derivative_tags = tmpl::list&lt;&gt;;</span>
+<span class="lineNum">      66 </span><span class="lineNoCov">          0 :   using integration_independent_tags = tmpl::list&lt;&gt;;</span>
+<span class="lineNum">      67 </span>            : 
+<span class="lineNum">      68 </span><span class="lineNoCov">          0 :   using return_tags = tmpl::list&lt;Tags::OneMinusY&gt;;</span>
+<span class="lineNum">      69 </span><span class="lineNoCov">          0 :   using argument_tags = tmpl::list&lt;Spectral::Swsh::Tags::LMax,</span>
+<span class="lineNum">      70 </span>            :                                    Spectral::Swsh::Tags::NumberOfRadialPoints&gt;;
+<span class="lineNum">      71 </span>            : 
+<span class="lineNum">      72 </span><span class="lineNoCov">          0 :   static void apply(</span>
+<span class="lineNum">      73 </span>            :       const gsl::not_null&lt;Scalar&lt;SpinWeighted&lt;ComplexDataVector, 0&gt;&gt;*&gt;
+<span class="lineNum">      74 </span>            :           one_minus_y,
+<span class="lineNum">      75 </span>            :       const size_t l_max, const size_t number_of_radial_points) noexcept {
+<span class="lineNum">      76 </span>            :     const size_t number_of_angular_points =
+<span class="lineNum">      77 </span>            :         Spectral::Swsh::number_of_swsh_collocation_points(l_max);
+<span class="lineNum">      78 </span>            :     const DataVector one_minus_y_collocation =
+<span class="lineNum">      79 </span>            :         1.0 - Spectral::collocation_points&lt;Spectral::Basis::Legendre,
+<span class="lineNum">      80 </span>            :                                            Spectral::Quadrature::GaussLobatto&gt;(
+<span class="lineNum">      81 </span>            :                   number_of_radial_points);
+<span class="lineNum">      82 </span>            :     // iterate through the angular 'chunks' and set them to their 1-y value
+<span class="lineNum">      83 </span>            :     for (size_t i = 0; i &lt; number_of_radial_points; ++i) {
+<span class="lineNum">      84 </span>            :       ComplexDataVector angular_view{
+<span class="lineNum">      85 </span>            :           get(*one_minus_y).data().data() + number_of_angular_points * i,
+<span class="lineNum">      86 </span>            :           number_of_angular_points};
+<span class="lineNum">      87 </span>            :       angular_view = one_minus_y_collocation[i];
+<span class="lineNum">      88 </span>            :     }
+<span class="lineNum">      89 </span>            :   }
+<span class="lineNum">      90 </span>            : };
+<span class="lineNum">      91 </span>            : 
+<span class="lineNum">      92 </span>            : /// Computes a volume version of Bondi radius of the worldtube \f$R\f$ from its
+<span class="lineNum">      93 </span>            : /// boundary value (by repeating it over the radial dimension)
+<span class="lineNum">      94 </span>            : template &lt;template &lt;typename&gt; class BoundaryPrefix&gt;
+<span class="lineNum">      95 </span><span class="lineCov">          1 : struct PrecomputeCceDependencies&lt;BoundaryPrefix, Tags::BondiR&gt; {</span>
+<span class="lineNum">      96 </span><span class="lineNoCov">          0 :   using boundary_tags = tmpl::list&lt;BoundaryPrefix&lt;Tags::BondiR&gt;&gt;;</span>
+<span class="lineNum">      97 </span><span class="lineNoCov">          0 :   using pre_swsh_derivative_tags = tmpl::list&lt;&gt;;</span>
+<span class="lineNum">      98 </span><span class="lineNoCov">          0 :   using integration_independent_tags = tmpl::list&lt;&gt;;</span>
+<span class="lineNum">      99 </span>            : 
+<span class="lineNum">     100 </span><span class="lineNoCov">          0 :   using return_tags = tmpl::list&lt;Tags::BondiR&gt;;</span>
+<span class="lineNum">     101 </span><span class="lineNoCov">          0 :   using argument_tags =</span>
+<span class="lineNum">     102 </span>            :       tmpl::append&lt;boundary_tags,
+<span class="lineNum">     103 </span>            :                    tmpl::list&lt;Spectral::Swsh::Tags::NumberOfRadialPoints&gt;&gt;;
+<span class="lineNum">     104 </span>            : 
+<span class="lineNum">     105 </span><span class="lineNoCov">          0 :   static void apply(</span>
+<span class="lineNum">     106 </span>            :       const gsl::not_null&lt;Scalar&lt;SpinWeighted&lt;ComplexDataVector, 0&gt;&gt;*&gt; r,
+<span class="lineNum">     107 </span>            :       const Scalar&lt;SpinWeighted&lt;ComplexDataVector, 0&gt;&gt;&amp; boundary_r,
+<span class="lineNum">     108 </span>            :       const size_t number_of_radial_points) noexcept {
+<span class="lineNum">     109 </span>            :     fill_with_n_copies(make_not_null(&amp;get(*r).data()), get(boundary_r).data(),
+<span class="lineNum">     110 </span>            :                        number_of_radial_points);
+<span class="lineNum">     111 </span>            :   }
+<span class="lineNum">     112 </span>            : };
+<span class="lineNum">     113 </span>            : 
+<span class="lineNum">     114 </span>            : /// Computes \f$\partial_u R / R\f$ from its boundary value (by repeating it
+<span class="lineNum">     115 </span>            : /// over the radial dimension).
+<span class="lineNum">     116 </span>            : template &lt;template &lt;typename&gt; class BoundaryPrefix&gt;
+<span class="lineNum">     117 </span><span class="lineCov">          1 : struct PrecomputeCceDependencies&lt;BoundaryPrefix, Tags::DuRDividedByR&gt; {</span>
+<span class="lineNum">     118 </span><span class="lineNoCov">          0 :   using boundary_tags = tmpl::list&lt;BoundaryPrefix&lt;Tags::DuRDividedByR&gt;&gt;;</span>
+<span class="lineNum">     119 </span><span class="lineNoCov">          0 :   using pre_swsh_derivative_tags = tmpl::list&lt;&gt;;</span>
+<span class="lineNum">     120 </span><span class="lineNoCov">          0 :   using integration_independent_tags = tmpl::list&lt;&gt;;</span>
+<span class="lineNum">     121 </span>            : 
+<span class="lineNum">     122 </span><span class="lineNoCov">          0 :   using return_tags = tmpl::list&lt;Tags::DuRDividedByR&gt;;</span>
+<span class="lineNum">     123 </span><span class="lineNoCov">          0 :   using argument_tags =</span>
+<span class="lineNum">     124 </span>            :       tmpl::append&lt;boundary_tags,
+<span class="lineNum">     125 </span>            :                    tmpl::list&lt;Spectral::Swsh::Tags::NumberOfRadialPoints&gt;&gt;;
+<span class="lineNum">     126 </span>            : 
+<span class="lineNum">     127 </span><span class="lineNoCov">          0 :   static void apply(</span>
+<span class="lineNum">     128 </span>            :       const gsl::not_null&lt;Scalar&lt;SpinWeighted&lt;ComplexDataVector, 0&gt;&gt;*&gt;
+<span class="lineNum">     129 </span>            :           du_r_divided_by_r,
+<span class="lineNum">     130 </span>            :       const Scalar&lt;SpinWeighted&lt;ComplexDataVector, 0&gt;&gt;&amp;
+<span class="lineNum">     131 </span>            :           boundary_du_r_divided_by_r,
+<span class="lineNum">     132 </span>            :       const size_t number_of_radial_points) noexcept {
+<span class="lineNum">     133 </span>            :     fill_with_n_copies(make_not_null(&amp;get(*du_r_divided_by_r).data()),
+<span class="lineNum">     134 </span>            :                        get(boundary_du_r_divided_by_r).data(),
+<span class="lineNum">     135 </span>            :                        number_of_radial_points);
+<span class="lineNum">     136 </span>            :   }
+<span class="lineNum">     137 </span>            : };
+<span class="lineNum">     138 </span>            : 
+<span class="lineNum">     139 </span>            : /// Computes \f$\eth R / R\f$ by differentiating and repeating the boundary
+<span class="lineNum">     140 </span>            : /// value of \f$R\f$.
+<span class="lineNum">     141 </span>            : template &lt;template &lt;typename&gt; class BoundaryPrefix&gt;
+<span class="lineNum">     142 </span><span class="lineCov">          1 : struct PrecomputeCceDependencies&lt;BoundaryPrefix, Tags::EthRDividedByR&gt; {</span>
+<span class="lineNum">     143 </span><span class="lineNoCov">          0 :   using boundary_tags = tmpl::list&lt;BoundaryPrefix&lt;Tags::BondiR&gt;&gt;;</span>
+<span class="lineNum">     144 </span><span class="lineNoCov">          0 :   using pre_swsh_derivative_tags = tmpl::list&lt;&gt;;</span>
+<span class="lineNum">     145 </span><span class="lineNoCov">          0 :   using integration_independent_tags = tmpl::list&lt;&gt;;</span>
+<span class="lineNum">     146 </span>            : 
+<span class="lineNum">     147 </span><span class="lineNoCov">          0 :   using return_tags = tmpl::list&lt;Tags::EthRDividedByR&gt;;</span>
+<span class="lineNum">     148 </span><span class="lineNoCov">          0 :   using argument_tags =</span>
+<span class="lineNum">     149 </span>            :       tmpl::append&lt;boundary_tags,
+<span class="lineNum">     150 </span>            :                    tmpl::list&lt;Spectral::Swsh::Tags::LMax,
+<span class="lineNum">     151 </span>            :                               Spectral::Swsh::Tags::NumberOfRadialPoints&gt;&gt;;
+<span class="lineNum">     152 </span>            : 
+<span class="lineNum">     153 </span><span class="lineNoCov">          0 :   static void apply(</span>
+<span class="lineNum">     154 </span>            :       const gsl::not_null&lt;Scalar&lt;SpinWeighted&lt;ComplexDataVector, 1&gt;&gt;*&gt;
+<span class="lineNum">     155 </span>            :           eth_r_divided_by_r,
+<span class="lineNum">     156 </span>            :       const Scalar&lt;SpinWeighted&lt;ComplexDataVector, 0&gt;&gt;&amp; boundary_r,
+<span class="lineNum">     157 </span>            :       const size_t l_max, const size_t number_of_radial_points) noexcept {
+<span class="lineNum">     158 </span>            :     detail::angular_derivative_of_r_divided_by_r_impl&lt;
+<span class="lineNum">     159 </span>            :         Spectral::Swsh::Tags::Eth&gt;(make_not_null(&amp;get(*eth_r_divided_by_r)),
+<span class="lineNum">     160 </span>            :                                    get(boundary_r), l_max,
+<span class="lineNum">     161 </span>            :                                    number_of_radial_points);
+<span class="lineNum">     162 </span>            :   }
+<span class="lineNum">     163 </span>            : };
+<span class="lineNum">     164 </span>            : 
+<span class="lineNum">     165 </span>            : /// Computes \f$\eth \eth R / R\f$ by differentiating and repeating the boundary
+<span class="lineNum">     166 </span>            : /// value of \f$R\f$.
+<span class="lineNum">     167 </span>            : template &lt;template &lt;typename&gt; class BoundaryPrefix&gt;
+<span class="lineNum">     168 </span><span class="lineCov">          1 : struct PrecomputeCceDependencies&lt;BoundaryPrefix, Tags::EthEthRDividedByR&gt; {</span>
+<span class="lineNum">     169 </span><span class="lineNoCov">          0 :   using boundary_tags = tmpl::list&lt;BoundaryPrefix&lt;Tags::BondiR&gt;&gt;;</span>
+<span class="lineNum">     170 </span><span class="lineNoCov">          0 :   using pre_swsh_derivative_tags = tmpl::list&lt;&gt;;</span>
+<span class="lineNum">     171 </span><span class="lineNoCov">          0 :   using integration_independent_tags = tmpl::list&lt;&gt;;</span>
+<span class="lineNum">     172 </span>            : 
+<span class="lineNum">     173 </span><span class="lineNoCov">          0 :   using return_tags = tmpl::list&lt;Tags::EthEthRDividedByR&gt;;</span>
+<span class="lineNum">     174 </span><span class="lineNoCov">          0 :   using argument_tags =</span>
+<span class="lineNum">     175 </span>            :       tmpl::append&lt;boundary_tags,
+<span class="lineNum">     176 </span>            :                    tmpl::list&lt;Spectral::Swsh::Tags::LMax,
+<span class="lineNum">     177 </span>            :                               Spectral::Swsh::Tags::NumberOfRadialPoints&gt;&gt;;
+<span class="lineNum">     178 </span>            : 
+<span class="lineNum">     179 </span><span class="lineNoCov">          0 :   static void apply(</span>
+<span class="lineNum">     180 </span>            :       const gsl::not_null&lt;Scalar&lt;SpinWeighted&lt;ComplexDataVector, 2&gt;&gt;*&gt;
+<span class="lineNum">     181 </span>            :           eth_eth_r_divided_by_r,
+<span class="lineNum">     182 </span>            :       const Scalar&lt;SpinWeighted&lt;ComplexDataVector, 0&gt;&gt;&amp; boundary_r,
+<span class="lineNum">     183 </span>            :       const size_t l_max, const size_t number_of_radial_points) noexcept {
+<span class="lineNum">     184 </span>            :     detail::angular_derivative_of_r_divided_by_r_impl&lt;
+<span class="lineNum">     185 </span>            :         Spectral::Swsh::Tags::EthEth&gt;(
+<span class="lineNum">     186 </span>            :         make_not_null(&amp;get(*eth_eth_r_divided_by_r)), get(boundary_r), l_max,
+<span class="lineNum">     187 </span>            :         number_of_radial_points);
+<span class="lineNum">     188 </span>            :   }
+<span class="lineNum">     189 </span>            : };
+<span class="lineNum">     190 </span>            : 
+<span class="lineNum">     191 </span>            : /// Computes \f$\eth \bar{\eth} R / R\f$ by differentiating and repeating the
+<span class="lineNum">     192 </span>            : /// boundary value of \f$R\f$.
+<span class="lineNum">     193 </span>            : template &lt;template &lt;typename&gt; class BoundaryPrefix&gt;
+<span class="lineNum">     194 </span><span class="lineCov">          1 : struct PrecomputeCceDependencies&lt;BoundaryPrefix, Tags::EthEthbarRDividedByR&gt; {</span>
+<span class="lineNum">     195 </span><span class="lineNoCov">          0 :   using boundary_tags = tmpl::list&lt;BoundaryPrefix&lt;Tags::BondiR&gt;&gt;;</span>
+<span class="lineNum">     196 </span><span class="lineNoCov">          0 :   using pre_swsh_derivative_tags = tmpl::list&lt;&gt;;</span>
+<span class="lineNum">     197 </span><span class="lineNoCov">          0 :   using integration_independent_tags = tmpl::list&lt;&gt;;</span>
+<span class="lineNum">     198 </span>            : 
+<span class="lineNum">     199 </span><span class="lineNoCov">          0 :   using return_tags = tmpl::list&lt;Tags::EthEthbarRDividedByR&gt;;</span>
+<span class="lineNum">     200 </span><span class="lineNoCov">          0 :   using argument_tags =</span>
+<span class="lineNum">     201 </span>            :       tmpl::append&lt;boundary_tags,
+<span class="lineNum">     202 </span>            :                    tmpl::list&lt;Spectral::Swsh::Tags::LMax,
+<span class="lineNum">     203 </span>            :                               Spectral::Swsh::Tags::NumberOfRadialPoints&gt;&gt;;
+<span class="lineNum">     204 </span>            : 
+<span class="lineNum">     205 </span><span class="lineNoCov">          0 :   static void apply(</span>
+<span class="lineNum">     206 </span>            :       const gsl::not_null&lt;Scalar&lt;SpinWeighted&lt;ComplexDataVector, 0&gt;&gt;*&gt;
+<span class="lineNum">     207 </span>            :           eth_ethbar_r_divided_by_r,
+<span class="lineNum">     208 </span>            :       const Scalar&lt;SpinWeighted&lt;ComplexDataVector, 0&gt;&gt;&amp; boundary_r,
+<span class="lineNum">     209 </span>            :       const size_t l_max, const size_t number_of_radial_points) noexcept {
+<span class="lineNum">     210 </span>            :     detail::angular_derivative_of_r_divided_by_r_impl&lt;
+<span class="lineNum">     211 </span>            :         Spectral::Swsh::Tags::EthEthbar&gt;(
+<span class="lineNum">     212 </span>            :         make_not_null(&amp;get(*eth_ethbar_r_divided_by_r)), get(boundary_r), l_max,
+<span class="lineNum">     213 </span>            :         number_of_radial_points);
+<span class="lineNum">     214 </span>            :   }
+<span class="lineNum">     215 </span>            : };
+<span class="lineNum">     216 </span>            : 
+<span class="lineNum">     217 </span>            : /// Computes \f$K = \sqrt{1 + J \bar{J}}\f$.
+<span class="lineNum">     218 </span>            : template &lt;template &lt;typename&gt; class BoundaryPrefix&gt;
+<span class="lineNum">     219 </span><span class="lineCov">          1 : struct PrecomputeCceDependencies&lt;BoundaryPrefix, Tags::BondiK&gt; {</span>
+<span class="lineNum">     220 </span><span class="lineNoCov">          0 :   using boundary_tags = tmpl::list&lt;&gt;;</span>
+<span class="lineNum">     221 </span><span class="lineNoCov">          0 :   using pre_swsh_derivative_tags = tmpl::list&lt;Tags::BondiJ&gt;;</span>
+<span class="lineNum">     222 </span><span class="lineNoCov">          0 :   using integration_independent_tags = tmpl::list&lt;&gt;;</span>
+<span class="lineNum">     223 </span>            : 
+<span class="lineNum">     224 </span><span class="lineNoCov">          0 :   using return_tags = tmpl::list&lt;Tags::BondiK&gt;;</span>
+<span class="lineNum">     225 </span><span class="lineNoCov">          0 :   using argument_tags = tmpl::append&lt;tmpl::list&lt;Spectral::Swsh::Tags::LMax&gt;,</span>
+<span class="lineNum">     226 </span>            :                                      pre_swsh_derivative_tags&gt;;
+<span class="lineNum">     227 </span>            : 
+<span class="lineNum">     228 </span><span class="lineNoCov">          0 :   static void apply(</span>
+<span class="lineNum">     229 </span>            :       const gsl::not_null&lt;Scalar&lt;SpinWeighted&lt;ComplexDataVector, 0&gt;&gt;*&gt; k,
+<span class="lineNum">     230 </span>            :       const size_t /*l_max*/,
+<span class="lineNum">     231 </span>            :       const Scalar&lt;SpinWeighted&lt;ComplexDataVector, 2&gt;&gt;&amp; j) noexcept {
+<span class="lineNum">     232 </span>            :     get(*k).data() = sqrt(1.0 + get(j).data() * conj(get(j)).data());
+<span class="lineNum">     233 </span>            :   }
+<span class="lineNum">     234 </span>            : };
+<span class="lineNum">     235 </span>            : 
+<span class="lineNum">     236 </span>            : /*!
+<span class="lineNum">     237 </span>            :  * \brief Convenience routine for computing all of the CCE inputs to integrand
+<span class="lineNum">     238 </span>            :  * computation that do not depend on intermediate integrand results. It should
+<span class="lineNum">     239 </span>            :  * be executed before moving through the hierarchy of integrands.
+<span class="lineNum">     240 </span>            :  *
+<span class="lineNum">     241 </span>            :  * \details Provided a \ref DataBoxGroup with the appropriate tags (including
+<span class="lineNum">     242 </span>            :  * `Cce::pre_computation_boundary_tags`, `Cce::pre_computation_tags`,
+<span class="lineNum">     243 </span>            :  * `Cce::Tags::BondiJ` and `Spectral::Swsh::Tags::LMax`), this function will
+<span class="lineNum">     244 </span>            :  * apply all of the necessary mutations to update the
+<span class="lineNum">     245 </span>            :  * `Cce::pre_computation_tags` to their correct values for the current values
+<span class="lineNum">     246 </span>            :  * for the remaining (input) tags.
+<span class="lineNum">     247 </span>            :  *
+<span class="lineNum">     248 </span>            :  * The `BoundaryPrefix` template template parameter is to be passed a prefix
+<span class="lineNum">     249 </span>            :  * tag associated with the boundary value prefix used in the computation (e.g.
+<span class="lineNum">     250 </span>            :  * `Cce::Tags::BoundaryValue`), and allows easy switching between the
+<span class="lineNum">     251 </span>            :  * regularity-preserving version and standard CCE.
+<span class="lineNum">     252 </span>            :  */
+<span class="lineNum">     253 </span>            : template &lt;template &lt;typename&gt; class BoundaryPrefix, typename DataBoxType&gt;
+<span class="lineNum">     254 </span><span class="lineCov">          1 : void mutate_all_precompute_cce_dependencies(</span>
+<span class="lineNum">     255 </span>            :     const gsl::not_null&lt;DataBoxType*&gt; box) noexcept {
+<span class="lineNum">     256 </span>            :   tmpl::for_each&lt;pre_computation_tags&gt;([&amp;box](auto x) {
+<span class="lineNum">     257 </span>            :     using integration_independent_tag = typename decltype(x)::type;
+<span class="lineNum">     258 </span>            :     using mutation =
+<span class="lineNum">     259 </span>            :         PrecomputeCceDependencies&lt;BoundaryPrefix, integration_independent_tag&gt;;
+<span class="lineNum">     260 </span>            :     db::mutate_apply&lt;mutation&gt;(box);
+<span class="lineNum">     261 </span>            :   });
+<span class="lineNum">     262 </span>            : }
+<span class="lineNum">     263 </span>            : }  // namespace Cce
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../../../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.13</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

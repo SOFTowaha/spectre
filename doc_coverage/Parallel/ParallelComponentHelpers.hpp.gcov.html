@@ -1,0 +1,335 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - 5912ac2e49a80e6a27b3707c9a1e6ce5248b1b2a - Parallel/ParallelComponentHelpers.hpp</title>
+  <link rel="stylesheet" type="text/css" href="../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title"> SpECTRE Documentation Coverage Report</td></tr>
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../index.html">top level</a> - <a href="index.html">Parallel</a> - ParallelComponentHelpers.hpp</td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+             <td class="headerItem">Commit:</td>
+             <td class="headerValue"><a target="_blank" href="https://github.com/sxs-collaboration/spectre/commit/5912ac2e49a80e6a27b3707c9a1e6ce5248b1b2a">5912ac2e49a80e6a27b3707c9a1e6ce5248b1b2a</a></td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">8</td>
+            <td class="headerCovTableEntry">9</td>
+            <td class="headerCovTableEntryMed">88.9 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2019-12-02 22:01:08</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td class="headerItem">Legend:</td>
+            <td class="headerValueLeg">            Lines:
+            <span class="coverLegendCov">hit</span>
+            <span class="coverLegendNoCov">not hit</span>
+</td>
+            <td></td>
+          </tr>
+          <tr><td><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">          Line data    Source code</pre>
+<pre class="source">
+<span class="lineNum">       1 </span><span class="lineNoCov">          0 : // Distributed under the MIT License.</span>
+<span class="lineNum">       2 </span>            : // See LICENSE.txt for details.
+<span class="lineNum">       3 </span>            : 
+<span class="lineNum">       4 </span>            : #pragma once
+<span class="lineNum">       5 </span>            : 
+<span class="lineNum">       6 </span>            : #include &quot;Parallel/PhaseDependentActionList.hpp&quot;
+<span class="lineNum">       7 </span>            : #include &quot;Utilities/TMPL.hpp&quot;
+<span class="lineNum">       8 </span>            : #include &quot;Utilities/TaggedTuple.hpp&quot;
+<span class="lineNum">       9 </span>            : #include &quot;Utilities/TypeTraits.hpp&quot;
+<span class="lineNum">      10 </span>            : 
+<span class="lineNum">      11 </span>            : namespace Parallel {
+<span class="lineNum">      12 </span>            : namespace detail {
+<span class="lineNum">      13 </span>            : template &lt;class Action, class = cpp17::void_t&lt;&gt;&gt;
+<span class="lineNum">      14 </span>            : struct get_inbox_tags_from_action {
+<span class="lineNum">      15 </span>            :   using type = tmpl::list&lt;&gt;;
+<span class="lineNum">      16 </span>            : };
+<span class="lineNum">      17 </span>            : 
+<span class="lineNum">      18 </span>            : template &lt;class Action&gt;
+<span class="lineNum">      19 </span>            : struct get_inbox_tags_from_action&lt;Action,
+<span class="lineNum">      20 </span>            :                                   cpp17::void_t&lt;typename Action::inbox_tags&gt;&gt; {
+<span class="lineNum">      21 </span>            :   using type = typename Action::inbox_tags;
+<span class="lineNum">      22 </span>            : };
+<span class="lineNum">      23 </span>            : }  // namespace detail
+<span class="lineNum">      24 </span>            : 
+<span class="lineNum">      25 </span>            : /*!
+<span class="lineNum">      26 </span>            :  * \ingroup ParallelGroup
+<span class="lineNum">      27 </span>            :  * \brief Given a list of Actions, get a list of the unique inbox tags
+<span class="lineNum">      28 </span>            :  */
+<span class="lineNum">      29 </span>            : template &lt;class ActionsList&gt;
+<span class="lineNum">      30 </span><span class="lineCov">          1 : using get_inbox_tags = tmpl::remove_duplicates&lt;tmpl::join&lt;tmpl::transform&lt;</span>
+<span class="lineNum">      31 </span>            :     ActionsList, detail::get_inbox_tags_from_action&lt;tmpl::_1&gt;&gt;&gt;&gt;;
+<span class="lineNum">      32 </span>            : 
+<span class="lineNum">      33 </span>            : namespace detail {
+<span class="lineNum">      34 </span>            : // ParallelStruct is a metavariables, component, or action struct
+<span class="lineNum">      35 </span>            : template &lt;class ParallelStruct, class = cpp17::void_t&lt;&gt;&gt;
+<span class="lineNum">      36 </span>            : struct get_const_global_cache_tags_from_parallel_struct {
+<span class="lineNum">      37 </span>            :   using type = tmpl::list&lt;&gt;;
+<span class="lineNum">      38 </span>            : };
+<span class="lineNum">      39 </span>            : 
+<span class="lineNum">      40 </span>            : template &lt;class ParallelStruct&gt;
+<span class="lineNum">      41 </span>            : struct get_const_global_cache_tags_from_parallel_struct&lt;
+<span class="lineNum">      42 </span>            :     ParallelStruct,
+<span class="lineNum">      43 </span>            :     cpp17::void_t&lt;typename ParallelStruct::const_global_cache_tags&gt;&gt; {
+<span class="lineNum">      44 </span>            :   using type = typename ParallelStruct::const_global_cache_tags;
+<span class="lineNum">      45 </span>            : };
+<span class="lineNum">      46 </span>            : 
+<span class="lineNum">      47 </span>            : template &lt;class Component&gt;
+<span class="lineNum">      48 </span>            : struct get_const_global_cache_tags_from_pdal {
+<span class="lineNum">      49 </span>            :   using type = tmpl::join&lt;tmpl::transform&lt;
+<span class="lineNum">      50 </span>            :       tmpl::flatten&lt;tmpl::transform&lt;
+<span class="lineNum">      51 </span>            :           typename Component::phase_dependent_action_list,
+<span class="lineNum">      52 </span>            :           get_action_list_from_phase_dep_action_list&lt;tmpl::_1&gt;&gt;&gt;,
+<span class="lineNum">      53 </span>            :       get_const_global_cache_tags_from_parallel_struct&lt;tmpl::_1&gt;&gt;&gt;;
+<span class="lineNum">      54 </span>            : };
+<span class="lineNum">      55 </span>            : }  // namespace detail
+<span class="lineNum">      56 </span>            : 
+<span class="lineNum">      57 </span>            : /*!
+<span class="lineNum">      58 </span>            :  * \ingroup ParallelGroup
+<span class="lineNum">      59 </span>            :  * \brief Given a list of Actions, get a list of the unique tags specified in
+<span class="lineNum">      60 </span>            :  * the actions' `const_global_cache_tags` aliases.
+<span class="lineNum">      61 </span>            :  */
+<span class="lineNum">      62 </span>            : template &lt;class ActionsList&gt;
+<span class="lineNum">      63 </span><span class="lineCov">          1 : using get_const_global_cache_tags_from_actions =</span>
+<span class="lineNum">      64 </span>            :     tmpl::remove_duplicates&lt;tmpl::join&lt;tmpl::transform&lt;
+<span class="lineNum">      65 </span>            :         ActionsList,
+<span class="lineNum">      66 </span>            :         detail::get_const_global_cache_tags_from_parallel_struct&lt;tmpl::_1&gt;&gt;&gt;&gt;;
+<span class="lineNum">      67 </span>            : 
+<span class="lineNum">      68 </span>            : /*!
+<span class="lineNum">      69 </span>            :  * \ingroup ParallelGroup
+<span class="lineNum">      70 </span>            :  * \brief Given the metavariables, get a list of the unique tags that will
+<span class="lineNum">      71 </span>            :  * specify the items in the ConstGlobalCache.
+<span class="lineNum">      72 </span>            :  */
+<span class="lineNum">      73 </span>            : template &lt;typename Metavariables&gt;
+<span class="lineNum">      74 </span><span class="lineCov">          1 : using get_const_global_cache_tags =</span>
+<span class="lineNum">      75 </span>            :     tmpl::remove_duplicates&lt;tmpl::flatten&lt;tmpl::list&lt;
+<span class="lineNum">      76 </span>            :         typename detail::get_const_global_cache_tags_from_parallel_struct&lt;
+<span class="lineNum">      77 </span>            :             Metavariables&gt;::type,
+<span class="lineNum">      78 </span>            :         tmpl::transform&lt;
+<span class="lineNum">      79 </span>            :             typename Metavariables::component_list,
+<span class="lineNum">      80 </span>            :             detail::get_const_global_cache_tags_from_parallel_struct&lt;tmpl::_1&gt;&gt;,
+<span class="lineNum">      81 </span>            :         tmpl::transform&lt;
+<span class="lineNum">      82 </span>            :             typename Metavariables::component_list,
+<span class="lineNum">      83 </span>            :             detail::get_const_global_cache_tags_from_pdal&lt;tmpl::_1&gt;&gt;&gt;&gt;&gt;;
+<span class="lineNum">      84 </span>            : 
+<span class="lineNum">      85 </span>            : namespace detail {
+<span class="lineNum">      86 </span>            : template &lt;typename PhaseAction&gt;
+<span class="lineNum">      87 </span>            : struct get_initialization_actions_list {
+<span class="lineNum">      88 </span>            :   using type = tmpl::list&lt;&gt;;
+<span class="lineNum">      89 </span>            : };
+<span class="lineNum">      90 </span>            : 
+<span class="lineNum">      91 </span>            : template &lt;typename PhaseType, typename InitializationActionsList&gt;
+<span class="lineNum">      92 </span>            : struct get_initialization_actions_list&lt;Parallel::PhaseActions&lt;
+<span class="lineNum">      93 </span>            :     PhaseType, PhaseType::Initialization, InitializationActionsList&gt;&gt; {
+<span class="lineNum">      94 </span>            :   using type = InitializationActionsList;
+<span class="lineNum">      95 </span>            : };
+<span class="lineNum">      96 </span>            : }  // namespace detail
+<span class="lineNum">      97 </span>            : 
+<span class="lineNum">      98 </span>            : /// \ingroup ParallelGroup
+<span class="lineNum">      99 </span>            : /// \brief Given the phase dependent action list, return the list of
+<span class="lineNum">     100 </span>            : /// actions in the Initialization phase (or an empty list if the Initialization
+<span class="lineNum">     101 </span>            : /// phase is absent from the phase dependent action list)
+<span class="lineNum">     102 </span>            : template &lt;typename PhaseDepActionList&gt;
+<span class="lineNum">     103 </span><span class="lineCov">          1 : using get_initialization_actions_list = tmpl::flatten&lt;tmpl::transform&lt;</span>
+<span class="lineNum">     104 </span>            :     PhaseDepActionList, detail::get_initialization_actions_list&lt;tmpl::_1&gt;&gt;&gt;;
+<span class="lineNum">     105 </span>            : 
+<span class="lineNum">     106 </span>            : namespace detail {
+<span class="lineNum">     107 </span>            : template &lt;typename Action, typename = cpp17::void_t&lt;&gt;&gt;
+<span class="lineNum">     108 </span>            : struct get_initialization_tags_from_action {
+<span class="lineNum">     109 </span>            :   using type = tmpl::list&lt;&gt;;
+<span class="lineNum">     110 </span>            : };
+<span class="lineNum">     111 </span>            : 
+<span class="lineNum">     112 </span>            : template &lt;typename Action&gt;
+<span class="lineNum">     113 </span>            : struct get_initialization_tags_from_action&lt;
+<span class="lineNum">     114 </span>            :     Action, cpp17::void_t&lt;typename Action::initialization_tags&gt;&gt; {
+<span class="lineNum">     115 </span>            :   using type = typename Action::initialization_tags;
+<span class="lineNum">     116 </span>            : };
+<span class="lineNum">     117 </span>            : 
+<span class="lineNum">     118 </span>            : template &lt;typename Action, typename = cpp17::void_t&lt;&gt;&gt;
+<span class="lineNum">     119 </span>            : struct get_initialization_tags_to_keep_from_action {
+<span class="lineNum">     120 </span>            :   using type = tmpl::list&lt;&gt;;
+<span class="lineNum">     121 </span>            : };
+<span class="lineNum">     122 </span>            : 
+<span class="lineNum">     123 </span>            : template &lt;typename Action&gt;
+<span class="lineNum">     124 </span>            : struct get_initialization_tags_to_keep_from_action&lt;
+<span class="lineNum">     125 </span>            :     Action, cpp17::void_t&lt;typename Action::initialization_tags_to_keep&gt;&gt; {
+<span class="lineNum">     126 </span>            :   using type = typename Action::initialization_tags_to_keep;
+<span class="lineNum">     127 </span>            : };
+<span class="lineNum">     128 </span>            : }  // namespace detail
+<span class="lineNum">     129 </span>            : 
+<span class="lineNum">     130 </span>            : /// \ingroup ParallelGroup
+<span class="lineNum">     131 </span>            : /// \brief Given a list of initialization actions, and possibly a list of tags
+<span class="lineNum">     132 </span>            : /// needed for allocation of an array component, returns a list of the
+<span class="lineNum">     133 </span>            : /// unique initialization_tags for all the actions (and the allocate function).
+<span class="lineNum">     134 </span>            : template &lt;typename InitializationActionsList,
+<span class="lineNum">     135 </span>            :           typename AllocationTagsList = tmpl::list&lt;&gt;&gt;
+<span class="lineNum">     136 </span><span class="lineCov">          1 : using get_initialization_tags = tmpl::remove_duplicates&lt;tmpl::flatten&lt;</span>
+<span class="lineNum">     137 </span>            :     tmpl::list&lt;AllocationTagsList,
+<span class="lineNum">     138 </span>            :                tmpl::transform&lt;
+<span class="lineNum">     139 </span>            :                    InitializationActionsList,
+<span class="lineNum">     140 </span>            :                    detail::get_initialization_tags_from_action&lt;tmpl::_1&gt;&gt;&gt;&gt;&gt;;
+<span class="lineNum">     141 </span>            : 
+<span class="lineNum">     142 </span>            : /// \ingroup ParallelGroup
+<span class="lineNum">     143 </span>            : /// \brief Given a list of initialization actions, returns a list of
+<span class="lineNum">     144 </span>            : /// the unique initialization_tags_to_keep for all the actions.  These
+<span class="lineNum">     145 </span>            : /// are the tags that are not removed from the DataBox after
+<span class="lineNum">     146 </span>            : /// initialization.
+<span class="lineNum">     147 </span>            : template &lt;typename InitializationActionsList&gt;
+<span class="lineNum">     148 </span><span class="lineCov">          1 : using get_initialization_tags_to_keep =</span>
+<span class="lineNum">     149 </span>            :     tmpl::remove_duplicates&lt;tmpl::flatten&lt;tmpl::transform&lt;
+<span class="lineNum">     150 </span>            :         InitializationActionsList,
+<span class="lineNum">     151 </span>            :         detail::get_initialization_tags_to_keep_from_action&lt;tmpl::_1&gt;&gt;&gt;&gt;;
+<span class="lineNum">     152 </span>            : 
+<span class="lineNum">     153 </span>            : namespace detail {
+<span class="lineNum">     154 </span>            : template &lt;typename InitializationTag&gt;
+<span class="lineNum">     155 </span>            : struct get_option_tags_from_initialization_tag {
+<span class="lineNum">     156 </span>            :   using type = typename InitializationTag::option_tags;
+<span class="lineNum">     157 </span>            : };
+<span class="lineNum">     158 </span>            : }  // namespace detail
+<span class="lineNum">     159 </span>            : 
+<span class="lineNum">     160 </span>            : /// \ingroup ParallelGroup
+<span class="lineNum">     161 </span>            : /// \brief Given a list of initialization tags, returns a list of the
+<span class="lineNum">     162 </span>            : /// unique option tags required to construct them.
+<span class="lineNum">     163 </span>            : template &lt;typename InitializationTagsList&gt;
+<span class="lineNum">     164 </span><span class="lineCov">          1 : using get_option_tags = tmpl::remove_duplicates&lt;tmpl::flatten&lt;tmpl::transform&lt;</span>
+<span class="lineNum">     165 </span>            :     InitializationTagsList,
+<span class="lineNum">     166 </span>            :     detail::get_option_tags_from_initialization_tag&lt;tmpl::_1&gt;&gt;&gt;&gt;;
+<span class="lineNum">     167 </span>            : 
+<span class="lineNum">     168 </span>            : namespace detail {
+<span class="lineNum">     169 </span>            : template &lt;typename Metavariables, typename Tag, typename... OptionTags,
+<span class="lineNum">     170 </span>            :           typename... OptionTagsForTag&gt;
+<span class="lineNum">     171 </span>            : typename Tag::type create_initialization_item_from_options(
+<span class="lineNum">     172 </span>            :     const tuples::TaggedTuple&lt;OptionTags...&gt;&amp; options,
+<span class="lineNum">     173 </span>            :     tmpl::list&lt;OptionTagsForTag...&gt; /*meta*/) noexcept {
+<span class="lineNum">     174 </span>            :   return Tag::template create_from_options&lt;Metavariables&gt;(
+<span class="lineNum">     175 </span>            :       tuples::get&lt;OptionTagsForTag&gt;(options)...);
+<span class="lineNum">     176 </span>            : }
+<span class="lineNum">     177 </span>            : }  // namespace detail
+<span class="lineNum">     178 </span>            : 
+<span class="lineNum">     179 </span>            : /// \ingroup ParallelGroup
+<span class="lineNum">     180 </span>            : /// \brief Given a list of tags and a tagged tuple containing items
+<span class="lineNum">     181 </span>            : /// created from input options, return a tagged tuple of items constructed
+<span class="lineNum">     182 </span>            : /// by calls to create_from_options for each tag in the list.
+<span class="lineNum">     183 </span>            : template &lt;typename Metavariables, typename... Tags, typename... OptionTags&gt;
+<span class="lineNum">     184 </span><span class="lineCov">          1 : tuples::TaggedTuple&lt;Tags...&gt; create_from_options(</span>
+<span class="lineNum">     185 </span>            :     const tuples::TaggedTuple&lt;OptionTags...&gt;&amp; options,
+<span class="lineNum">     186 </span>            :     tmpl::list&lt;Tags...&gt; /*meta*/) noexcept {
+<span class="lineNum">     187 </span>            :   return {detail::create_initialization_item_from_options&lt;Metavariables, Tags&gt;(
+<span class="lineNum">     188 </span>            :       options, typename Tags::option_tags{})...};
+<span class="lineNum">     189 </span>            : }
+<span class="lineNum">     190 </span>            : 
+<span class="lineNum">     191 </span>            : /// \cond
+<span class="lineNum">     192 </span>            : namespace Algorithms {
+<span class="lineNum">     193 </span>            : struct Singleton;
+<span class="lineNum">     194 </span>            : struct Array;
+<span class="lineNum">     195 </span>            : struct Group;
+<span class="lineNum">     196 </span>            : struct Nodegroup;
+<span class="lineNum">     197 </span>            : }  // namespace Algorithms
+<span class="lineNum">     198 </span>            : 
+<span class="lineNum">     199 </span>            : template &lt;class ChareType&gt;
+<span class="lineNum">     200 </span>            : struct get_array_index;
+<span class="lineNum">     201 </span>            : 
+<span class="lineNum">     202 </span>            : template &lt;&gt;
+<span class="lineNum">     203 </span>            : struct get_array_index&lt;Parallel::Algorithms::Singleton&gt; {
+<span class="lineNum">     204 </span>            :   template &lt;class ParallelComponent&gt;
+<span class="lineNum">     205 </span>            :   using f = cpp17::void_type;
+<span class="lineNum">     206 </span>            : };
+<span class="lineNum">     207 </span>            : 
+<span class="lineNum">     208 </span>            : template &lt;&gt;
+<span class="lineNum">     209 </span>            : struct get_array_index&lt;Parallel::Algorithms::Array&gt; {
+<span class="lineNum">     210 </span>            :   template &lt;class ParallelComponent&gt;
+<span class="lineNum">     211 </span>            :   using f = typename ParallelComponent::array_index;
+<span class="lineNum">     212 </span>            : };
+<span class="lineNum">     213 </span>            : 
+<span class="lineNum">     214 </span>            : template &lt;&gt;
+<span class="lineNum">     215 </span>            : struct get_array_index&lt;Parallel::Algorithms::Group&gt; {
+<span class="lineNum">     216 </span>            :   template &lt;class ParallelComponent&gt;
+<span class="lineNum">     217 </span>            :   using f = int;
+<span class="lineNum">     218 </span>            : };
+<span class="lineNum">     219 </span>            : 
+<span class="lineNum">     220 </span>            : template &lt;&gt;
+<span class="lineNum">     221 </span>            : struct get_array_index&lt;Parallel::Algorithms::Nodegroup&gt; {
+<span class="lineNum">     222 </span>            :   template &lt;class ParallelComponent&gt;
+<span class="lineNum">     223 </span>            :   using f = int;
+<span class="lineNum">     224 </span>            : };
+<span class="lineNum">     225 </span>            : 
+<span class="lineNum">     226 </span>            : template &lt;typename ParallelComponent&gt;
+<span class="lineNum">     227 </span>            : using proxy_from_parallel_component =
+<span class="lineNum">     228 </span>            :     typename ParallelComponent::chare_type::template cproxy&lt;
+<span class="lineNum">     229 </span>            :         ParallelComponent,
+<span class="lineNum">     230 </span>            :         typename get_array_index&lt;typename ParallelComponent::chare_type&gt;::
+<span class="lineNum">     231 </span>            :             template f&lt;ParallelComponent&gt;&gt;;
+<span class="lineNum">     232 </span>            : 
+<span class="lineNum">     233 </span>            : template &lt;typename ParallelComponent&gt;
+<span class="lineNum">     234 </span>            : using index_from_parallel_component =
+<span class="lineNum">     235 </span>            :     typename ParallelComponent::chare_type::template ckindex&lt;
+<span class="lineNum">     236 </span>            :         ParallelComponent,
+<span class="lineNum">     237 </span>            :         typename get_array_index&lt;typename ParallelComponent::chare_type&gt;::
+<span class="lineNum">     238 </span>            :             template f&lt;ParallelComponent&gt;&gt;;
+<span class="lineNum">     239 </span>            : 
+<span class="lineNum">     240 </span>            : template &lt;class ParallelComponent, class... Args&gt;
+<span class="lineNum">     241 </span>            : struct charm_types_with_parameters {
+<span class="lineNum">     242 </span>            :   using cproxy =
+<span class="lineNum">     243 </span>            :       typename ParallelComponent::chare_type::template cproxy&lt;ParallelComponent,
+<span class="lineNum">     244 </span>            :                                                               Args...&gt;;
+<span class="lineNum">     245 </span>            :   using cbase =
+<span class="lineNum">     246 </span>            :       typename ParallelComponent::chare_type::template cbase&lt;ParallelComponent,
+<span class="lineNum">     247 </span>            :                                                              Args...&gt;;
+<span class="lineNum">     248 </span>            :   using algorithm =
+<span class="lineNum">     249 </span>            :       typename ParallelComponent::chare_type::template algorithm_type&lt;
+<span class="lineNum">     250 </span>            :           ParallelComponent, Args...&gt;;
+<span class="lineNum">     251 </span>            :   using ckindex = typename ParallelComponent::chare_type::template ckindex&lt;
+<span class="lineNum">     252 </span>            :       ParallelComponent, Args...&gt;;
+<span class="lineNum">     253 </span>            : };
+<span class="lineNum">     254 </span>            : /// \endcond
+<span class="lineNum">     255 </span>            : }  // namespace Parallel
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.13</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

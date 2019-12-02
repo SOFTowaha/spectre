@@ -1,0 +1,164 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - 5912ac2e49a80e6a27b3707c9a1e6ce5248b1b2a - NumericalAlgorithms/LinearSolver/Lapack.hpp</title>
+  <link rel="stylesheet" type="text/css" href="../../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title"> SpECTRE Documentation Coverage Report</td></tr>
+    <tr><td class="ruler"><img src="../../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../../index.html">top level</a> - <a href="index.html">NumericalAlgorithms/LinearSolver</a> - Lapack.hpp</td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+             <td class="headerItem">Commit:</td>
+             <td class="headerValue"><a target="_blank" href="https://github.com/sxs-collaboration/spectre/commit/5912ac2e49a80e6a27b3707c9a1e6ce5248b1b2a">5912ac2e49a80e6a27b3707c9a1e6ce5248b1b2a</a></td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">6</td>
+            <td class="headerCovTableEntry">7</td>
+            <td class="headerCovTableEntryMed">85.7 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2019-12-02 22:01:08</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td class="headerItem">Legend:</td>
+            <td class="headerValueLeg">            Lines:
+            <span class="coverLegendCov">hit</span>
+            <span class="coverLegendNoCov">not hit</span>
+</td>
+            <td></td>
+          </tr>
+          <tr><td><img src="../../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">          Line data    Source code</pre>
+<pre class="source">
+<span class="lineNum">       1 </span><span class="lineNoCov">          0 : // Distributed under the MIT License.</span>
+<span class="lineNum">       2 </span>            : // See LICENSE.txt for details.
+<span class="lineNum">       3 </span>            : 
+<span class="lineNum">       4 </span>            : #pragma once
+<span class="lineNum">       5 </span>            : 
+<span class="lineNum">       6 </span>            : #include &quot;Utilities/Gsl.hpp&quot;
+<span class="lineNum">       7 </span>            : 
+<span class="lineNum">       8 </span>            : /// \cond
+<span class="lineNum">       9 </span>            : class DataVector;
+<span class="lineNum">      10 </span>            : class Matrix;
+<span class="lineNum">      11 </span>            : /// \endcond
+<span class="lineNum">      12 </span>            : 
+<span class="lineNum">      13 </span>            : /// LAPACK wrappers
+<span class="lineNum">      14 </span>            : namespace lapack {
+<span class="lineNum">      15 </span>            : // @{
+<span class="lineNum">      16 </span>            : /*!
+<span class="lineNum">      17 </span>            :  * \ingroup LinearSolverGroup
+<span class="lineNum">      18 </span>            :  * \brief Wrapper for LAPACK dgesv, which solves the general linear equation
+<span class="lineNum">      19 </span>            :  * \f$A x = b\f$ by LUP (Lower-triangular, upper-triangular, and permutation)
+<span class="lineNum">      20 </span>            :  * decomposition.
+<span class="lineNum">      21 </span>            :  * \details Several interfaces are provided with combinations of
+<span class="lineNum">      22 </span>            :  * input parameters due to the versatility of the LAPACK utility.
+<span class="lineNum">      23 </span>            :  * - `rhs_in_solution_out` or `solution` : If the `rhs` `DataVector` is not
+<span class="lineNum">      24 </span>            :  * separately supplied, this single pass-by-pointer `DataVector` acts as the
+<span class="lineNum">      25 </span>            :  * input \f$ b\f$, and is overwritten with the solution \f$x\f$; in this case
+<span class="lineNum">      26 </span>            :  * `rhs_in_solution_out` must be sufficiently large to contain the solution. If
+<span class="lineNum">      27 </span>            :  * `rhs` is separately supplied, `solution` will contain \f$x\f$ at the end of
+<span class="lineNum">      28 </span>            :  * the algorithm, and must be sufficiently large to contain the solution.
+<span class="lineNum">      29 </span>            :  * - `rhs` (optional) : An input `DataVector` representing \f$b\f$ that is not
+<span class="lineNum">      30 </span>            :  * overwritten.
+<span class="lineNum">      31 </span>            :  * - `matrix_operator`: The `Matrix` \f$A\f$. If passed by pointer, this matrix
+<span class="lineNum">      32 </span>            :  * will be 'destroyed' and overwritten with LU decomposition information.
+<span class="lineNum">      33 </span>            :  * Optionally, a `pivots` vector may be passed by pointer so that the full LUP
+<span class="lineNum">      34 </span>            :  * decomposition information can be recovered from the LAPACK output. If passed
+<span class="lineNum">      35 </span>            :  * by const reference, the wrapper will make a copy so that LAPACK does not
+<span class="lineNum">      36 </span>            :  * overwrite the supplied matrix.
+<span class="lineNum">      37 </span>            :  * - `pivots` (optional) : a `std::vector&lt;int&gt;`, passed by pointer, which will
+<span class="lineNum">      38 </span>            :  * contain the permutation information necessary to reassemble the full matrix
+<span class="lineNum">      39 </span>            :  * information if LAPACK is permitted to modify the input matrix in-place.
+<span class="lineNum">      40 </span>            :  * - `number_of_rhs` : The number of columns of \f$x\f$ and \f$b\f$. This is
+<span class="lineNum">      41 </span>            :  * thought of as the 'number of right-hand-sides' to be solved for. In most
+<span class="lineNum">      42 </span>            :  * cases, that additional dimension can be inferred from the dimensionality of
+<span class="lineNum">      43 </span>            :  * the matrix and the input vector(s), which occurs if `number_of_rhs` is set to
+<span class="lineNum">      44 </span>            :  * 0 (default). If the provided `DataVector` is an inappropriate size for that
+<span class="lineNum">      45 </span>            :  * inference (i.e. is not a multiple of the largest dimension of the matrix), or
+<span class="lineNum">      46 </span>            :  * if you only want to solve for the first `number_of_rhs` columns, the
+<span class="lineNum">      47 </span>            :  * parameter `number_of_rhs` must be supplied.
+<span class="lineNum">      48 </span>            :  *
+<span class="lineNum">      49 </span>            :  * The function return `int` is the value provided by the `INFO` field of the
+<span class="lineNum">      50 </span>            :  * LAPACK call. It is 0 for a successful linear solve, and nonzero values code
+<span class="lineNum">      51 </span>            :  * for types of failures of the algorithm.
+<span class="lineNum">      52 </span>            :  * See LAPACK documentation for further details about `dgesv`:
+<span class="lineNum">      53 </span>            :  * http://www.netlib.org/lapack/
+<span class="lineNum">      54 </span>            :  */
+<span class="lineNum">      55 </span><span class="lineCov">          1 : int general_matrix_linear_solve(gsl::not_null&lt;DataVector*&gt; rhs_in_solution_out,</span>
+<span class="lineNum">      56 </span>            :                                 gsl::not_null&lt;Matrix*&gt; matrix_operator,
+<span class="lineNum">      57 </span>            :                                 int number_of_rhs = 0) noexcept;
+<span class="lineNum">      58 </span>            : 
+<span class="lineNum">      59 </span><span class="lineCov">          1 : int general_matrix_linear_solve(gsl::not_null&lt;DataVector*&gt; rhs_in_solution_out,</span>
+<span class="lineNum">      60 </span>            :                                 gsl::not_null&lt;std::vector&lt;int&gt;*&gt; pivots,
+<span class="lineNum">      61 </span>            :                                 gsl::not_null&lt;Matrix*&gt; matrix_operator,
+<span class="lineNum">      62 </span>            :                                 int number_of_rhs = 0) noexcept;
+<span class="lineNum">      63 </span>            : 
+<span class="lineNum">      64 </span><span class="lineCov">          1 : int general_matrix_linear_solve(gsl::not_null&lt;DataVector*&gt; solution,</span>
+<span class="lineNum">      65 </span>            :                                 gsl::not_null&lt;Matrix*&gt; matrix_operator,
+<span class="lineNum">      66 </span>            :                                 const DataVector&amp; rhs,
+<span class="lineNum">      67 </span>            :                                 int number_of_rhs = 0) noexcept;
+<span class="lineNum">      68 </span>            : 
+<span class="lineNum">      69 </span><span class="lineCov">          1 : int general_matrix_linear_solve(gsl::not_null&lt;DataVector*&gt; solution,</span>
+<span class="lineNum">      70 </span>            :                                 gsl::not_null&lt;std::vector&lt;int&gt;*&gt; pivots,
+<span class="lineNum">      71 </span>            :                                 gsl::not_null&lt;Matrix*&gt; matrix_operator,
+<span class="lineNum">      72 </span>            :                                 const DataVector&amp; rhs,
+<span class="lineNum">      73 </span>            :                                 int number_of_rhs = 0) noexcept;
+<span class="lineNum">      74 </span>            : 
+<span class="lineNum">      75 </span><span class="lineCov">          1 : int general_matrix_linear_solve(gsl::not_null&lt;DataVector*&gt; rhs_in_solution_out,</span>
+<span class="lineNum">      76 </span>            :                                 const Matrix&amp; matrix_operator,
+<span class="lineNum">      77 </span>            :                                 int number_of_rhs = 0) noexcept;
+<span class="lineNum">      78 </span>            : 
+<span class="lineNum">      79 </span><span class="lineCov">          1 : int general_matrix_linear_solve(gsl::not_null&lt;DataVector*&gt; solution,</span>
+<span class="lineNum">      80 </span>            :                                 const Matrix&amp; matrix_operator,
+<span class="lineNum">      81 </span>            :                                 const DataVector&amp; rhs,
+<span class="lineNum">      82 </span>            :                                 int number_of_rhs = 0) noexcept;
+<span class="lineNum">      83 </span>            : // @}
+<span class="lineNum">      84 </span>            : }  // namespace lapack
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.13</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

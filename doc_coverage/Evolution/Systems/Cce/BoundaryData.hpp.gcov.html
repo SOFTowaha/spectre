@@ -1,0 +1,304 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - 5912ac2e49a80e6a27b3707c9a1e6ce5248b1b2a - Evolution/Systems/Cce/BoundaryData.hpp</title>
+  <link rel="stylesheet" type="text/css" href="../../../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title"> SpECTRE Documentation Coverage Report</td></tr>
+    <tr><td class="ruler"><img src="../../../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../../../index.html">top level</a> - <a href="index.html">Evolution/Systems/Cce</a> - BoundaryData.hpp</td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+             <td class="headerItem">Commit:</td>
+             <td class="headerValue"><a target="_blank" href="https://github.com/sxs-collaboration/spectre/commit/5912ac2e49a80e6a27b3707c9a1e6ce5248b1b2a">5912ac2e49a80e6a27b3707c9a1e6ce5248b1b2a</a></td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">8</td>
+            <td class="headerCovTableEntry">11</td>
+            <td class="headerCovTableEntryLo">72.7 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2019-12-02 22:01:08</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td class="headerItem">Legend:</td>
+            <td class="headerValueLeg">            Lines:
+            <span class="coverLegendCov">hit</span>
+            <span class="coverLegendNoCov">not hit</span>
+</td>
+            <td></td>
+          </tr>
+          <tr><td><img src="../../../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../../../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">          Line data    Source code</pre>
+<pre class="source">
+<span class="lineNum">       1 </span><span class="lineNoCov">          0 : // Distributed under the MIT License.</span>
+<span class="lineNum">       2 </span>            : // See LICENSE.txt for details.
+<span class="lineNum">       3 </span>            : 
+<span class="lineNum">       4 </span>            : #pragma once
+<span class="lineNum">       5 </span>            : 
+<span class="lineNum">       6 </span>            : #include &lt;cstddef&gt;
+<span class="lineNum">       7 </span>            : 
+<span class="lineNum">       8 </span>            : #include &quot;DataStructures/DataVector.hpp&quot;
+<span class="lineNum">       9 </span>            : #include &quot;DataStructures/SpinWeighted.hpp&quot;
+<span class="lineNum">      10 </span>            : #include &quot;DataStructures/Tensor/TypeAliases.hpp&quot;
+<span class="lineNum">      11 </span>            : #include &quot;Evolution/Systems/Cce/BoundaryDataTags.hpp&quot;
+<span class="lineNum">      12 </span>            : 
+<span class="lineNum">      13 </span>            : /// \cond
+<span class="lineNum">      14 </span>            : class DataVector;
+<span class="lineNum">      15 </span>            : class ComplexDataVector;
+<span class="lineNum">      16 </span>            : /// \endcond
+<span class="lineNum">      17 </span>            : 
+<span class="lineNum">      18 </span>            : namespace Cce {
+<span class="lineNum">      19 </span>            : // tensor aliases for brevity
+<span class="lineNum">      20 </span><span class="lineNoCov">          0 : using jacobian_tensor = Tensor&lt;</span>
+<span class="lineNum">      21 </span>            :     DataVector, tmpl::integral_list&lt;std::int32_t, 2, 1&gt;,
+<span class="lineNum">      22 </span>            :     index_list&lt;SpatialIndex&lt;3, UpLo::Lo, ::Frame::Spherical&lt;::Frame::Inertial&gt;&gt;,
+<span class="lineNum">      23 </span>            :                SpatialIndex&lt;3, UpLo::Up, ::Frame::Inertial&gt;&gt;&gt;;
+<span class="lineNum">      24 </span>            : 
+<span class="lineNum">      25 </span><span class="lineNoCov">          0 : using inverse_jacobian_tensor =</span>
+<span class="lineNum">      26 </span>            :     Tensor&lt;DataVector, tmpl::integral_list&lt;std::int32_t, 2, 1&gt;,
+<span class="lineNum">      27 </span>            :            index_list&lt;SpatialIndex&lt;3, UpLo::Lo, ::Frame::Inertial&gt;,
+<span class="lineNum">      28 </span>            :                       SpatialIndex&lt;3, UpLo::Up,
+<span class="lineNum">      29 </span>            :                                    ::Frame::Spherical&lt;::Frame::Inertial&gt;&gt;&gt;&gt;;
+<span class="lineNum">      30 </span>            : 
+<span class="lineNum">      31 </span>            : /*!
+<span class="lineNum">      32 </span>            :  * \brief Constructs the collocation values for \f$\cos(\phi)\f$,
+<span class="lineNum">      33 </span>            :  * \f$\cos(\theta)\f$, \f$\sin(\phi)\f$, and \f$\sin(\theta)\f$, returned by
+<span class="lineNum">      34 </span>            :  * `not_null` pointer in that order.
+<span class="lineNum">      35 </span>            :  *
+<span class="lineNum">      36 </span>            :  * \details These are needed for coordinate transformations from the input
+<span class="lineNum">      37 </span>            :  * Cartesian-like coordinates.
+<span class="lineNum">      38 </span>            :  */
+<span class="lineNum">      39 </span><span class="lineCov">          1 : void trigonometric_functions_on_swsh_collocation(</span>
+<span class="lineNum">      40 </span>            :     gsl::not_null&lt;Scalar&lt;DataVector&gt;*&gt; cos_phi,
+<span class="lineNum">      41 </span>            :     gsl::not_null&lt;Scalar&lt;DataVector&gt;*&gt; cos_theta,
+<span class="lineNum">      42 </span>            :     gsl::not_null&lt;Scalar&lt;DataVector&gt;*&gt; sin_phi,
+<span class="lineNum">      43 </span>            :     gsl::not_null&lt;Scalar&lt;DataVector&gt;*&gt; sin_theta, size_t l_max) noexcept;
+<span class="lineNum">      44 </span>            : 
+<span class="lineNum">      45 </span>            : /*!
+<span class="lineNum">      46 </span>            :  * \brief Creates both the Jacobian and inverse Jacobian between Cartesian and
+<span class="lineNum">      47 </span>            :  * spherical coordinates, and the coordinates themselves
+<span class="lineNum">      48 </span>            :  *
+<span class="lineNum">      49 </span>            :  * \details The `cartesian_to_spherical_jacobian` is
+<span class="lineNum">      50 </span>            :  * \f$dx^i/d\tilde{x}^{\tilde j}\f$,
+<span class="lineNum">      51 </span>            :  * where the Cartesian components are in order \f$x^i = \{x, y, z\}\f$
+<span class="lineNum">      52 </span>            :  * and the spherical coordinates are
+<span class="lineNum">      53 </span>            :  * \f$\tilde{x}^{\tilde j} = \{r, \theta, \phi\}\f$.
+<span class="lineNum">      54 </span>            :  * The Cartesian coordinates given are the standard unit sphere coordinates:
+<span class="lineNum">      55 </span>            :  *
+<span class="lineNum">      56 </span>            :  * \f{align*}{
+<span class="lineNum">      57 </span>            :  *  x &amp;= \cos(\phi) \sin(\theta)\\
+<span class="lineNum">      58 </span>            :  *  y &amp;= \sin(\phi) \sin(\theta)\\
+<span class="lineNum">      59 </span>            :  *  z &amp;= \cos(\theta)
+<span class="lineNum">      60 </span>            :  * \f}
+<span class="lineNum">      61 </span>            :  *
+<span class="lineNum">      62 </span>            :  * \note These Jacobians are adjusted to improve regularity near the pole, in
+<span class="lineNum">      63 </span>            :  * particular the \f$\partial \phi / \partial x^i\f$ components have been scaled
+<span class="lineNum">      64 </span>            :  * by \f$\sin \theta\f$ (omitting a \f$1/\sin(\theta)\f$) and the
+<span class="lineNum">      65 </span>            :  * \f$\partial x^i/\partial \phi\f$ components have been scaled by
+<span class="lineNum">      66 </span>            :  * \f$1/\sin(\theta)\f$ (omitting a \f$\sin(\theta)\f$). The reason is that in
+<span class="lineNum">      67 </span>            :  * most careful calculations, these problematic sin factors can actually be
+<span class="lineNum">      68 </span>            :  * omitted because they cancel. In cases where they are actually required, they
+<span class="lineNum">      69 </span>            :  * must be put in by hand.
+<span class="lineNum">      70 </span>            :  */
+<span class="lineNum">      71 </span><span class="lineCov">          1 : void cartesian_to_spherical_coordinates_and_jacobians(</span>
+<span class="lineNum">      72 </span>            :     gsl::not_null&lt;tnsr::I&lt;DataVector, 3&gt;*&gt; unit_cartesian_coords,
+<span class="lineNum">      73 </span>            :     gsl::not_null&lt;jacobian_tensor*&gt; cartesian_to_spherical_jacobian,
+<span class="lineNum">      74 </span>            :     gsl::not_null&lt;inverse_jacobian_tensor*&gt;
+<span class="lineNum">      75 </span>            :         inverse_cartesian_to_spherical_jacobian,
+<span class="lineNum">      76 </span>            :     const Scalar&lt;DataVector&gt;&amp; cos_phi, const Scalar&lt;DataVector&gt;&amp; cos_theta,
+<span class="lineNum">      77 </span>            :     const Scalar&lt;DataVector&gt;&amp; sin_phi, const Scalar&lt;DataVector&gt;&amp; sin_theta,
+<span class="lineNum">      78 </span>            :     double extraction_radius) noexcept;
+<span class="lineNum">      79 </span>            : 
+<span class="lineNum">      80 </span>            : /*!
+<span class="lineNum">      81 </span>            :  * \brief Computes the spacetime metric and its first derivative in the
+<span class="lineNum">      82 </span>            :  * intermediate radial null coordinates
+<span class="lineNum">      83 </span>            :  *
+<span class="lineNum">      84 </span>            :  * \details These components are obtained by the steps in
+<span class="lineNum">      85 </span>            :  * Section II-A of \cite Barkett2019uae, which is based on the computation from
+<span class="lineNum">      86 </span>            :  * Section 4.3 of \cite Bishop1998uk. The most direct comparison is to be made
+<span class="lineNum">      87 </span>            :  * with equation (31) of \cite Barkett2019uae, which gives the null metric
+<span class="lineNum">      88 </span>            :  * components explicitly. The time derivative is then (using notation from
+<span class="lineNum">      89 </span>            :  * equation (31)  of \cite Barkett2019uae):
+<span class="lineNum">      90 </span>            :  *
+<span class="lineNum">      91 </span>            :  * \f{align}{
+<span class="lineNum">      92 </span>            :  * \partial_{\bar u} g_{\bar u \bar \lambda} =
+<span class="lineNum">      93 </span>            :  * \partial_{\bar u} g_{\bar \lambda \bar \lambda} =
+<span class="lineNum">      94 </span>            :  * \partial_{\bar u} g_{\bar \lambda \bar A} &amp;= 0 \\
+<span class="lineNum">      95 </span>            :  * \partial_{\bar u} g_{\bar u \bar u} &amp;=
+<span class="lineNum">      96 </span>            :  * \partial_{\breve t} g_{\breve t \breve t} \\
+<span class="lineNum">      97 </span>            :  * \partial_{\bar u} g_{\bar u \bar A} &amp;=
+<span class="lineNum">      98 </span>            :  * \frac{\partial \breve x^{\breve i}}{\partial \bar x^{\bar A}}\\
+<span class="lineNum">      99 </span>            :  * g_{\breve i \breve t}
+<span class="lineNum">     100 </span>            :  * \partial_{\bar u} g_{\bar A \bar B}
+<span class="lineNum">     101 </span>            :  * &amp;= \frac{\partial \breve x^{\breve i}}{\partial \bar x^{\bar A}}
+<span class="lineNum">     102 </span>            :  * \frac{\partial \breve x^{\breve j}}{\partial \bar x^{\bar B}}
+<span class="lineNum">     103 </span>            :  * g_{\breve i \breve j}
+<span class="lineNum">     104 </span>            :  * \f}
+<span class="lineNum">     105 </span>            :  */
+<span class="lineNum">     106 </span><span class="lineCov">          1 : void null_metric_and_derivative(</span>
+<span class="lineNum">     107 </span>            :     gsl::not_null&lt;tnsr::aa&lt;DataVector, 3, Frame::RadialNull&gt;*&gt; du_null_metric,
+<span class="lineNum">     108 </span>            :     gsl::not_null&lt;tnsr::aa&lt;DataVector, 3, Frame::RadialNull&gt;*&gt; null_metric,
+<span class="lineNum">     109 </span>            :     const jacobian_tensor&amp; cartesian_to_spherical_jacobian,
+<span class="lineNum">     110 </span>            :     const tnsr::aa&lt;DataVector, 3&gt;&amp; dt_spacetime_metric,
+<span class="lineNum">     111 </span>            :     const tnsr::aa&lt;DataVector, 3&gt;&amp; spacetime_metric) noexcept;
+<span class="lineNum">     112 </span>            : 
+<span class="lineNum">     113 </span>            : /*!
+<span class="lineNum">     114 </span>            :  * \brief Computes the spatial unit normal vector \f$s^i\f$ to the spherical
+<span class="lineNum">     115 </span>            :  * worldtube surface and its first time derivative.
+<span class="lineNum">     116 </span>            :  *
+<span class="lineNum">     117 </span>            :  * \details Refer to equation (20) of \cite Barkett2019uae for the expression of
+<span class="lineNum">     118 </span>            :  * the spatial unit normal vector, and equation (23) of \cite Barkett2019uae for
+<span class="lineNum">     119 </span>            :  * the first time derivative. Refer to \cite Bishop1998uk for more exposition
+<span class="lineNum">     120 </span>            :  * about the overall construction of the coordinate transformations used for the
+<span class="lineNum">     121 </span>            :  * intermediate null coordinates.
+<span class="lineNum">     122 </span>            :  */
+<span class="lineNum">     123 </span><span class="lineCov">          1 : void worldtube_normal_and_derivatives(</span>
+<span class="lineNum">     124 </span>            :     gsl::not_null&lt;tnsr::I&lt;DataVector, 3&gt;*&gt; worldtube_normal,
+<span class="lineNum">     125 </span>            :     gsl::not_null&lt;tnsr::I&lt;DataVector, 3&gt;*&gt; dt_worldtube_normal,
+<span class="lineNum">     126 </span>            :     const Scalar&lt;DataVector&gt;&amp; cos_phi, const Scalar&lt;DataVector&gt;&amp; cos_theta,
+<span class="lineNum">     127 </span>            :     const tnsr::aa&lt;DataVector, 3&gt;&amp; spacetime_metric,
+<span class="lineNum">     128 </span>            :     const tnsr::aa&lt;DataVector, 3&gt;&amp; dt_spacetime_metric,
+<span class="lineNum">     129 </span>            :     const Scalar&lt;DataVector&gt;&amp; sin_phi, const Scalar&lt;DataVector&gt;&amp; sin_theta,
+<span class="lineNum">     130 </span>            :     const tnsr::II&lt;DataVector, 3&gt;&amp; inverse_spatial_metric) noexcept;
+<span class="lineNum">     131 </span>            : 
+<span class="lineNum">     132 </span>            : /*!
+<span class="lineNum">     133 </span>            :  * \brief Computes the null 4-vector \f$l^\mu\f$ on the worldtube surface that
+<span class="lineNum">     134 </span>            :  * is to be used as the CCE hypersurface generator, and the first time
+<span class="lineNum">     135 </span>            :  * derivative \f$\partial_u l^\mu\f$.
+<span class="lineNum">     136 </span>            :  *
+<span class="lineNum">     137 </span>            :  * \details For mathematical description of our choice of the null generator,
+<span class="lineNum">     138 </span>            :  * refer to equation (22) of \cite Barkett2019uae, and for the first time
+<span class="lineNum">     139 </span>            :  * derivative see (25) of \cite Barkett2019uae.  Refer to \cite Bishop1998uk for
+<span class="lineNum">     140 </span>            :  * more exposition about the overall construction of the coordinate
+<span class="lineNum">     141 </span>            :  * transformations used for the intermediate null coordinates.
+<span class="lineNum">     142 </span>            :  */
+<span class="lineNum">     143 </span><span class="lineCov">          1 : void null_vector_l_and_derivatives(</span>
+<span class="lineNum">     144 </span>            :     gsl::not_null&lt;tnsr::A&lt;DataVector, 3&gt;*&gt; du_null_l,
+<span class="lineNum">     145 </span>            :     gsl::not_null&lt;tnsr::A&lt;DataVector, 3&gt;*&gt; null_l,
+<span class="lineNum">     146 </span>            :     const tnsr::I&lt;DataVector, 3&gt;&amp; dt_worldtube_normal,
+<span class="lineNum">     147 </span>            :     const Scalar&lt;DataVector&gt;&amp; dt_lapse,
+<span class="lineNum">     148 </span>            :     const tnsr::aa&lt;DataVector, 3&gt;&amp; dt_spacetime_metric,
+<span class="lineNum">     149 </span>            :     const tnsr::I&lt;DataVector, 3&gt;&amp; dt_shift, const Scalar&lt;DataVector&gt;&amp; lapse,
+<span class="lineNum">     150 </span>            :     const tnsr::aa&lt;DataVector, 3&gt;&amp; spacetime_metric,
+<span class="lineNum">     151 </span>            :     const tnsr::I&lt;DataVector, 3&gt;&amp; shift,
+<span class="lineNum">     152 </span>            :     const tnsr::I&lt;DataVector, 3&gt;&amp; worldtube_normal) noexcept;
+<span class="lineNum">     153 </span>            : 
+<span class="lineNum">     154 </span>            : /*!
+<span class="lineNum">     155 </span>            :  * \brief Computes the partial derivative of the spacetime metric and inverse
+<span class="lineNum">     156 </span>            :  * spacetime metric in the intermediate null radial coordinates with respect to
+<span class="lineNum">     157 </span>            :  * the null generator \f$l^\mu\f$
+<span class="lineNum">     158 </span>            :  *
+<span class="lineNum">     159 </span>            :  * \details For full expressions of the \f$l^\mu \partial_\mu g_{a b}\f$ and
+<span class="lineNum">     160 </span>            :  * \f$l^\mu \partial_\mu g^{a b}\f$ computed in this function, see equation (31)
+<span class="lineNum">     161 </span>            :  * and (32) of \cite Barkett2019uae.  Refer to \cite Bishop1998uk for more
+<span class="lineNum">     162 </span>            :  * exposition about the overall construction of the coordinate transformations
+<span class="lineNum">     163 </span>            :  * used for the intermediate null coordinates.
+<span class="lineNum">     164 </span>            :  */
+<span class="lineNum">     165 </span><span class="lineCov">          1 : void dlambda_null_metric_and_inverse(</span>
+<span class="lineNum">     166 </span>            :     gsl::not_null&lt;tnsr::aa&lt;DataVector, 3, Frame::RadialNull&gt;*&gt;
+<span class="lineNum">     167 </span>            :         dlambda_null_metric,
+<span class="lineNum">     168 </span>            :     gsl::not_null&lt;tnsr::AA&lt;DataVector, 3, Frame::RadialNull&gt;*&gt;
+<span class="lineNum">     169 </span>            :         dlambda_inverse_null_metric,
+<span class="lineNum">     170 </span>            :     const tnsr::iA&lt;DataVector, 3&gt;&amp; angular_d_null_l,
+<span class="lineNum">     171 </span>            :     const jacobian_tensor&amp; cartesian_to_spherical_jacobian,
+<span class="lineNum">     172 </span>            :     const tnsr::iaa&lt;DataVector, 3&gt;&amp; phi,
+<span class="lineNum">     173 </span>            :     const tnsr::aa&lt;DataVector, 3&gt;&amp; dt_spacetime_metric,
+<span class="lineNum">     174 </span>            :     const tnsr::A&lt;DataVector, 3&gt;&amp; du_null_l,
+<span class="lineNum">     175 </span>            :     const tnsr::AA&lt;DataVector, 3&gt;&amp; inverse_null_metric,
+<span class="lineNum">     176 </span>            :     const tnsr::A&lt;DataVector, 3&gt;&amp; null_l,
+<span class="lineNum">     177 </span>            :     const tnsr::aa&lt;DataVector, 3&gt;&amp; spacetime_metric) noexcept;
+<span class="lineNum">     178 </span>            : 
+<span class="lineNum">     179 </span>            : /*!
+<span class="lineNum">     180 </span>            :  * \brief Computes the full 4-dimensional partial of the Bondi radius with
+<span class="lineNum">     181 </span>            :  * respect to the intermediate null coordinates.
+<span class="lineNum">     182 </span>            :  *
+<span class="lineNum">     183 </span>            :  * \details The expression evaluated is obtained from differentiating the
+<span class="lineNum">     184 </span>            :  * determinant equation for `bondi_r`, from (35) of \cite Barkett2019uae :
+<span class="lineNum">     185 </span>            :  *
+<span class="lineNum">     186 </span>            :  * \f[
+<span class="lineNum">     187 </span>            :  * \partial_\alpha r = \frac{r}{4} \left(g^{A B} \partial_\alpha g_{A B}
+<span class="lineNum">     188 </span>            :  * - \frac{\partial_\alpha \det q_{A B}}{\det q_{A B}}\right)
+<span class="lineNum">     189 </span>            :  * \f]
+<span class="lineNum">     190 </span>            :  *
+<span class="lineNum">     191 </span>            :  * Note that for the angular derivatives, we just numerically differentiate
+<span class="lineNum">     192 </span>            :  * using the utilities in `Spectral::Swsh::angular_derivative()`. For the time
+<span class="lineNum">     193 </span>            :  * and radial derivatives, the second term in the above equation vanishes.
+<span class="lineNum">     194 </span>            :  */
+<span class="lineNum">     195 </span><span class="lineCov">          1 : void d_bondi_r(</span>
+<span class="lineNum">     196 </span>            :     gsl::not_null&lt;tnsr::a&lt;DataVector, 3, Frame::RadialNull&gt;*&gt; d_bondi_r,
+<span class="lineNum">     197 </span>            :     const Scalar&lt;SpinWeighted&lt;ComplexDataVector, 0&gt;&gt;&amp; bondi_r,
+<span class="lineNum">     198 </span>            :     const tnsr::aa&lt;DataVector, 3, Frame::RadialNull&gt;&amp; dlambda_null_metric,
+<span class="lineNum">     199 </span>            :     const tnsr::aa&lt;DataVector, 3, Frame::RadialNull&gt;&amp; du_null_metric,
+<span class="lineNum">     200 </span>            :     const tnsr::AA&lt;DataVector, 3, Frame::RadialNull&gt;&amp; inverse_null_metric,
+<span class="lineNum">     201 </span>            :     size_t l_max) noexcept;
+<span class="lineNum">     202 </span>            : 
+<span class="lineNum">     203 </span>            : /*!
+<span class="lineNum">     204 </span>            :  * \brief Compute the complex angular dyads used to define the spin-weighted
+<span class="lineNum">     205 </span>            :  * scalars in the CCE system.
+<span class="lineNum">     206 </span>            :  *
+<span class="lineNum">     207 </span>            :  * \details We use the typically chosen angular dyads in CCE
+<span class="lineNum">     208 </span>            :  * \cite Barkett2019uae \cite Bishop1997ik :
+<span class="lineNum">     209 </span>            :  *
+<span class="lineNum">     210 </span>            :  * \f{align*}{
+<span class="lineNum">     211 </span>            :  * q_A &amp;= \{-1, -i \sin(\theta)\}\\
+<span class="lineNum">     212 </span>            :  * q^A &amp;= \left\{-1, -i \frac{1}{\sin \theta}\right\}
+<span class="lineNum">     213 </span>            :  * \f}
+<span class="lineNum">     214 </span>            :  *
+<span class="lineNum">     215 </span>            :  * However, to maintain regularity and for compatibility with the more regular
+<span class="lineNum">     216 </span>            :  * Jacobians from `Cce::cartesian_to_spherical_coordinates_and_jacobians()`, in
+<span class="lineNum">     217 </span>            :  * the code we omit the factors of \f$\sin \theta\f$ from the above equations.
+<span class="lineNum">     218 </span>            :  */
+<span class="lineNum">     219 </span><span class="lineCov">          1 : void dyads(</span>
+<span class="lineNum">     220 </span>            :     gsl::not_null&lt;tnsr::i&lt;ComplexDataVector, 2, Frame::RadialNull&gt;*&gt; down_dyad,
+<span class="lineNum">     221 </span>            :     gsl::not_null&lt;tnsr::I&lt;ComplexDataVector, 2, Frame::RadialNull&gt;*&gt;
+<span class="lineNum">     222 </span>            :         up_dyad) noexcept;
+<span class="lineNum">     223 </span>            : 
+<span class="lineNum">     224 </span>            : }  // namespace Cce
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../../../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.13</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

@@ -1,0 +1,245 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - 5912ac2e49a80e6a27b3707c9a1e6ce5248b1b2a - DataStructures/DataBox/Prefixes.hpp</title>
+  <link rel="stylesheet" type="text/css" href="../../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title"> SpECTRE Documentation Coverage Report</td></tr>
+    <tr><td class="ruler"><img src="../../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../../index.html">top level</a> - <a href="index.html">DataStructures/DataBox</a> - Prefixes.hpp</td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+             <td class="headerItem">Commit:</td>
+             <td class="headerValue"><a target="_blank" href="https://github.com/sxs-collaboration/spectre/commit/5912ac2e49a80e6a27b3707c9a1e6ce5248b1b2a">5912ac2e49a80e6a27b3707c9a1e6ce5248b1b2a</a></td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">11</td>
+            <td class="headerCovTableEntry">33</td>
+            <td class="headerCovTableEntryLo">33.3 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2019-12-02 22:01:08</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td class="headerItem">Legend:</td>
+            <td class="headerValueLeg">            Lines:
+            <span class="coverLegendCov">hit</span>
+            <span class="coverLegendNoCov">not hit</span>
+</td>
+            <td></td>
+          </tr>
+          <tr><td><img src="../../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">          Line data    Source code</pre>
+<pre class="source">
+<span class="lineNum">       1 </span><span class="lineCov">          1 : // Distributed under the MIT License.</span>
+<span class="lineNum">       2 </span>            : // See LICENSE.txt for details.
+<span class="lineNum">       3 </span>            : 
+<span class="lineNum">       4 </span>            : /// \file
+<span class="lineNum">       5 </span>            : /// Define prefixes for DataBox tags
+<span class="lineNum">       6 </span>            : 
+<span class="lineNum">       7 </span>            : #pragma once
+<span class="lineNum">       8 </span>            : 
+<span class="lineNum">       9 </span>            : #include &lt;cstddef&gt;
+<span class="lineNum">      10 </span>            : #include &lt;string&gt;
+<span class="lineNum">      11 </span>            : 
+<span class="lineNum">      12 </span>            : #include &quot;DataStructures/DataBox/DataBoxTag.hpp&quot;
+<span class="lineNum">      13 </span>            : #include &quot;DataStructures/Tensor/IndexType.hpp&quot;
+<span class="lineNum">      14 </span>            : #include &quot;DataStructures/Tensor/Metafunctions.hpp&quot;
+<span class="lineNum">      15 </span>            : #include &quot;DataStructures/Tensor/Tensor.hpp&quot;
+<span class="lineNum">      16 </span>            : #include &quot;Utilities/Requires.hpp&quot;
+<span class="lineNum">      17 </span>            : #include &quot;Utilities/TypeTraits.hpp&quot;  // IWYU pragma: keep
+<span class="lineNum">      18 </span>            : 
+<span class="lineNum">      19 </span>            : /// \cond
+<span class="lineNum">      20 </span>            : template &lt;class&gt;
+<span class="lineNum">      21 </span>            : class Variables;  // IWYU pragma: keep
+<span class="lineNum">      22 </span>            : /// \endcond
+<span class="lineNum">      23 </span>            : 
+<span class="lineNum">      24 </span>            : namespace Tags {
+<span class="lineNum">      25 </span>            : /// \ingroup DataBoxTagsGroup
+<span class="lineNum">      26 </span>            : /// \brief Prefix indicating a time derivative
+<span class="lineNum">      27 </span>            : ///
+<span class="lineNum">      28 </span>            : /// \snippet Test_DataBoxPrefixes.cpp dt_name
+<span class="lineNum">      29 </span>            : template &lt;typename Tag&gt;
+<span class="lineNum">      30 </span><span class="lineCov">          1 : struct dt : db::PrefixTag, db::SimpleTag {</span>
+<span class="lineNum">      31 </span><span class="lineNoCov">          0 :   static std::string name() noexcept {</span>
+<span class="lineNum">      32 </span>            :     return &quot;dt(&quot; + db::tag_name&lt;Tag&gt;() + &quot;)&quot;;
+<span class="lineNum">      33 </span>            :   }
+<span class="lineNum">      34 </span><span class="lineNoCov">          0 :   using type = db::const_item_type&lt;Tag&gt;;</span>
+<span class="lineNum">      35 </span><span class="lineNoCov">          0 :   using tag = Tag;</span>
+<span class="lineNum">      36 </span>            : };
+<span class="lineNum">      37 </span>            : 
+<span class="lineNum">      38 </span>            : /// \ingroup DataBoxTagsGroup
+<span class="lineNum">      39 </span>            : /// \brief Prefix indicating the analytic solution value for a quantity
+<span class="lineNum">      40 </span>            : ///
+<span class="lineNum">      41 </span>            : /// \snippet Test_DataBoxPrefixes.cpp analytic_name
+<span class="lineNum">      42 </span>            : template &lt;typename Tag&gt;
+<span class="lineNum">      43 </span><span class="lineCov">          1 : struct Analytic : db::PrefixTag, db::SimpleTag {</span>
+<span class="lineNum">      44 </span><span class="lineNoCov">          0 :   using type = db::const_item_type&lt;Tag&gt;;</span>
+<span class="lineNum">      45 </span><span class="lineNoCov">          0 :   using tag = Tag;</span>
+<span class="lineNum">      46 </span>            : };
+<span class="lineNum">      47 </span>            : 
+<span class="lineNum">      48 </span>            : /// \ingroup DataBoxTagsGroup
+<span class="lineNum">      49 </span>            : /// \brief Prefix indicating a flux
+<span class="lineNum">      50 </span>            : ///
+<span class="lineNum">      51 </span>            : /// \snippet Test_DataBoxPrefixes.cpp flux_name
+<span class="lineNum">      52 </span>            : template &lt;typename Tag, typename VolumeDim, typename Fr,
+<span class="lineNum">      53 </span>            :           typename = std::nullptr_t&gt;
+<span class="lineNum">      54 </span><span class="lineCov">          1 : struct Flux;</span>
+<span class="lineNum">      55 </span>            : 
+<span class="lineNum">      56 </span>            : /// \cond
+<span class="lineNum">      57 </span>            : template &lt;typename Tag, typename VolumeDim, typename Fr&gt;
+<span class="lineNum">      58 </span>            : struct Flux&lt;Tag, VolumeDim, Fr,
+<span class="lineNum">      59 </span>            :             Requires&lt;tt::is_a_v&lt;Tensor, db::const_item_type&lt;Tag&gt;&gt;&gt;&gt;
+<span class="lineNum">      60 </span>            :     : db::PrefixTag, db::SimpleTag {
+<span class="lineNum">      61 </span>            :   using type = TensorMetafunctions::prepend_spatial_index&lt;
+<span class="lineNum">      62 </span>            :       db::const_item_type&lt;Tag&gt;, VolumeDim::value, UpLo::Up, Fr&gt;;
+<span class="lineNum">      63 </span>            :   using tag = Tag;
+<span class="lineNum">      64 </span>            :   static std::string name() noexcept {
+<span class="lineNum">      65 </span>            :     return &quot;Flux(&quot; + db::tag_name&lt;Tag&gt;() + &quot;)&quot;;
+<span class="lineNum">      66 </span>            :   }
+<span class="lineNum">      67 </span>            : };
+<span class="lineNum">      68 </span>            : 
+<span class="lineNum">      69 </span>            : template &lt;typename Tag, typename VolumeDim, typename Fr&gt;
+<span class="lineNum">      70 </span>            : struct Flux&lt;Tag, VolumeDim, Fr,
+<span class="lineNum">      71 </span>            :             Requires&lt;tt::is_a_v&lt;::Variables, db::const_item_type&lt;Tag&gt;&gt;&gt;&gt;
+<span class="lineNum">      72 </span>            :     : db::PrefixTag, db::SimpleTag {
+<span class="lineNum">      73 </span>            :   using type = db::const_item_type&lt;Tag&gt;;
+<span class="lineNum">      74 </span>            :   using tag = Tag;
+<span class="lineNum">      75 </span>            :   static std::string name() noexcept {
+<span class="lineNum">      76 </span>            :     return &quot;Flux(&quot; + db::tag_name&lt;Tag&gt;() + &quot;)&quot;;
+<span class="lineNum">      77 </span>            :   }
+<span class="lineNum">      78 </span>            : };
+<span class="lineNum">      79 </span>            : /// \endcond
+<span class="lineNum">      80 </span>            : 
+<span class="lineNum">      81 </span>            : /// \ingroup DataBoxTagsGroup
+<span class="lineNum">      82 </span>            : /// \brief Prefix indicating a source term
+<span class="lineNum">      83 </span>            : ///
+<span class="lineNum">      84 </span>            : /// \snippet Test_DataBoxPrefixes.cpp source_name
+<span class="lineNum">      85 </span>            : template &lt;typename Tag&gt;
+<span class="lineNum">      86 </span><span class="lineCov">          1 : struct Source : db::PrefixTag, db::SimpleTag {</span>
+<span class="lineNum">      87 </span><span class="lineNoCov">          0 :   using type = db::const_item_type&lt;Tag&gt;;</span>
+<span class="lineNum">      88 </span><span class="lineNoCov">          0 :   using tag = Tag;</span>
+<span class="lineNum">      89 </span><span class="lineNoCov">          0 :   static std::string name() noexcept {</span>
+<span class="lineNum">      90 </span>            :     return &quot;Source(&quot; + db::tag_name&lt;Tag&gt;() + &quot;)&quot;;
+<span class="lineNum">      91 </span>            :   }
+<span class="lineNum">      92 </span>            : };
+<span class="lineNum">      93 </span>            : 
+<span class="lineNum">      94 </span>            : /// \ingroup DataBoxTagsGroup
+<span class="lineNum">      95 </span>            : /// \brief Prefix indicating a source term that is independent of dynamic
+<span class="lineNum">      96 </span>            : /// variables
+<span class="lineNum">      97 </span>            : template &lt;typename Tag&gt;
+<span class="lineNum">      98 </span><span class="lineCov">          1 : struct FixedSource : db::PrefixTag, db::SimpleTag {</span>
+<span class="lineNum">      99 </span><span class="lineNoCov">          0 :   using type = db::const_item_type&lt;Tag&gt;;</span>
+<span class="lineNum">     100 </span><span class="lineNoCov">          0 :   using tag = Tag;</span>
+<span class="lineNum">     101 </span>            : };
+<span class="lineNum">     102 </span>            : 
+<span class="lineNum">     103 </span>            : /// \ingroup DataBoxTagsGroup
+<span class="lineNum">     104 </span>            : /// \brief Prefix indicating the initial value of a quantity
+<span class="lineNum">     105 </span>            : ///
+<span class="lineNum">     106 </span>            : /// \snippet Test_DataBoxPrefixes.cpp initial_name
+<span class="lineNum">     107 </span>            : template &lt;typename Tag&gt;
+<span class="lineNum">     108 </span><span class="lineCov">          1 : struct Initial : db::PrefixTag, db::SimpleTag {</span>
+<span class="lineNum">     109 </span><span class="lineNoCov">          0 :   using type = db::const_item_type&lt;Tag&gt;;</span>
+<span class="lineNum">     110 </span><span class="lineNoCov">          0 :   using tag = Tag;</span>
+<span class="lineNum">     111 </span><span class="lineNoCov">          0 :   static std::string name() noexcept {</span>
+<span class="lineNum">     112 </span>            :     return &quot;Initial(&quot; + db::tag_name&lt;Tag&gt;() + &quot;)&quot;;
+<span class="lineNum">     113 </span>            :   }
+<span class="lineNum">     114 </span>            : };
+<span class="lineNum">     115 </span>            : 
+<span class="lineNum">     116 </span>            : /// \ingroup DataBoxTagsGroup
+<span class="lineNum">     117 </span>            : /// \brief Prefix indicating a boundary unit normal vector dotted into
+<span class="lineNum">     118 </span>            : /// the flux
+<span class="lineNum">     119 </span>            : ///
+<span class="lineNum">     120 </span>            : /// \snippet Test_DataBoxPrefixes.cpp normal_dot_flux_name
+<span class="lineNum">     121 </span>            : template &lt;typename Tag&gt;
+<span class="lineNum">     122 </span><span class="lineCov">          1 : struct NormalDotFlux : db::PrefixTag, db::SimpleTag {</span>
+<span class="lineNum">     123 </span><span class="lineNoCov">          0 :   using type = db::const_item_type&lt;Tag&gt;;</span>
+<span class="lineNum">     124 </span><span class="lineNoCov">          0 :   using tag = Tag;</span>
+<span class="lineNum">     125 </span><span class="lineNoCov">          0 :   static std::string name() noexcept {</span>
+<span class="lineNum">     126 </span>            :     return &quot;NormalDotFlux(&quot; + db::tag_name&lt;Tag&gt;() + &quot;)&quot;;
+<span class="lineNum">     127 </span>            :   }
+<span class="lineNum">     128 </span>            : };
+<span class="lineNum">     129 </span>            : 
+<span class="lineNum">     130 </span>            : /// \ingroup DataBoxTagsGroup
+<span class="lineNum">     131 </span>            : /// \brief Prefix indicating a boundary unit normal vector dotted into
+<span class="lineNum">     132 </span>            : /// the numerical flux
+<span class="lineNum">     133 </span>            : ///
+<span class="lineNum">     134 </span>            : /// \snippet Test_DataBoxPrefixes.cpp normal_dot_numerical_flux_name
+<span class="lineNum">     135 </span>            : template &lt;typename Tag&gt;
+<span class="lineNum">     136 </span><span class="lineCov">          1 : struct NormalDotNumericalFlux : db::PrefixTag, db::SimpleTag {</span>
+<span class="lineNum">     137 </span><span class="lineNoCov">          0 :   using type = db::const_item_type&lt;Tag&gt;;</span>
+<span class="lineNum">     138 </span><span class="lineNoCov">          0 :   using tag = Tag;</span>
+<span class="lineNum">     139 </span><span class="lineNoCov">          0 :   static std::string name() noexcept {</span>
+<span class="lineNum">     140 </span>            :     return &quot;NormalDotNumericalFlux(&quot; + db::tag_name&lt;Tag&gt;() + &quot;)&quot;;
+<span class="lineNum">     141 </span>            :   }
+<span class="lineNum">     142 </span>            : };
+<span class="lineNum">     143 </span>            : 
+<span class="lineNum">     144 </span>            : /// \ingroup DataBoxTagsGroup
+<span class="lineNum">     145 </span>            : /// \brief Prefix indicating the value a quantity will take on the
+<span class="lineNum">     146 </span>            : /// next iteration of the algorithm.
+<span class="lineNum">     147 </span>            : ///
+<span class="lineNum">     148 </span>            : /// \snippet Test_DataBoxPrefixes.cpp next_name
+<span class="lineNum">     149 </span>            : template &lt;typename Tag&gt;
+<span class="lineNum">     150 </span><span class="lineCov">          1 : struct Next : db::PrefixTag, db::SimpleTag {</span>
+<span class="lineNum">     151 </span><span class="lineNoCov">          0 :   using type = db::const_item_type&lt;Tag&gt;;</span>
+<span class="lineNum">     152 </span><span class="lineNoCov">          0 :   using tag = Tag;</span>
+<span class="lineNum">     153 </span><span class="lineNoCov">          0 :   static std::string name() noexcept {</span>
+<span class="lineNum">     154 </span>            :     return &quot;Next(&quot; + db::tag_name&lt;Tag&gt;() + &quot;)&quot;;
+<span class="lineNum">     155 </span>            :   }
+<span class="lineNum">     156 </span>            : };
+<span class="lineNum">     157 </span>            : 
+<span class="lineNum">     158 </span>            : /// \ingroup DataBoxTagsGroup
+<span class="lineNum">     159 </span>            : /// \brief Compute item for `Tags::Next&lt;Tag&gt;`
+<span class="lineNum">     160 </span>            : ///
+<span class="lineNum">     161 </span>            : /// Requires that a template specialization for the requested `Tag` is defined.
+<span class="lineNum">     162 </span>            : template &lt;typename Tag&gt;
+<span class="lineNum">     163 </span><span class="lineCov">          1 : struct NextCompute;</span>
+<span class="lineNum">     164 </span>            : 
+<span class="lineNum">     165 </span>            : }  // namespace Tags
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.13</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

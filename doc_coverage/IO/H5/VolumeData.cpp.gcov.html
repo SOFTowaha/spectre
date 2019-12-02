@@ -1,0 +1,418 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - 5912ac2e49a80e6a27b3707c9a1e6ce5248b1b2a - IO/H5/VolumeData.cpp</title>
+  <link rel="stylesheet" type="text/css" href="../../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title"> SpECTRE Documentation Coverage Report</td></tr>
+    <tr><td class="ruler"><img src="../../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../../index.html">top level</a> - <a href="index.html">IO/H5</a> - VolumeData.cpp</td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+             <td class="headerItem">Commit:</td>
+             <td class="headerValue"><a target="_blank" href="https://github.com/sxs-collaboration/spectre/commit/5912ac2e49a80e6a27b3707c9a1e6ce5248b1b2a">5912ac2e49a80e6a27b3707c9a1e6ce5248b1b2a</a></td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntry">1</td>
+            <td class="headerCovTableEntryLo">0.0 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2019-12-02 22:01:08</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td class="headerItem">Legend:</td>
+            <td class="headerValueLeg">            Lines:
+            <span class="coverLegendCov">hit</span>
+            <span class="coverLegendNoCov">not hit</span>
+</td>
+            <td></td>
+          </tr>
+          <tr><td><img src="../../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">          Line data    Source code</pre>
+<pre class="source">
+<span class="lineNum">       1 </span><span class="lineNoCov">          0 : // Distributed under the MIT License.</span>
+<span class="lineNum">       2 </span>            : // See LICENSE.txt for details.
+<span class="lineNum">       3 </span>            : 
+<span class="lineNum">       4 </span>            : #include &quot;IO/H5/VolumeData.hpp&quot;
+<span class="lineNum">       5 </span>            : 
+<span class="lineNum">       6 </span>            : #include &lt;algorithm&gt;
+<span class="lineNum">       7 </span>            : #include &lt;boost/algorithm/string.hpp&gt;
+<span class="lineNum">       8 </span>            : #include &lt;boost/iterator/transform_iterator.hpp&gt;
+<span class="lineNum">       9 </span>            : #include &lt;hdf5.h&gt;
+<span class="lineNum">      10 </span>            : #include &lt;memory&gt;
+<span class="lineNum">      11 </span>            : #include &lt;ostream&gt;
+<span class="lineNum">      12 </span>            : #include &lt;string&gt;
+<span class="lineNum">      13 </span>            : 
+<span class="lineNum">      14 </span>            : #include &quot;DataStructures/DataVector.hpp&quot;
+<span class="lineNum">      15 </span>            : #include &quot;DataStructures/Tensor/TensorData.hpp&quot;
+<span class="lineNum">      16 </span>            : #include &quot;ErrorHandling/Assert.hpp&quot;
+<span class="lineNum">      17 </span>            : #include &quot;ErrorHandling/Error.hpp&quot;
+<span class="lineNum">      18 </span>            : #include &quot;IO/Connectivity.hpp&quot;
+<span class="lineNum">      19 </span>            : #include &quot;IO/H5/AccessType.hpp&quot;
+<span class="lineNum">      20 </span>            : #include &quot;IO/H5/Header.hpp&quot;
+<span class="lineNum">      21 </span>            : #include &quot;IO/H5/Helpers.hpp&quot;
+<span class="lineNum">      22 </span>            : #include &quot;IO/H5/Version.hpp&quot;
+<span class="lineNum">      23 </span>            : #include &quot;Utilities/Algorithm.hpp&quot;
+<span class="lineNum">      24 </span>            : #include &quot;Utilities/Literals.hpp&quot;
+<span class="lineNum">      25 </span>            : #include &quot;Utilities/Numeric.hpp&quot;
+<span class="lineNum">      26 </span>            : 
+<span class="lineNum">      27 </span>            : /// \cond HIDDEN_SYMBOLS
+<span class="lineNum">      28 </span>            : namespace h5 {
+<span class="lineNum">      29 </span>            : namespace {
+<span class="lineNum">      30 </span>            : // Append the element extents and connectevity to the total extents and
+<span class="lineNum">      31 </span>            : // connectivity
+<span class="lineNum">      32 </span>            : void append_element_extents_and_connectivity(
+<span class="lineNum">      33 </span>            :     const gsl::not_null&lt;std::vector&lt;size_t&gt;*&gt; total_extents,
+<span class="lineNum">      34 </span>            :     const gsl::not_null&lt;std::vector&lt;int&gt;*&gt; total_connectivity,
+<span class="lineNum">      35 </span>            :     const gsl::not_null&lt;int*&gt; total_points_so_far, const size_t dim,
+<span class="lineNum">      36 </span>            :     const ExtentsAndTensorVolumeData&amp; element) noexcept {
+<span class="lineNum">      37 </span>            :   // Process the element extents
+<span class="lineNum">      38 </span>            :   const auto&amp; extents = element.extents;
+<span class="lineNum">      39 </span>            :   if (extents.size() != dim) {
+<span class="lineNum">      40 </span>            :     ERROR(&quot;Trying to write data of dimensionality&quot;
+<span class="lineNum">      41 </span>            :           &lt;&lt; extents.size() &lt;&lt; &quot;but the VolumeData file has dimensionality&quot;
+<span class="lineNum">      42 </span>            :           &lt;&lt; dim &lt;&lt; &quot;.&quot;);
+<span class="lineNum">      43 </span>            :   }
+<span class="lineNum">      44 </span>            :   total_extents-&gt;insert(total_extents-&gt;end(), extents.begin(), extents.end());
+<span class="lineNum">      45 </span>            :   // Find the number of points in the local connectivity
+<span class="lineNum">      46 </span>            :   const int element_num_points =
+<span class="lineNum">      47 </span>            :       alg::accumulate(extents, 1, std::multiplies&lt;&gt;{});
+<span class="lineNum">      48 </span>            :   // Generate the connectivity data for the element
+<span class="lineNum">      49 </span>            :   // Possible optimization: local_connectivity.reserve(BLAH) if we can figure
+<span class="lineNum">      50 </span>            :   // out size without computing all the connectivities.
+<span class="lineNum">      51 </span>            :   const std::vector&lt;int&gt; connectivity =
+<span class="lineNum">      52 </span>            :       [&amp;extents, &amp;total_points_so_far ]() noexcept {
+<span class="lineNum">      53 </span>            :     std::vector&lt;int&gt; local_connectivity;
+<span class="lineNum">      54 </span>            :     for (const auto&amp; cell : vis::detail::compute_cells(extents)) {
+<span class="lineNum">      55 </span>            :       for (const auto&amp; bounding_indices : cell.bounding_indices) {
+<span class="lineNum">      56 </span>            :         local_connectivity.emplace_back(*total_points_so_far +
+<span class="lineNum">      57 </span>            :                                         static_cast&lt;int&gt;(bounding_indices));
+<span class="lineNum">      58 </span>            :       }
+<span class="lineNum">      59 </span>            :     }
+<span class="lineNum">      60 </span>            :     return local_connectivity;
+<span class="lineNum">      61 </span>            :   }
+<span class="lineNum">      62 </span>            :   ();
+<span class="lineNum">      63 </span>            :   *total_points_so_far += element_num_points;
+<span class="lineNum">      64 </span>            :   total_connectivity-&gt;insert(total_connectivity-&gt;end(), connectivity.begin(),
+<span class="lineNum">      65 </span>            :                              connectivity.end());
+<span class="lineNum">      66 </span>            : }
+<span class="lineNum">      67 </span>            : 
+<span class="lineNum">      68 </span>            : // Append the name of an element to the string of grid names
+<span class="lineNum">      69 </span>            : void append_element_name(const gsl::not_null&lt;std::string*&gt; grid_names,
+<span class="lineNum">      70 </span>            :                          const ExtentsAndTensorVolumeData&amp; element) noexcept {
+<span class="lineNum">      71 </span>            :   // Get the name of the element
+<span class="lineNum">      72 </span>            :   const auto&amp; first_tensor_name = element.tensor_components.front().name;
+<span class="lineNum">      73 </span>            :   ASSERT(first_tensor_name.find_last_of('/') != std::string::npos,
+<span class="lineNum">      74 </span>            :          &quot;The expected format of the tensor component names is &quot;
+<span class="lineNum">      75 </span>            :          &quot;'GROUP_NAME/COMPONENT_NAME' but could not find a '/' in '&quot;
+<span class="lineNum">      76 </span>            :              &lt;&lt; first_tensor_name &lt;&lt; &quot;'.&quot;);
+<span class="lineNum">      77 </span>            :   const auto spatial_name =
+<span class="lineNum">      78 </span>            :       first_tensor_name.substr(0, first_tensor_name.find_last_of('/'));
+<span class="lineNum">      79 </span>            :   *grid_names += spatial_name + VolumeData::separator();
+<span class="lineNum">      80 </span>            : }
+<span class="lineNum">      81 </span>            : }  // namespace
+<span class="lineNum">      82 </span>            : 
+<span class="lineNum">      83 </span>            : VolumeData::VolumeData(const bool subfile_exists, detail::OpenGroup&amp;&amp; group,
+<span class="lineNum">      84 </span>            :                        const hid_t /*location*/, const std::string&amp; name,
+<span class="lineNum">      85 </span>            :                        const uint32_t version) noexcept
+<span class="lineNum">      86 </span>            :     : group_(std::move(group)),
+<span class="lineNum">      87 </span>            :       name_(name.size() &gt; extension().size()
+<span class="lineNum">      88 </span>            :                 ? (extension() == name.substr(name.size() - extension().size())
+<span class="lineNum">      89 </span>            :                        ? name
+<span class="lineNum">      90 </span>            :                        : name + extension())
+<span class="lineNum">      91 </span>            :                 : name + extension()),
+<span class="lineNum">      92 </span>            :       version_(version),
+<span class="lineNum">      93 </span>            :       volume_data_group_(group_.id(), name_, h5::AccessType::ReadWrite) {
+<span class="lineNum">      94 </span>            :   if (subfile_exists) {
+<span class="lineNum">      95 </span>            :     // We treat this as an internal version for now. We'll need to deal with
+<span class="lineNum">      96 </span>            :     // proper versioning later.
+<span class="lineNum">      97 </span>            :     const Version open_version(true, detail::OpenGroup{},
+<span class="lineNum">      98 </span>            :                                volume_data_group_.id(), &quot;version&quot;);
+<span class="lineNum">      99 </span>            :     version_ = open_version.get_version();
+<span class="lineNum">     100 </span>            :     const Header header(true, detail::OpenGroup{}, volume_data_group_.id(),
+<span class="lineNum">     101 </span>            :                         &quot;header&quot;);
+<span class="lineNum">     102 </span>            :     header_ = header.get_header();
+<span class="lineNum">     103 </span>            :   } else {  // file does not exist
+<span class="lineNum">     104 </span>            :     // Subfiles are closed as they go out of scope, so we have the extra
+<span class="lineNum">     105 </span>            :     // braces here to add the necessary scope
+<span class="lineNum">     106 </span>            :     {
+<span class="lineNum">     107 </span>            :       Version open_version(false, detail::OpenGroup{}, volume_data_group_.id(),
+<span class="lineNum">     108 </span>            :                            &quot;version&quot;, version_);
+<span class="lineNum">     109 </span>            :     }
+<span class="lineNum">     110 </span>            :     {
+<span class="lineNum">     111 </span>            :       Header header(false, detail::OpenGroup{}, volume_data_group_.id(),
+<span class="lineNum">     112 </span>            :                     &quot;header&quot;);
+<span class="lineNum">     113 </span>            :       header_ = header.get_header();
+<span class="lineNum">     114 </span>            :     }
+<span class="lineNum">     115 </span>            :   }
+<span class="lineNum">     116 </span>            : }
+<span class="lineNum">     117 </span>            : 
+<span class="lineNum">     118 </span>            : // Write Volume Data stored in a vector of `ExtentsAndTensorVolumeData` to
+<span class="lineNum">     119 </span>            : // an `observation_group` in a `VolumeData` file.
+<span class="lineNum">     120 </span>            : void VolumeData::write_volume_data(
+<span class="lineNum">     121 </span>            :     const size_t observation_id, const double observation_value,
+<span class="lineNum">     122 </span>            :     const std::vector&lt;ExtentsAndTensorVolumeData&gt;&amp; elements) noexcept {
+<span class="lineNum">     123 </span>            :   const std::string path = &quot;ObservationId&quot; + std::to_string(observation_id);
+<span class="lineNum">     124 </span>            :   detail::OpenGroup observation_group(volume_data_group_.id(), path,
+<span class="lineNum">     125 </span>            :                                       AccessType::ReadWrite);
+<span class="lineNum">     126 </span>            :   if (contains_attribute(observation_group.id(), &quot;&quot;, &quot;observation_value&quot;)) {
+<span class="lineNum">     127 </span>            :     ERROR(&quot;Trying to write ObservationId &quot;
+<span class="lineNum">     128 </span>            :           &lt;&lt; std::to_string(observation_id) &lt;&lt; &quot; with observation_value &quot;
+<span class="lineNum">     129 </span>            :           &lt;&lt; observation_group.id() &lt;&lt; &quot; which already exists in file at &quot;
+<span class="lineNum">     130 </span>            :           &lt;&lt; path &lt;&lt; &quot;.&quot;);
+<span class="lineNum">     131 </span>            :   }
+<span class="lineNum">     132 </span>            :   h5::write_to_attribute(observation_group.id(), &quot;observation_value&quot;,
+<span class="lineNum">     133 </span>            :                          observation_value);
+<span class="lineNum">     134 </span>            :   // Get first element to extract the component names and dimension
+<span class="lineNum">     135 </span>            :   const auto get_component_name = [](const auto&amp; component) noexcept {
+<span class="lineNum">     136 </span>            :     ASSERT(component.name.find_last_of('/') != std::string::npos,
+<span class="lineNum">     137 </span>            :            &quot;The expected format of the tensor component names is &quot;
+<span class="lineNum">     138 </span>            :            &quot;'GROUP_NAME/COMPONENT_NAME' but could not find a '/' in '&quot;
+<span class="lineNum">     139 </span>            :                &lt;&lt; component.name &lt;&lt; &quot;'.&quot;);
+<span class="lineNum">     140 </span>            :     return component.name.substr(component.name.find_last_of('/') + 1);
+<span class="lineNum">     141 </span>            :   };
+<span class="lineNum">     142 </span>            :   const std::vector&lt;std::string&gt; component_names(
+<span class="lineNum">     143 </span>            :       boost::make_transform_iterator(elements.front().tensor_components.begin(),
+<span class="lineNum">     144 </span>            :                                      get_component_name),
+<span class="lineNum">     145 </span>            :       boost::make_transform_iterator(elements.front().tensor_components.end(),
+<span class="lineNum">     146 </span>            :                                      get_component_name));
+<span class="lineNum">     147 </span>            : 
+<span class="lineNum">     148 </span>            :   // The dimension of the grid is the number of extents per element.
+<span class="lineNum">     149 </span>            :   // Only written once per VolumeData file, as if two observation id's
+<span class="lineNum">     150 </span>            :   if (not contains_attribute(volume_data_group_.id(), &quot;&quot;, &quot;dimension&quot;)) {
+<span class="lineNum">     151 </span>            :     h5::write_to_attribute(volume_data_group_.id(), &quot;dimension&quot;,
+<span class="lineNum">     152 </span>            :                            elements.front().extents.size());
+<span class="lineNum">     153 </span>            :   }
+<span class="lineNum">     154 </span>            :   const auto dim =
+<span class="lineNum">     155 </span>            :       h5::read_value_attribute&lt;size_t&gt;(volume_data_group_.id(), &quot;dimension&quot;);
+<span class="lineNum">     156 </span>            :   // Extract Tensor Data one component at a time
+<span class="lineNum">     157 </span>            :   std::vector&lt;size_t&gt; total_extents;
+<span class="lineNum">     158 </span>            :   std::string grid_names;
+<span class="lineNum">     159 </span>            :   std::vector&lt;int&gt; total_connectivity;
+<span class="lineNum">     160 </span>            :   // We need to keep track the total number of points inserted into the
+<span class="lineNum">     161 </span>            :   // connectivity after each iteration to be sure each point gets a
+<span class="lineNum">     162 </span>            :   // unique representation in the topology data
+<span class="lineNum">     163 </span>            :   int total_points_so_far = 0;
+<span class="lineNum">     164 </span>            :   // Loop over tensor componenents
+<span class="lineNum">     165 </span>            :   for (size_t i = 0; i &lt; component_names.size(); i++) {
+<span class="lineNum">     166 </span>            :     std::string component_name = component_names[i];
+<span class="lineNum">     167 </span>            : 
+<span class="lineNum">     168 </span>            :     std::vector&lt;double&gt; contiguous_tensor_data{};
+<span class="lineNum">     169 </span>            :     for (auto&amp; element : elements) {
+<span class="lineNum">     170 </span>            :       if (i == 0) {  // True if first tensor component being accessed
+<span class="lineNum">     171 </span>            :         append_element_name(&amp;grid_names, element);
+<span class="lineNum">     172 </span>            :         append_element_extents_and_connectivity(
+<span class="lineNum">     173 </span>            :             &amp;total_extents, &amp;total_connectivity, &amp;total_points_so_far, dim,
+<span class="lineNum">     174 </span>            :             element);
+<span class="lineNum">     175 </span>            :       }
+<span class="lineNum">     176 </span>            :       const DataVector&amp; tensor_data_on_grid = element.tensor_components[i].data;
+<span class="lineNum">     177 </span>            :       contiguous_tensor_data.insert(contiguous_tensor_data.end(),
+<span class="lineNum">     178 </span>            :                                     tensor_data_on_grid.begin(),
+<span class="lineNum">     179 </span>            :                                     tensor_data_on_grid.end());
+<span class="lineNum">     180 </span>            : 
+<span class="lineNum">     181 </span>            :     }  // for each element
+<span class="lineNum">     182 </span>            : 
+<span class="lineNum">     183 </span>            :     // Write the data for the tensor component
+<span class="lineNum">     184 </span>            :     if (h5::contains_dataset_or_group(observation_group.id(), &quot;&quot;,
+<span class="lineNum">     185 </span>            :                                       component_name)) {
+<span class="lineNum">     186 </span>            :       ERROR(&quot;Trying to write tensor component '&quot;
+<span class="lineNum">     187 </span>            :             &lt;&lt; component_name
+<span class="lineNum">     188 </span>            :             &lt;&lt; &quot;' which already exists in HDF5 file in group '&quot; &lt;&lt; name_ &lt;&lt; '/'
+<span class="lineNum">     189 </span>            :             &lt;&lt; &quot;ObservationId&quot; &lt;&lt; std::to_string(observation_id) &lt;&lt; &quot;'&quot;);
+<span class="lineNum">     190 </span>            :     }
+<span class="lineNum">     191 </span>            : 
+<span class="lineNum">     192 </span>            :     h5::write_data(observation_group.id(), contiguous_tensor_data,
+<span class="lineNum">     193 </span>            :                    {contiguous_tensor_data.size()}, component_name);
+<span class="lineNum">     194 </span>            :   }  // for each component
+<span class="lineNum">     195 </span>            : 
+<span class="lineNum">     196 </span>            :   // Write the grid extents contiguously, the first `dim` belong to the
+<span class="lineNum">     197 </span>            :   // First grid, the second `dim` belong to the second grid, and so on,
+<span class="lineNum">     198 </span>            :   // Ordering is `x, y, z, ... `
+<span class="lineNum">     199 </span>            :   h5::write_data(observation_group.id(), total_extents, {total_extents.size()},
+<span class="lineNum">     200 </span>            :                  &quot;total_extents&quot;);
+<span class="lineNum">     201 </span>            :   // Write the names of the grids as vector of chars with individual names
+<span class="lineNum">     202 </span>            :   // separated by `separator()`
+<span class="lineNum">     203 </span>            :   std::vector&lt;char&gt; grid_names_as_chars(grid_names.begin(), grid_names.end());
+<span class="lineNum">     204 </span>            :   h5::write_data(observation_group.id(), grid_names_as_chars,
+<span class="lineNum">     205 </span>            :                  {grid_names_as_chars.size()}, &quot;grid_names&quot;);
+<span class="lineNum">     206 </span>            :   // Write the Connectivity
+<span class="lineNum">     207 </span>            :   h5::write_data(observation_group.id(), total_connectivity,
+<span class="lineNum">     208 </span>            :                  {total_connectivity.size()}, &quot;connectivity&quot;);
+<span class="lineNum">     209 </span>            : }
+<span class="lineNum">     210 </span>            : 
+<span class="lineNum">     211 </span>            : std::vector&lt;size_t&gt; VolumeData::list_observation_ids() const noexcept {
+<span class="lineNum">     212 </span>            :   const auto names = get_group_names(volume_data_group_.id(), &quot;&quot;);
+<span class="lineNum">     213 </span>            :   const auto helper = [](const std::string&amp; s) noexcept {
+<span class="lineNum">     214 </span>            :     return std::stoul(s.substr(std::string(&quot;ObservationId&quot;).size()));
+<span class="lineNum">     215 </span>            :   };
+<span class="lineNum">     216 </span>            :   return {boost::make_transform_iterator(names.begin(), helper),
+<span class="lineNum">     217 </span>            :           boost::make_transform_iterator(names.end(), helper)};
+<span class="lineNum">     218 </span>            : }
+<span class="lineNum">     219 </span>            : 
+<span class="lineNum">     220 </span>            : double VolumeData::get_observation_value(const size_t observation_id) const
+<span class="lineNum">     221 </span>            :     noexcept {
+<span class="lineNum">     222 </span>            :   const std::string path = &quot;ObservationId&quot; + std::to_string(observation_id);
+<span class="lineNum">     223 </span>            :   detail::OpenGroup observation_group(volume_data_group_.id(), path,
+<span class="lineNum">     224 </span>            :                                       AccessType::ReadOnly);
+<span class="lineNum">     225 </span>            :   return h5::read_value_attribute&lt;double&gt;(observation_group.id(),
+<span class="lineNum">     226 </span>            :                                           &quot;observation_value&quot;);
+<span class="lineNum">     227 </span>            : }
+<span class="lineNum">     228 </span>            : 
+<span class="lineNum">     229 </span>            : std::vector&lt;std::string&gt; VolumeData::list_tensor_components(
+<span class="lineNum">     230 </span>            :     const size_t observation_id) const noexcept {
+<span class="lineNum">     231 </span>            :   auto tensor_components =
+<span class="lineNum">     232 </span>            :       get_group_names(volume_data_group_.id(),
+<span class="lineNum">     233 </span>            :                       &quot;ObservationId&quot; + std::to_string(observation_id));
+<span class="lineNum">     234 </span>            :   std::remove(tensor_components.begin(), tensor_components.end(),
+<span class="lineNum">     235 </span>            :               &quot;connectivity&quot;);
+<span class="lineNum">     236 </span>            :   std::remove(tensor_components.begin(), tensor_components.end(),
+<span class="lineNum">     237 </span>            :               &quot;total_extents&quot;);
+<span class="lineNum">     238 </span>            :   std::remove(tensor_components.begin(), tensor_components.end(), &quot;grid_names&quot;);
+<span class="lineNum">     239 </span>            :   // std::remove moves the element to the end of the vector, so we still need to
+<span class="lineNum">     240 </span>            :   // actually erase it from the vector
+<span class="lineNum">     241 </span>            :   tensor_components.erase(tensor_components.end() - 3, tensor_components.end());
+<span class="lineNum">     242 </span>            : 
+<span class="lineNum">     243 </span>            :   return tensor_components;
+<span class="lineNum">     244 </span>            : }
+<span class="lineNum">     245 </span>            : 
+<span class="lineNum">     246 </span>            : std::vector&lt;std::string&gt; VolumeData::get_grid_names(
+<span class="lineNum">     247 </span>            :     const size_t observation_id) const noexcept {
+<span class="lineNum">     248 </span>            :   const std::string path = &quot;ObservationId&quot; + std::to_string(observation_id);
+<span class="lineNum">     249 </span>            :   detail::OpenGroup observation_group(volume_data_group_.id(), path,
+<span class="lineNum">     250 </span>            :                                       AccessType::ReadOnly);
+<span class="lineNum">     251 </span>            :   const std::vector&lt;char&gt; names =
+<span class="lineNum">     252 </span>            :       h5::read_data&lt;1, std::vector&lt;char&gt;&gt;(observation_group.id(), &quot;grid_names&quot;);
+<span class="lineNum">     253 </span>            :   const std::string all_names(names.begin(), names.end());
+<span class="lineNum">     254 </span>            :   std::vector&lt;std::string&gt; grid_names{};
+<span class="lineNum">     255 </span>            :   boost::split(grid_names, all_names, [this](const char c) noexcept {
+<span class="lineNum">     256 </span>            :     return c == this-&gt;separator();
+<span class="lineNum">     257 </span>            :   });
+<span class="lineNum">     258 </span>            :   // boost::split counts the last separator as a split even though there are no
+<span class="lineNum">     259 </span>            :   // characters after it, so the last entry of the vector is empty
+<span class="lineNum">     260 </span>            :   grid_names.pop_back();
+<span class="lineNum">     261 </span>            :   return grid_names;
+<span class="lineNum">     262 </span>            : }
+<span class="lineNum">     263 </span>            : 
+<span class="lineNum">     264 </span>            : DataVector VolumeData::get_tensor_component(
+<span class="lineNum">     265 </span>            :     const size_t observation_id, const std::string&amp; tensor_component) const
+<span class="lineNum">     266 </span>            :     noexcept {
+<span class="lineNum">     267 </span>            :   const std::string path = &quot;ObservationId&quot; + std::to_string(observation_id);
+<span class="lineNum">     268 </span>            :   detail::OpenGroup observation_group(volume_data_group_.id(), path,
+<span class="lineNum">     269 </span>            :                                       AccessType::ReadOnly);
+<span class="lineNum">     270 </span>            : 
+<span class="lineNum">     271 </span>            :   const hid_t dataset_id =
+<span class="lineNum">     272 </span>            :       h5::open_dataset(observation_group.id(), tensor_component);
+<span class="lineNum">     273 </span>            :   const hid_t dataspace_id = h5::open_dataspace(dataset_id);
+<span class="lineNum">     274 </span>            :   const auto rank =
+<span class="lineNum">     275 </span>            :       static_cast&lt;size_t&gt;(H5Sget_simple_extent_ndims(dataspace_id));
+<span class="lineNum">     276 </span>            :   h5::close_dataspace(dataspace_id);
+<span class="lineNum">     277 </span>            :   h5::close_dataset(dataset_id);
+<span class="lineNum">     278 </span>            :   switch (rank) {
+<span class="lineNum">     279 </span>            :     case 1:
+<span class="lineNum">     280 </span>            :       return h5::read_data&lt;1, DataVector&gt;(observation_group.id(),
+<span class="lineNum">     281 </span>            :                                           tensor_component);
+<span class="lineNum">     282 </span>            :     case 2:
+<span class="lineNum">     283 </span>            :       return h5::read_data&lt;2, DataVector&gt;(observation_group.id(),
+<span class="lineNum">     284 </span>            :                                           tensor_component);
+<span class="lineNum">     285 </span>            :     case 3:
+<span class="lineNum">     286 </span>            :       return h5::read_data&lt;3, DataVector&gt;(observation_group.id(),
+<span class="lineNum">     287 </span>            :                                           tensor_component);
+<span class="lineNum">     288 </span>            :     default:
+<span class="lineNum">     289 </span>            :       ERROR(&quot;Rank must be 1, 2, or 3. Received data with Rank = &quot; &lt;&lt; rank);
+<span class="lineNum">     290 </span>            :   }
+<span class="lineNum">     291 </span>            : }
+<span class="lineNum">     292 </span>            : 
+<span class="lineNum">     293 </span>            : std::vector&lt;std::vector&lt;size_t&gt;&gt; VolumeData::get_extents(
+<span class="lineNum">     294 </span>            :     const size_t observation_id) const noexcept {
+<span class="lineNum">     295 </span>            :   const std::string path = &quot;ObservationId&quot; + std::to_string(observation_id);
+<span class="lineNum">     296 </span>            :   detail::OpenGroup observation_group(volume_data_group_.id(), path,
+<span class="lineNum">     297 </span>            :                                       AccessType::ReadOnly);
+<span class="lineNum">     298 </span>            :   const auto dim =
+<span class="lineNum">     299 </span>            :       h5::read_value_attribute&lt;size_t&gt;(volume_data_group_.id(), &quot;dimension&quot;);
+<span class="lineNum">     300 </span>            :   const auto extents_per_element = static_cast&lt;long&gt;(dim);
+<span class="lineNum">     301 </span>            :   const auto total_extents = h5::read_data&lt;1, std::vector&lt;size_t&gt;&gt;(
+<span class="lineNum">     302 </span>            :       observation_group.id(), &quot;total_extents&quot;);
+<span class="lineNum">     303 </span>            :   std::vector&lt;std::vector&lt;size_t&gt;&gt; individual_extents;
+<span class="lineNum">     304 </span>            :   individual_extents.reserve(total_extents.size() / dim);
+<span class="lineNum">     305 </span>            :   for (auto iter = total_extents.begin(); iter != total_extents.end();
+<span class="lineNum">     306 </span>            :        iter += extents_per_element) {
+<span class="lineNum">     307 </span>            :     individual_extents.emplace_back(iter, iter + extents_per_element);
+<span class="lineNum">     308 </span>            :   }
+<span class="lineNum">     309 </span>            :   return individual_extents;
+<span class="lineNum">     310 </span>            : }
+<span class="lineNum">     311 </span>            : 
+<span class="lineNum">     312 </span>            : std::pair&lt;size_t, size_t&gt; offset_and_length_for_grid(
+<span class="lineNum">     313 </span>            :     const std::string&amp; grid_name,
+<span class="lineNum">     314 </span>            :     const std::vector&lt;std::string&gt;&amp; all_grid_names,
+<span class="lineNum">     315 </span>            :     const std::vector&lt;std::vector&lt;size_t&gt;&gt;&amp; all_extents) noexcept {
+<span class="lineNum">     316 </span>            :   auto found_grid_name = alg::find(all_grid_names, grid_name);
+<span class="lineNum">     317 </span>            :   if (found_grid_name == all_grid_names.end()) {
+<span class="lineNum">     318 </span>            :     ERROR(&quot;Found no grid named '&quot; + grid_name + &quot;'.&quot;);
+<span class="lineNum">     319 </span>            :   } else {
+<span class="lineNum">     320 </span>            :     const auto element_index =
+<span class="lineNum">     321 </span>            :         std::distance(all_grid_names.begin(), found_grid_name);
+<span class="lineNum">     322 </span>            :     const size_t element_data_offset = std::accumulate(
+<span class="lineNum">     323 </span>            :         all_extents.begin(), all_extents.begin() + element_index,
+<span class="lineNum">     324 </span>            :         0_st, [](size_t offset, std::vector&lt;size_t&gt; extents) noexcept {
+<span class="lineNum">     325 </span>            :           return offset + alg::accumulate(extents, 1_st, std::multiplies&lt;&gt;{});
+<span class="lineNum">     326 </span>            :         });
+<span class="lineNum">     327 </span>            :     const size_t element_data_length = alg::accumulate(
+<span class="lineNum">     328 </span>            :         gsl::at(all_extents, element_index), 1_st, std::multiplies&lt;&gt;{});
+<span class="lineNum">     329 </span>            :     return {element_data_offset, element_data_length};
+<span class="lineNum">     330 </span>            :   }
+<span class="lineNum">     331 </span>            : }
+<span class="lineNum">     332 </span>            : 
+<span class="lineNum">     333 </span>            : size_t VolumeData::get_dimension() const noexcept {
+<span class="lineNum">     334 </span>            :   return h5::read_value_attribute&lt;double&gt;(volume_data_group_.id(), &quot;dimension&quot;);
+<span class="lineNum">     335 </span>            : }
+<span class="lineNum">     336 </span>            : 
+<span class="lineNum">     337 </span>            : }  // namespace h5
+<span class="lineNum">     338 </span>            : /// \endcond HIDDEN_SYMBOLS
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.13</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

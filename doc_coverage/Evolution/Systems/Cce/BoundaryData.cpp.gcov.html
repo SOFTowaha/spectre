@@ -1,0 +1,615 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - 5912ac2e49a80e6a27b3707c9a1e6ce5248b1b2a - Evolution/Systems/Cce/BoundaryData.cpp</title>
+  <link rel="stylesheet" type="text/css" href="../../../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title"> SpECTRE Documentation Coverage Report</td></tr>
+    <tr><td class="ruler"><img src="../../../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../../../index.html">top level</a> - <a href="index.html">Evolution/Systems/Cce</a> - BoundaryData.cpp</td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+             <td class="headerItem">Commit:</td>
+             <td class="headerValue"><a target="_blank" href="https://github.com/sxs-collaboration/spectre/commit/5912ac2e49a80e6a27b3707c9a1e6ce5248b1b2a">5912ac2e49a80e6a27b3707c9a1e6ce5248b1b2a</a></td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">1</td>
+            <td class="headerCovTableEntry">10</td>
+            <td class="headerCovTableEntryLo">10.0 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2019-12-02 22:01:08</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td class="headerItem">Legend:</td>
+            <td class="headerValueLeg">            Lines:
+            <span class="coverLegendCov">hit</span>
+            <span class="coverLegendNoCov">not hit</span>
+</td>
+            <td></td>
+          </tr>
+          <tr><td><img src="../../../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../../../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">          Line data    Source code</pre>
+<pre class="source">
+<span class="lineNum">       1 </span><span class="lineNoCov">          0 : // Distributed under the MIT License.</span>
+<span class="lineNum">       2 </span>            : // See LICENSE.txt for details.
+<span class="lineNum">       3 </span>            : 
+<span class="lineNum">       4 </span>            : #include &quot;Evolution/Systems/Cce/BoundaryData.hpp&quot;
+<span class="lineNum">       5 </span>            : 
+<span class="lineNum">       6 </span>            : #include &lt;cstddef&gt;
+<span class="lineNum">       7 </span>            : 
+<span class="lineNum">       8 </span>            : #include &quot;DataStructures/ComplexDataVector.hpp&quot;
+<span class="lineNum">       9 </span>            : #include &quot;DataStructures/DataVector.hpp&quot;
+<span class="lineNum">      10 </span>            : #include &quot;DataStructures/SpinWeighted.hpp&quot;
+<span class="lineNum">      11 </span>            : #include &quot;DataStructures/Tensor/EagerMath/Magnitude.hpp&quot;
+<span class="lineNum">      12 </span>            : #include &quot;DataStructures/Tensor/Tensor.hpp&quot;
+<span class="lineNum">      13 </span>            : #include &quot;DataStructures/Tensor/TypeAliases.hpp&quot;
+<span class="lineNum">      14 </span>            : #include &quot;NumericalAlgorithms/Spectral/SwshCollocation.hpp&quot;
+<span class="lineNum">      15 </span>            : #include &quot;NumericalAlgorithms/Spectral/SwshDerivatives.hpp&quot;
+<span class="lineNum">      16 </span>            : #include &quot;PointwiseFunctions/GeneralRelativity/ComputeGhQuantities.hpp&quot;
+<span class="lineNum">      17 </span>            : #include &quot;PointwiseFunctions/GeneralRelativity/ComputeSpacetimeQuantities.hpp&quot;
+<span class="lineNum">      18 </span>            : #include &quot;Utilities/ContainerHelpers.hpp&quot;
+<span class="lineNum">      19 </span>            : #include &quot;Utilities/Math.hpp&quot;
+<span class="lineNum">      20 </span>            : 
+<span class="lineNum">      21 </span><span class="lineCov">          1 : namespace Cce {</span>
+<span class="lineNum">      22 </span>            : 
+<span class="lineNum">      23 </span><span class="lineNoCov">          0 : void trigonometric_functions_on_swsh_collocation(</span>
+<span class="lineNum">      24 </span>            :     const gsl::not_null&lt;Scalar&lt;DataVector&gt;*&gt; cos_phi,
+<span class="lineNum">      25 </span>            :     const gsl::not_null&lt;Scalar&lt;DataVector&gt;*&gt; cos_theta,
+<span class="lineNum">      26 </span>            :     const gsl::not_null&lt;Scalar&lt;DataVector&gt;*&gt; sin_phi,
+<span class="lineNum">      27 </span>            :     const gsl::not_null&lt;Scalar&lt;DataVector&gt;*&gt; sin_theta,
+<span class="lineNum">      28 </span>            :     const size_t l_max) noexcept {
+<span class="lineNum">      29 </span>            :   const size_t size = Spectral::Swsh::number_of_swsh_collocation_points(l_max);
+<span class="lineNum">      30 </span>            :   destructive_resize_components(cos_phi, size);
+<span class="lineNum">      31 </span>            :   destructive_resize_components(cos_theta, size);
+<span class="lineNum">      32 </span>            :   destructive_resize_components(sin_phi, size);
+<span class="lineNum">      33 </span>            :   destructive_resize_components(sin_theta, size);
+<span class="lineNum">      34 </span>            : 
+<span class="lineNum">      35 </span>            :   const auto&amp; collocation = Spectral::Swsh::cached_collocation_metadata&lt;
+<span class="lineNum">      36 </span>            :       Spectral::Swsh::ComplexRepresentation::Interleaved&gt;(l_max);
+<span class="lineNum">      37 </span>            :   for (const auto&amp; collocation_point : collocation) {
+<span class="lineNum">      38 </span>            :     get(*sin_theta)[collocation_point.offset] = sin(collocation_point.theta);
+<span class="lineNum">      39 </span>            :     get(*cos_theta)[collocation_point.offset] = cos(collocation_point.theta);
+<span class="lineNum">      40 </span>            :     get(*sin_phi)[collocation_point.offset] = sin(collocation_point.phi);
+<span class="lineNum">      41 </span>            :     get(*cos_phi)[collocation_point.offset] = cos(collocation_point.phi);
+<span class="lineNum">      42 </span>            :   }
+<span class="lineNum">      43 </span>            : }
+<span class="lineNum">      44 </span>            : 
+<span class="lineNum">      45 </span><span class="lineNoCov">          0 : void cartesian_to_spherical_coordinates_and_jacobians(</span>
+<span class="lineNum">      46 </span>            :     const gsl::not_null&lt;tnsr::I&lt;DataVector, 3&gt;*&gt; unit_cartesian_coords,
+<span class="lineNum">      47 </span>            :     const gsl::not_null&lt;jacobian_tensor*&gt; cartesian_to_spherical_jacobian,
+<span class="lineNum">      48 </span>            :     const gsl::not_null&lt;inverse_jacobian_tensor*&gt;
+<span class="lineNum">      49 </span>            :         inverse_cartesian_to_spherical_jacobian,
+<span class="lineNum">      50 </span>            :     const Scalar&lt;DataVector&gt;&amp; cos_phi, const Scalar&lt;DataVector&gt;&amp; cos_theta,
+<span class="lineNum">      51 </span>            :     const Scalar&lt;DataVector&gt;&amp; sin_phi, const Scalar&lt;DataVector&gt;&amp; sin_theta,
+<span class="lineNum">      52 </span>            :     const double extraction_radius) noexcept {
+<span class="lineNum">      53 </span>            :   const size_t size = get(cos_phi).size();
+<span class="lineNum">      54 </span>            :   destructive_resize_components(unit_cartesian_coords, size);
+<span class="lineNum">      55 </span>            :   destructive_resize_components(cartesian_to_spherical_jacobian, size);
+<span class="lineNum">      56 </span>            :   destructive_resize_components(inverse_cartesian_to_spherical_jacobian, size);
+<span class="lineNum">      57 </span>            : 
+<span class="lineNum">      58 </span>            :   // note: factor of r scaled out
+<span class="lineNum">      59 </span>            :   get&lt;0&gt;(*unit_cartesian_coords) = get(sin_theta) * get(cos_phi);
+<span class="lineNum">      60 </span>            :   get&lt;1&gt;(*unit_cartesian_coords) = get(sin_theta) * get(sin_phi);
+<span class="lineNum">      61 </span>            :   get&lt;2&gt;(*unit_cartesian_coords) = get(cos_theta);
+<span class="lineNum">      62 </span>            : 
+<span class="lineNum">      63 </span>            :   // dx/dr   dy/dr  dz/dr
+<span class="lineNum">      64 </span>            :   get&lt;0, 0&gt;(*cartesian_to_spherical_jacobian) = get(sin_theta) * get(cos_phi);
+<span class="lineNum">      65 </span>            :   get&lt;0, 1&gt;(*cartesian_to_spherical_jacobian) = get(sin_theta) * get(sin_phi);
+<span class="lineNum">      66 </span>            :   get&lt;0, 2&gt;(*cartesian_to_spherical_jacobian) = get(cos_theta);
+<span class="lineNum">      67 </span>            :   // dx/dtheta   dy/dtheta  dz/dtheta
+<span class="lineNum">      68 </span>            :   get&lt;1, 0&gt;(*cartesian_to_spherical_jacobian) =
+<span class="lineNum">      69 </span>            :       extraction_radius * get(cos_theta) * get(cos_phi);
+<span class="lineNum">      70 </span>            :   get&lt;1, 1&gt;(*cartesian_to_spherical_jacobian) =
+<span class="lineNum">      71 </span>            :       extraction_radius * get(cos_theta) * get(sin_phi);
+<span class="lineNum">      72 </span>            :   get&lt;1, 2&gt;(*cartesian_to_spherical_jacobian) =
+<span class="lineNum">      73 </span>            :       -extraction_radius * get(sin_theta);
+<span class="lineNum">      74 </span>            :   // (1/sin(theta)) { dx/dphi,   dy/dphi,  dz/dphi }
+<span class="lineNum">      75 </span>            :   get&lt;2, 0&gt;(*cartesian_to_spherical_jacobian) =
+<span class="lineNum">      76 </span>            :       -extraction_radius * get(sin_phi);
+<span class="lineNum">      77 </span>            :   get&lt;2, 1&gt;(*cartesian_to_spherical_jacobian) =
+<span class="lineNum">      78 </span>            :       extraction_radius * get(cos_phi);
+<span class="lineNum">      79 </span>            :   get&lt;2, 2&gt;(*cartesian_to_spherical_jacobian) = 0.0;
+<span class="lineNum">      80 </span>            : 
+<span class="lineNum">      81 </span>            :   // dr/dx   dtheta/dx   dphi/dx * sin(theta)
+<span class="lineNum">      82 </span>            :   get&lt;0, 0&gt;(*inverse_cartesian_to_spherical_jacobian) =
+<span class="lineNum">      83 </span>            :       get(cos_phi) * get(sin_theta);
+<span class="lineNum">      84 </span>            :   get&lt;0, 1&gt;(*inverse_cartesian_to_spherical_jacobian) =
+<span class="lineNum">      85 </span>            :       get(cos_phi) * get(cos_theta) / extraction_radius;
+<span class="lineNum">      86 </span>            :   get&lt;0, 2&gt;(*inverse_cartesian_to_spherical_jacobian) =
+<span class="lineNum">      87 </span>            :       -get(sin_phi) / (extraction_radius);
+<span class="lineNum">      88 </span>            :   // dr/dy   dtheta/dy   dphi/dy * sin(theta)
+<span class="lineNum">      89 </span>            :   get&lt;1, 0&gt;(*inverse_cartesian_to_spherical_jacobian) =
+<span class="lineNum">      90 </span>            :       get(sin_phi) * get(sin_theta);
+<span class="lineNum">      91 </span>            :   get&lt;1, 1&gt;(*inverse_cartesian_to_spherical_jacobian) =
+<span class="lineNum">      92 </span>            :       get(cos_theta) * get(sin_phi) / extraction_radius;
+<span class="lineNum">      93 </span>            :   get&lt;1, 2&gt;(*inverse_cartesian_to_spherical_jacobian) =
+<span class="lineNum">      94 </span>            :       get(cos_phi) / (extraction_radius);
+<span class="lineNum">      95 </span>            :   // dr/dz   dtheta/dz   dphi/dz * sin(theta)
+<span class="lineNum">      96 </span>            :   get&lt;2, 0&gt;(*inverse_cartesian_to_spherical_jacobian) = get(cos_theta);
+<span class="lineNum">      97 </span>            :   get&lt;2, 1&gt;(*inverse_cartesian_to_spherical_jacobian) =
+<span class="lineNum">      98 </span>            :       -get(sin_theta) / extraction_radius;
+<span class="lineNum">      99 </span>            :   get&lt;2, 2&gt;(*inverse_cartesian_to_spherical_jacobian) = 0.0;
+<span class="lineNum">     100 </span>            : }
+<span class="lineNum">     101 </span>            : 
+<span class="lineNum">     102 </span><span class="lineNoCov">          0 : void null_metric_and_derivative(</span>
+<span class="lineNum">     103 </span>            :     const gsl::not_null&lt;tnsr::aa&lt;DataVector, 3, Frame::RadialNull&gt;*&gt;
+<span class="lineNum">     104 </span>            :         du_null_metric,
+<span class="lineNum">     105 </span>            :     const gsl::not_null&lt;tnsr::aa&lt;DataVector, 3, Frame::RadialNull&gt;*&gt;
+<span class="lineNum">     106 </span>            :         null_metric,
+<span class="lineNum">     107 </span>            :     const jacobian_tensor&amp; cartesian_to_spherical_jacobian,
+<span class="lineNum">     108 </span>            :     const tnsr::aa&lt;DataVector, 3&gt;&amp; dt_spacetime_metric,
+<span class="lineNum">     109 </span>            :     const tnsr::aa&lt;DataVector, 3&gt;&amp; spacetime_metric) noexcept {
+<span class="lineNum">     110 </span>            :   const size_t size = get&lt;0, 0&gt;(spacetime_metric).size();
+<span class="lineNum">     111 </span>            :   destructive_resize_components(null_metric, size);
+<span class="lineNum">     112 </span>            :   destructive_resize_components(du_null_metric, size);
+<span class="lineNum">     113 </span>            : 
+<span class="lineNum">     114 </span>            :   get&lt;0, 0&gt;(*null_metric) = get&lt;0, 0&gt;(spacetime_metric);
+<span class="lineNum">     115 </span>            :   get&lt;0, 0&gt;(*du_null_metric) = get&lt;0, 0&gt;(dt_spacetime_metric);
+<span class="lineNum">     116 </span>            : 
+<span class="lineNum">     117 </span>            :   get&lt;0, 1&gt;(*null_metric) = -1.0;
+<span class="lineNum">     118 </span>            :   get&lt;0, 1&gt;(*du_null_metric) = 0.0;
+<span class="lineNum">     119 </span>            : 
+<span class="lineNum">     120 </span>            :   for (size_t i = 0; i &lt; 3; ++i) {
+<span class="lineNum">     121 </span>            :     null_metric-&gt;get(1, i + 1) = 0.0;
+<span class="lineNum">     122 </span>            :     du_null_metric-&gt;get(1, i + 1) = 0.0;
+<span class="lineNum">     123 </span>            :   }
+<span class="lineNum">     124 </span>            : 
+<span class="lineNum">     125 </span>            :   for (size_t A = 0; A &lt; 2; ++A) {
+<span class="lineNum">     126 </span>            :     null_metric-&gt;get(0, A + 2) = cartesian_to_spherical_jacobian.get(A + 1, 0) *
+<span class="lineNum">     127 </span>            :                                  spacetime_metric.get(0, 1);
+<span class="lineNum">     128 </span>            :     du_null_metric-&gt;get(0, A + 2) =
+<span class="lineNum">     129 </span>            :         cartesian_to_spherical_jacobian.get(A + 1, 0) *
+<span class="lineNum">     130 </span>            :         dt_spacetime_metric.get(0, 1);
+<span class="lineNum">     131 </span>            :     for (size_t i = 1; i &lt; 3; ++i) {
+<span class="lineNum">     132 </span>            :       null_metric-&gt;get(0, A + 2) +=
+<span class="lineNum">     133 </span>            :           cartesian_to_spherical_jacobian.get(A + 1, i) *
+<span class="lineNum">     134 </span>            :           spacetime_metric.get(0, i + 1);
+<span class="lineNum">     135 </span>            :       du_null_metric-&gt;get(0, A + 2) +=
+<span class="lineNum">     136 </span>            :           cartesian_to_spherical_jacobian.get(A + 1, i) *
+<span class="lineNum">     137 </span>            :           dt_spacetime_metric.get(0, i + 1);
+<span class="lineNum">     138 </span>            :     }
+<span class="lineNum">     139 </span>            :   }
+<span class="lineNum">     140 </span>            : 
+<span class="lineNum">     141 </span>            :   for (size_t A = 0; A &lt; 2; ++A) {
+<span class="lineNum">     142 </span>            :     for (size_t B = A; B &lt; 2; ++B) {
+<span class="lineNum">     143 </span>            :       null_metric-&gt;get(A + 2, B + 2) =
+<span class="lineNum">     144 </span>            :           cartesian_to_spherical_jacobian.get(A + 1, 0) *
+<span class="lineNum">     145 </span>            :           cartesian_to_spherical_jacobian.get(B + 1, 0) *
+<span class="lineNum">     146 </span>            :           spacetime_metric.get(1, 1);
+<span class="lineNum">     147 </span>            :       du_null_metric-&gt;get(A + 2, B + 2) =
+<span class="lineNum">     148 </span>            :           cartesian_to_spherical_jacobian.get(A + 1, 0) *
+<span class="lineNum">     149 </span>            :           cartesian_to_spherical_jacobian.get(B + 1, 0) *
+<span class="lineNum">     150 </span>            :           dt_spacetime_metric.get(1, 1);
+<span class="lineNum">     151 </span>            : 
+<span class="lineNum">     152 </span>            :       for (size_t i = 1; i &lt; 3; ++i) {
+<span class="lineNum">     153 </span>            :         null_metric-&gt;get(A + 2, B + 2) +=
+<span class="lineNum">     154 </span>            :             cartesian_to_spherical_jacobian.get(A + 1, i) *
+<span class="lineNum">     155 </span>            :             cartesian_to_spherical_jacobian.get(B + 1, i) *
+<span class="lineNum">     156 </span>            :             spacetime_metric.get(i + 1, i + 1);
+<span class="lineNum">     157 </span>            :         du_null_metric-&gt;get(A + 2, B + 2) +=
+<span class="lineNum">     158 </span>            :             cartesian_to_spherical_jacobian.get(A + 1, i) *
+<span class="lineNum">     159 </span>            :             cartesian_to_spherical_jacobian.get(B + 1, i) *
+<span class="lineNum">     160 </span>            :             dt_spacetime_metric.get(i + 1, i + 1);
+<span class="lineNum">     161 </span>            :       }
+<span class="lineNum">     162 </span>            : 
+<span class="lineNum">     163 </span>            :       for (size_t i = 0; i &lt; 3; ++i) {
+<span class="lineNum">     164 </span>            :         for (size_t j = i + 1; j &lt; 3; ++j) {
+<span class="lineNum">     165 </span>            :           // the off-diagonal pieces must be explicitly symmetrized
+<span class="lineNum">     166 </span>            :           null_metric-&gt;get(A + 2, B + 2) +=
+<span class="lineNum">     167 </span>            :               (cartesian_to_spherical_jacobian.get(A + 1, i) *
+<span class="lineNum">     168 </span>            :                    cartesian_to_spherical_jacobian.get(B + 1, j) +
+<span class="lineNum">     169 </span>            :                cartesian_to_spherical_jacobian.get(A + 1, j) *
+<span class="lineNum">     170 </span>            :                    cartesian_to_spherical_jacobian.get(B + 1, i)) *
+<span class="lineNum">     171 </span>            :               spacetime_metric.get(i + 1, j + 1);
+<span class="lineNum">     172 </span>            :           du_null_metric-&gt;get(A + 2, B + 2) +=
+<span class="lineNum">     173 </span>            :               (cartesian_to_spherical_jacobian.get(A + 1, i) *
+<span class="lineNum">     174 </span>            :                    cartesian_to_spherical_jacobian.get(B + 1, j) +
+<span class="lineNum">     175 </span>            :                cartesian_to_spherical_jacobian.get(A + 1, j) *
+<span class="lineNum">     176 </span>            :                    cartesian_to_spherical_jacobian.get(B + 1, i)) *
+<span class="lineNum">     177 </span>            :               dt_spacetime_metric.get(i + 1, j + 1);
+<span class="lineNum">     178 </span>            :         }
+<span class="lineNum">     179 </span>            :       }
+<span class="lineNum">     180 </span>            :     }
+<span class="lineNum">     181 </span>            :   }
+<span class="lineNum">     182 </span>            : 
+<span class="lineNum">     183 </span>            :   for (size_t a = 0; a &lt; 4; ++a) {
+<span class="lineNum">     184 </span>            :     for (size_t b = 0; b &lt; a; ++b) {
+<span class="lineNum">     185 </span>            :       null_metric-&gt;get(a, b) = null_metric-&gt;get(b, a);
+<span class="lineNum">     186 </span>            :       du_null_metric-&gt;get(a, b) = du_null_metric-&gt;get(b, a);
+<span class="lineNum">     187 </span>            :     }
+<span class="lineNum">     188 </span>            :   }
+<span class="lineNum">     189 </span>            : }
+<span class="lineNum">     190 </span>            : 
+<span class="lineNum">     191 </span><span class="lineNoCov">          0 : void worldtube_normal_and_derivatives(</span>
+<span class="lineNum">     192 </span>            :     const gsl::not_null&lt;tnsr::I&lt;DataVector, 3&gt;*&gt; worldtube_normal,
+<span class="lineNum">     193 </span>            :     const gsl::not_null&lt;tnsr::I&lt;DataVector, 3&gt;*&gt; dt_worldtube_normal,
+<span class="lineNum">     194 </span>            :     const Scalar&lt;DataVector&gt;&amp; cos_phi, const Scalar&lt;DataVector&gt;&amp; cos_theta,
+<span class="lineNum">     195 </span>            :     const tnsr::aa&lt;DataVector, 3&gt;&amp; spacetime_metric,
+<span class="lineNum">     196 </span>            :     const tnsr::aa&lt;DataVector, 3&gt;&amp; dt_spacetime_metric,
+<span class="lineNum">     197 </span>            :     const Scalar&lt;DataVector&gt;&amp; sin_phi, const Scalar&lt;DataVector&gt;&amp; sin_theta,
+<span class="lineNum">     198 </span>            :     const tnsr::II&lt;DataVector, 3&gt;&amp; inverse_spatial_metric) noexcept {
+<span class="lineNum">     199 </span>            :   const size_t size = get&lt;0, 0&gt;(spacetime_metric).size();
+<span class="lineNum">     200 </span>            :   destructive_resize_components(worldtube_normal, size);
+<span class="lineNum">     201 </span>            :   destructive_resize_components(dt_worldtube_normal, size);
+<span class="lineNum">     202 </span>            : 
+<span class="lineNum">     203 </span>            :   // Allocation
+<span class="lineNum">     204 </span>            :   Variables&lt;tmpl::list&lt;::Tags::Tempi&lt;0, 3&gt;, ::Tags::TempScalar&lt;1&gt;&gt;&gt;
+<span class="lineNum">     205 </span>            :       aggregated_buffers{size};
+<span class="lineNum">     206 </span>            :   tnsr::i&lt;DataVector, 3&gt;&amp; sigma = get&lt;::Tags::Tempi&lt;0, 3&gt;&gt;(aggregated_buffers);
+<span class="lineNum">     207 </span>            :   get&lt;0&gt;(sigma) = get(cos_phi) * square(get(sin_theta));
+<span class="lineNum">     208 </span>            :   get&lt;1&gt;(sigma) = get(sin_phi) * square(get(sin_theta));
+<span class="lineNum">     209 </span>            :   get&lt;2&gt;(sigma) = get(sin_theta) * get(cos_theta);
+<span class="lineNum">     210 </span>            : 
+<span class="lineNum">     211 </span>            :   // Allocation
+<span class="lineNum">     212 </span>            :   magnitude(make_not_null(&amp;get&lt;::Tags::TempScalar&lt;1&gt;&gt;(aggregated_buffers)),
+<span class="lineNum">     213 </span>            :             sigma, inverse_spatial_metric);
+<span class="lineNum">     214 </span>            :   const DataVector&amp; norm_of_sigma =
+<span class="lineNum">     215 </span>            :       get(get&lt;::Tags::TempScalar&lt;1&gt;&gt;(aggregated_buffers));
+<span class="lineNum">     216 </span>            : 
+<span class="lineNum">     217 </span>            :   get&lt;0&gt;(sigma) /= norm_of_sigma;
+<span class="lineNum">     218 </span>            :   get&lt;1&gt;(sigma) /= norm_of_sigma;
+<span class="lineNum">     219 </span>            :   get&lt;2&gt;(sigma) /= norm_of_sigma;
+<span class="lineNum">     220 </span>            : 
+<span class="lineNum">     221 </span>            :   for (size_t i = 0; i &lt; 3; ++i) {
+<span class="lineNum">     222 </span>            :     worldtube_normal-&gt;get(i) = inverse_spatial_metric.get(i, 0) * sigma.get(0);
+<span class="lineNum">     223 </span>            :     for (size_t j = 1; j &lt; 3; ++j) {
+<span class="lineNum">     224 </span>            :       worldtube_normal-&gt;get(i) +=
+<span class="lineNum">     225 </span>            :           inverse_spatial_metric.get(i, j) * sigma.get(j);
+<span class="lineNum">     226 </span>            :     }
+<span class="lineNum">     227 </span>            :   }
+<span class="lineNum">     228 </span>            : 
+<span class="lineNum">     229 </span>            :   for (size_t i = 0; i &lt; 3; ++i) {
+<span class="lineNum">     230 </span>            :     for (size_t m = 0; m &lt; 3; ++m) {
+<span class="lineNum">     231 </span>            :       for (size_t n = 0; n &lt; 3; ++n) {
+<span class="lineNum">     232 </span>            :         if (UNLIKELY(m == 0 and n == 0)) {
+<span class="lineNum">     233 </span>            :           dt_worldtube_normal-&gt;get(i) =
+<span class="lineNum">     234 </span>            :               (0.5 * worldtube_normal-&gt;get(i) * get&lt;0&gt;(*worldtube_normal) -
+<span class="lineNum">     235 </span>            :                inverse_spatial_metric.get(i, 0)) *
+<span class="lineNum">     236 </span>            :               get&lt;0&gt;(*worldtube_normal) * get&lt;1, 1&gt;(dt_spacetime_metric);
+<span class="lineNum">     237 </span>            :         } else {
+<span class="lineNum">     238 </span>            :           dt_worldtube_normal-&gt;get(i) +=
+<span class="lineNum">     239 </span>            :               (0.5 * worldtube_normal-&gt;get(i) * worldtube_normal-&gt;get(m) -
+<span class="lineNum">     240 </span>            :                inverse_spatial_metric.get(i, m)) *
+<span class="lineNum">     241 </span>            :               worldtube_normal-&gt;get(n) * dt_spacetime_metric.get(m + 1, n + 1);
+<span class="lineNum">     242 </span>            :         }
+<span class="lineNum">     243 </span>            :       }
+<span class="lineNum">     244 </span>            :     }
+<span class="lineNum">     245 </span>            :   }
+<span class="lineNum">     246 </span>            : }
+<span class="lineNum">     247 </span>            : 
+<span class="lineNum">     248 </span><span class="lineNoCov">          0 : void null_vector_l_and_derivatives(</span>
+<span class="lineNum">     249 </span>            :     const gsl::not_null&lt;tnsr::A&lt;DataVector, 3&gt;*&gt; du_null_l,
+<span class="lineNum">     250 </span>            :     const gsl::not_null&lt;tnsr::A&lt;DataVector, 3&gt;*&gt; null_l,
+<span class="lineNum">     251 </span>            :     const tnsr::I&lt;DataVector, 3&gt;&amp; dt_worldtube_normal,
+<span class="lineNum">     252 </span>            :     const Scalar&lt;DataVector&gt;&amp; dt_lapse,
+<span class="lineNum">     253 </span>            :     const tnsr::aa&lt;DataVector, 3&gt;&amp; dt_spacetime_metric,
+<span class="lineNum">     254 </span>            :     const tnsr::I&lt;DataVector, 3&gt;&amp; dt_shift, const Scalar&lt;DataVector&gt;&amp; lapse,
+<span class="lineNum">     255 </span>            :     const tnsr::aa&lt;DataVector, 3&gt;&amp; spacetime_metric,
+<span class="lineNum">     256 </span>            :     const tnsr::I&lt;DataVector, 3&gt;&amp; shift,
+<span class="lineNum">     257 </span>            :     const tnsr::I&lt;DataVector, 3&gt;&amp; worldtube_normal) noexcept {
+<span class="lineNum">     258 </span>            :   const size_t size = get(lapse).size();
+<span class="lineNum">     259 </span>            :   destructive_resize_components(du_null_l, size);
+<span class="lineNum">     260 </span>            :   destructive_resize_components(null_l, size);
+<span class="lineNum">     261 </span>            : 
+<span class="lineNum">     262 </span>            :   // Allocation
+<span class="lineNum">     263 </span>            :   Variables&lt;tmpl::list&lt;::Tags::TempScalar&lt;0&gt;, ::Tags::TempScalar&lt;1&gt;,
+<span class="lineNum">     264 </span>            :                        ::Tags::TempScalar&lt;2&gt;&gt;&gt;
+<span class="lineNum">     265 </span>            :       aggregated_buffer{size};
+<span class="lineNum">     266 </span>            :   DataVector&amp; denominator = get(get&lt;::Tags::TempScalar&lt;0&gt;&gt;(aggregated_buffer));
+<span class="lineNum">     267 </span>            :   DataVector&amp; du_denominator =
+<span class="lineNum">     268 </span>            :       get(get&lt;::Tags::TempScalar&lt;1&gt;&gt;(aggregated_buffer));
+<span class="lineNum">     269 </span>            :   DataVector&amp; one_divided_by_lapse =
+<span class="lineNum">     270 </span>            :       get(get&lt;::Tags::TempScalar&lt;2&gt;&gt;(aggregated_buffer));
+<span class="lineNum">     271 </span>            :   one_divided_by_lapse = 1.0 / get(lapse);
+<span class="lineNum">     272 </span>            :   denominator = get(lapse);
+<span class="lineNum">     273 </span>            :   for (size_t i = 0; i &lt; 3; ++i) {
+<span class="lineNum">     274 </span>            :     // off-diagonal
+<span class="lineNum">     275 </span>            :     for (size_t j = i + 1; j &lt; 3; ++j) {
+<span class="lineNum">     276 </span>            :       denominator -= spacetime_metric.get(i + 1, j + 1) *
+<span class="lineNum">     277 </span>            :                      (shift.get(i) * worldtube_normal.get(j) +
+<span class="lineNum">     278 </span>            :                       shift.get(j) * worldtube_normal.get(i));
+<span class="lineNum">     279 </span>            :     }
+<span class="lineNum">     280 </span>            :     // diagonal
+<span class="lineNum">     281 </span>            :     denominator -= spacetime_metric.get(i + 1, i + 1) * shift.get(i) *
+<span class="lineNum">     282 </span>            :                    worldtube_normal.get(i);
+<span class="lineNum">     283 </span>            :   }
+<span class="lineNum">     284 </span>            :   // buffer re-use because we won't need the uninverted denominator after this.
+<span class="lineNum">     285 </span>            :   DataVector&amp; one_divided_by_denominator =
+<span class="lineNum">     286 </span>            :       get(get&lt;::Tags::TempScalar&lt;0&gt;&gt;(aggregated_buffer));
+<span class="lineNum">     287 </span>            :   one_divided_by_denominator = 1.0 / denominator;
+<span class="lineNum">     288 </span>            :   get&lt;0&gt;(*null_l) = one_divided_by_denominator * one_divided_by_lapse;
+<span class="lineNum">     289 </span>            :   for (size_t i = 0; i &lt; 3; ++i) {
+<span class="lineNum">     290 </span>            :     null_l-&gt;get(i + 1) =
+<span class="lineNum">     291 </span>            :         (worldtube_normal.get(i) - shift.get(i) * one_divided_by_lapse) *
+<span class="lineNum">     292 </span>            :         one_divided_by_denominator;
+<span class="lineNum">     293 </span>            :   }
+<span class="lineNum">     294 </span>            : 
+<span class="lineNum">     295 </span>            :   du_denominator = -get(dt_lapse);
+<span class="lineNum">     296 </span>            :   for (size_t i = 0; i &lt; 3; ++i) {
+<span class="lineNum">     297 </span>            :     for (size_t j = i + 1; j &lt; 3; ++j) {
+<span class="lineNum">     298 </span>            :       // symmetry
+<span class="lineNum">     299 </span>            :       du_denominator += (dt_shift.get(i) * worldtube_normal.get(j) +
+<span class="lineNum">     300 </span>            :                          dt_shift.get(j) * worldtube_normal.get(i)) *
+<span class="lineNum">     301 </span>            :                             spacetime_metric.get(i + 1, j + 1) +
+<span class="lineNum">     302 </span>            :                         (shift.get(i) * worldtube_normal.get(j) +
+<span class="lineNum">     303 </span>            :                          shift.get(j) * worldtube_normal.get(i)) *
+<span class="lineNum">     304 </span>            :                             dt_spacetime_metric.get(i + 1, j + 1) +
+<span class="lineNum">     305 </span>            :                         (shift.get(i) * dt_worldtube_normal.get(j) +
+<span class="lineNum">     306 </span>            :                          shift.get(j) * dt_worldtube_normal.get(i)) *
+<span class="lineNum">     307 </span>            :                             spacetime_metric.get(i + 1, j + 1);
+<span class="lineNum">     308 </span>            :     }
+<span class="lineNum">     309 </span>            :     // diagonal
+<span class="lineNum">     310 </span>            :     du_denominator += dt_shift.get(i) * spacetime_metric.get(i + 1, i + 1) *
+<span class="lineNum">     311 </span>            :                           worldtube_normal.get(i) +
+<span class="lineNum">     312 </span>            :                       shift.get(i) * dt_spacetime_metric.get(i + 1, i + 1) *
+<span class="lineNum">     313 </span>            :                           worldtube_normal.get(i) +
+<span class="lineNum">     314 </span>            :                       shift.get(i) * spacetime_metric.get(i + 1, i + 1) *
+<span class="lineNum">     315 </span>            :                           dt_worldtube_normal.get(i);
+<span class="lineNum">     316 </span>            :   }
+<span class="lineNum">     317 </span>            :   du_denominator *= square(one_divided_by_denominator);
+<span class="lineNum">     318 </span>            : 
+<span class="lineNum">     319 </span>            :   get&lt;0&gt;(*du_null_l) = (du_denominator - get(dt_lapse) * one_divided_by_lapse *
+<span class="lineNum">     320 </span>            :                                              one_divided_by_denominator) *
+<span class="lineNum">     321 </span>            :                        one_divided_by_lapse;
+<span class="lineNum">     322 </span>            :   for (size_t i = 0; i &lt; 3; ++i) {
+<span class="lineNum">     323 </span>            :     du_null_l-&gt;get(i + 1) =
+<span class="lineNum">     324 </span>            :         (dt_worldtube_normal.get(i) - dt_shift.get(i) * one_divided_by_lapse) *
+<span class="lineNum">     325 </span>            :         one_divided_by_denominator;
+<span class="lineNum">     326 </span>            :     du_null_l-&gt;get(i + 1) += shift.get(i) * get(dt_lapse) *
+<span class="lineNum">     327 </span>            :                              square(one_divided_by_lapse) *
+<span class="lineNum">     328 </span>            :                              one_divided_by_denominator;
+<span class="lineNum">     329 </span>            :     du_null_l-&gt;get(i + 1) +=
+<span class="lineNum">     330 </span>            :         (-shift.get(i) * one_divided_by_lapse + worldtube_normal.get(i)) *
+<span class="lineNum">     331 </span>            :         du_denominator;
+<span class="lineNum">     332 </span>            :   }
+<span class="lineNum">     333 </span>            : }
+<span class="lineNum">     334 </span>            : 
+<span class="lineNum">     335 </span><span class="lineNoCov">          0 : void dlambda_null_metric_and_inverse(</span>
+<span class="lineNum">     336 </span>            :     const gsl::not_null&lt;tnsr::aa&lt;DataVector, 3, Frame::RadialNull&gt;*&gt;
+<span class="lineNum">     337 </span>            :         dlambda_null_metric,
+<span class="lineNum">     338 </span>            :     const gsl::not_null&lt;tnsr::AA&lt;DataVector, 3, Frame::RadialNull&gt;*&gt;
+<span class="lineNum">     339 </span>            :         dlambda_inverse_null_metric,
+<span class="lineNum">     340 </span>            :     const tnsr::iA&lt;DataVector, 3&gt;&amp; angular_d_null_l,
+<span class="lineNum">     341 </span>            :     const jacobian_tensor&amp; cartesian_to_spherical_jacobian,
+<span class="lineNum">     342 </span>            :     const tnsr::iaa&lt;DataVector, 3&gt;&amp; phi,
+<span class="lineNum">     343 </span>            :     const tnsr::aa&lt;DataVector, 3&gt;&amp; dt_spacetime_metric,
+<span class="lineNum">     344 </span>            :     const tnsr::A&lt;DataVector, 3&gt;&amp; du_null_l,
+<span class="lineNum">     345 </span>            :     const tnsr::AA&lt;DataVector, 3&gt;&amp; inverse_null_metric,
+<span class="lineNum">     346 </span>            :     const tnsr::A&lt;DataVector, 3&gt;&amp; null_l,
+<span class="lineNum">     347 </span>            :     const tnsr::aa&lt;DataVector, 3&gt;&amp; spacetime_metric) noexcept {
+<span class="lineNum">     348 </span>            :   // first, the (down-index) null metric
+<span class="lineNum">     349 </span>            :   const size_t size = get&lt;0, 0&gt;(spacetime_metric).size();
+<span class="lineNum">     350 </span>            :   destructive_resize_components(dlambda_null_metric, size);
+<span class="lineNum">     351 </span>            :   destructive_resize_components(dlambda_inverse_null_metric, size);
+<span class="lineNum">     352 </span>            : 
+<span class="lineNum">     353 </span>            :   get&lt;0, 0&gt;(*dlambda_null_metric) =
+<span class="lineNum">     354 </span>            :       get&lt;0&gt;(null_l) * get&lt;0, 0&gt;(dt_spacetime_metric) +
+<span class="lineNum">     355 </span>            :       2.0 * get&lt;0&gt;(du_null_l) * get&lt;0, 0&gt;(spacetime_metric);
+<span class="lineNum">     356 </span>            :   for (size_t i = 0; i &lt; 3; ++i) {
+<span class="lineNum">     357 </span>            :     get&lt;0, 0&gt;(*dlambda_null_metric) +=
+<span class="lineNum">     358 </span>            :         null_l.get(i + 1) * phi.get(i, 0, 0) +
+<span class="lineNum">     359 </span>            :         2.0 * du_null_l.get(i + 1) * spacetime_metric.get(i + 1, 0);
+<span class="lineNum">     360 </span>            :   }
+<span class="lineNum">     361 </span>            :   // A0 component
+<span class="lineNum">     362 </span>            :   for (size_t A = 0; A &lt; 2; ++A) {
+<span class="lineNum">     363 </span>            :     dlambda_null_metric-&gt;get(0, A + 2) =
+<span class="lineNum">     364 </span>            :         cartesian_to_spherical_jacobian.get(A + 1, 0) *
+<span class="lineNum">     365 </span>            :             (get&lt;0&gt;(du_null_l) * get&lt;1, 0&gt;(spacetime_metric) +
+<span class="lineNum">     366 </span>            :              get&lt;0&gt;(null_l) * get&lt;1, 0&gt;(dt_spacetime_metric)) +
+<span class="lineNum">     367 </span>            :         angular_d_null_l.get(A + 1, 1) * get&lt;1, 0&gt;(spacetime_metric) +
+<span class="lineNum">     368 </span>            :         angular_d_null_l.get(A + 1, 0) * get&lt;0, 0&gt;(spacetime_metric);
+<span class="lineNum">     369 </span>            :     for (size_t k = 1; k &lt; 3; ++k) {
+<span class="lineNum">     370 </span>            :       dlambda_null_metric-&gt;get(0, A + 2) +=
+<span class="lineNum">     371 </span>            :           cartesian_to_spherical_jacobian.get(A + 1, k) *
+<span class="lineNum">     372 </span>            :               (get&lt;0&gt;(du_null_l) * spacetime_metric.get(k + 1, 0) +
+<span class="lineNum">     373 </span>            :                get&lt;0&gt;(null_l) * dt_spacetime_metric.get(k + 1, 0)) +
+<span class="lineNum">     374 </span>            :           angular_d_null_l.get(A + 1, k + 1) * spacetime_metric.get(k + 1, 0);
+<span class="lineNum">     375 </span>            :     }
+<span class="lineNum">     376 </span>            :     for (size_t i = 0; i &lt; 3; ++i) {
+<span class="lineNum">     377 </span>            :       for (size_t k = 0; k &lt; 3; ++k) {
+<span class="lineNum">     378 </span>            :         dlambda_null_metric-&gt;get(0, A + 2) +=
+<span class="lineNum">     379 </span>            :             cartesian_to_spherical_jacobian.get(A + 1, k) *
+<span class="lineNum">     380 </span>            :             (du_null_l.get(i + 1) * spacetime_metric.get(k + 1, i + 1) +
+<span class="lineNum">     381 </span>            :              null_l.get(i + 1) * phi.get(i, k + 1, 0));
+<span class="lineNum">     382 </span>            :       }
+<span class="lineNum">     383 </span>            :     }
+<span class="lineNum">     384 </span>            :     dlambda_null_metric-&gt;get(A + 2, 0) = dlambda_null_metric-&gt;get(0, A + 2);
+<span class="lineNum">     385 </span>            :   }
+<span class="lineNum">     386 </span>            :   // zero the null directions
+<span class="lineNum">     387 </span>            :   get&lt;0, 1&gt;(*dlambda_null_metric) = 0.0;
+<span class="lineNum">     388 </span>            :   for (size_t a = 1; a &lt; 4; ++a) {
+<span class="lineNum">     389 </span>            :     dlambda_null_metric-&gt;get(1, a) = 0.0;
+<span class="lineNum">     390 </span>            :   }
+<span class="lineNum">     391 </span>            : 
+<span class="lineNum">     392 </span>            :   for (size_t A = 0; A &lt; 2; ++A) {
+<span class="lineNum">     393 </span>            :     for (size_t B = 0; B &lt; 2; ++B) {
+<span class="lineNum">     394 </span>            :       dlambda_null_metric-&gt;get(A + 2, B + 2) = 0.0;
+<span class="lineNum">     395 </span>            :     }
+<span class="lineNum">     396 </span>            :   }
+<span class="lineNum">     397 </span>            : 
+<span class="lineNum">     398 </span>            :   for (size_t A = 0; A &lt; 2; ++A) {
+<span class="lineNum">     399 </span>            :     for (size_t B = A; B &lt; 2; ++B) {
+<span class="lineNum">     400 </span>            :       for (size_t i = 0; i &lt; 3; ++i) {
+<span class="lineNum">     401 </span>            :         for (size_t j = 0; j &lt; 3; ++j) {
+<span class="lineNum">     402 </span>            :           dlambda_null_metric-&gt;get(A + 2, B + 2) +=
+<span class="lineNum">     403 </span>            :               get&lt;0&gt;(null_l) * cartesian_to_spherical_jacobian.get(A + 1, i) *
+<span class="lineNum">     404 </span>            :               cartesian_to_spherical_jacobian.get(B + 1, j) *
+<span class="lineNum">     405 </span>            :               dt_spacetime_metric.get(i + 1, j + 1);
+<span class="lineNum">     406 </span>            :         }
+<span class="lineNum">     407 </span>            :       }
+<span class="lineNum">     408 </span>            :     }
+<span class="lineNum">     409 </span>            :   }
+<span class="lineNum">     410 </span>            :   for (size_t A = 0; A &lt; 2; ++A) {
+<span class="lineNum">     411 </span>            :     for (size_t B = A; B &lt; 2; ++B) {
+<span class="lineNum">     412 </span>            :       for (size_t i = 0; i &lt; 3; ++i) {
+<span class="lineNum">     413 </span>            :         for (size_t j = 0; j &lt; 3; ++j) {
+<span class="lineNum">     414 </span>            :           for (size_t k = 0; k &lt; 3; ++k) {
+<span class="lineNum">     415 </span>            :             dlambda_null_metric-&gt;get(A + 2, B + 2) +=
+<span class="lineNum">     416 </span>            :                 null_l.get(k + 1) *
+<span class="lineNum">     417 </span>            :                 cartesian_to_spherical_jacobian.get(A + 1, i) *
+<span class="lineNum">     418 </span>            :                 cartesian_to_spherical_jacobian.get(B + 1, j) *
+<span class="lineNum">     419 </span>            :                 phi.get(k, i + 1, j + 1);
+<span class="lineNum">     420 </span>            :           }
+<span class="lineNum">     421 </span>            :         }
+<span class="lineNum">     422 </span>            :       }
+<span class="lineNum">     423 </span>            :     }
+<span class="lineNum">     424 </span>            :   }
+<span class="lineNum">     425 </span>            : 
+<span class="lineNum">     426 </span>            :   for (size_t A = 0; A &lt; 2; ++A) {
+<span class="lineNum">     427 </span>            :     for (size_t B = A; B &lt; 2; ++B) {
+<span class="lineNum">     428 </span>            :       for (size_t i = 0; i &lt; 3; ++i) {
+<span class="lineNum">     429 </span>            :         for (size_t a = 0; a &lt; 4; ++a) {
+<span class="lineNum">     430 </span>            :           dlambda_null_metric-&gt;get(A + 2, B + 2) +=
+<span class="lineNum">     431 </span>            :               (angular_d_null_l.get(A + 1, a) *
+<span class="lineNum">     432 </span>            :                    cartesian_to_spherical_jacobian.get(B + 1, i) +
+<span class="lineNum">     433 </span>            :                angular_d_null_l.get(B + 1, a) *
+<span class="lineNum">     434 </span>            :                    cartesian_to_spherical_jacobian.get(A + 1, i)) *
+<span class="lineNum">     435 </span>            :               spacetime_metric.get(a, i + 1);
+<span class="lineNum">     436 </span>            :         }
+<span class="lineNum">     437 </span>            :       }
+<span class="lineNum">     438 </span>            :     }
+<span class="lineNum">     439 </span>            :   }
+<span class="lineNum">     440 </span>            :   for (size_t a = 0; a &lt; 4; ++a) {
+<span class="lineNum">     441 </span>            :     for (size_t b = 0; b &lt; a; ++b) {
+<span class="lineNum">     442 </span>            :       dlambda_null_metric-&gt;get(a, b) = dlambda_null_metric-&gt;get(b, a);
+<span class="lineNum">     443 </span>            :     }
+<span class="lineNum">     444 </span>            :   }
+<span class="lineNum">     445 </span>            : 
+<span class="lineNum">     446 </span>            :   for (size_t a = 0; a &lt; 4; ++a) {
+<span class="lineNum">     447 </span>            :     for (size_t b = 0; b &lt; 4; ++b) {
+<span class="lineNum">     448 </span>            :       dlambda_inverse_null_metric-&gt;get(a, b) = 0.0;
+<span class="lineNum">     449 </span>            :     }
+<span class="lineNum">     450 </span>            :   }
+<span class="lineNum">     451 </span>            :   for (size_t A = 0; A &lt; 2; ++A) {
+<span class="lineNum">     452 </span>            :     for (size_t B = A; B &lt; 2; ++B) {
+<span class="lineNum">     453 </span>            :       for (size_t C = 0; C &lt; 2; ++C) {
+<span class="lineNum">     454 </span>            :         for (size_t D = 0; D &lt; 2; ++D) {
+<span class="lineNum">     455 </span>            :           dlambda_inverse_null_metric-&gt;get(A + 2, B + 2) -=
+<span class="lineNum">     456 </span>            :               inverse_null_metric.get(A + 2, C + 2) *
+<span class="lineNum">     457 </span>            :               inverse_null_metric.get(B + 2, D + 2) *
+<span class="lineNum">     458 </span>            :               dlambda_null_metric-&gt;get(C + 2, D + 2);
+<span class="lineNum">     459 </span>            :         }
+<span class="lineNum">     460 </span>            :       }
+<span class="lineNum">     461 </span>            :     }
+<span class="lineNum">     462 </span>            :   }
+<span class="lineNum">     463 </span>            : 
+<span class="lineNum">     464 </span>            :   for (size_t A = 0; A &lt; 2; ++A) {
+<span class="lineNum">     465 </span>            :     for (size_t B = 0; B &lt; 2; ++B) {
+<span class="lineNum">     466 </span>            :       dlambda_inverse_null_metric-&gt;get(1, A + 2) +=
+<span class="lineNum">     467 </span>            :           inverse_null_metric.get(A + 2, B + 2) *
+<span class="lineNum">     468 </span>            :           dlambda_null_metric-&gt;get(0, B + 2);
+<span class="lineNum">     469 </span>            :       for (size_t C = 0; C &lt; 2; ++C) {
+<span class="lineNum">     470 </span>            :         dlambda_inverse_null_metric-&gt;get(1, A + 2) -=
+<span class="lineNum">     471 </span>            :             inverse_null_metric.get(A + 2, B + 2) *
+<span class="lineNum">     472 </span>            :             inverse_null_metric.get(1, C + 2) *
+<span class="lineNum">     473 </span>            :             dlambda_null_metric-&gt;get(C + 2, B + 2);
+<span class="lineNum">     474 </span>            :       }
+<span class="lineNum">     475 </span>            :     }
+<span class="lineNum">     476 </span>            :   }
+<span class="lineNum">     477 </span>            : 
+<span class="lineNum">     478 </span>            :   get&lt;1, 1&gt;(*dlambda_inverse_null_metric) -= get&lt;0, 0&gt;(*dlambda_null_metric);
+<span class="lineNum">     479 </span>            : 
+<span class="lineNum">     480 </span>            :   for (size_t A = 0; A &lt; 2; ++A) {
+<span class="lineNum">     481 </span>            :     get&lt;1, 1&gt;(*dlambda_inverse_null_metric) +=
+<span class="lineNum">     482 </span>            :         2.0 * inverse_null_metric.get(1, A + 2) *
+<span class="lineNum">     483 </span>            :         dlambda_null_metric-&gt;get(0, A + 2);
+<span class="lineNum">     484 </span>            :     for (size_t B = 0; B &lt; 2; ++B) {
+<span class="lineNum">     485 </span>            :       get&lt;1, 1&gt;(*dlambda_inverse_null_metric) -=
+<span class="lineNum">     486 </span>            :           inverse_null_metric.get(1, A + 2) *
+<span class="lineNum">     487 </span>            :           inverse_null_metric.get(1, B + 2) *
+<span class="lineNum">     488 </span>            :           dlambda_null_metric-&gt;get(A + 2, B + 2);
+<span class="lineNum">     489 </span>            :     }
+<span class="lineNum">     490 </span>            :   }
+<span class="lineNum">     491 </span>            : }
+<span class="lineNum">     492 </span>            : 
+<span class="lineNum">     493 </span><span class="lineNoCov">          0 : void d_bondi_r(</span>
+<span class="lineNum">     494 </span>            :     const gsl::not_null&lt;tnsr::a&lt;DataVector, 3, Frame::RadialNull&gt;*&gt; d_bondi_r,
+<span class="lineNum">     495 </span>            :     const Scalar&lt;SpinWeighted&lt;ComplexDataVector, 0&gt;&gt;&amp; bondi_r,
+<span class="lineNum">     496 </span>            :     const tnsr::aa&lt;DataVector, 3, Frame::RadialNull&gt;&amp; dlambda_null_metric,
+<span class="lineNum">     497 </span>            :     const tnsr::aa&lt;DataVector, 3, Frame::RadialNull&gt;&amp; du_null_metric,
+<span class="lineNum">     498 </span>            :     const tnsr::AA&lt;DataVector, 3, Frame::RadialNull&gt;&amp; inverse_null_metric,
+<span class="lineNum">     499 </span>            :     const size_t l_max) noexcept {
+<span class="lineNum">     500 </span>            :   destructive_resize_components(d_bondi_r,
+<span class="lineNum">     501 </span>            :                                 get&lt;0, 0&gt;(inverse_null_metric).size());
+<span class="lineNum">     502 </span>            : 
+<span class="lineNum">     503 </span>            :   // compute the time derivative part
+<span class="lineNum">     504 </span>            :   get&lt;0&gt;(*d_bondi_r) =
+<span class="lineNum">     505 </span>            :       0.25 * real(get(bondi_r).data()) *
+<span class="lineNum">     506 </span>            :       (get&lt;2, 2&gt;(inverse_null_metric) * get&lt;2, 2&gt;(du_null_metric) +
+<span class="lineNum">     507 </span>            :        2.0 * get&lt;2, 3&gt;(inverse_null_metric) * get&lt;2, 3&gt;(du_null_metric) +
+<span class="lineNum">     508 </span>            :        get&lt;3, 3&gt;(inverse_null_metric) * get&lt;3, 3&gt;(du_null_metric));
+<span class="lineNum">     509 </span>            :   // compute the lambda derivative part
+<span class="lineNum">     510 </span>            :   get&lt;1&gt;(*d_bondi_r) =
+<span class="lineNum">     511 </span>            :       0.25 * real(get(bondi_r).data()) *
+<span class="lineNum">     512 </span>            :       (get&lt;2, 2&gt;(inverse_null_metric) * get&lt;2, 2&gt;(dlambda_null_metric) +
+<span class="lineNum">     513 </span>            :        2.0 * get&lt;2, 3&gt;(inverse_null_metric) * get&lt;2, 3&gt;(dlambda_null_metric) +
+<span class="lineNum">     514 </span>            :        get&lt;3, 3&gt;(inverse_null_metric) * get&lt;3, 3&gt;(dlambda_null_metric));
+<span class="lineNum">     515 </span>            : 
+<span class="lineNum">     516 </span>            :   // Allocation (of result and coefficient buffer)
+<span class="lineNum">     517 </span>            :   const auto eth_of_r =
+<span class="lineNum">     518 </span>            :       Spectral::Swsh::angular_derivative&lt;Spectral::Swsh::Tags::Eth&gt;(
+<span class="lineNum">     519 </span>            :           l_max, 1, get(bondi_r));
+<span class="lineNum">     520 </span>            :   d_bondi_r-&gt;get(2) = -real(eth_of_r.data());
+<span class="lineNum">     521 </span>            :   d_bondi_r-&gt;get(3) = -imag(eth_of_r.data());
+<span class="lineNum">     522 </span>            : }
+<span class="lineNum">     523 </span>            : 
+<span class="lineNum">     524 </span><span class="lineNoCov">          0 : void dyads(</span>
+<span class="lineNum">     525 </span>            :     const gsl::not_null&lt;tnsr::i&lt;ComplexDataVector, 2, Frame::RadialNull&gt;*&gt;
+<span class="lineNum">     526 </span>            :         down_dyad,
+<span class="lineNum">     527 </span>            :     const gsl::not_null&lt;tnsr::I&lt;ComplexDataVector, 2, Frame::RadialNull&gt;*&gt;
+<span class="lineNum">     528 </span>            :         up_dyad) noexcept {
+<span class="lineNum">     529 </span>            :   // implicit factors of sin_theta omitted (still normalized as desired, though)
+<span class="lineNum">     530 </span>            :   get&lt;0&gt;(*down_dyad) = -1.0;
+<span class="lineNum">     531 </span>            :   get&lt;1&gt;(*down_dyad) = std::complex&lt;double&gt;(0.0, -1.0);
+<span class="lineNum">     532 </span>            :   get&lt;0&gt;(*up_dyad) = -1.0;
+<span class="lineNum">     533 </span>            :   get&lt;1&gt;(*up_dyad) = std::complex&lt;double&gt;(0.0, -1.0);
+<span class="lineNum">     534 </span>            : }
+<span class="lineNum">     535 </span>            : }  // namespace Cce
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../../../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.13</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

@@ -1,0 +1,172 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - 5912ac2e49a80e6a27b3707c9a1e6ce5248b1b2a - Elliptic/Systems/Poisson/Equations.cpp</title>
+  <link rel="stylesheet" type="text/css" href="../../../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title"> SpECTRE Documentation Coverage Report</td></tr>
+    <tr><td class="ruler"><img src="../../../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../../../index.html">top level</a> - <a href="index.html">Elliptic/Systems/Poisson</a> - Equations.cpp</td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+             <td class="headerItem">Commit:</td>
+             <td class="headerValue"><a target="_blank" href="https://github.com/sxs-collaboration/spectre/commit/5912ac2e49a80e6a27b3707c9a1e6ce5248b1b2a">5912ac2e49a80e6a27b3707c9a1e6ce5248b1b2a</a></td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">2</td>
+            <td class="headerCovTableEntry">10</td>
+            <td class="headerCovTableEntryLo">20.0 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2019-12-02 22:01:08</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td class="headerItem">Legend:</td>
+            <td class="headerValueLeg">            Lines:
+            <span class="coverLegendCov">hit</span>
+            <span class="coverLegendNoCov">not hit</span>
+</td>
+            <td></td>
+          </tr>
+          <tr><td><img src="../../../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../../../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">          Line data    Source code</pre>
+<pre class="source">
+<span class="lineNum">       1 </span><span class="lineNoCov">          0 : // Distributed under the MIT License.</span>
+<span class="lineNum">       2 </span>            : // See LICENSE.txt for details.
+<span class="lineNum">       3 </span>            : 
+<span class="lineNum">       4 </span>            : #include &quot;Elliptic/Systems/Poisson/Equations.hpp&quot;
+<span class="lineNum">       5 </span>            : 
+<span class="lineNum">       6 </span>            : #include &lt;cstddef&gt;
+<span class="lineNum">       7 </span>            : 
+<span class="lineNum">       8 </span>            : #include &quot;DataStructures/DataVector.hpp&quot;
+<span class="lineNum">       9 </span>            : #include &quot;DataStructures/Tensor/Tensor.hpp&quot;
+<span class="lineNum">      10 </span>            : #include &quot;PointwiseFunctions/GeneralRelativity/IndexManipulation.hpp&quot;
+<span class="lineNum">      11 </span>            : #include &quot;Utilities/GenerateInstantiations.hpp&quot;
+<span class="lineNum">      12 </span>            : #include &quot;Utilities/MakeWithValue.hpp&quot;
+<span class="lineNum">      13 </span>            : 
+<span class="lineNum">      14 </span><span class="lineCov">          1 : namespace Poisson {</span>
+<span class="lineNum">      15 </span>            : 
+<span class="lineNum">      16 </span>            : template &lt;size_t Dim&gt;
+<span class="lineNum">      17 </span><span class="lineNoCov">          0 : void euclidean_fluxes(</span>
+<span class="lineNum">      18 </span>            :     const gsl::not_null&lt;tnsr::I&lt;DataVector, Dim, Frame::Inertial&gt;*&gt;
+<span class="lineNum">      19 </span>            :         flux_for_field,
+<span class="lineNum">      20 </span>            :     const tnsr::i&lt;DataVector, Dim, Frame::Inertial&gt;&amp; field_gradient) noexcept {
+<span class="lineNum">      21 </span>            :   for (size_t d = 0; d &lt; Dim; d++) {
+<span class="lineNum">      22 </span>            :     flux_for_field-&gt;get(d) = field_gradient.get(d);
+<span class="lineNum">      23 </span>            :   }
+<span class="lineNum">      24 </span>            : }
+<span class="lineNum">      25 </span>            : 
+<span class="lineNum">      26 </span>            : template &lt;size_t Dim&gt;
+<span class="lineNum">      27 </span><span class="lineNoCov">          0 : void noneuclidean_fluxes(</span>
+<span class="lineNum">      28 </span>            :     const gsl::not_null&lt;tnsr::I&lt;DataVector, Dim, Frame::Inertial&gt;*&gt;
+<span class="lineNum">      29 </span>            :         flux_for_field,
+<span class="lineNum">      30 </span>            :     const tnsr::II&lt;DataVector, Dim, Frame::Inertial&gt;&amp; inv_spatial_metric,
+<span class="lineNum">      31 </span>            :     const Scalar&lt;DataVector&gt;&amp; det_spatial_metric,
+<span class="lineNum">      32 </span>            :     const tnsr::i&lt;DataVector, Dim, Frame::Inertial&gt;&amp; field_gradient) noexcept {
+<span class="lineNum">      33 </span>            :   raise_or_lower_index(flux_for_field, field_gradient, inv_spatial_metric);
+<span class="lineNum">      34 </span>            :   for (size_t i = 0; i &lt; Dim; i++) {
+<span class="lineNum">      35 </span>            :     flux_for_field-&gt;get(i) *= sqrt(get(det_spatial_metric));
+<span class="lineNum">      36 </span>            :   }
+<span class="lineNum">      37 </span>            : }
+<span class="lineNum">      38 </span>            : 
+<span class="lineNum">      39 </span>            : template &lt;size_t Dim&gt;
+<span class="lineNum">      40 </span><span class="lineCov">          1 : void auxiliary_fluxes(gsl::not_null&lt;tnsr::Ij&lt;DataVector, Dim, Frame::Inertial&gt;*&gt;</span>
+<span class="lineNum">      41 </span>            :                           flux_for_gradient,
+<span class="lineNum">      42 </span>            :                       const Scalar&lt;DataVector&gt;&amp; field) noexcept {
+<span class="lineNum">      43 </span>            :   std::fill(flux_for_gradient-&gt;begin(), flux_for_gradient-&gt;end(), 0.);
+<span class="lineNum">      44 </span>            :   for (size_t d = 0; d &lt; Dim; d++) {
+<span class="lineNum">      45 </span>            :     flux_for_gradient-&gt;get(d, d) = get(field);
+<span class="lineNum">      46 </span>            :   }
+<span class="lineNum">      47 </span>            : }
+<span class="lineNum">      48 </span>            : 
+<span class="lineNum">      49 </span>            : }  // namespace Poisson
+<span class="lineNum">      50 </span>            : 
+<span class="lineNum">      51 </span><span class="lineNoCov">          0 : #define DIM(data) BOOST_PP_TUPLE_ELEM(0, data)</span>
+<span class="lineNum">      52 </span>            : 
+<span class="lineNum">      53 </span><span class="lineNoCov">          0 : #define INSTANTIATE(_, data)                                                 \</span>
+<span class="lineNum">      54 </span>            :   template void Poisson::euclidean_fluxes&lt;DIM(data)&gt;(                        \
+<span class="lineNum">      55 </span>            :       const gsl::not_null&lt;tnsr::I&lt;DataVector, DIM(data), Frame::Inertial&gt;*&gt;, \
+<span class="lineNum">      56 </span>            :       const tnsr::i&lt;DataVector, DIM(data), Frame::Inertial&gt;&amp;) noexcept;      \
+<span class="lineNum">      57 </span>            :   template void Poisson::noneuclidean_fluxes&lt;DIM(data)&gt;(                     \
+<span class="lineNum">      58 </span>            :       const gsl::not_null&lt;tnsr::I&lt;DataVector, DIM(data), Frame::Inertial&gt;*&gt;, \
+<span class="lineNum">      59 </span>            :       const tnsr::II&lt;DataVector, DIM(data), Frame::Inertial&gt;&amp;,               \
+<span class="lineNum">      60 </span>            :       const Scalar&lt;DataVector&gt;&amp;,                                             \
+<span class="lineNum">      61 </span>            :       const tnsr::i&lt;DataVector, DIM(data), Frame::Inertial&gt;&amp;) noexcept;      \
+<span class="lineNum">      62 </span>            :   template void Poisson::auxiliary_fluxes&lt;DIM(data)&gt;(                        \
+<span class="lineNum">      63 </span>            :       gsl::not_null&lt;tnsr::Ij&lt;DataVector, DIM(data), Frame::Inertial&gt;*&gt;,      \
+<span class="lineNum">      64 </span>            :       const Scalar&lt;DataVector&gt;&amp;) noexcept;
+<span class="lineNum">      65 </span>            : 
+<span class="lineNum">      66 </span>            : GENERATE_INSTANTIATIONS(INSTANTIATE, (1, 2, 3))
+<span class="lineNum">      67 </span>            : 
+<span class="lineNum">      68 </span>            : // Instantiate derivative templates
+<span class="lineNum">      69 </span>            : #include &quot;DataStructures/DataBox/Prefixes.hpp&quot;
+<span class="lineNum">      70 </span>            : #include &quot;Elliptic/Systems/Poisson/FirstOrderSystem.hpp&quot;
+<span class="lineNum">      71 </span>            : #include &quot;Elliptic/Systems/Poisson/Tags.hpp&quot;  // IWYU pragma: keep
+<span class="lineNum">      72 </span>            : #include &quot;NumericalAlgorithms/LinearOperators/Divergence.tpp&quot;  // IWYU pragma: keep
+<span class="lineNum">      73 </span>            : #include &quot;Utilities/TMPL.hpp&quot;
+<span class="lineNum">      74 </span>            : 
+<span class="lineNum">      75 </span>            : template &lt;size_t Dim&gt;
+<span class="lineNum">      76 </span><span class="lineNoCov">          0 : using variables_tag = typename Poisson::FirstOrderSystem&lt;Dim&gt;::variables_tag;</span>
+<span class="lineNum">      77 </span>            : template &lt;size_t Dim&gt;
+<span class="lineNum">      78 </span><span class="lineNoCov">          0 : using fluxes_tags_list = db::get_variables_tags_list&lt;db::add_tag_prefix&lt;</span>
+<span class="lineNum">      79 </span>            :     ::Tags::Flux, variables_tag&lt;Dim&gt;, tmpl::size_t&lt;Dim&gt;, Frame::Inertial&gt;&gt;;
+<span class="lineNum">      80 </span>            : 
+<span class="lineNum">      81 </span><span class="lineNoCov">          0 : #define INSTANTIATE_DERIVS(_, data)                                            \</span>
+<span class="lineNum">      82 </span>            :   template Variables&lt;db::wrap_tags_in&lt;Tags::div, fluxes_tags_list&lt;DIM(data)&gt;&gt;&gt; \
+<span class="lineNum">      83 </span>            :   divergence&lt;fluxes_tags_list&lt;DIM(data)&gt;, DIM(data), Frame::Inertial&gt;(         \
+<span class="lineNum">      84 </span>            :       const Variables&lt;fluxes_tags_list&lt;DIM(data)&gt;&gt;&amp;, const Mesh&lt;DIM(data)&gt;&amp;,   \
+<span class="lineNum">      85 </span>            :       const InverseJacobian&lt;DataVector, DIM(data), Frame::Logical,             \
+<span class="lineNum">      86 </span>            :                             Frame::Inertial&gt;&amp;) noexcept;
+<span class="lineNum">      87 </span>            : 
+<span class="lineNum">      88 </span>            : GENERATE_INSTANTIATIONS(INSTANTIATE_DERIVS, (1, 2, 3))
+<span class="lineNum">      89 </span>            : 
+<span class="lineNum">      90 </span>            : #undef INSTANTIATE
+<span class="lineNum">      91 </span>            : #undef INSTANTIATE_DERIVS
+<span class="lineNum">      92 </span>            : #undef DIM
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../../../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.13</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

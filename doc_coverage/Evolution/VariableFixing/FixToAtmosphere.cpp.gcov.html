@@ -1,0 +1,208 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - 5912ac2e49a80e6a27b3707c9a1e6ce5248b1b2a - Evolution/VariableFixing/FixToAtmosphere.cpp</title>
+  <link rel="stylesheet" type="text/css" href="../../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title"> SpECTRE Documentation Coverage Report</td></tr>
+    <tr><td class="ruler"><img src="../../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../../index.html">top level</a> - <a href="index.html">Evolution/VariableFixing</a> - FixToAtmosphere.cpp</td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+             <td class="headerItem">Commit:</td>
+             <td class="headerValue"><a target="_blank" href="https://github.com/sxs-collaboration/spectre/commit/5912ac2e49a80e6a27b3707c9a1e6ce5248b1b2a">5912ac2e49a80e6a27b3707c9a1e6ce5248b1b2a</a></td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntry">6</td>
+            <td class="headerCovTableEntryLo">0.0 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2019-12-02 22:01:08</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td class="headerItem">Legend:</td>
+            <td class="headerValueLeg">            Lines:
+            <span class="coverLegendCov">hit</span>
+            <span class="coverLegendNoCov">not hit</span>
+</td>
+            <td></td>
+          </tr>
+          <tr><td><img src="../../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">          Line data    Source code</pre>
+<pre class="source">
+<span class="lineNum">       1 </span><span class="lineNoCov">          0 : // Distributed under the MIT License.</span>
+<span class="lineNum">       2 </span>            : // See LICENSE.txt for details.
+<span class="lineNum">       3 </span>            : 
+<span class="lineNum">       4 </span>            : #include &quot;Evolution/VariableFixing/FixToAtmosphere.hpp&quot;
+<span class="lineNum">       5 </span>            : 
+<span class="lineNum">       6 </span>            : #include &lt;pup.h&gt;  // IWYU pragma: keep
+<span class="lineNum">       7 </span>            : 
+<span class="lineNum">       8 </span>            : #include &quot;DataStructures/DataVector.hpp&quot;
+<span class="lineNum">       9 </span>            : #include &quot;DataStructures/Tensor/Tensor.hpp&quot;
+<span class="lineNum">      10 </span>            : #include &quot;Utilities/GenerateInstantiations.hpp&quot;
+<span class="lineNum">      11 </span>            : #include &quot;Utilities/Overloader.hpp&quot;
+<span class="lineNum">      12 </span>            : 
+<span class="lineNum">      13 </span>            : // IWYU pragma: no_include &lt;array&gt;
+<span class="lineNum">      14 </span>            : 
+<span class="lineNum">      15 </span>            : // IWYU pragma: no_forward_declare EquationsOfState::EquationOfState
+<span class="lineNum">      16 </span>            : // IWYU pragma: no_forward_declare Tensor
+<span class="lineNum">      17 </span>            : 
+<span class="lineNum">      18 </span>            : namespace VariableFixing {
+<span class="lineNum">      19 </span>            : 
+<span class="lineNum">      20 </span>            : template &lt;size_t Dim, size_t ThermodynamicDim&gt;
+<span class="lineNum">      21 </span>            : FixToAtmosphere&lt;Dim, ThermodynamicDim&gt;::FixToAtmosphere(
+<span class="lineNum">      22 </span>            :     const double density_of_atmosphere, const double density_cutoff,
+<span class="lineNum">      23 </span>            :     const OptionContext&amp; context)
+<span class="lineNum">      24 </span>            :     : density_of_atmosphere_(density_of_atmosphere),
+<span class="lineNum">      25 </span>            :       density_cutoff_(density_cutoff) {
+<span class="lineNum">      26 </span>            :   if (density_of_atmosphere_ &gt; density_cutoff_) {
+<span class="lineNum">      27 </span>            :     PARSE_ERROR(context, &quot;The cutoff density (&quot;
+<span class="lineNum">      28 </span>            :                              &lt;&lt; density_cutoff_
+<span class="lineNum">      29 </span>            :                              &lt;&lt; &quot;) must be greater than or equal to the &quot;
+<span class="lineNum">      30 </span>            :                                 &quot;density value in the atmosphere (&quot;
+<span class="lineNum">      31 </span>            :                              &lt;&lt; density_of_atmosphere_ &lt;&lt; ')');
+<span class="lineNum">      32 </span>            :   }
+<span class="lineNum">      33 </span>            : }
+<span class="lineNum">      34 </span>            : 
+<span class="lineNum">      35 </span>            : // clang-tidy: google-runtime-references
+<span class="lineNum">      36 </span>            : template &lt;size_t Dim, size_t ThermodynamicDim&gt;
+<span class="lineNum">      37 </span>            : void FixToAtmosphere&lt;Dim, ThermodynamicDim&gt;::pup(
+<span class="lineNum">      38 </span>            :     PUP::er&amp; p) noexcept {  // NOLINT
+<span class="lineNum">      39 </span>            :   p | density_of_atmosphere_;
+<span class="lineNum">      40 </span>            :   p | density_cutoff_;
+<span class="lineNum">      41 </span>            : }
+<span class="lineNum">      42 </span>            : 
+<span class="lineNum">      43 </span>            : template &lt;size_t Dim, size_t ThermodynamicDim&gt;
+<span class="lineNum">      44 </span>            : void FixToAtmosphere&lt;Dim, ThermodynamicDim&gt;::operator()(
+<span class="lineNum">      45 </span>            :     const gsl::not_null&lt;Scalar&lt;DataVector&gt;*&gt; rest_mass_density,
+<span class="lineNum">      46 </span>            :     const gsl::not_null&lt;Scalar&lt;DataVector&gt;*&gt; specific_internal_energy,
+<span class="lineNum">      47 </span>            :     const gsl::not_null&lt;tnsr::I&lt;DataVector, Dim, Frame::Inertial&gt;*&gt;
+<span class="lineNum">      48 </span>            :         spatial_velocity,
+<span class="lineNum">      49 </span>            :     const gsl::not_null&lt;Scalar&lt;DataVector&gt;*&gt; lorentz_factor,
+<span class="lineNum">      50 </span>            :     const gsl::not_null&lt;Scalar&lt;DataVector&gt;*&gt; pressure,
+<span class="lineNum">      51 </span>            :     const gsl::not_null&lt;Scalar&lt;DataVector&gt;*&gt; specific_enthalpy,
+<span class="lineNum">      52 </span>            :     const EquationsOfState::EquationOfState&lt;true, ThermodynamicDim&gt;&amp;
+<span class="lineNum">      53 </span>            :         equation_of_state) const noexcept {
+<span class="lineNum">      54 </span>            :   for (size_t i = 0; i &lt; rest_mass_density-&gt;get().size(); i++) {
+<span class="lineNum">      55 </span>            :     if (UNLIKELY(rest_mass_density-&gt;get()[i] &lt; density_cutoff_)) {
+<span class="lineNum">      56 </span>            :       rest_mass_density-&gt;get()[i] = density_of_atmosphere_;
+<span class="lineNum">      57 </span>            :       for (size_t d = 0; d &lt; Dim; ++d) {
+<span class="lineNum">      58 </span>            :         spatial_velocity-&gt;get(d)[i] = 0.0;
+<span class="lineNum">      59 </span>            :       }
+<span class="lineNum">      60 </span>            :       lorentz_factor-&gt;get()[i] = 1.0;
+<span class="lineNum">      61 </span>            :       Scalar&lt;double&gt; atmosphere_density{density_of_atmosphere_};
+<span class="lineNum">      62 </span>            :       make_overloader(
+<span class="lineNum">      63 </span>            :           [
+<span class="lineNum">      64 </span>            :             &amp;atmosphere_density, &amp;pressure, &amp;specific_internal_energy,
+<span class="lineNum">      65 </span>            :             &amp;specific_enthalpy, &amp;i
+<span class="lineNum">      66 </span>            :           ](const EquationsOfState::EquationOfState&lt;true, 1&gt;&amp;
+<span class="lineNum">      67 </span>            :                 the_equation_of_state) noexcept {
+<span class="lineNum">      68 </span>            :             pressure-&gt;get()[i] =
+<span class="lineNum">      69 </span>            :                 get(the_equation_of_state.pressure_from_density(
+<span class="lineNum">      70 </span>            :                     atmosphere_density));
+<span class="lineNum">      71 </span>            :             specific_internal_energy-&gt;get()[i] =
+<span class="lineNum">      72 </span>            :                 get(the_equation_of_state.specific_internal_energy_from_density(
+<span class="lineNum">      73 </span>            :                     atmosphere_density));
+<span class="lineNum">      74 </span>            :             specific_enthalpy-&gt;get()[i] =
+<span class="lineNum">      75 </span>            :                 get(the_equation_of_state.specific_enthalpy_from_density(
+<span class="lineNum">      76 </span>            :                     atmosphere_density));
+<span class="lineNum">      77 </span>            :           },
+<span class="lineNum">      78 </span>            :           [
+<span class="lineNum">      79 </span>            :             &amp;atmosphere_density, &amp;pressure, &amp;specific_internal_energy,
+<span class="lineNum">      80 </span>            :             &amp;specific_enthalpy, &amp;i
+<span class="lineNum">      81 </span>            :           ](const EquationsOfState::EquationOfState&lt;true, 2&gt;&amp;
+<span class="lineNum">      82 </span>            :                 the_equation_of_state) noexcept {
+<span class="lineNum">      83 </span>            :             Scalar&lt;double&gt; atmosphere_energy{0.0};
+<span class="lineNum">      84 </span>            :             pressure-&gt;get()[i] =
+<span class="lineNum">      85 </span>            :                 get(the_equation_of_state.pressure_from_density_and_energy(
+<span class="lineNum">      86 </span>            :                     atmosphere_density, atmosphere_energy));
+<span class="lineNum">      87 </span>            :             specific_internal_energy-&gt;get()[i] = get(atmosphere_energy);
+<span class="lineNum">      88 </span>            :             specific_enthalpy-&gt;get()[i] = get(
+<span class="lineNum">      89 </span>            :                 the_equation_of_state.specific_enthalpy_from_density_and_energy(
+<span class="lineNum">      90 </span>            :                     atmosphere_density, atmosphere_energy));
+<span class="lineNum">      91 </span>            :           })(equation_of_state);
+<span class="lineNum">      92 </span>            :     }
+<span class="lineNum">      93 </span>            :   }
+<span class="lineNum">      94 </span>            : }
+<span class="lineNum">      95 </span>            : 
+<span class="lineNum">      96 </span>            : template &lt;size_t Dim, size_t LocalThermodynamicDim&gt;
+<span class="lineNum">      97 </span><span class="lineNoCov">          0 : bool operator==(</span>
+<span class="lineNum">      98 </span>            :     const FixToAtmosphere&lt;Dim, LocalThermodynamicDim&gt;&amp; lhs,
+<span class="lineNum">      99 </span>            :     const FixToAtmosphere&lt;Dim, LocalThermodynamicDim&gt;&amp; rhs) noexcept {
+<span class="lineNum">     100 </span>            :   return lhs.density_of_atmosphere_ == rhs.density_of_atmosphere_ and
+<span class="lineNum">     101 </span>            :          lhs.density_cutoff_ == rhs.density_cutoff_;
+<span class="lineNum">     102 </span>            : }
+<span class="lineNum">     103 </span>            : 
+<span class="lineNum">     104 </span>            : template &lt;size_t Dim, size_t ThermodynamicDim&gt;
+<span class="lineNum">     105 </span><span class="lineNoCov">          0 : bool operator!=(const FixToAtmosphere&lt;Dim, ThermodynamicDim&gt;&amp; lhs,</span>
+<span class="lineNum">     106 </span>            :                 const FixToAtmosphere&lt;Dim, ThermodynamicDim&gt;&amp; rhs) noexcept {
+<span class="lineNum">     107 </span>            :   return not(lhs == rhs);
+<span class="lineNum">     108 </span>            : }
+<span class="lineNum">     109 </span>            : 
+<span class="lineNum">     110 </span><span class="lineNoCov">          0 : #define DIM(data) BOOST_PP_TUPLE_ELEM(0, data)</span>
+<span class="lineNum">     111 </span><span class="lineNoCov">          0 : #define THERMO_DIM(data) BOOST_PP_TUPLE_ELEM(1, data)</span>
+<span class="lineNum">     112 </span>            : 
+<span class="lineNum">     113 </span><span class="lineNoCov">          0 : #define INSTANTIATION(r, data)                                           \</span>
+<span class="lineNum">     114 </span>            :   template class FixToAtmosphere&lt;DIM(data), THERMO_DIM(data)&gt;;           \
+<span class="lineNum">     115 </span>            :   template bool operator==(                                              \
+<span class="lineNum">     116 </span>            :       const FixToAtmosphere&lt;DIM(data), THERMO_DIM(data)&gt;&amp; lhs,           \
+<span class="lineNum">     117 </span>            :       const FixToAtmosphere&lt;DIM(data), THERMO_DIM(data)&gt;&amp; rhs) noexcept; \
+<span class="lineNum">     118 </span>            :   template bool operator!=(                                              \
+<span class="lineNum">     119 </span>            :       const FixToAtmosphere&lt;DIM(data), THERMO_DIM(data)&gt;&amp; lhs,           \
+<span class="lineNum">     120 </span>            :       const FixToAtmosphere&lt;DIM(data), THERMO_DIM(data)&gt;&amp; rhs) noexcept;
+<span class="lineNum">     121 </span>            : 
+<span class="lineNum">     122 </span>            : GENERATE_INSTANTIATIONS(INSTANTIATION, (1, 2, 3), (1, 2))
+<span class="lineNum">     123 </span>            : 
+<span class="lineNum">     124 </span>            : #undef DIM
+<span class="lineNum">     125 </span>            : #undef THERMO_DIM
+<span class="lineNum">     126 </span>            : #undef INSTANTIATION
+<span class="lineNum">     127 </span>            : 
+<span class="lineNum">     128 </span>            : }  // namespace VariableFixing
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.13</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

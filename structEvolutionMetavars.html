@@ -1,0 +1,889 @@
+<!-- HTML header for doxygen 1.8.10-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=9"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="author" content="SXS Collaboration">
+    <meta name="generator" content="Doxygen 1.8.13"/>
+    <style>
+        /*!
+         * IE10 viewport hack for Surface/desktop Windows 8 bug
+         * Copyright 2014-2015 Twitter, Inc.
+         * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
+         */
+        @-webkit-viewport { width: device-width; }
+        @-moz-viewport    { width: device-width; }
+        @-ms-viewport     { width: device-width; }
+        @-o-viewport      { width: device-width; }
+        @viewport         { width: device-width; }
+      </style>
+  <title>SpECTRE: EvolutionMetavars&lt; InitialData &gt; Struct Template Reference</title>
+  <link href="tabs.css" rel="stylesheet" type="text/css"/>
+  <script type="text/javascript" src="jquery.js"></script>
+  <script type="text/javascript" src="dynsections.js"></script>
+  <link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+  <script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    extensions: ["tex2jax.js", "TeX/AMSmath.js", "TeX/AMSsymbols.js", "color.js"],
+    jax: ["input/TeX","output/HTML-CSS"],
+});
+MathJax.Hub.Config({
+    TeX: { equationNumbers: { autoNumber: "AMS" } }
+});
+MathJax.Hub.Config({
+    tex2jax: {inlineMath: [['^^','^^'], ['\\(', '\\)']]}
+});
+</script><script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js"></script>
+  <link href="octicons.css" rel="stylesheet">
+  <link href="bootstrap.min.css" rel="stylesheet">
+  <link href="doxygen.css" rel="stylesheet" type="text/css" />
+  <script type="text/javascript" src="jquery.js"></script>
+  <script type="text/javascript" src="popper.min.js"></script>
+  <script type="text/javascript" src="bootstrap.min.js"></script>
+  <script type="text/javascript" src="spectre.js"></script>
+  </head>
+  <body>
+  <div id="top" class="navbar-fixed-top"><!-- do not remove this div, it is closed by doxygen! -->
+  <!-- BEGIN TITLEAREA -->
+  <div id="titlearea">
+  <script type="text/javascript">
+  var searchBox = new SearchBox("searchBox", "search",false,'Search');
+  </script>
+  <div id="main-nav">
+    <ul class="sm sm-dox" id="main-menu">
+      <li>
+      <a href="index.html">
+      SpECTRE &#160;
+        <span id="projectnumber">v0.0.0</span>
+      </a>
+      </li>
+      <li class="dropdown">
+        <a class="dropdown-toggle" data-toggle="dropdown" href="#" id="selected">
+          <span id="selected">
+            <i class="octicon octicon-book"></i><span>Documentation</span>
+          </span>
+          <span class="caret"></span>
+        </a>
+        <ul class="dropdown-menu">
+          <li style="min-width: 135px;">
+            <a href="index.html">
+            <i class="octicon octicon-book"></i><span>Introduction</span></a>
+          </li>
+          <li style="min-width: 135px;">
+            <a href="installation.html">
+              <i class="octicon octicon-desktop-download"></i><span>Installation</span>
+            </a>
+          </li>
+          <li style="min-width: 135px;">
+            <a href="tutorials.html">
+              <i class="octicon octicon-mortar-board"></i><span>User Tutorials</span>
+            </a>
+          </li>
+          <li style="min-width: 135px;">
+            <a href="dev_guide.html">
+              <i class="octicon octicon-gist-secret"></i><span>Dev Guide</span>
+            </a>
+          </li>
+          <li style="min-width: 135px;">
+            <a href="code_of_conduct.html">
+              <i class="octicon octicon-comment-discussion"></i><span>Code of Conduct</span>
+            </a>
+          </li>
+          <li style="min-width: 135px;">
+            <a href="contributing_to_spectre.html">
+              <i class="octicon octicon-git-pull-request"></i><span>Contributing Guide</span>
+            </a>
+          </li>
+        </ul>
+      </li>
+      <li class="dropdown">
+        <a class="dropdown-toggle" data-toggle="dropdown" href="#" id="selected">
+          <span id="selected">
+            <i class="octicon octicon-code"></i>
+              <span>Code Reference</span>
+          </span>
+          <span class="caret"></span>
+        </a>
+        <ul class="dropdown-menu">
+          <li style="min-width: 130px;">
+            <a href="modules.html">
+              <i class="octicon octicon-code"></i>
+              <span>Topics</span>
+            </a>
+          </li>
+          <li style="min-width: 130px;">
+            <a href="namespaces.html">
+              <i class="octicon octicon-gist"></i>
+              <span>Namespaces</span>
+            </a>
+          </li>
+        </ul>
+      </li>
+      <li>
+        <a href="files.html">
+          <i class="octicon octicon-file-directory"></i><span>Files</span>
+        </a>
+      </li>
+      <li>
+        <a href="citelist.html">
+          <i class="octicon octicon-file-text"></i><span>Bibliography</span>
+        </a>
+      </li>
+      <li>
+        <a href="https://github.com/sxs-collaboration/spectre" target="_blank">
+          <i class="octicon octicon-mark-github"></i><span>View on GitHub</span>
+        </a>
+      </li>
+      <!--The Search <li> is added by doxygen later-->
+    </ul>
+  </div><!-- main-nav -->
+  </div><!-- titlearea -->
+  <!-- window showing the filter options -->
+  <div id="MSearchSelectWindow"  style="position: fixed;"
+       onmouseover="return searchBox.OnSearchSelectShow()"
+       onmouseout="return searchBox.OnSearchSelectHide()"
+       onkeydown="return searchBox.OnSearchSelectKey(event)">
+  </div>
+  <!-- iframe showing the search results (closed by default) -->
+  <div id="MSearchResultsWindow"  style="position: fixed;">
+  <iframe src="javascript:void(0)" frameborder="0"
+          name="MSearchResults" id="MSearchResults">
+  </iframe>
+  </div>
+<!-- Generated by Doxygen 1.8.13 -->
+<script type="text/javascript">
+var searchBox = new SearchBox("searchBox", "search",false,'Search');
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+$(function() {
+  initMenu('',true,false,'search.php','Search');
+  $(document).ready(function() { init_search(); });
+});
+</script>
+<div id="main-nav"></div>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<iframe src="javascript:void(0)" frameborder="0" 
+        name="MSearchResults" id="MSearchResults">
+</iframe>
+</div>
+
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">Classes</a> &#124;
+<a href="#pub-types">Public Types</a> &#124;
+<a href="#pub-static-methods">Static Public Member Functions</a> &#124;
+<a href="#pub-static-attribs">Static Public Attributes</a> &#124;
+<a href="structEvolutionMetavars-members.html">List of all members</a>  </div>
+  <div class="headertitle">
+<div class="title">EvolutionMetavars&lt; InitialData &gt; Struct Template Reference</div>  </div>
+</div><!--header-->
+<div class="contents">
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
+Classes</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structEvolutionMetavars_1_1ObservationType.html">ObservationType</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-types"></a>
+Public Types</h2></td></tr>
+<tr class="memitem:abb30c995bd6d596b3b97b73afc2630dd"><td class="memItemLeft" align="right" valign="top"><a id="abb30c995bd6d596b3b97b73afc2630dd"></a>enum &#160;</td><td class="memItemRight" valign="bottom"><b>Phase</b> { <br />
+&#160;&#160;<b>Initialization</b>, 
+<b>RegisterWithObserver</b>, 
+<b>InitializeTimeStepperHistory</b>, 
+<b>Evolve</b>, 
+<br />
+&#160;&#160;<b>Exit</b>, 
+<b>Initialization</b>, 
+<b>InitializeTimeStepperHistory</b>, 
+<b>RegisterWithObserver</b>, 
+<br />
+&#160;&#160;<b>Evolve</b>, 
+<b>Exit</b>, 
+<b>Initialization</b>, 
+<b>InitializeTimeStepperHistory</b>, 
+<br />
+&#160;&#160;<b>RegisterWithObserver</b>, 
+<b>Evolve</b>, 
+<b>Exit</b>, 
+<b>Initialization</b>, 
+<br />
+&#160;&#160;<b>InitializeTimeStepperHistory</b>, 
+<b>RegisterWithObserver</b>, 
+<b>Evolve</b>, 
+<b>Exit</b>, 
+<br />
+&#160;&#160;<b>Initialization</b>, 
+<b>InitializeTimeStepperHistory</b>, 
+<b>RegisterWithObserver</b>, 
+<b>Evolve</b>, 
+<br />
+&#160;&#160;<b>Exit</b>, 
+<b>Initialization</b>, 
+<b>RegisterWithObserver</b>, 
+<b>InitializeTimeStepperHistory</b>, 
+<br />
+&#160;&#160;<b>Evolve</b>, 
+<b>Exit</b>
+<br />
+ }</td></tr>
+<tr class="separator:abb30c995bd6d596b3b97b73afc2630dd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abb30c995bd6d596b3b97b73afc2630dd"><td class="memItemLeft" align="right" valign="top"><a id="abb30c995bd6d596b3b97b73afc2630dd"></a>enum &#160;</td><td class="memItemRight" valign="bottom"><b>Phase</b> { <br />
+&#160;&#160;<b>Initialization</b>, 
+<b>RegisterWithObserver</b>, 
+<b>InitializeTimeStepperHistory</b>, 
+<b>Evolve</b>, 
+<br />
+&#160;&#160;<b>Exit</b>, 
+<b>Initialization</b>, 
+<b>InitializeTimeStepperHistory</b>, 
+<b>RegisterWithObserver</b>, 
+<br />
+&#160;&#160;<b>Evolve</b>, 
+<b>Exit</b>, 
+<b>Initialization</b>, 
+<b>InitializeTimeStepperHistory</b>, 
+<br />
+&#160;&#160;<b>RegisterWithObserver</b>, 
+<b>Evolve</b>, 
+<b>Exit</b>, 
+<b>Initialization</b>, 
+<br />
+&#160;&#160;<b>InitializeTimeStepperHistory</b>, 
+<b>RegisterWithObserver</b>, 
+<b>Evolve</b>, 
+<b>Exit</b>, 
+<br />
+&#160;&#160;<b>Initialization</b>, 
+<b>InitializeTimeStepperHistory</b>, 
+<b>RegisterWithObserver</b>, 
+<b>Evolve</b>, 
+<br />
+&#160;&#160;<b>Exit</b>, 
+<b>Initialization</b>, 
+<b>RegisterWithObserver</b>, 
+<b>InitializeTimeStepperHistory</b>, 
+<br />
+&#160;&#160;<b>Evolve</b>, 
+<b>Exit</b>
+<br />
+ }</td></tr>
+<tr class="separator:abb30c995bd6d596b3b97b73afc2630dd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abb30c995bd6d596b3b97b73afc2630dd"><td class="memItemLeft" align="right" valign="top"><a id="abb30c995bd6d596b3b97b73afc2630dd"></a>enum &#160;</td><td class="memItemRight" valign="bottom"><b>Phase</b> { <br />
+&#160;&#160;<b>Initialization</b>, 
+<b>RegisterWithObserver</b>, 
+<b>InitializeTimeStepperHistory</b>, 
+<b>Evolve</b>, 
+<br />
+&#160;&#160;<b>Exit</b>, 
+<b>Initialization</b>, 
+<b>InitializeTimeStepperHistory</b>, 
+<b>RegisterWithObserver</b>, 
+<br />
+&#160;&#160;<b>Evolve</b>, 
+<b>Exit</b>, 
+<b>Initialization</b>, 
+<b>InitializeTimeStepperHistory</b>, 
+<br />
+&#160;&#160;<b>RegisterWithObserver</b>, 
+<b>Evolve</b>, 
+<b>Exit</b>, 
+<b>Initialization</b>, 
+<br />
+&#160;&#160;<b>InitializeTimeStepperHistory</b>, 
+<b>RegisterWithObserver</b>, 
+<b>Evolve</b>, 
+<b>Exit</b>, 
+<br />
+&#160;&#160;<b>Initialization</b>, 
+<b>InitializeTimeStepperHistory</b>, 
+<b>RegisterWithObserver</b>, 
+<b>Evolve</b>, 
+<br />
+&#160;&#160;<b>Exit</b>, 
+<b>Initialization</b>, 
+<b>RegisterWithObserver</b>, 
+<b>InitializeTimeStepperHistory</b>, 
+<br />
+&#160;&#160;<b>Evolve</b>, 
+<b>Exit</b>
+<br />
+ }</td></tr>
+<tr class="separator:abb30c995bd6d596b3b97b73afc2630dd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abb30c995bd6d596b3b97b73afc2630dd"><td class="memItemLeft" align="right" valign="top"><a id="abb30c995bd6d596b3b97b73afc2630dd"></a>enum &#160;</td><td class="memItemRight" valign="bottom"><b>Phase</b> { <br />
+&#160;&#160;<b>Initialization</b>, 
+<b>RegisterWithObserver</b>, 
+<b>InitializeTimeStepperHistory</b>, 
+<b>Evolve</b>, 
+<br />
+&#160;&#160;<b>Exit</b>, 
+<b>Initialization</b>, 
+<b>InitializeTimeStepperHistory</b>, 
+<b>RegisterWithObserver</b>, 
+<br />
+&#160;&#160;<b>Evolve</b>, 
+<b>Exit</b>, 
+<b>Initialization</b>, 
+<b>InitializeTimeStepperHistory</b>, 
+<br />
+&#160;&#160;<b>RegisterWithObserver</b>, 
+<b>Evolve</b>, 
+<b>Exit</b>, 
+<b>Initialization</b>, 
+<br />
+&#160;&#160;<b>InitializeTimeStepperHistory</b>, 
+<b>RegisterWithObserver</b>, 
+<b>Evolve</b>, 
+<b>Exit</b>, 
+<br />
+&#160;&#160;<b>Initialization</b>, 
+<b>InitializeTimeStepperHistory</b>, 
+<b>RegisterWithObserver</b>, 
+<b>Evolve</b>, 
+<br />
+&#160;&#160;<b>Exit</b>, 
+<b>Initialization</b>, 
+<b>RegisterWithObserver</b>, 
+<b>InitializeTimeStepperHistory</b>, 
+<br />
+&#160;&#160;<b>Evolve</b>, 
+<b>Exit</b>
+<br />
+ }</td></tr>
+<tr class="separator:abb30c995bd6d596b3b97b73afc2630dd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abb30c995bd6d596b3b97b73afc2630dd"><td class="memItemLeft" align="right" valign="top"><a id="abb30c995bd6d596b3b97b73afc2630dd"></a>enum &#160;</td><td class="memItemRight" valign="bottom"><b>Phase</b> { <br />
+&#160;&#160;<b>Initialization</b>, 
+<b>RegisterWithObserver</b>, 
+<b>InitializeTimeStepperHistory</b>, 
+<b>Evolve</b>, 
+<br />
+&#160;&#160;<b>Exit</b>, 
+<b>Initialization</b>, 
+<b>InitializeTimeStepperHistory</b>, 
+<b>RegisterWithObserver</b>, 
+<br />
+&#160;&#160;<b>Evolve</b>, 
+<b>Exit</b>, 
+<b>Initialization</b>, 
+<b>InitializeTimeStepperHistory</b>, 
+<br />
+&#160;&#160;<b>RegisterWithObserver</b>, 
+<b>Evolve</b>, 
+<b>Exit</b>, 
+<b>Initialization</b>, 
+<br />
+&#160;&#160;<b>InitializeTimeStepperHistory</b>, 
+<b>RegisterWithObserver</b>, 
+<b>Evolve</b>, 
+<b>Exit</b>, 
+<br />
+&#160;&#160;<b>Initialization</b>, 
+<b>InitializeTimeStepperHistory</b>, 
+<b>RegisterWithObserver</b>, 
+<b>Evolve</b>, 
+<br />
+&#160;&#160;<b>Exit</b>, 
+<b>Initialization</b>, 
+<b>RegisterWithObserver</b>, 
+<b>InitializeTimeStepperHistory</b>, 
+<br />
+&#160;&#160;<b>Evolve</b>, 
+<b>Exit</b>
+<br />
+ }</td></tr>
+<tr class="separator:abb30c995bd6d596b3b97b73afc2630dd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abb30c995bd6d596b3b97b73afc2630dd"><td class="memItemLeft" align="right" valign="top"><a id="abb30c995bd6d596b3b97b73afc2630dd"></a>enum &#160;</td><td class="memItemRight" valign="bottom"><b>Phase</b> { <br />
+&#160;&#160;<b>Initialization</b>, 
+<b>RegisterWithObserver</b>, 
+<b>InitializeTimeStepperHistory</b>, 
+<b>Evolve</b>, 
+<br />
+&#160;&#160;<b>Exit</b>, 
+<b>Initialization</b>, 
+<b>InitializeTimeStepperHistory</b>, 
+<b>RegisterWithObserver</b>, 
+<br />
+&#160;&#160;<b>Evolve</b>, 
+<b>Exit</b>, 
+<b>Initialization</b>, 
+<b>InitializeTimeStepperHistory</b>, 
+<br />
+&#160;&#160;<b>RegisterWithObserver</b>, 
+<b>Evolve</b>, 
+<b>Exit</b>, 
+<b>Initialization</b>, 
+<br />
+&#160;&#160;<b>InitializeTimeStepperHistory</b>, 
+<b>RegisterWithObserver</b>, 
+<b>Evolve</b>, 
+<b>Exit</b>, 
+<br />
+&#160;&#160;<b>Initialization</b>, 
+<b>InitializeTimeStepperHistory</b>, 
+<b>RegisterWithObserver</b>, 
+<b>Evolve</b>, 
+<br />
+&#160;&#160;<b>Exit</b>, 
+<b>Initialization</b>, 
+<b>RegisterWithObserver</b>, 
+<b>InitializeTimeStepperHistory</b>, 
+<br />
+&#160;&#160;<b>Evolve</b>, 
+<b>Exit</b>
+<br />
+ }</td></tr>
+<tr class="separator:abb30c995bd6d596b3b97b73afc2630dd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a56637ea3c3e3915b4a7ec1b68d0c02f4"><td class="memItemLeft" align="right" valign="top"><a id="a56637ea3c3e3915b4a7ec1b68d0c02f4"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>system</b> = <a class="el" href="structBurgers_1_1System.html">Burgers::System</a></td></tr>
+<tr class="separator:a56637ea3c3e3915b4a7ec1b68d0c02f4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2444df24f0fd35b94186f578d7043880"><td class="memItemLeft" align="right" valign="top"><a id="a2444df24f0fd35b94186f578d7043880"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>temporal_id</b> = <a class="el" href="structTags_1_1TimeStepId.html">Tags::TimeStepId</a></td></tr>
+<tr class="separator:a2444df24f0fd35b94186f578d7043880"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a253ad3695f53bec27d0cb6ffab7c6fc7"><td class="memItemLeft" align="right" valign="top"><a id="a253ad3695f53bec27d0cb6ffab7c6fc7"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>initial_data_tag</b> = <a class="el" href="structTags_1_1AnalyticSolution.html">Tags::AnalyticSolution</a>&lt; <a class="el" href="classBurgers_1_1Solutions_1_1Step.html">Burgers::Solutions::Step</a> &gt;</td></tr>
+<tr class="separator:a253ad3695f53bec27d0cb6ffab7c6fc7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a46eb93cc74edff6a824ed7487c0566c2"><td class="memItemLeft" align="right" valign="top"><a id="a46eb93cc74edff6a824ed7487c0566c2"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>boundary_condition_tag</b> = <a class="el" href="structTags_1_1AnalyticSolution.html">initial_data_tag</a></td></tr>
+<tr class="separator:a46eb93cc74edff6a824ed7487c0566c2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a604644452d7ea2c86c07c651338b1a03"><td class="memItemLeft" align="right" valign="top"><a id="a604644452d7ea2c86c07c651338b1a03"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>normal_dot_numerical_flux</b> = <a class="el" href="structTags_1_1NumericalFlux.html">Tags::NumericalFlux</a>&lt; <a class="el" href="structdg_1_1NumericalFluxes_1_1LocalLaxFriedrichs.html">dg::NumericalFluxes::LocalLaxFriedrichs</a>&lt; <a class="el" href="structBurgers_1_1System.html">system</a> &gt; &gt;</td></tr>
+<tr class="separator:a604644452d7ea2c86c07c651338b1a03"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7ea9f486e6248bae3a56495a450f3ac9"><td class="memItemLeft" align="right" valign="top"><a id="a7ea9f486e6248bae3a56495a450f3ac9"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>limiter</b> = <a class="el" href="structTags_1_1Limiter.html">Tags::Limiter</a>&lt; Limiters::Minmod&lt; 1, system::variables_tag::tags_list &gt; &gt;</td></tr>
+<tr class="separator:a7ea9f486e6248bae3a56495a450f3ac9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:add9eae7fc94c5a2e64b33677386297e0"><td class="memItemLeft" align="right" valign="top"><a id="add9eae7fc94c5a2e64b33677386297e0"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>observe_fields</b> = db::get_variables_tags_list&lt; typename <a class="el" href="structTags_1_1Variables.html">system::variables_tag</a> &gt;</td></tr>
+<tr class="separator:add9eae7fc94c5a2e64b33677386297e0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a793f0a8901648415bd2f51c0c60531d5"><td class="memItemLeft" align="right" valign="top"><a id="a793f0a8901648415bd2f51c0c60531d5"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>analytic_solution_fields</b> = observe_fields</td></tr>
+<tr class="separator:a793f0a8901648415bd2f51c0c60531d5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa6497a041c4ade7b96bf420367347033"><td class="memItemLeft" align="right" valign="top"><a id="aa6497a041c4ade7b96bf420367347033"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>events</b> = tmpl::list&lt; <a class="el" href="structdg_1_1Events_1_1Registrars_1_1ObserveFields.html">dg::Events::Registrars::ObserveFields</a>&lt; 1, <a class="el" href="structTags_1_1Time.html">Tags::Time</a>, observe_fields, analytic_solution_fields &gt;, <a class="el" href="structRegistration_1_1Registrar.html">dg::Events::Registrars::ObserveErrorNorms</a>&lt; <a class="el" href="structTags_1_1Time.html">Tags::Time</a>, analytic_solution_fields &gt; &gt;</td></tr>
+<tr class="separator:aa6497a041c4ade7b96bf420367347033"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae2ae4a8578a5694bf882e828c40a759f"><td class="memItemLeft" align="right" valign="top"><a id="ae2ae4a8578a5694bf882e828c40a759f"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>triggers</b> = <a class="el" href="group__EventsAndTriggersGroup.html#ga59c7addd4e715b4c49d98bac1403b445">Triggers::time_triggers</a></td></tr>
+<tr class="separator:ae2ae4a8578a5694bf882e828c40a759f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9319b42d8ff18192bf7976e4e8d3bde0"><td class="memItemLeft" align="right" valign="top"><a id="a9319b42d8ff18192bf7976e4e8d3bde0"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>const_global_cache_tags</b> = tmpl::list&lt; <a class="el" href="structTags_1_1AnalyticSolution.html">initial_data_tag</a>, <a class="el" href="structTags_1_1TimeStepper.html">Tags::TimeStepper</a>&lt; tmpl::conditional_t&lt; local_time_stepping, <a class="el" href="classLtsTimeStepper.html">LtsTimeStepper</a>, <a class="el" href="classTimeStepper.html">TimeStepper</a> &gt; &gt;, <a class="el" href="structTags_1_1EventsAndTriggers.html">Tags::EventsAndTriggers</a>&lt; events, triggers &gt; &gt;</td></tr>
+<tr class="separator:a9319b42d8ff18192bf7976e4e8d3bde0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aeffb6328bf4045bbda633cb12949e704"><td class="memItemLeft" align="right" valign="top"><a id="aeffb6328bf4045bbda633cb12949e704"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>element_observation_type</b> = <a class="el" href="structEvolutionMetavars_1_1ObservationType.html">ObservationType</a></td></tr>
+<tr class="separator:aeffb6328bf4045bbda633cb12949e704"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0c64a8c1de86ae0900c5388de4bfae8b"><td class="memItemLeft" align="right" valign="top"><a id="a0c64a8c1de86ae0900c5388de4bfae8b"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>observed_reduction_data_tags</b> = observers::collect_reduction_data_tags&lt; <a class="el" href="classEvent.html">Event</a>&lt; events &gt;::creatable_classes &gt;</td></tr>
+<tr class="separator:a0c64a8c1de86ae0900c5388de4bfae8b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0e9e682f8eddcd111373c165e2e595a9"><td class="memItemLeft" align="right" valign="top"><a id="a0e9e682f8eddcd111373c165e2e595a9"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>step_choosers</b> = tmpl::list&lt; <a class="el" href="structStepChoosers_1_1Registrars_1_1Cfl.html">StepChoosers::Registrars::Cfl</a>&lt; 1, <a class="el" href="structFrame_1_1Inertial.html">Frame::Inertial</a> &gt;, <a class="el" href="structRegistration_1_1Registrar.html">StepChoosers::Registrars::Constant</a>, <a class="el" href="structRegistration_1_1Registrar.html">StepChoosers::Registrars::Increase</a> &gt;</td></tr>
+<tr class="separator:a0e9e682f8eddcd111373c165e2e595a9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0312a035cd58ef4e46d5f20bdfc7a1c7"><td class="memItemLeft" align="right" valign="top"><a id="a0312a035cd58ef4e46d5f20bdfc7a1c7"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>step_actions</b> = tmpl::flatten&lt; tmpl::list&lt; <a class="el" href="structActions_1_1ComputeVolumeFluxes.html">Actions::ComputeVolumeFluxes</a>, <a class="el" href="structdg_1_1Actions_1_1SendDataForFluxes.html">dg::Actions::SendDataForFluxes</a>&lt; <a class="el" href="structEvolutionMetavars.html">EvolutionMetavars</a> &gt;, <a class="el" href="structActions_1_1ComputeTimeDerivative.html">Actions::ComputeTimeDerivative</a>, <a class="el" href="structdg_1_1Actions_1_1ImposeDirichletBoundaryConditions.html">dg::Actions::ImposeDirichletBoundaryConditions</a>&lt; <a class="el" href="structEvolutionMetavars.html">EvolutionMetavars</a> &gt;, <a class="el" href="structdg_1_1Actions_1_1ReceiveDataForFluxes.html">dg::Actions::ReceiveDataForFluxes</a>&lt; <a class="el" href="structEvolutionMetavars.html">EvolutionMetavars</a> &gt;, tmpl::conditional_t&lt; local_time_stepping, tmpl::list&lt;&gt;, <a class="el" href="structdg_1_1Actions_1_1ApplyFluxes.html">dg::Actions::ApplyFluxes</a> &gt;, <a class="el" href="structActions_1_1RecordTimeStepperData.html">Actions::RecordTimeStepperData</a>, tmpl::conditional_t&lt; local_time_stepping, <a class="el" href="structdg_1_1Actions_1_1ApplyBoundaryFluxesLocalTimeStepping.html">dg::Actions::ApplyBoundaryFluxesLocalTimeStepping</a>, tmpl::list&lt;&gt; &gt;, <a class="el" href="structActions_1_1UpdateU.html">Actions::UpdateU</a>, <a class="el" href="structLimiters_1_1Actions_1_1SendData.html">Limiters::Actions::SendData</a>&lt; <a class="el" href="structEvolutionMetavars.html">EvolutionMetavars</a> &gt;, <a class="el" href="structLimiters_1_1Actions_1_1Limit.html">Limiters::Actions::Limit</a>&lt; <a class="el" href="structEvolutionMetavars.html">EvolutionMetavars</a> &gt; &gt;&gt;</td></tr>
+<tr class="separator:a0312a035cd58ef4e46d5f20bdfc7a1c7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad8dc2fa1bcf72d0ab6e0abce66d4a122"><td class="memItemLeft" align="right" valign="top"><a id="ad8dc2fa1bcf72d0ab6e0abce66d4a122"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>initialization_actions</b> = tmpl::list&lt; <a class="el" href="structdg_1_1Actions_1_1InitializeDomain.html">dg::Actions::InitializeDomain</a>&lt; 1 &gt;, <a class="el" href="structInitialization_1_1Actions_1_1ConservativeSystem.html">Initialization::Actions::ConservativeSystem</a>, <a class="el" href="structdg_1_1Actions_1_1InitializeInterfaces.html">dg::Actions::InitializeInterfaces</a>&lt; <a class="el" href="structBurgers_1_1System.html">system</a>, <a class="el" href="group__InitializationGroup.html#gac7e9ce406b34fcda759c6e47155b4bbd">dg::Initialization::slice_tags_to_face</a>&lt; typename <a class="el" href="structTags_1_1Variables.html">system::variables_tag</a> &gt;, <a class="el" href="group__InitializationGroup.html#gab5ce0161b6bc0216d3634622be66c9bb">dg::Initialization::slice_tags_to_exterior</a>&lt;&gt; &gt;, <a class="el" href="structInitialization_1_1Actions_1_1Evolution.html">Initialization::Actions::Evolution</a>&lt; <a class="el" href="structEvolutionMetavars.html">EvolutionMetavars</a> &gt;, <a class="el" href="structInitialization_1_1Actions_1_1AddComputeTags.html">Initialization::Actions::AddComputeTags</a>&lt; tmpl::list&lt; <a class="el" href="structevolution_1_1Tags_1_1AnalyticCompute.html">evolution::Tags::AnalyticCompute</a>&lt; 1, <a class="el" href="structTags_1_1AnalyticSolution.html">initial_data_tag</a>, analytic_solution_fields &gt; &gt;&gt;, <a class="el" href="structdg_1_1Actions_1_1InitializeMortars.html">dg::Actions::InitializeMortars</a>&lt; <a class="el" href="structEvolutionMetavars.html">EvolutionMetavars</a> &gt;, <a class="el" href="structInitialization_1_1Actions_1_1DiscontinuousGalerkin.html">Initialization::Actions::DiscontinuousGalerkin</a>&lt; <a class="el" href="structEvolutionMetavars.html">EvolutionMetavars</a> &gt;, <a class="el" href="structInitialization_1_1Actions_1_1Minmod.html">Initialization::Actions::Minmod</a>&lt; 1 &gt;, <a class="el" href="structInitialization_1_1Actions_1_1RemoveOptionsAndTerminatePhase.html">Initialization::Actions::RemoveOptionsAndTerminatePhase</a> &gt;</td></tr>
+<tr class="separator:ad8dc2fa1bcf72d0ab6e0abce66d4a122"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1dd26b2b1c35735186c062075086d2f2"><td class="memItemLeft" align="right" valign="top"><a id="a1dd26b2b1c35735186c062075086d2f2"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>component_list</b> = tmpl::list&lt; <a class="el" href="structobservers_1_1Observer.html">observers::Observer</a>&lt; <a class="el" href="structEvolutionMetavars.html">EvolutionMetavars</a> &gt;, <a class="el" href="structobservers_1_1ObserverWriter.html">observers::ObserverWriter</a>&lt; <a class="el" href="structEvolutionMetavars.html">EvolutionMetavars</a> &gt;, <a class="el" href="structDgElementArray.html">DgElementArray</a>&lt; <a class="el" href="structEvolutionMetavars.html">EvolutionMetavars</a>, tmpl::list&lt; <a class="el" href="structParallel_1_1PhaseActions.html">Parallel::PhaseActions</a>&lt; Phase, Phase::Initialization, initialization_actions &gt;, <a class="el" href="structParallel_1_1PhaseActions.html">Parallel::PhaseActions</a>&lt; Phase, Phase::RegisterWithObserver, tmpl::list&lt; <a class="el" href="structobservers_1_1Actions_1_1RegisterWithObservers.html">observers::Actions::RegisterWithObservers</a>&lt; <a class="el" href="structobservers_1_1RegisterObservers.html">observers::RegisterObservers</a>&lt; <a class="el" href="structTags_1_1Time.html">Tags::Time</a>, <a class="el" href="structEvolutionMetavars_1_1ObservationType.html">element_observation_type</a> &gt; &gt;, <a class="el" href="structParallel_1_1Actions_1_1TerminatePhase.html">Parallel::Actions::TerminatePhase</a> &gt; &gt;, <a class="el" href="structParallel_1_1PhaseActions.html">Parallel::PhaseActions</a>&lt; Phase, Phase::InitializeTimeStepperHistory, <a class="el" href="group__TimeGroup.html#gaca875eaf9855556d9f6bfc82f82c5897">SelfStart::self_start_procedure</a>&lt; step_actions &gt; &gt;, <a class="el" href="structParallel_1_1PhaseActions.html">Parallel::PhaseActions</a>&lt; Phase, Phase::Evolve, tmpl::flatten&lt; tmpl::list&lt; <a class="el" href="structActions_1_1RunEventsAndTriggers.html">Actions::RunEventsAndTriggers</a>, tmpl::conditional_t&lt; local_time_stepping, <a class="el" href="structActions_1_1ChangeStepSize.html">Actions::ChangeStepSize</a>&lt; step_choosers &gt;, tmpl::list&lt;&gt; &gt;, step_actions, <a class="el" href="structActions_1_1AdvanceTime.html">Actions::AdvanceTime</a> &gt; &gt;&gt; &gt;&gt; &gt;</td></tr>
+<tr class="separator:a1dd26b2b1c35735186c062075086d2f2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acc81ae13bddd26f54d13d6ea16239a82"><td class="memItemLeft" align="right" valign="top"><a id="acc81ae13bddd26f54d13d6ea16239a82"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>frame</b> = <a class="el" href="structFrame_1_1Inertial.html">Frame::Inertial</a></td></tr>
+<tr class="separator:acc81ae13bddd26f54d13d6ea16239a82"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a47a518ac9f0e98de7e22e9ba34dceb7d"><td class="memItemLeft" align="right" valign="top"><a id="a47a518ac9f0e98de7e22e9ba34dceb7d"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>system</b> = <a class="el" href="structGeneralizedHarmonic_1_1System.html">GeneralizedHarmonic::System</a>&lt; volume_dim &gt;</td></tr>
+<tr class="separator:a47a518ac9f0e98de7e22e9ba34dceb7d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2444df24f0fd35b94186f578d7043880"><td class="memItemLeft" align="right" valign="top"><a id="a2444df24f0fd35b94186f578d7043880"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>temporal_id</b> = <a class="el" href="structTags_1_1TimeStepId.html">Tags::TimeStepId</a></td></tr>
+<tr class="separator:a2444df24f0fd35b94186f578d7043880"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a91298edfb3332502c3380fbe9b7b39d7"><td class="memItemLeft" align="right" valign="top"><a id="a91298edfb3332502c3380fbe9b7b39d7"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>initial_data_tag</b> = <a class="el" href="structTags_1_1AnalyticSolution.html">Tags::AnalyticSolution</a>&lt; <a class="el" href="classGeneralizedHarmonic_1_1Solutions_1_1WrappedGr.html">GeneralizedHarmonic::Solutions::WrappedGr</a>&lt; <a class="el" href="classgr_1_1Solutions_1_1KerrSchild.html">gr::Solutions::KerrSchild</a> &gt; &gt;</td></tr>
+<tr class="separator:a91298edfb3332502c3380fbe9b7b39d7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a46eb93cc74edff6a824ed7487c0566c2"><td class="memItemLeft" align="right" valign="top"><a id="a46eb93cc74edff6a824ed7487c0566c2"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>boundary_condition_tag</b> = <a class="el" href="structTags_1_1AnalyticSolution.html">initial_data_tag</a></td></tr>
+<tr class="separator:a46eb93cc74edff6a824ed7487c0566c2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5725ae99a18e4563614367ba8fc83090"><td class="memItemLeft" align="right" valign="top"><a id="a5725ae99a18e4563614367ba8fc83090"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>normal_dot_numerical_flux</b> = <a class="el" href="structTags_1_1NumericalFlux.html">Tags::NumericalFlux</a>&lt; <a class="el" href="structGeneralizedHarmonic_1_1UpwindFlux.html">GeneralizedHarmonic::UpwindFlux</a>&lt; volume_dim &gt; &gt;</td></tr>
+<tr class="separator:a5725ae99a18e4563614367ba8fc83090"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abd48b9f07ed8476af50c18c679ba12ea"><td class="memItemLeft" align="right" valign="top"><a id="abd48b9f07ed8476af50c18c679ba12ea"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>analytic_solution_fields</b> = db::get_variables_tags_list&lt; typename <a class="el" href="structTags_1_1Variables.html">system::variables_tag</a> &gt;</td></tr>
+<tr class="separator:abd48b9f07ed8476af50c18c679ba12ea"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab1c275f50ab39565c97012515b3a1b11"><td class="memItemLeft" align="right" valign="top"><a id="ab1c275f50ab39565c97012515b3a1b11"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>observe_fields</b> = tmpl::append&lt; analytic_solution_fields, tmpl::list&lt; ::<a class="el" href="structTags_1_1PointwiseL2Norm.html">Tags::PointwiseL2Norm</a>&lt; <a class="el" href="structGeneralizedHarmonic_1_1Tags_1_1GaugeConstraint.html">GeneralizedHarmonic::Tags::GaugeConstraint</a>&lt; volume_dim, <a class="el" href="structFrame_1_1Inertial.html">frame</a> &gt; &gt;, ::<a class="el" href="structTags_1_1PointwiseL2Norm.html">Tags::PointwiseL2Norm</a>&lt; <a class="el" href="structGeneralizedHarmonic_1_1Tags_1_1ThreeIndexConstraint.html">GeneralizedHarmonic::Tags::ThreeIndexConstraint</a>&lt; volume_dim, <a class="el" href="structFrame_1_1Inertial.html">frame</a> &gt; &gt;, ::<a class="el" href="structTags_1_1PointwiseL2Norm.html">Tags::PointwiseL2Norm</a>&lt; <a class="el" href="structGeneralizedHarmonic_1_1Tags_1_1FourIndexConstraint.html">GeneralizedHarmonic::Tags::FourIndexConstraint</a>&lt; volume_dim, <a class="el" href="structFrame_1_1Inertial.html">frame</a> &gt; &gt;&gt; &gt;</td></tr>
+<tr class="separator:ab1c275f50ab39565c97012515b3a1b11"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa3cd66579391d327a04c41769f6bf027"><td class="memItemLeft" align="right" valign="top"><a id="aa3cd66579391d327a04c41769f6bf027"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>events</b> = tmpl::list&lt; <a class="el" href="structRegistration_1_1Registrar.html">dg::Events::Registrars::ObserveErrorNorms</a>&lt; <a class="el" href="structTags_1_1Time.html">Tags::Time</a>, analytic_solution_fields &gt;, <a class="el" href="structdg_1_1Events_1_1Registrars_1_1ObserveFields.html">dg::Events::Registrars::ObserveFields</a>&lt; volume_dim, <a class="el" href="structTags_1_1Time.html">Tags::Time</a>, observe_fields, analytic_solution_fields &gt; &gt;</td></tr>
+<tr class="separator:aa3cd66579391d327a04c41769f6bf027"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae2ae4a8578a5694bf882e828c40a759f"><td class="memItemLeft" align="right" valign="top"><a id="ae2ae4a8578a5694bf882e828c40a759f"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>triggers</b> = <a class="el" href="group__EventsAndTriggersGroup.html#ga59c7addd4e715b4c49d98bac1403b445">Triggers::time_triggers</a></td></tr>
+<tr class="separator:ae2ae4a8578a5694bf882e828c40a759f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af65b8ae12bc6bb8bb35c6cad70c7410a"><td class="memItemLeft" align="right" valign="top"><a id="af65b8ae12bc6bb8bb35c6cad70c7410a"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>const_global_cache_tags</b> = tmpl::list&lt; <a class="el" href="structTags_1_1AnalyticSolution.html">initial_data_tag</a>, <a class="el" href="structTags_1_1TimeStepper.html">Tags::TimeStepper</a>&lt; <a class="el" href="classTimeStepper.html">TimeStepper</a> &gt;, <a class="el" href="structGeneralizedHarmonic_1_1Tags_1_1GaugeHRollOnStartTime.html">GeneralizedHarmonic::Tags::GaugeHRollOnStartTime</a>, <a class="el" href="structGeneralizedHarmonic_1_1Tags_1_1GaugeHRollOnTimeWindow.html">GeneralizedHarmonic::Tags::GaugeHRollOnTimeWindow</a>, <a class="el" href="structGeneralizedHarmonic_1_1Tags_1_1GaugeHSpatialWeightDecayWidth.html">GeneralizedHarmonic::Tags::GaugeHSpatialWeightDecayWidth</a>&lt; <a class="el" href="structFrame_1_1Inertial.html">frame</a> &gt;, <a class="el" href="structTags_1_1EventsAndTriggers.html">Tags::EventsAndTriggers</a>&lt; events, triggers &gt; &gt;</td></tr>
+<tr class="separator:af65b8ae12bc6bb8bb35c6cad70c7410a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3be76032b78aba14819bcf4eacc2f3a9"><td class="memItemLeft" align="right" valign="top"><a id="a3be76032b78aba14819bcf4eacc2f3a9"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>step_choosers</b> = tmpl::list&lt; <a class="el" href="structStepChoosers_1_1Registrars_1_1Cfl.html">StepChoosers::Registrars::Cfl</a>&lt; volume_dim, <a class="el" href="structFrame_1_1Inertial.html">frame</a> &gt;, <a class="el" href="structRegistration_1_1Registrar.html">StepChoosers::Registrars::Constant</a>, <a class="el" href="structRegistration_1_1Registrar.html">StepChoosers::Registrars::Increase</a> &gt;</td></tr>
+<tr class="separator:a3be76032b78aba14819bcf4eacc2f3a9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aeffb6328bf4045bbda633cb12949e704"><td class="memItemLeft" align="right" valign="top"><a id="aeffb6328bf4045bbda633cb12949e704"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>element_observation_type</b> = <a class="el" href="structEvolutionMetavars_1_1ObservationType.html">ObservationType</a></td></tr>
+<tr class="separator:aeffb6328bf4045bbda633cb12949e704"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0c64a8c1de86ae0900c5388de4bfae8b"><td class="memItemLeft" align="right" valign="top"><a id="a0c64a8c1de86ae0900c5388de4bfae8b"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>observed_reduction_data_tags</b> = observers::collect_reduction_data_tags&lt; <a class="el" href="classEvent.html">Event</a>&lt; events &gt;::creatable_classes &gt;</td></tr>
+<tr class="separator:a0c64a8c1de86ae0900c5388de4bfae8b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac74a97827e36bdc781d247be653647aa"><td class="memItemLeft" align="right" valign="top"><a id="ac74a97827e36bdc781d247be653647aa"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>step_actions</b> = tmpl::flatten&lt; tmpl::list&lt; <a class="el" href="structdg_1_1Actions_1_1ComputeNonconservativeBoundaryFluxes.html">dg::Actions::ComputeNonconservativeBoundaryFluxes</a>&lt; <a class="el" href="structTags_1_1InternalDirections.html">Tags::InternalDirections</a>&lt; volume_dim &gt; &gt;, <a class="el" href="structdg_1_1Actions_1_1SendDataForFluxes.html">dg::Actions::SendDataForFluxes</a>&lt; <a class="el" href="structEvolutionMetavars.html">EvolutionMetavars</a> &gt;, <a class="el" href="structActions_1_1ComputeTimeDerivative.html">Actions::ComputeTimeDerivative</a>, <a class="el" href="structdg_1_1Actions_1_1ComputeNonconservativeBoundaryFluxes.html">dg::Actions::ComputeNonconservativeBoundaryFluxes</a>&lt; <a class="el" href="structTags_1_1BoundaryDirectionsInterior.html">Tags::BoundaryDirectionsInterior</a>&lt; volume_dim &gt; &gt;, <a class="el" href="structdg_1_1Actions_1_1ImposeDirichletBoundaryConditions.html">dg::Actions::ImposeDirichletBoundaryConditions</a>&lt; <a class="el" href="structEvolutionMetavars.html">EvolutionMetavars</a> &gt;, <a class="el" href="structdg_1_1Actions_1_1ReceiveDataForFluxes.html">dg::Actions::ReceiveDataForFluxes</a>&lt; <a class="el" href="structEvolutionMetavars.html">EvolutionMetavars</a> &gt;, <a class="el" href="structdg_1_1Actions_1_1ApplyFluxes.html">dg::Actions::ApplyFluxes</a>, <a class="el" href="structActions_1_1RecordTimeStepperData.html">Actions::RecordTimeStepperData</a>, <a class="el" href="structActions_1_1UpdateU.html">Actions::UpdateU</a> &gt; &gt;</td></tr>
+<tr class="separator:ac74a97827e36bdc781d247be653647aa"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6e54595a9c1e855f83cbfdf75e23c9bb"><td class="memItemLeft" align="right" valign="top"><a id="a6e54595a9c1e855f83cbfdf75e23c9bb"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>initialization_actions</b> = tmpl::list&lt; <a class="el" href="structdg_1_1Actions_1_1InitializeDomain.html">dg::Actions::InitializeDomain</a>&lt; volume_dim &gt;, <a class="el" href="structInitialization_1_1Actions_1_1NonconservativeSystem.html">Initialization::Actions::NonconservativeSystem</a>, <a class="el" href="structGeneralizedHarmonic_1_1Actions_1_1InitializeGhAnd3Plus1Variables.html">GeneralizedHarmonic::Actions::InitializeGhAnd3Plus1Variables</a>&lt; volume_dim &gt;, <a class="el" href="structdg_1_1Actions_1_1InitializeInterfaces.html">dg::Actions::InitializeInterfaces</a>&lt; <a class="el" href="structBurgers_1_1System.html">system</a>, <a class="el" href="group__InitializationGroup.html#gac7e9ce406b34fcda759c6e47155b4bbd">dg::Initialization::slice_tags_to_face</a>&lt; typename <a class="el" href="structTags_1_1Variables.html">system::variables_tag</a>, <a class="el" href="structgr_1_1Tags_1_1SpatialMetric.html">gr::Tags::SpatialMetric</a>&lt; volume_dim, <a class="el" href="structFrame_1_1Inertial.html">frame</a>, <a class="el" href="classDataVector.html">DataVector</a> &gt;, <a class="el" href="structgr_1_1Tags_1_1DetAndInverseSpatialMetricCompute.html">gr::Tags::DetAndInverseSpatialMetricCompute</a>&lt; volume_dim, <a class="el" href="structFrame_1_1Inertial.html">frame</a>, <a class="el" href="classDataVector.html">DataVector</a> &gt;, <a class="el" href="structgr_1_1Tags_1_1Shift.html">gr::Tags::Shift</a>&lt; volume_dim, <a class="el" href="structFrame_1_1Inertial.html">frame</a>, <a class="el" href="classDataVector.html">DataVector</a> &gt;, <a class="el" href="structgr_1_1Tags_1_1Lapse.html">gr::Tags::Lapse</a>&lt; <a class="el" href="classDataVector.html">DataVector</a> &gt; &gt;, <a class="el" href="group__InitializationGroup.html#gab5ce0161b6bc0216d3634622be66c9bb">dg::Initialization::slice_tags_to_exterior</a>&lt; <a class="el" href="structgr_1_1Tags_1_1SpatialMetric.html">gr::Tags::SpatialMetric</a>&lt; volume_dim, <a class="el" href="structFrame_1_1Inertial.html">frame</a>, <a class="el" href="classDataVector.html">DataVector</a> &gt;, <a class="el" href="structgr_1_1Tags_1_1DetAndInverseSpatialMetricCompute.html">gr::Tags::DetAndInverseSpatialMetricCompute</a>&lt; volume_dim, <a class="el" href="structFrame_1_1Inertial.html">frame</a>, <a class="el" href="classDataVector.html">DataVector</a> &gt;, <a class="el" href="structgr_1_1Tags_1_1Shift.html">gr::Tags::Shift</a>&lt; volume_dim, <a class="el" href="structFrame_1_1Inertial.html">frame</a>, <a class="el" href="classDataVector.html">DataVector</a> &gt;, <a class="el" href="structgr_1_1Tags_1_1Lapse.html">gr::Tags::Lapse</a>&lt; <a class="el" href="classDataVector.html">DataVector</a> &gt; &gt;, <a class="el" href="group__InitializationGroup.html#ga7a1d6838963187d5b11c4efd34491438">dg::Initialization::face_compute_tags</a>&lt; ::<a class="el" href="structTags_1_1BoundaryCoordinates.html">Tags::BoundaryCoordinates</a>&lt; volume_dim, <a class="el" href="structFrame_1_1Inertial.html">frame</a> &gt;, <a class="el" href="structGeneralizedHarmonic_1_1Tags_1_1ConstraintGamma0Compute.html">GeneralizedHarmonic::Tags::ConstraintGamma0Compute</a>&lt; volume_dim, <a class="el" href="structFrame_1_1Inertial.html">frame</a> &gt;, <a class="el" href="structGeneralizedHarmonic_1_1Tags_1_1ConstraintGamma1Compute.html">GeneralizedHarmonic::Tags::ConstraintGamma1Compute</a>&lt; volume_dim, <a class="el" href="structFrame_1_1Inertial.html">frame</a> &gt;, <a class="el" href="structGeneralizedHarmonic_1_1Tags_1_1ConstraintGamma2Compute.html">GeneralizedHarmonic::Tags::ConstraintGamma2Compute</a>&lt; volume_dim, <a class="el" href="structFrame_1_1Inertial.html">frame</a> &gt;, <a class="el" href="structGeneralizedHarmonic_1_1CharacteristicFieldsCompute.html">GeneralizedHarmonic::CharacteristicFieldsCompute</a>&lt; volume_dim, <a class="el" href="structFrame_1_1Inertial.html">frame</a> &gt;, <a class="el" href="structGeneralizedHarmonic_1_1CharacteristicSpeedsCompute.html">GeneralizedHarmonic::CharacteristicSpeedsCompute</a>&lt; volume_dim, <a class="el" href="structFrame_1_1Inertial.html">frame</a> &gt; &gt;, <a class="el" href="group__InitializationGroup.html#gae51ec91ec661ea95819662f122fb6d84">dg::Initialization::exterior_compute_tags</a>&lt; <a class="el" href="structGeneralizedHarmonic_1_1Tags_1_1ConstraintGamma0Compute.html">GeneralizedHarmonic::Tags::ConstraintGamma0Compute</a>&lt; volume_dim, <a class="el" href="structFrame_1_1Inertial.html">frame</a> &gt;, <a class="el" href="structGeneralizedHarmonic_1_1Tags_1_1ConstraintGamma1Compute.html">GeneralizedHarmonic::Tags::ConstraintGamma1Compute</a>&lt; volume_dim, <a class="el" href="structFrame_1_1Inertial.html">frame</a> &gt;, <a class="el" href="structGeneralizedHarmonic_1_1Tags_1_1ConstraintGamma2Compute.html">GeneralizedHarmonic::Tags::ConstraintGamma2Compute</a>&lt; volume_dim, <a class="el" href="structFrame_1_1Inertial.html">frame</a> &gt;, <a class="el" href="structGeneralizedHarmonic_1_1CharacteristicFieldsCompute.html">GeneralizedHarmonic::CharacteristicFieldsCompute</a>&lt; volume_dim, <a class="el" href="structFrame_1_1Inertial.html">frame</a> &gt;, <a class="el" href="structGeneralizedHarmonic_1_1CharacteristicSpeedsCompute.html">GeneralizedHarmonic::CharacteristicSpeedsCompute</a>&lt; volume_dim, <a class="el" href="structFrame_1_1Inertial.html">frame</a> &gt; &gt;&gt;, <a class="el" href="structInitialization_1_1Actions_1_1Evolution.html">Initialization::Actions::Evolution</a>&lt; <a class="el" href="structEvolutionMetavars.html">EvolutionMetavars</a> &gt;, <a class="el" href="structInitialization_1_1Actions_1_1AddComputeTags.html">Initialization::Actions::AddComputeTags</a>&lt; tmpl::list&lt; <a class="el" href="structevolution_1_1Tags_1_1AnalyticCompute.html">evolution::Tags::AnalyticCompute</a>&lt; volume_dim, <a class="el" href="structTags_1_1AnalyticSolution.html">initial_data_tag</a>, analytic_solution_fields &gt; &gt;&gt;, <a class="el" href="structGeneralizedHarmonic_1_1Actions_1_1InitializeGauge.html">GeneralizedHarmonic::Actions::InitializeGauge</a>&lt; volume_dim &gt;, <a class="el" href="structGeneralizedHarmonic_1_1Actions_1_1InitializeConstraints.html">GeneralizedHarmonic::Actions::InitializeConstraints</a>&lt; volume_dim &gt;, <a class="el" href="structdg_1_1Actions_1_1InitializeMortars.html">dg::Actions::InitializeMortars</a>&lt; <a class="el" href="structEvolutionMetavars.html">EvolutionMetavars</a>, true &gt;, <a class="el" href="structInitialization_1_1Actions_1_1DiscontinuousGalerkin.html">Initialization::Actions::DiscontinuousGalerkin</a>&lt; <a class="el" href="structEvolutionMetavars.html">EvolutionMetavars</a> &gt;, <a class="el" href="structInitialization_1_1Actions_1_1RemoveOptionsAndTerminatePhase.html">Initialization::Actions::RemoveOptionsAndTerminatePhase</a> &gt;</td></tr>
+<tr class="separator:a6e54595a9c1e855f83cbfdf75e23c9bb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9efbf9aa6600646e3ece657895d57009"><td class="memItemLeft" align="right" valign="top"><a id="a9efbf9aa6600646e3ece657895d57009"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>component_list</b> = tmpl::list&lt; <a class="el" href="structobservers_1_1Observer.html">observers::Observer</a>&lt; <a class="el" href="structEvolutionMetavars.html">EvolutionMetavars</a> &gt;, <a class="el" href="structobservers_1_1ObserverWriter.html">observers::ObserverWriter</a>&lt; <a class="el" href="structEvolutionMetavars.html">EvolutionMetavars</a> &gt;, <a class="el" href="structDgElementArray.html">DgElementArray</a>&lt; <a class="el" href="structEvolutionMetavars.html">EvolutionMetavars</a>, tmpl::list&lt; <a class="el" href="structParallel_1_1PhaseActions.html">Parallel::PhaseActions</a>&lt; Phase, Phase::Initialization, initialization_actions &gt;, <a class="el" href="structParallel_1_1PhaseActions.html">Parallel::PhaseActions</a>&lt; Phase, Phase::InitializeTimeStepperHistory, tmpl::flatten&lt; tmpl::list&lt; <a class="el" href="group__TimeGroup.html#gaca875eaf9855556d9f6bfc82f82c5897">SelfStart::self_start_procedure</a>&lt; step_actions &gt; &gt;&gt; &gt;, <a class="el" href="structParallel_1_1PhaseActions.html">Parallel::PhaseActions</a>&lt; Phase, Phase::RegisterWithObserver, tmpl::list&lt; <a class="el" href="structobservers_1_1Actions_1_1RegisterWithObservers.html">observers::Actions::RegisterWithObservers</a>&lt; <a class="el" href="structobservers_1_1RegisterObservers.html">observers::RegisterObservers</a>&lt; <a class="el" href="structTags_1_1Time.html">Tags::Time</a>, <a class="el" href="structEvolutionMetavars_1_1ObservationType.html">element_observation_type</a> &gt; &gt;, <a class="el" href="structParallel_1_1Actions_1_1TerminatePhase.html">Parallel::Actions::TerminatePhase</a> &gt; &gt;, <a class="el" href="structParallel_1_1PhaseActions.html">Parallel::PhaseActions</a>&lt; Phase, Phase::Evolve, tmpl::flatten&lt; tmpl::list&lt; <a class="el" href="structActions_1_1RunEventsAndTriggers.html">Actions::RunEventsAndTriggers</a>, step_actions, <a class="el" href="structActions_1_1AdvanceTime.html">Actions::AdvanceTime</a> &gt; &gt;&gt; &gt;&gt; &gt;</td></tr>
+<tr class="separator:a9efbf9aa6600646e3ece657895d57009"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a12b98fe11eaa17566c288ccfd0ac215d"><td class="memItemLeft" align="right" valign="top"><a id="a12b98fe11eaa17566c288ccfd0ac215d"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>initial_data</b> = InitialData</td></tr>
+<tr class="separator:a12b98fe11eaa17566c288ccfd0ac215d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9b06165bc175e6e277c8e15c4e58d372"><td class="memItemLeft" align="right" valign="top"><a id="a9b06165bc175e6e277c8e15c4e58d372"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>equation_of_state_type</b> = typename initial_data::equation_of_state_type</td></tr>
+<tr class="separator:a9b06165bc175e6e277c8e15c4e58d372"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a82f5244fa70f0b94ca02315fc62a936c"><td class="memItemLeft" align="right" valign="top"><a id="a82f5244fa70f0b94ca02315fc62a936c"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>system</b> = <a class="el" href="structgrmhd_1_1ValenciaDivClean_1_1System.html">grmhd::ValenciaDivClean::System</a>&lt; equation_of_state_type &gt;</td></tr>
+<tr class="separator:a82f5244fa70f0b94ca02315fc62a936c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2444df24f0fd35b94186f578d7043880"><td class="memItemLeft" align="right" valign="top"><a id="a2444df24f0fd35b94186f578d7043880"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>temporal_id</b> = <a class="el" href="structTags_1_1TimeStepId.html">Tags::TimeStepId</a></td></tr>
+<tr class="separator:a2444df24f0fd35b94186f578d7043880"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac98fd2b79a500005683c09b18c731e50"><td class="memItemLeft" align="right" valign="top"><a id="ac98fd2b79a500005683c09b18c731e50"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>initial_data_tag</b> = tmpl::conditional_t&lt; evolution::is_analytic_solution_v&lt; initial_data &gt;, <a class="el" href="structTags_1_1AnalyticSolution.html">Tags::AnalyticSolution</a>&lt; initial_data &gt;, <a class="el" href="structTags_1_1AnalyticData.html">Tags::AnalyticData</a>&lt; initial_data &gt; &gt;</td></tr>
+<tr class="separator:ac98fd2b79a500005683c09b18c731e50"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a46eb93cc74edff6a824ed7487c0566c2"><td class="memItemLeft" align="right" valign="top"><a id="a46eb93cc74edff6a824ed7487c0566c2"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>boundary_condition_tag</b> = <a class="el" href="structTags_1_1AnalyticSolution.html">initial_data_tag</a></td></tr>
+<tr class="separator:a46eb93cc74edff6a824ed7487c0566c2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a80902cadbc68a8f9c3705e95758598f2"><td class="memItemLeft" align="right" valign="top"><a id="a80902cadbc68a8f9c3705e95758598f2"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>analytic_variables_tags</b> = typename system::primitive_variables_tag::tags_list</td></tr>
+<tr class="separator:a80902cadbc68a8f9c3705e95758598f2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a27cb2bc810ecad87a2e18daface0f976"><td class="memItemLeft" align="right" valign="top"><a id="a27cb2bc810ecad87a2e18daface0f976"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>equation_of_state_tag</b> = <a class="el" href="structhydro_1_1Tags_1_1EquationOfState.html">hydro::Tags::EquationOfState</a>&lt; equation_of_state_type &gt;</td></tr>
+<tr class="separator:a27cb2bc810ecad87a2e18daface0f976"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a604644452d7ea2c86c07c651338b1a03"><td class="memItemLeft" align="right" valign="top"><a id="a604644452d7ea2c86c07c651338b1a03"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>normal_dot_numerical_flux</b> = <a class="el" href="structTags_1_1NumericalFlux.html">Tags::NumericalFlux</a>&lt; <a class="el" href="structdg_1_1NumericalFluxes_1_1LocalLaxFriedrichs.html">dg::NumericalFluxes::LocalLaxFriedrichs</a>&lt; <a class="el" href="structBurgers_1_1System.html">system</a> &gt; &gt;</td></tr>
+<tr class="separator:a604644452d7ea2c86c07c651338b1a03"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6bc09436527431d727cffc3f50469b97"><td class="memItemLeft" align="right" valign="top"><a id="a6bc09436527431d727cffc3f50469b97"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>limiter</b> = <a class="el" href="structTags_1_1Limiter.html">Tags::Limiter</a>&lt; Limiters::Minmod&lt; 3, tmpl::list&lt; <a class="el" href="structgrmhd_1_1ValenciaDivClean_1_1Tags_1_1TildeD.html">grmhd::ValenciaDivClean::Tags::TildeD</a>, <a class="el" href="structgrmhd_1_1ValenciaDivClean_1_1Tags_1_1TildeTau.html">grmhd::ValenciaDivClean::Tags::TildeTau</a>, <a class="el" href="structgrmhd_1_1ValenciaDivClean_1_1Tags_1_1TildeS.html">grmhd::ValenciaDivClean::Tags::TildeS</a>&lt; <a class="el" href="structFrame_1_1Inertial.html">Frame::Inertial</a> &gt;, <a class="el" href="structgrmhd_1_1ValenciaDivClean_1_1Tags_1_1TildeB.html">grmhd::ValenciaDivClean::Tags::TildeB</a>&lt; <a class="el" href="structFrame_1_1Inertial.html">Frame::Inertial</a> &gt; &gt;&gt; &gt;</td></tr>
+<tr class="separator:a6bc09436527431d727cffc3f50469b97"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a62dc9d28f85699f4358ba8f320a5620f"><td class="memItemLeft" align="right" valign="top"><a id="a62dc9d28f85699f4358ba8f320a5620f"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>events</b> = tmpl::flatten&lt; tmpl::list&lt; tmpl::conditional_t&lt; evolution::is_analytic_solution_v&lt; initial_data &gt;, <a class="el" href="structRegistration_1_1Registrar.html">dg::Events::Registrars::ObserveErrorNorms</a>&lt; <a class="el" href="structTags_1_1Time.html">Tags::Time</a>, analytic_variables_tags &gt;, tmpl::list&lt;&gt; &gt;, <a class="el" href="structdg_1_1Events_1_1Registrars_1_1ObserveFields.html">dg::Events::Registrars::ObserveFields</a>&lt; 3, <a class="el" href="structTags_1_1Time.html">Tags::Time</a>, tmpl::append&lt; db::get_variables_tags_list&lt; typename <a class="el" href="structTags_1_1Variables.html">system::variables_tag</a> &gt;, db::get_variables_tags_list&lt; typename system::primitive_variables_tag &gt; &gt;, tmpl::conditional_t&lt; evolution::is_analytic_solution_v&lt; initial_data &gt;, analytic_variables_tags, tmpl::list&lt;&gt; &gt;&gt; &gt;&gt;</td></tr>
+<tr class="separator:a62dc9d28f85699f4358ba8f320a5620f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae2ae4a8578a5694bf882e828c40a759f"><td class="memItemLeft" align="right" valign="top"><a id="ae2ae4a8578a5694bf882e828c40a759f"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>triggers</b> = <a class="el" href="group__EventsAndTriggersGroup.html#ga59c7addd4e715b4c49d98bac1403b445">Triggers::time_triggers</a></td></tr>
+<tr class="separator:ae2ae4a8578a5694bf882e828c40a759f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af01b6e1198e711fa39fa6bc5ab60501a"><td class="memItemLeft" align="right" valign="top"><a id="af01b6e1198e711fa39fa6bc5ab60501a"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>step_choosers</b> = tmpl::list&lt; <a class="el" href="structStepChoosers_1_1Registrars_1_1Cfl.html">StepChoosers::Registrars::Cfl</a>&lt; 3, <a class="el" href="structFrame_1_1Inertial.html">Frame::Inertial</a> &gt;, <a class="el" href="structRegistration_1_1Registrar.html">StepChoosers::Registrars::Constant</a>, <a class="el" href="structRegistration_1_1Registrar.html">StepChoosers::Registrars::Increase</a> &gt;</td></tr>
+<tr class="separator:af01b6e1198e711fa39fa6bc5ab60501a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a73c7f37db535b028cdf4dade4a316d02"><td class="memItemLeft" align="right" valign="top"><a id="a73c7f37db535b028cdf4dade4a316d02"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>ordered_list_of_primitive_recovery_schemes</b> = tmpl::list&lt; <a class="el" href="classgrmhd_1_1ValenciaDivClean_1_1PrimitiveRecoverySchemes_1_1NewmanHamlin.html">grmhd::ValenciaDivClean::PrimitiveRecoverySchemes::NewmanHamlin</a>, <a class="el" href="classgrmhd_1_1ValenciaDivClean_1_1PrimitiveRecoverySchemes_1_1PalenzuelaEtAl.html">grmhd::ValenciaDivClean::PrimitiveRecoverySchemes::PalenzuelaEtAl</a> &gt;</td></tr>
+<tr class="separator:a73c7f37db535b028cdf4dade4a316d02"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aeffb6328bf4045bbda633cb12949e704"><td class="memItemLeft" align="right" valign="top"><a id="aeffb6328bf4045bbda633cb12949e704"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>element_observation_type</b> = <a class="el" href="structEvolutionMetavars_1_1ObservationType.html">ObservationType</a></td></tr>
+<tr class="separator:aeffb6328bf4045bbda633cb12949e704"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae9253efe183dc4c2aa1112d513988a3c"><td class="memItemLeft" align="right" valign="top"><a id="ae9253efe183dc4c2aa1112d513988a3c"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>observed_reduction_data_tags</b> = observers::collect_reduction_data_tags&lt; typename <a class="el" href="classEvent.html">Event</a>&lt; events &gt;::creatable_classes &gt;</td></tr>
+<tr class="separator:ae9253efe183dc4c2aa1112d513988a3c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab0365eaad4cae4895673f448dbd01851"><td class="memItemLeft" align="right" valign="top"><a id="ab0365eaad4cae4895673f448dbd01851"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>step_actions</b> = tmpl::flatten&lt; tmpl::list&lt; <a class="el" href="structActions_1_1ComputeVolumeFluxes.html">Actions::ComputeVolumeFluxes</a>, <a class="el" href="structdg_1_1Actions_1_1SendDataForFluxes.html">dg::Actions::SendDataForFluxes</a>&lt; <a class="el" href="structEvolutionMetavars.html">EvolutionMetavars</a> &gt;, <a class="el" href="structActions_1_1ComputeVolumeSources.html">Actions::ComputeVolumeSources</a>, <a class="el" href="structActions_1_1ComputeTimeDerivative.html">Actions::ComputeTimeDerivative</a>, tmpl::conditional_t&lt; evolution::is_analytic_solution_v&lt; initial_data &gt;, <a class="el" href="structdg_1_1Actions_1_1ImposeDirichletBoundaryConditions.html">dg::Actions::ImposeDirichletBoundaryConditions</a>&lt; <a class="el" href="structEvolutionMetavars.html">EvolutionMetavars</a> &gt;, tmpl::list&lt;&gt; &gt;, <a class="el" href="structdg_1_1Actions_1_1ReceiveDataForFluxes.html">dg::Actions::ReceiveDataForFluxes</a>&lt; <a class="el" href="structEvolutionMetavars.html">EvolutionMetavars</a> &gt;, tmpl::conditional_t&lt; local_time_stepping, tmpl::list&lt;&gt;, <a class="el" href="structdg_1_1Actions_1_1ApplyFluxes.html">dg::Actions::ApplyFluxes</a> &gt;, <a class="el" href="structActions_1_1RecordTimeStepperData.html">Actions::RecordTimeStepperData</a>, tmpl::conditional_t&lt; local_time_stepping, <a class="el" href="structdg_1_1Actions_1_1ApplyBoundaryFluxesLocalTimeStepping.html">dg::Actions::ApplyBoundaryFluxesLocalTimeStepping</a>, tmpl::list&lt;&gt; &gt;, <a class="el" href="structActions_1_1UpdateU.html">Actions::UpdateU</a>, <a class="el" href="structLimiters_1_1Actions_1_1SendData.html">Limiters::Actions::SendData</a>&lt; <a class="el" href="structEvolutionMetavars.html">EvolutionMetavars</a> &gt;, <a class="el" href="structLimiters_1_1Actions_1_1Limit.html">Limiters::Actions::Limit</a>&lt; <a class="el" href="structEvolutionMetavars.html">EvolutionMetavars</a> &gt;, <a class="el" href="structVariableFixing_1_1Actions_1_1FixVariables.html">VariableFixing::Actions::FixVariables</a>&lt; <a class="el" href="classVariableFixing_1_1FixConservatives.html">VariableFixing::FixConservatives</a> &gt;, <a class="el" href="structActions_1_1UpdatePrimitives.html">Actions::UpdatePrimitives</a> &gt; &gt;</td></tr>
+<tr class="separator:ab0365eaad4cae4895673f448dbd01851"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acc70265c60f8e0df24e990720ce94661"><td class="memItemLeft" align="right" valign="top"><a id="acc70265c60f8e0df24e990720ce94661"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>initialization_actions</b> = tmpl::list&lt; <a class="el" href="structdg_1_1Actions_1_1InitializeDomain.html">dg::Actions::InitializeDomain</a>&lt; 3 &gt;, <a class="el" href="structInitialization_1_1Actions_1_1GrTagsForHydro.html">Initialization::Actions::GrTagsForHydro</a>, <a class="el" href="structInitialization_1_1Actions_1_1ConservativeSystem.html">Initialization::Actions::ConservativeSystem</a>, <a class="el" href="structVariableFixing_1_1Actions_1_1FixVariables.html">VariableFixing::Actions::FixVariables</a>&lt; <a class="el" href="classVariableFixing_1_1FixToAtmosphere.html">VariableFixing::FixToAtmosphere</a>&lt; volume_dim, thermodynamic_dim &gt; &gt;, <a class="el" href="structActions_1_1UpdateConservatives.html">Actions::UpdateConservatives</a>, <a class="el" href="structdg_1_1Actions_1_1InitializeInterfaces.html">dg::Actions::InitializeInterfaces</a>&lt; <a class="el" href="structBurgers_1_1System.html">system</a>, <a class="el" href="group__InitializationGroup.html#gac7e9ce406b34fcda759c6e47155b4bbd">dg::Initialization::slice_tags_to_face</a>&lt; typename <a class="el" href="structTags_1_1Variables.html">system::variables_tag</a>, typename system::spacetime_variables_tag, typename system::primitive_variables_tag &gt;, <a class="el" href="group__InitializationGroup.html#gab5ce0161b6bc0216d3634622be66c9bb">dg::Initialization::slice_tags_to_exterior</a>&lt; typename system::spacetime_variables_tag, typename system::primitive_variables_tag &gt; &gt;, <a class="el" href="structInitialization_1_1Actions_1_1Evolution.html">Initialization::Actions::Evolution</a>&lt; <a class="el" href="structEvolutionMetavars.html">EvolutionMetavars</a> &gt;, tmpl::conditional_t&lt; evolution::is_analytic_solution_v&lt; initial_data &gt;, <a class="el" href="structInitialization_1_1Actions_1_1AddComputeTags.html">Initialization::Actions::AddComputeTags</a>&lt; tmpl::list&lt; <a class="el" href="structevolution_1_1Tags_1_1AnalyticCompute.html">evolution::Tags::AnalyticCompute</a>&lt; 3, <a class="el" href="structTags_1_1AnalyticSolution.html">initial_data_tag</a>, analytic_variables_tags &gt; &gt;&gt;, tmpl::list&lt;&gt; &gt;, <a class="el" href="structdg_1_1Actions_1_1InitializeMortars.html">dg::Actions::InitializeMortars</a>&lt; <a class="el" href="structEvolutionMetavars.html">EvolutionMetavars</a> &gt;, <a class="el" href="structInitialization_1_1Actions_1_1DiscontinuousGalerkin.html">Initialization::Actions::DiscontinuousGalerkin</a>&lt; <a class="el" href="structEvolutionMetavars.html">EvolutionMetavars</a> &gt;, <a class="el" href="structInitialization_1_1Actions_1_1Minmod.html">Initialization::Actions::Minmod</a>&lt; 3 &gt;, <a class="el" href="structInitialization_1_1Actions_1_1RemoveOptionsAndTerminatePhase.html">Initialization::Actions::RemoveOptionsAndTerminatePhase</a> &gt;</td></tr>
+<tr class="separator:acc70265c60f8e0df24e990720ce94661"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac9b8850b7f8396e9c5393fdd9a8777b1"><td class="memItemLeft" align="right" valign="top"><a id="ac9b8850b7f8396e9c5393fdd9a8777b1"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>component_list</b> = tmpl::list&lt; <a class="el" href="structobservers_1_1Observer.html">observers::Observer</a>&lt; <a class="el" href="structEvolutionMetavars.html">EvolutionMetavars</a> &gt;, <a class="el" href="structobservers_1_1ObserverWriter.html">observers::ObserverWriter</a>&lt; <a class="el" href="structEvolutionMetavars.html">EvolutionMetavars</a> &gt;, <a class="el" href="structDgElementArray.html">DgElementArray</a>&lt; <a class="el" href="structEvolutionMetavars.html">EvolutionMetavars</a>, tmpl::list&lt; <a class="el" href="structParallel_1_1PhaseActions.html">Parallel::PhaseActions</a>&lt; Phase, Phase::Initialization, initialization_actions &gt;, <a class="el" href="structParallel_1_1PhaseActions.html">Parallel::PhaseActions</a>&lt; Phase, Phase::InitializeTimeStepperHistory, <a class="el" href="group__TimeGroup.html#gaca875eaf9855556d9f6bfc82f82c5897">SelfStart::self_start_procedure</a>&lt; step_actions &gt; &gt;, <a class="el" href="structParallel_1_1PhaseActions.html">Parallel::PhaseActions</a>&lt; Phase, Phase::RegisterWithObserver, tmpl::list&lt; <a class="el" href="structobservers_1_1Actions_1_1RegisterWithObservers.html">observers::Actions::RegisterWithObservers</a>&lt; <a class="el" href="structobservers_1_1RegisterObservers.html">observers::RegisterObservers</a>&lt; <a class="el" href="structTags_1_1Time.html">Tags::Time</a>, <a class="el" href="structEvolutionMetavars_1_1ObservationType.html">element_observation_type</a> &gt; &gt;, <a class="el" href="structParallel_1_1Actions_1_1TerminatePhase.html">Parallel::Actions::TerminatePhase</a> &gt; &gt;, <a class="el" href="structParallel_1_1PhaseActions.html">Parallel::PhaseActions</a>&lt; Phase, Phase::Evolve, tmpl::list&lt; <a class="el" href="structVariableFixing_1_1Actions_1_1FixVariables.html">VariableFixing::Actions::FixVariables</a>&lt; <a class="el" href="classVariableFixing_1_1FixToAtmosphere.html">VariableFixing::FixToAtmosphere</a>&lt; volume_dim, thermodynamic_dim &gt; &gt;, <a class="el" href="structActions_1_1UpdateConservatives.html">Actions::UpdateConservatives</a>, <a class="el" href="structActions_1_1RunEventsAndTriggers.html">Actions::RunEventsAndTriggers</a>, tmpl::conditional_t&lt; local_time_stepping, <a class="el" href="structActions_1_1ChangeStepSize.html">Actions::ChangeStepSize</a>&lt; step_choosers &gt;, tmpl::list&lt;&gt; &gt;, step_actions, <a class="el" href="structActions_1_1AdvanceTime.html">Actions::AdvanceTime</a> &gt; &gt;&gt; &gt;&gt;</td></tr>
+<tr class="separator:ac9b8850b7f8396e9c5393fdd9a8777b1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a02c77c0271467cfe3e38d41a0c01fdd5"><td class="memItemLeft" align="right" valign="top"><a id="a02c77c0271467cfe3e38d41a0c01fdd5"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>const_global_cache_tags</b> = tmpl::list&lt; <a class="el" href="structTags_1_1AnalyticSolution.html">initial_data_tag</a>, <a class="el" href="structTags_1_1TimeStepper.html">Tags::TimeStepper</a>&lt; tmpl::conditional_t&lt; local_time_stepping, <a class="el" href="classLtsTimeStepper.html">LtsTimeStepper</a>, <a class="el" href="classTimeStepper.html">TimeStepper</a> &gt; &gt;, <a class="el" href="structgrmhd_1_1ValenciaDivClean_1_1Tags_1_1ConstraintDampingParameter.html">grmhd::ValenciaDivClean::Tags::ConstraintDampingParameter</a>, <a class="el" href="structTags_1_1EventsAndTriggers.html">Tags::EventsAndTriggers</a>&lt; events, triggers &gt; &gt;</td></tr>
+<tr class="separator:a02c77c0271467cfe3e38d41a0c01fdd5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a12b98fe11eaa17566c288ccfd0ac215d"><td class="memItemLeft" align="right" valign="top"><a id="a12b98fe11eaa17566c288ccfd0ac215d"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>initial_data</b> = InitialData</td></tr>
+<tr class="separator:a12b98fe11eaa17566c288ccfd0ac215d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9b06165bc175e6e277c8e15c4e58d372"><td class="memItemLeft" align="right" valign="top"><a id="a9b06165bc175e6e277c8e15c4e58d372"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>equation_of_state_type</b> = typename initial_data::equation_of_state_type</td></tr>
+<tr class="separator:a9b06165bc175e6e277c8e15c4e58d372"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ade02cb85ebeae8f53e57962afda62c43"><td class="memItemLeft" align="right" valign="top"><a id="ade02cb85ebeae8f53e57962afda62c43"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>source_term_type</b> = typename initial_data::source_term_type</td></tr>
+<tr class="separator:ade02cb85ebeae8f53e57962afda62c43"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac54ddc383fc82dc7a370a4aeda4de253"><td class="memItemLeft" align="right" valign="top"><a id="ac54ddc383fc82dc7a370a4aeda4de253"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>system</b> = <a class="el" href="structNewtonianEuler_1_1System.html">NewtonianEuler::System</a>&lt; Dim, equation_of_state_type, initial_data &gt;</td></tr>
+<tr class="separator:ac54ddc383fc82dc7a370a4aeda4de253"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2444df24f0fd35b94186f578d7043880"><td class="memItemLeft" align="right" valign="top"><a id="a2444df24f0fd35b94186f578d7043880"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>temporal_id</b> = <a class="el" href="structTags_1_1TimeStepId.html">Tags::TimeStepId</a></td></tr>
+<tr class="separator:a2444df24f0fd35b94186f578d7043880"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac98fd2b79a500005683c09b18c731e50"><td class="memItemLeft" align="right" valign="top"><a id="ac98fd2b79a500005683c09b18c731e50"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>initial_data_tag</b> = tmpl::conditional_t&lt; evolution::is_analytic_solution_v&lt; initial_data &gt;, <a class="el" href="structTags_1_1AnalyticSolution.html">Tags::AnalyticSolution</a>&lt; initial_data &gt;, <a class="el" href="structTags_1_1AnalyticData.html">Tags::AnalyticData</a>&lt; initial_data &gt; &gt;</td></tr>
+<tr class="separator:ac98fd2b79a500005683c09b18c731e50"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a46eb93cc74edff6a824ed7487c0566c2"><td class="memItemLeft" align="right" valign="top"><a id="a46eb93cc74edff6a824ed7487c0566c2"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>boundary_condition_tag</b> = <a class="el" href="structTags_1_1AnalyticSolution.html">initial_data_tag</a></td></tr>
+<tr class="separator:a46eb93cc74edff6a824ed7487c0566c2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a80902cadbc68a8f9c3705e95758598f2"><td class="memItemLeft" align="right" valign="top"><a id="a80902cadbc68a8f9c3705e95758598f2"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>analytic_variables_tags</b> = typename system::primitive_variables_tag::tags_list</td></tr>
+<tr class="separator:a80902cadbc68a8f9c3705e95758598f2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a27cb2bc810ecad87a2e18daface0f976"><td class="memItemLeft" align="right" valign="top"><a id="a27cb2bc810ecad87a2e18daface0f976"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>equation_of_state_tag</b> = <a class="el" href="structhydro_1_1Tags_1_1EquationOfState.html">hydro::Tags::EquationOfState</a>&lt; equation_of_state_type &gt;</td></tr>
+<tr class="separator:a27cb2bc810ecad87a2e18daface0f976"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1777b619d18914dfd13354cf335456b3"><td class="memItemLeft" align="right" valign="top"><a id="a1777b619d18914dfd13354cf335456b3"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>source_term_tag</b> = <a class="el" href="structNewtonianEuler_1_1Tags_1_1SourceTerm.html">NewtonianEuler::Tags::SourceTerm</a>&lt; initial_data &gt;</td></tr>
+<tr class="separator:a1777b619d18914dfd13354cf335456b3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a540400129d9be7048ec385b426626ad6"><td class="memItemLeft" align="right" valign="top"><a id="a540400129d9be7048ec385b426626ad6"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>normal_dot_numerical_flux</b> = <a class="el" href="structTags_1_1NumericalFlux.html">Tags::NumericalFlux</a>&lt; <a class="el" href="structdg_1_1NumericalFluxes_1_1Hll.html">dg::NumericalFluxes::Hll</a>&lt; <a class="el" href="structBurgers_1_1System.html">system</a> &gt; &gt;</td></tr>
+<tr class="separator:a540400129d9be7048ec385b426626ad6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2ec5132893f8df61df0eb287a9f11af3"><td class="memItemLeft" align="right" valign="top"><a id="a2ec5132893f8df61df0eb287a9f11af3"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>limiter</b> = <a class="el" href="structTags_1_1Limiter.html">Tags::Limiter</a>&lt; Limiters::Minmod&lt; Dim, tmpl::list&lt; <a class="el" href="structNewtonianEuler_1_1Tags_1_1MassDensityCons.html">NewtonianEuler::Tags::MassDensityCons</a>&lt; <a class="el" href="classDataVector.html">DataVector</a> &gt;, <a class="el" href="structNewtonianEuler_1_1Tags_1_1MomentumDensity.html">NewtonianEuler::Tags::MomentumDensity</a>&lt; <a class="el" href="classDataVector.html">DataVector</a>, Dim, <a class="el" href="structFrame_1_1Inertial.html">Frame::Inertial</a> &gt;, <a class="el" href="structNewtonianEuler_1_1Tags_1_1EnergyDensity.html">NewtonianEuler::Tags::EnergyDensity</a>&lt; <a class="el" href="classDataVector.html">DataVector</a> &gt; &gt;&gt; &gt;</td></tr>
+<tr class="separator:a2ec5132893f8df61df0eb287a9f11af3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a567d2f74b610df61bf2ca158b58ba123"><td class="memItemLeft" align="right" valign="top"><a id="a567d2f74b610df61bf2ca158b58ba123"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>events</b> = tmpl::flatten&lt; tmpl::list&lt; tmpl::conditional_t&lt; evolution::is_analytic_solution_v&lt; initial_data &gt;, <a class="el" href="structRegistration_1_1Registrar.html">dg::Events::Registrars::ObserveErrorNorms</a>&lt; <a class="el" href="structTags_1_1Time.html">Tags::Time</a>, analytic_variables_tags &gt;, tmpl::list&lt;&gt; &gt;, <a class="el" href="structdg_1_1Events_1_1Registrars_1_1ObserveFields.html">dg::Events::Registrars::ObserveFields</a>&lt; Dim, <a class="el" href="structTags_1_1Time.html">Tags::Time</a>, tmpl::append&lt; db::get_variables_tags_list&lt; typename <a class="el" href="structTags_1_1Variables.html">system::variables_tag</a> &gt;, db::get_variables_tags_list&lt; typename system::primitive_variables_tag &gt; &gt;, tmpl::conditional_t&lt; evolution::is_analytic_solution_v&lt; initial_data &gt;, analytic_variables_tags, tmpl::list&lt;&gt; &gt;&gt; &gt;&gt;</td></tr>
+<tr class="separator:a567d2f74b610df61bf2ca158b58ba123"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae2ae4a8578a5694bf882e828c40a759f"><td class="memItemLeft" align="right" valign="top"><a id="ae2ae4a8578a5694bf882e828c40a759f"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>triggers</b> = <a class="el" href="group__EventsAndTriggersGroup.html#ga59c7addd4e715b4c49d98bac1403b445">Triggers::time_triggers</a></td></tr>
+<tr class="separator:ae2ae4a8578a5694bf882e828c40a759f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8eab6b897f3da8d45c96b3bbb5530ae5"><td class="memItemLeft" align="right" valign="top"><a id="a8eab6b897f3da8d45c96b3bbb5530ae5"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>step_choosers</b> = tmpl::list&lt; <a class="el" href="structStepChoosers_1_1Registrars_1_1Cfl.html">StepChoosers::Registrars::Cfl</a>&lt; Dim, <a class="el" href="structFrame_1_1Inertial.html">Frame::Inertial</a> &gt;, <a class="el" href="structRegistration_1_1Registrar.html">StepChoosers::Registrars::Constant</a>, <a class="el" href="structRegistration_1_1Registrar.html">StepChoosers::Registrars::Increase</a> &gt;</td></tr>
+<tr class="separator:a8eab6b897f3da8d45c96b3bbb5530ae5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aeffb6328bf4045bbda633cb12949e704"><td class="memItemLeft" align="right" valign="top"><a id="aeffb6328bf4045bbda633cb12949e704"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>element_observation_type</b> = <a class="el" href="structEvolutionMetavars_1_1ObservationType.html">ObservationType</a></td></tr>
+<tr class="separator:aeffb6328bf4045bbda633cb12949e704"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae9253efe183dc4c2aa1112d513988a3c"><td class="memItemLeft" align="right" valign="top"><a id="ae9253efe183dc4c2aa1112d513988a3c"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>observed_reduction_data_tags</b> = observers::collect_reduction_data_tags&lt; typename <a class="el" href="classEvent.html">Event</a>&lt; events &gt;::creatable_classes &gt;</td></tr>
+<tr class="separator:ae9253efe183dc4c2aa1112d513988a3c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abc4c66146d507ade47be37315bb6aec9"><td class="memItemLeft" align="right" valign="top"><a id="abc4c66146d507ade47be37315bb6aec9"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>step_actions</b> = tmpl::flatten&lt; tmpl::list&lt; <a class="el" href="structActions_1_1ComputeVolumeFluxes.html">Actions::ComputeVolumeFluxes</a>, <a class="el" href="structdg_1_1Actions_1_1SendDataForFluxes.html">dg::Actions::SendDataForFluxes</a>&lt; <a class="el" href="structEvolutionMetavars.html">EvolutionMetavars</a> &gt;, tmpl::conditional_t&lt; has_source_terms, <a class="el" href="structActions_1_1ComputeVolumeSources.html">Actions::ComputeVolumeSources</a>, tmpl::list&lt;&gt; &gt;, <a class="el" href="structActions_1_1ComputeTimeDerivative.html">Actions::ComputeTimeDerivative</a>, tmpl::conditional_t&lt; evolution::is_analytic_solution_v&lt; initial_data &gt;, <a class="el" href="structdg_1_1Actions_1_1ImposeDirichletBoundaryConditions.html">dg::Actions::ImposeDirichletBoundaryConditions</a>&lt; <a class="el" href="structEvolutionMetavars.html">EvolutionMetavars</a> &gt;, tmpl::list&lt;&gt; &gt;, <a class="el" href="structdg_1_1Actions_1_1ReceiveDataForFluxes.html">dg::Actions::ReceiveDataForFluxes</a>&lt; <a class="el" href="structEvolutionMetavars.html">EvolutionMetavars</a> &gt;, tmpl::conditional_t&lt; local_time_stepping, tmpl::list&lt;&gt;, <a class="el" href="structdg_1_1Actions_1_1ApplyFluxes.html">dg::Actions::ApplyFluxes</a> &gt;, <a class="el" href="structActions_1_1RecordTimeStepperData.html">Actions::RecordTimeStepperData</a>, tmpl::conditional_t&lt; local_time_stepping, <a class="el" href="structdg_1_1Actions_1_1ApplyBoundaryFluxesLocalTimeStepping.html">dg::Actions::ApplyBoundaryFluxesLocalTimeStepping</a>, tmpl::list&lt;&gt; &gt;, <a class="el" href="structActions_1_1UpdateU.html">Actions::UpdateU</a>, <a class="el" href="structLimiters_1_1Actions_1_1SendData.html">Limiters::Actions::SendData</a>&lt; <a class="el" href="structEvolutionMetavars.html">EvolutionMetavars</a> &gt;, <a class="el" href="structLimiters_1_1Actions_1_1Limit.html">Limiters::Actions::Limit</a>&lt; <a class="el" href="structEvolutionMetavars.html">EvolutionMetavars</a> &gt;, <a class="el" href="structActions_1_1MutateApply.html">Actions::MutateApply</a>&lt; typename system::primitive_from_conservative &gt; &gt;&gt;</td></tr>
+<tr class="separator:abc4c66146d507ade47be37315bb6aec9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7e12c874fc09a0e834a6fd6a8c447098"><td class="memItemLeft" align="right" valign="top"><a id="a7e12c874fc09a0e834a6fd6a8c447098"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>initialization_actions</b> = tmpl::list&lt; <a class="el" href="structdg_1_1Actions_1_1InitializeDomain.html">dg::Actions::InitializeDomain</a>&lt; Dim &gt;, <a class="el" href="structInitialization_1_1Actions_1_1ConservativeSystem.html">Initialization::Actions::ConservativeSystem</a>, <a class="el" href="structInitialization_1_1Actions_1_1AddComputeTags.html">Initialization::Actions::AddComputeTags</a>&lt; tmpl::list&lt; <a class="el" href="structNewtonianEuler_1_1Tags_1_1SoundSpeedSquaredCompute.html">NewtonianEuler::Tags::SoundSpeedSquaredCompute</a>&lt; <a class="el" href="classDataVector.html">DataVector</a> &gt;, <a class="el" href="structNewtonianEuler_1_1Tags_1_1SoundSpeedCompute.html">NewtonianEuler::Tags::SoundSpeedCompute</a>&lt; <a class="el" href="classDataVector.html">DataVector</a> &gt; &gt;&gt;, <a class="el" href="structActions_1_1UpdateConservatives.html">Actions::UpdateConservatives</a>, <a class="el" href="structdg_1_1Actions_1_1InitializeInterfaces.html">dg::Actions::InitializeInterfaces</a>&lt; <a class="el" href="structBurgers_1_1System.html">system</a>, <a class="el" href="group__InitializationGroup.html#gac7e9ce406b34fcda759c6e47155b4bbd">dg::Initialization::slice_tags_to_face</a>&lt; typename <a class="el" href="structTags_1_1Variables.html">system::variables_tag</a>, typename system::primitive_variables_tag, <a class="el" href="structNewtonianEuler_1_1Tags_1_1SoundSpeed.html">NewtonianEuler::Tags::SoundSpeed</a>&lt; <a class="el" href="classDataVector.html">DataVector</a> &gt; &gt;, <a class="el" href="group__InitializationGroup.html#gab5ce0161b6bc0216d3634622be66c9bb">dg::Initialization::slice_tags_to_exterior</a>&lt; typename system::primitive_variables_tag, <a class="el" href="structNewtonianEuler_1_1Tags_1_1SoundSpeed.html">NewtonianEuler::Tags::SoundSpeed</a>&lt; <a class="el" href="classDataVector.html">DataVector</a> &gt; &gt;&gt;, <a class="el" href="structInitialization_1_1Actions_1_1Evolution.html">Initialization::Actions::Evolution</a>&lt; <a class="el" href="structEvolutionMetavars.html">EvolutionMetavars</a> &gt;, tmpl::conditional_t&lt; evolution::is_analytic_solution_v&lt; initial_data &gt;, <a class="el" href="structInitialization_1_1Actions_1_1AddComputeTags.html">Initialization::Actions::AddComputeTags</a>&lt; tmpl::list&lt; <a class="el" href="structevolution_1_1Tags_1_1AnalyticCompute.html">evolution::Tags::AnalyticCompute</a>&lt; Dim, <a class="el" href="structTags_1_1AnalyticSolution.html">initial_data_tag</a>, analytic_variables_tags &gt; &gt;&gt;, tmpl::list&lt;&gt; &gt;, <a class="el" href="structdg_1_1Actions_1_1InitializeMortars.html">dg::Actions::InitializeMortars</a>&lt; <a class="el" href="structEvolutionMetavars.html">EvolutionMetavars</a> &gt;, <a class="el" href="structInitialization_1_1Actions_1_1DiscontinuousGalerkin.html">Initialization::Actions::DiscontinuousGalerkin</a>&lt; <a class="el" href="structEvolutionMetavars.html">EvolutionMetavars</a> &gt;, <a class="el" href="structInitialization_1_1Actions_1_1Minmod.html">Initialization::Actions::Minmod</a>&lt; Dim &gt;, <a class="el" href="structInitialization_1_1Actions_1_1RemoveOptionsAndTerminatePhase.html">Initialization::Actions::RemoveOptionsAndTerminatePhase</a> &gt;</td></tr>
+<tr class="separator:a7e12c874fc09a0e834a6fd6a8c447098"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab2ba4f047881e430d0370c5640528399"><td class="memItemLeft" align="right" valign="top"><a id="ab2ba4f047881e430d0370c5640528399"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>component_list</b> = tmpl::list&lt; <a class="el" href="structobservers_1_1Observer.html">observers::Observer</a>&lt; <a class="el" href="structEvolutionMetavars.html">EvolutionMetavars</a> &gt;, <a class="el" href="structobservers_1_1ObserverWriter.html">observers::ObserverWriter</a>&lt; <a class="el" href="structEvolutionMetavars.html">EvolutionMetavars</a> &gt;, <a class="el" href="structDgElementArray.html">DgElementArray</a>&lt; <a class="el" href="structEvolutionMetavars.html">EvolutionMetavars</a>, tmpl::list&lt; <a class="el" href="structParallel_1_1PhaseActions.html">Parallel::PhaseActions</a>&lt; Phase, Phase::Initialization, initialization_actions &gt;, <a class="el" href="structParallel_1_1PhaseActions.html">Parallel::PhaseActions</a>&lt; Phase, Phase::InitializeTimeStepperHistory, tmpl::flatten&lt; tmpl::list&lt; <a class="el" href="group__TimeGroup.html#gaca875eaf9855556d9f6bfc82f82c5897">SelfStart::self_start_procedure</a>&lt; step_actions &gt; &gt;&gt; &gt;, <a class="el" href="structParallel_1_1PhaseActions.html">Parallel::PhaseActions</a>&lt; Phase, Phase::RegisterWithObserver, tmpl::list&lt; <a class="el" href="structobservers_1_1Actions_1_1RegisterWithObservers.html">observers::Actions::RegisterWithObservers</a>&lt; <a class="el" href="structobservers_1_1RegisterObservers.html">observers::RegisterObservers</a>&lt; <a class="el" href="structTags_1_1Time.html">Tags::Time</a>, <a class="el" href="structEvolutionMetavars_1_1ObservationType.html">element_observation_type</a> &gt; &gt;, <a class="el" href="structParallel_1_1Actions_1_1TerminatePhase.html">Parallel::Actions::TerminatePhase</a> &gt; &gt;, <a class="el" href="structParallel_1_1PhaseActions.html">Parallel::PhaseActions</a>&lt; Phase, Phase::Evolve, tmpl::flatten&lt; tmpl::list&lt; <a class="el" href="structActions_1_1UpdateConservatives.html">Actions::UpdateConservatives</a>, <a class="el" href="structActions_1_1RunEventsAndTriggers.html">Actions::RunEventsAndTriggers</a>, tmpl::conditional_t&lt; local_time_stepping, <a class="el" href="structActions_1_1ChangeStepSize.html">Actions::ChangeStepSize</a>&lt; step_choosers &gt;, tmpl::list&lt;&gt; &gt;, step_actions, <a class="el" href="structActions_1_1AdvanceTime.html">Actions::AdvanceTime</a> &gt; &gt;&gt; &gt;&gt; &gt;</td></tr>
+<tr class="separator:ab2ba4f047881e430d0370c5640528399"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a24dfa1382df93dc072c06ff41f6f2315"><td class="memItemLeft" align="right" valign="top"><a id="a24dfa1382df93dc072c06ff41f6f2315"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>const_global_cache_tags</b> = tmpl::list&lt; <a class="el" href="structTags_1_1AnalyticSolution.html">initial_data_tag</a>, tmpl::conditional_t&lt; has_source_terms, <a class="el" href="structNewtonianEuler_1_1Tags_1_1SourceTerm.html">source_term_tag</a>, tmpl::list&lt;&gt; &gt;, <a class="el" href="structTags_1_1TimeStepper.html">Tags::TimeStepper</a>&lt; tmpl::conditional_t&lt; local_time_stepping, <a class="el" href="classLtsTimeStepper.html">LtsTimeStepper</a>, <a class="el" href="classTimeStepper.html">TimeStepper</a> &gt; &gt;, <a class="el" href="structTags_1_1EventsAndTriggers.html">Tags::EventsAndTriggers</a>&lt; events, triggers &gt; &gt;</td></tr>
+<tr class="separator:a24dfa1382df93dc072c06ff41f6f2315"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2cf7377caa0b7a27acbb8d38f1d6848c"><td class="memItemLeft" align="right" valign="top"><a id="a2cf7377caa0b7a27acbb8d38f1d6848c"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>initial_data</b> = <a class="el" href="classRadiationTransport_1_1M1Grey_1_1Solutions_1_1ConstantM1.html">RadiationTransport::M1Grey::Solutions::ConstantM1</a></td></tr>
+<tr class="separator:a2cf7377caa0b7a27acbb8d38f1d6848c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae70ace52e4d0a001d1546300cc2468b4"><td class="memItemLeft" align="right" valign="top"><a id="ae70ace52e4d0a001d1546300cc2468b4"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>neutrino_species</b> = tmpl::list&lt; <a class="el" href="structneutrinos_1_1ElectronNeutrinos.html">neutrinos::ElectronNeutrinos</a>&lt; 1 &gt; &gt;</td></tr>
+<tr class="separator:ae70ace52e4d0a001d1546300cc2468b4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab73a92d6adbb5e280073212c5423d59d"><td class="memItemLeft" align="right" valign="top"><a id="ab73a92d6adbb5e280073212c5423d59d"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>system</b> = <a class="el" href="structRadiationTransport_1_1M1Grey_1_1System.html">RadiationTransport::M1Grey::System</a>&lt; neutrino_species &gt;</td></tr>
+<tr class="separator:ab73a92d6adbb5e280073212c5423d59d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2444df24f0fd35b94186f578d7043880"><td class="memItemLeft" align="right" valign="top"><a id="a2444df24f0fd35b94186f578d7043880"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>temporal_id</b> = <a class="el" href="structTags_1_1TimeStepId.html">Tags::TimeStepId</a></td></tr>
+<tr class="separator:a2444df24f0fd35b94186f578d7043880"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac98fd2b79a500005683c09b18c731e50"><td class="memItemLeft" align="right" valign="top"><a id="ac98fd2b79a500005683c09b18c731e50"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>initial_data_tag</b> = tmpl::conditional_t&lt; evolution::is_analytic_solution_v&lt; initial_data &gt;, <a class="el" href="structTags_1_1AnalyticSolution.html">Tags::AnalyticSolution</a>&lt; initial_data &gt;, <a class="el" href="structTags_1_1AnalyticData.html">Tags::AnalyticData</a>&lt; initial_data &gt; &gt;</td></tr>
+<tr class="separator:ac98fd2b79a500005683c09b18c731e50"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a46eb93cc74edff6a824ed7487c0566c2"><td class="memItemLeft" align="right" valign="top"><a id="a46eb93cc74edff6a824ed7487c0566c2"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>boundary_condition_tag</b> = <a class="el" href="structTags_1_1AnalyticSolution.html">initial_data_tag</a></td></tr>
+<tr class="separator:a46eb93cc74edff6a824ed7487c0566c2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad7a6af2eb5085ca18ab5fcd47ab54fb2"><td class="memItemLeft" align="right" valign="top"><a id="ad7a6af2eb5085ca18ab5fcd47ab54fb2"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>analytic_variables_tags</b> = typename system::variables_tag::tags_list</td></tr>
+<tr class="separator:ad7a6af2eb5085ca18ab5fcd47ab54fb2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a604644452d7ea2c86c07c651338b1a03"><td class="memItemLeft" align="right" valign="top"><a id="a604644452d7ea2c86c07c651338b1a03"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>normal_dot_numerical_flux</b> = <a class="el" href="structTags_1_1NumericalFlux.html">Tags::NumericalFlux</a>&lt; <a class="el" href="structdg_1_1NumericalFluxes_1_1LocalLaxFriedrichs.html">dg::NumericalFluxes::LocalLaxFriedrichs</a>&lt; <a class="el" href="structBurgers_1_1System.html">system</a> &gt; &gt;</td></tr>
+<tr class="separator:a604644452d7ea2c86c07c651338b1a03"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa2d82b7d45fe3f668fb08505151b94e3"><td class="memItemLeft" align="right" valign="top"><a id="aa2d82b7d45fe3f668fb08505151b94e3"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>limiter</b> = <a class="el" href="structTags_1_1Limiter.html">Tags::Limiter</a>&lt; Limiters::Minmod&lt; 3, typename system::variables_tag::tags_list &gt; &gt;</td></tr>
+<tr class="separator:aa2d82b7d45fe3f668fb08505151b94e3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a62dc9d28f85699f4358ba8f320a5620f"><td class="memItemLeft" align="right" valign="top"><a id="a62dc9d28f85699f4358ba8f320a5620f"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>events</b> = tmpl::flatten&lt; tmpl::list&lt; tmpl::conditional_t&lt; evolution::is_analytic_solution_v&lt; initial_data &gt;, <a class="el" href="structRegistration_1_1Registrar.html">dg::Events::Registrars::ObserveErrorNorms</a>&lt; <a class="el" href="structTags_1_1Time.html">Tags::Time</a>, analytic_variables_tags &gt;, tmpl::list&lt;&gt; &gt;, <a class="el" href="structdg_1_1Events_1_1Registrars_1_1ObserveFields.html">dg::Events::Registrars::ObserveFields</a>&lt; 3, <a class="el" href="structTags_1_1Time.html">Tags::Time</a>, tmpl::append&lt; db::get_variables_tags_list&lt; typename <a class="el" href="structTags_1_1Variables.html">system::variables_tag</a> &gt;, db::get_variables_tags_list&lt; typename system::primitive_variables_tag &gt; &gt;, tmpl::conditional_t&lt; evolution::is_analytic_solution_v&lt; initial_data &gt;, analytic_variables_tags, tmpl::list&lt;&gt; &gt;&gt; &gt;&gt;</td></tr>
+<tr class="separator:a62dc9d28f85699f4358ba8f320a5620f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae2ae4a8578a5694bf882e828c40a759f"><td class="memItemLeft" align="right" valign="top"><a id="ae2ae4a8578a5694bf882e828c40a759f"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>triggers</b> = <a class="el" href="group__EventsAndTriggersGroup.html#ga59c7addd4e715b4c49d98bac1403b445">Triggers::time_triggers</a></td></tr>
+<tr class="separator:ae2ae4a8578a5694bf882e828c40a759f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af01b6e1198e711fa39fa6bc5ab60501a"><td class="memItemLeft" align="right" valign="top"><a id="af01b6e1198e711fa39fa6bc5ab60501a"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>step_choosers</b> = tmpl::list&lt; <a class="el" href="structStepChoosers_1_1Registrars_1_1Cfl.html">StepChoosers::Registrars::Cfl</a>&lt; 3, <a class="el" href="structFrame_1_1Inertial.html">Frame::Inertial</a> &gt;, <a class="el" href="structRegistration_1_1Registrar.html">StepChoosers::Registrars::Constant</a>, <a class="el" href="structRegistration_1_1Registrar.html">StepChoosers::Registrars::Increase</a> &gt;</td></tr>
+<tr class="separator:af01b6e1198e711fa39fa6bc5ab60501a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aeffb6328bf4045bbda633cb12949e704"><td class="memItemLeft" align="right" valign="top"><a id="aeffb6328bf4045bbda633cb12949e704"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>element_observation_type</b> = <a class="el" href="structEvolutionMetavars_1_1ObservationType.html">ObservationType</a></td></tr>
+<tr class="separator:aeffb6328bf4045bbda633cb12949e704"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae9253efe183dc4c2aa1112d513988a3c"><td class="memItemLeft" align="right" valign="top"><a id="ae9253efe183dc4c2aa1112d513988a3c"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>observed_reduction_data_tags</b> = observers::collect_reduction_data_tags&lt; typename <a class="el" href="classEvent.html">Event</a>&lt; events &gt;::creatable_classes &gt;</td></tr>
+<tr class="separator:ae9253efe183dc4c2aa1112d513988a3c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2689f5f8dbbe3d346f1696c196781858"><td class="memItemLeft" align="right" valign="top"><a id="a2689f5f8dbbe3d346f1696c196781858"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>step_actions</b> = tmpl::flatten&lt; tmpl::list&lt; <a class="el" href="structActions_1_1ComputeVolumeFluxes.html">Actions::ComputeVolumeFluxes</a>, <a class="el" href="structdg_1_1Actions_1_1SendDataForFluxes.html">dg::Actions::SendDataForFluxes</a>&lt; <a class="el" href="structEvolutionMetavars.html">EvolutionMetavars</a> &gt;, <a class="el" href="structActions_1_1ComputeVolumeSources.html">Actions::ComputeVolumeSources</a>, <a class="el" href="structActions_1_1ComputeTimeDerivative.html">Actions::ComputeTimeDerivative</a>, tmpl::conditional_t&lt; evolution::is_analytic_solution_v&lt; initial_data &gt;, <a class="el" href="structdg_1_1Actions_1_1ImposeDirichletBoundaryConditions.html">dg::Actions::ImposeDirichletBoundaryConditions</a>&lt; <a class="el" href="structEvolutionMetavars.html">EvolutionMetavars</a> &gt;, tmpl::list&lt;&gt; &gt;, <a class="el" href="structdg_1_1Actions_1_1ReceiveDataForFluxes.html">dg::Actions::ReceiveDataForFluxes</a>&lt; <a class="el" href="structEvolutionMetavars.html">EvolutionMetavars</a> &gt;, tmpl::conditional_t&lt; local_time_stepping, tmpl::list&lt;&gt;, <a class="el" href="structdg_1_1Actions_1_1ApplyFluxes.html">dg::Actions::ApplyFluxes</a> &gt;, <a class="el" href="structActions_1_1RecordTimeStepperData.html">Actions::RecordTimeStepperData</a>, tmpl::conditional_t&lt; local_time_stepping, <a class="el" href="structdg_1_1Actions_1_1ApplyBoundaryFluxesLocalTimeStepping.html">dg::Actions::ApplyBoundaryFluxesLocalTimeStepping</a>, tmpl::list&lt;&gt; &gt;, <a class="el" href="structActions_1_1UpdateU.html">Actions::UpdateU</a>, <a class="el" href="structLimiters_1_1Actions_1_1SendData.html">Limiters::Actions::SendData</a>&lt; <a class="el" href="structEvolutionMetavars.html">EvolutionMetavars</a> &gt;, <a class="el" href="structLimiters_1_1Actions_1_1Limit.html">Limiters::Actions::Limit</a>&lt; <a class="el" href="structEvolutionMetavars.html">EvolutionMetavars</a> &gt;, <a class="el" href="structActions_1_1UpdateM1Closure.html">Actions::UpdateM1Closure</a> &gt; &gt;</td></tr>
+<tr class="separator:a2689f5f8dbbe3d346f1696c196781858"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a109fdc40ddf4683c25eae38a7d25113a"><td class="memItemLeft" align="right" valign="top"><a id="a109fdc40ddf4683c25eae38a7d25113a"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>initialization_actions</b> = tmpl::list&lt; <a class="el" href="structdg_1_1Actions_1_1InitializeDomain.html">dg::Actions::InitializeDomain</a>&lt; 3 &gt;, <a class="el" href="structInitialization_1_1Actions_1_1GrTagsForHydro.html">Initialization::Actions::GrTagsForHydro</a>, <a class="el" href="structInitialization_1_1Actions_1_1ConservativeSystem.html">Initialization::Actions::ConservativeSystem</a>, <a class="el" href="structRadiationTransport_1_1M1Grey_1_1Actions_1_1InitializeM1Tags.html">RadiationTransport::M1Grey::Actions::InitializeM1Tags</a>, <a class="el" href="structActions_1_1UpdateM1Closure.html">Actions::UpdateM1Closure</a>, <a class="el" href="structdg_1_1Actions_1_1InitializeInterfaces.html">dg::Actions::InitializeInterfaces</a>&lt; <a class="el" href="structBurgers_1_1System.html">system</a>, <a class="el" href="group__InitializationGroup.html#gac7e9ce406b34fcda759c6e47155b4bbd">dg::Initialization::slice_tags_to_face</a>&lt; typename <a class="el" href="structTags_1_1Variables.html">system::variables_tag</a>, typename system::spacetime_variables_tag, typename system::primitive_variables_tag &gt;, <a class="el" href="group__InitializationGroup.html#gab5ce0161b6bc0216d3634622be66c9bb">dg::Initialization::slice_tags_to_exterior</a>&lt; typename system::spacetime_variables_tag, typename system::primitive_variables_tag &gt; &gt;, <a class="el" href="structInitialization_1_1Actions_1_1Evolution.html">Initialization::Actions::Evolution</a>&lt; <a class="el" href="structEvolutionMetavars.html">EvolutionMetavars</a> &gt;, tmpl::conditional_t&lt; evolution::is_analytic_solution_v&lt; initial_data &gt;, <a class="el" href="structInitialization_1_1Actions_1_1AddComputeTags.html">Initialization::Actions::AddComputeTags</a>&lt; tmpl::list&lt; <a class="el" href="structevolution_1_1Tags_1_1AnalyticCompute.html">evolution::Tags::AnalyticCompute</a>&lt; 3, <a class="el" href="structTags_1_1AnalyticSolution.html">initial_data_tag</a>, analytic_variables_tags &gt; &gt;&gt;, tmpl::list&lt;&gt; &gt;, <a class="el" href="structdg_1_1Actions_1_1InitializeMortars.html">dg::Actions::InitializeMortars</a>&lt; <a class="el" href="structEvolutionMetavars.html">EvolutionMetavars</a> &gt;, <a class="el" href="structInitialization_1_1Actions_1_1DiscontinuousGalerkin.html">Initialization::Actions::DiscontinuousGalerkin</a>&lt; <a class="el" href="structEvolutionMetavars.html">EvolutionMetavars</a> &gt;, <a class="el" href="structInitialization_1_1Actions_1_1Minmod.html">Initialization::Actions::Minmod</a>&lt; 3 &gt;, <a class="el" href="structInitialization_1_1Actions_1_1RemoveOptionsAndTerminatePhase.html">Initialization::Actions::RemoveOptionsAndTerminatePhase</a> &gt;</td></tr>
+<tr class="separator:a109fdc40ddf4683c25eae38a7d25113a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adf4377eaa33937ed932bdd7af46d91d0"><td class="memItemLeft" align="right" valign="top"><a id="adf4377eaa33937ed932bdd7af46d91d0"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>component_list</b> = tmpl::list&lt; <a class="el" href="structobservers_1_1Observer.html">observers::Observer</a>&lt; <a class="el" href="structEvolutionMetavars.html">EvolutionMetavars</a> &gt;, <a class="el" href="structobservers_1_1ObserverWriter.html">observers::ObserverWriter</a>&lt; <a class="el" href="structEvolutionMetavars.html">EvolutionMetavars</a> &gt;, <a class="el" href="structDgElementArray.html">DgElementArray</a>&lt; <a class="el" href="structEvolutionMetavars.html">EvolutionMetavars</a>, tmpl::list&lt; <a class="el" href="structParallel_1_1PhaseActions.html">Parallel::PhaseActions</a>&lt; Phase, Phase::Initialization, initialization_actions &gt;, <a class="el" href="structParallel_1_1PhaseActions.html">Parallel::PhaseActions</a>&lt; Phase, Phase::InitializeTimeStepperHistory, <a class="el" href="group__TimeGroup.html#gaca875eaf9855556d9f6bfc82f82c5897">SelfStart::self_start_procedure</a>&lt; step_actions &gt; &gt;, <a class="el" href="structParallel_1_1PhaseActions.html">Parallel::PhaseActions</a>&lt; Phase, Phase::RegisterWithObserver, tmpl::list&lt; <a class="el" href="structobservers_1_1Actions_1_1RegisterWithObservers.html">observers::Actions::RegisterWithObservers</a>&lt; <a class="el" href="structobservers_1_1RegisterObservers.html">observers::RegisterObservers</a>&lt; <a class="el" href="structTags_1_1Time.html">Tags::Time</a>, <a class="el" href="structEvolutionMetavars_1_1ObservationType.html">element_observation_type</a> &gt; &gt;, <a class="el" href="structParallel_1_1Actions_1_1TerminatePhase.html">Parallel::Actions::TerminatePhase</a> &gt; &gt;, <a class="el" href="structParallel_1_1PhaseActions.html">Parallel::PhaseActions</a>&lt; Phase, Phase::Evolve, tmpl::flatten&lt; tmpl::list&lt; <a class="el" href="structActions_1_1RunEventsAndTriggers.html">Actions::RunEventsAndTriggers</a>, tmpl::conditional_t&lt; local_time_stepping, <a class="el" href="structActions_1_1ChangeStepSize.html">Actions::ChangeStepSize</a>&lt; step_choosers &gt;, tmpl::list&lt;&gt; &gt;, step_actions, <a class="el" href="structActions_1_1AdvanceTime.html">Actions::AdvanceTime</a> &gt; &gt;&gt; &gt;&gt; &gt;</td></tr>
+<tr class="separator:adf4377eaa33937ed932bdd7af46d91d0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9319b42d8ff18192bf7976e4e8d3bde0"><td class="memItemLeft" align="right" valign="top"><a id="a9319b42d8ff18192bf7976e4e8d3bde0"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>const_global_cache_tags</b> = tmpl::list&lt; <a class="el" href="structTags_1_1AnalyticSolution.html">initial_data_tag</a>, <a class="el" href="structTags_1_1TimeStepper.html">Tags::TimeStepper</a>&lt; tmpl::conditional_t&lt; local_time_stepping, <a class="el" href="classLtsTimeStepper.html">LtsTimeStepper</a>, <a class="el" href="classTimeStepper.html">TimeStepper</a> &gt; &gt;, <a class="el" href="structTags_1_1EventsAndTriggers.html">Tags::EventsAndTriggers</a>&lt; events, triggers &gt; &gt;</td></tr>
+<tr class="separator:a9319b42d8ff18192bf7976e4e8d3bde0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a73b883046afa7cf5389e727789a71463"><td class="memItemLeft" align="right" valign="top"><a id="a73b883046afa7cf5389e727789a71463"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>system</b> = <a class="el" href="structScalarWave_1_1System.html">ScalarWave::System</a>&lt; Dim &gt;</td></tr>
+<tr class="separator:a73b883046afa7cf5389e727789a71463"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2444df24f0fd35b94186f578d7043880"><td class="memItemLeft" align="right" valign="top"><a id="a2444df24f0fd35b94186f578d7043880"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>temporal_id</b> = <a class="el" href="structTags_1_1TimeStepId.html">Tags::TimeStepId</a></td></tr>
+<tr class="separator:a2444df24f0fd35b94186f578d7043880"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acf715150e3290d55e24494c9ed4d377b"><td class="memItemLeft" align="right" valign="top"><a id="acf715150e3290d55e24494c9ed4d377b"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>initial_data_tag</b> = <a class="el" href="structTags_1_1AnalyticSolution.html">Tags::AnalyticSolution</a>&lt; <a class="el" href="classScalarWave_1_1Solutions_1_1PlaneWave.html">ScalarWave::Solutions::PlaneWave</a>&lt; Dim &gt; &gt;</td></tr>
+<tr class="separator:acf715150e3290d55e24494c9ed4d377b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a46eb93cc74edff6a824ed7487c0566c2"><td class="memItemLeft" align="right" valign="top"><a id="a46eb93cc74edff6a824ed7487c0566c2"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>boundary_condition_tag</b> = <a class="el" href="structTags_1_1AnalyticSolution.html">initial_data_tag</a></td></tr>
+<tr class="separator:a46eb93cc74edff6a824ed7487c0566c2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7dd84018f386052322291c479c6e04f2"><td class="memItemLeft" align="right" valign="top"><a id="a7dd84018f386052322291c479c6e04f2"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>normal_dot_numerical_flux</b> = <a class="el" href="structTags_1_1NumericalFlux.html">Tags::NumericalFlux</a>&lt; <a class="el" href="structScalarWave_1_1UpwindFlux.html">ScalarWave::UpwindFlux</a>&lt; Dim &gt; &gt;</td></tr>
+<tr class="separator:a7dd84018f386052322291c479c6e04f2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:add9eae7fc94c5a2e64b33677386297e0"><td class="memItemLeft" align="right" valign="top"><a id="add9eae7fc94c5a2e64b33677386297e0"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>observe_fields</b> = db::get_variables_tags_list&lt; typename <a class="el" href="structTags_1_1Variables.html">system::variables_tag</a> &gt;</td></tr>
+<tr class="separator:add9eae7fc94c5a2e64b33677386297e0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a793f0a8901648415bd2f51c0c60531d5"><td class="memItemLeft" align="right" valign="top"><a id="a793f0a8901648415bd2f51c0c60531d5"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>analytic_solution_fields</b> = observe_fields</td></tr>
+<tr class="separator:a793f0a8901648415bd2f51c0c60531d5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a64021aafe34dba117e119913bba5dd15"><td class="memItemLeft" align="right" valign="top"><a id="a64021aafe34dba117e119913bba5dd15"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>events</b> = tmpl::list&lt; <a class="el" href="structdg_1_1Events_1_1Registrars_1_1ObserveFields.html">dg::Events::Registrars::ObserveFields</a>&lt; Dim, <a class="el" href="structTags_1_1Time.html">Tags::Time</a>, observe_fields, analytic_solution_fields &gt;, <a class="el" href="structRegistration_1_1Registrar.html">dg::Events::Registrars::ObserveErrorNorms</a>&lt; <a class="el" href="structTags_1_1Time.html">Tags::Time</a>, analytic_solution_fields &gt; &gt;</td></tr>
+<tr class="separator:a64021aafe34dba117e119913bba5dd15"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae2ae4a8578a5694bf882e828c40a759f"><td class="memItemLeft" align="right" valign="top"><a id="ae2ae4a8578a5694bf882e828c40a759f"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>triggers</b> = <a class="el" href="group__EventsAndTriggersGroup.html#ga59c7addd4e715b4c49d98bac1403b445">Triggers::time_triggers</a></td></tr>
+<tr class="separator:ae2ae4a8578a5694bf882e828c40a759f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9319b42d8ff18192bf7976e4e8d3bde0"><td class="memItemLeft" align="right" valign="top"><a id="a9319b42d8ff18192bf7976e4e8d3bde0"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>const_global_cache_tags</b> = tmpl::list&lt; <a class="el" href="structTags_1_1AnalyticSolution.html">initial_data_tag</a>, <a class="el" href="structTags_1_1TimeStepper.html">Tags::TimeStepper</a>&lt; tmpl::conditional_t&lt; local_time_stepping, <a class="el" href="classLtsTimeStepper.html">LtsTimeStepper</a>, <a class="el" href="classTimeStepper.html">TimeStepper</a> &gt; &gt;, <a class="el" href="structTags_1_1EventsAndTriggers.html">Tags::EventsAndTriggers</a>&lt; events, triggers &gt; &gt;</td></tr>
+<tr class="separator:a9319b42d8ff18192bf7976e4e8d3bde0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aeffb6328bf4045bbda633cb12949e704"><td class="memItemLeft" align="right" valign="top"><a id="aeffb6328bf4045bbda633cb12949e704"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>element_observation_type</b> = <a class="el" href="structEvolutionMetavars_1_1ObservationType.html">ObservationType</a></td></tr>
+<tr class="separator:aeffb6328bf4045bbda633cb12949e704"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae9253efe183dc4c2aa1112d513988a3c"><td class="memItemLeft" align="right" valign="top"><a id="ae9253efe183dc4c2aa1112d513988a3c"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>observed_reduction_data_tags</b> = observers::collect_reduction_data_tags&lt; typename <a class="el" href="classEvent.html">Event</a>&lt; events &gt;::creatable_classes &gt;</td></tr>
+<tr class="separator:ae9253efe183dc4c2aa1112d513988a3c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2088de03246d1bdfa76be97ad1051be6"><td class="memItemLeft" align="right" valign="top"><a id="a2088de03246d1bdfa76be97ad1051be6"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>step_choosers</b> = tmpl::list&lt; <a class="el" href="structStepChoosers_1_1Registrars_1_1ByBlock.html">StepChoosers::Registrars::ByBlock</a>&lt; Dim &gt;, <a class="el" href="structStepChoosers_1_1Registrars_1_1Cfl.html">StepChoosers::Registrars::Cfl</a>&lt; Dim, <a class="el" href="structFrame_1_1Inertial.html">Frame::Inertial</a> &gt;, <a class="el" href="structRegistration_1_1Registrar.html">StepChoosers::Registrars::Constant</a>, <a class="el" href="structRegistration_1_1Registrar.html">StepChoosers::Registrars::Increase</a> &gt;</td></tr>
+<tr class="separator:a2088de03246d1bdfa76be97ad1051be6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a94208a4dc253842ab96241a56be6e815"><td class="memItemLeft" align="right" valign="top"><a id="a94208a4dc253842ab96241a56be6e815"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>step_actions</b> = tmpl::flatten&lt; tmpl::list&lt; <a class="el" href="structdg_1_1Actions_1_1ComputeNonconservativeBoundaryFluxes.html">dg::Actions::ComputeNonconservativeBoundaryFluxes</a>&lt; <a class="el" href="structTags_1_1InternalDirections.html">Tags::InternalDirections</a>&lt; Dim &gt; &gt;, <a class="el" href="structdg_1_1Actions_1_1SendDataForFluxes.html">dg::Actions::SendDataForFluxes</a>&lt; <a class="el" href="structEvolutionMetavars.html">EvolutionMetavars</a> &gt;, <a class="el" href="structActions_1_1ComputeTimeDerivative.html">Actions::ComputeTimeDerivative</a>, <a class="el" href="structdg_1_1Actions_1_1ComputeNonconservativeBoundaryFluxes.html">dg::Actions::ComputeNonconservativeBoundaryFluxes</a>&lt; <a class="el" href="structTags_1_1BoundaryDirectionsInterior.html">Tags::BoundaryDirectionsInterior</a>&lt; Dim &gt; &gt;, <a class="el" href="structdg_1_1Actions_1_1ImposeDirichletBoundaryConditions.html">dg::Actions::ImposeDirichletBoundaryConditions</a>&lt; <a class="el" href="structEvolutionMetavars.html">EvolutionMetavars</a> &gt;, <a class="el" href="structdg_1_1Actions_1_1ReceiveDataForFluxes.html">dg::Actions::ReceiveDataForFluxes</a>&lt; <a class="el" href="structEvolutionMetavars.html">EvolutionMetavars</a> &gt;, tmpl::conditional_t&lt; local_time_stepping, tmpl::list&lt;&gt;, <a class="el" href="structdg_1_1Actions_1_1ApplyFluxes.html">dg::Actions::ApplyFluxes</a> &gt;, <a class="el" href="structActions_1_1RecordTimeStepperData.html">Actions::RecordTimeStepperData</a>, tmpl::conditional_t&lt; local_time_stepping, <a class="el" href="structdg_1_1Actions_1_1ApplyBoundaryFluxesLocalTimeStepping.html">dg::Actions::ApplyBoundaryFluxesLocalTimeStepping</a>, tmpl::list&lt;&gt; &gt;, <a class="el" href="structActions_1_1UpdateU.html">Actions::UpdateU</a>, tmpl::conditional_t&lt; use_filtering, dg::Actions::Filter&lt; <a class="el" href="classFilters_1_1Exponential.html">Filters::Exponential</a>&lt; 0 &gt;, tmpl::list&lt; <a class="el" href="structScalarWave_1_1Pi.html">ScalarWave::Pi</a>, <a class="el" href="structScalarWave_1_1Psi.html">ScalarWave::Psi</a>, <a class="el" href="structScalarWave_1_1Phi.html">ScalarWave::Phi</a>&lt; Dim &gt; &gt;&gt;, tmpl::list&lt;&gt; &gt;&gt; &gt;</td></tr>
+<tr class="separator:a94208a4dc253842ab96241a56be6e815"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a52d48d699c6cf915a595f58b7a004ca0"><td class="memItemLeft" align="right" valign="top"><a id="a52d48d699c6cf915a595f58b7a004ca0"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>initialization_actions</b> = tmpl::list&lt; <a class="el" href="structdg_1_1Actions_1_1InitializeDomain.html">dg::Actions::InitializeDomain</a>&lt; system::volume_dim &gt;, <a class="el" href="structInitialization_1_1Actions_1_1NonconservativeSystem.html">Initialization::Actions::NonconservativeSystem</a>, <a class="el" href="structdg_1_1Actions_1_1InitializeInterfaces.html">dg::Actions::InitializeInterfaces</a>&lt; <a class="el" href="structBurgers_1_1System.html">system</a>, <a class="el" href="group__InitializationGroup.html#gac7e9ce406b34fcda759c6e47155b4bbd">dg::Initialization::slice_tags_to_face</a>&lt; typename <a class="el" href="structTags_1_1Variables.html">system::variables_tag</a> &gt;, <a class="el" href="group__InitializationGroup.html#gab5ce0161b6bc0216d3634622be66c9bb">dg::Initialization::slice_tags_to_exterior</a>&lt;&gt; &gt;, <a class="el" href="structInitialization_1_1Actions_1_1Evolution.html">Initialization::Actions::Evolution</a>&lt; <a class="el" href="structEvolutionMetavars.html">EvolutionMetavars</a> &gt;, <a class="el" href="structInitialization_1_1Actions_1_1AddComputeTags.html">Initialization::Actions::AddComputeTags</a>&lt; tmpl::list&lt; <a class="el" href="structevolution_1_1Tags_1_1AnalyticCompute.html">evolution::Tags::AnalyticCompute</a>&lt; Dim, <a class="el" href="structTags_1_1AnalyticSolution.html">initial_data_tag</a>, analytic_solution_fields &gt; &gt;&gt;, <a class="el" href="structdg_1_1Actions_1_1InitializeMortars.html">dg::Actions::InitializeMortars</a>&lt; <a class="el" href="structEvolutionMetavars.html">EvolutionMetavars</a> &gt;, <a class="el" href="structInitialization_1_1Actions_1_1DiscontinuousGalerkin.html">Initialization::Actions::DiscontinuousGalerkin</a>&lt; <a class="el" href="structEvolutionMetavars.html">EvolutionMetavars</a> &gt;, <a class="el" href="structInitialization_1_1Actions_1_1RemoveOptionsAndTerminatePhase.html">Initialization::Actions::RemoveOptionsAndTerminatePhase</a> &gt;</td></tr>
+<tr class="separator:a52d48d699c6cf915a595f58b7a004ca0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adf4377eaa33937ed932bdd7af46d91d0"><td class="memItemLeft" align="right" valign="top"><a id="adf4377eaa33937ed932bdd7af46d91d0"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>component_list</b> = tmpl::list&lt; <a class="el" href="structobservers_1_1Observer.html">observers::Observer</a>&lt; <a class="el" href="structEvolutionMetavars.html">EvolutionMetavars</a> &gt;, <a class="el" href="structobservers_1_1ObserverWriter.html">observers::ObserverWriter</a>&lt; <a class="el" href="structEvolutionMetavars.html">EvolutionMetavars</a> &gt;, <a class="el" href="structDgElementArray.html">DgElementArray</a>&lt; <a class="el" href="structEvolutionMetavars.html">EvolutionMetavars</a>, tmpl::list&lt; <a class="el" href="structParallel_1_1PhaseActions.html">Parallel::PhaseActions</a>&lt; Phase, Phase::Initialization, initialization_actions &gt;, <a class="el" href="structParallel_1_1PhaseActions.html">Parallel::PhaseActions</a>&lt; Phase, Phase::InitializeTimeStepperHistory, <a class="el" href="group__TimeGroup.html#gaca875eaf9855556d9f6bfc82f82c5897">SelfStart::self_start_procedure</a>&lt; step_actions &gt; &gt;, <a class="el" href="structParallel_1_1PhaseActions.html">Parallel::PhaseActions</a>&lt; Phase, Phase::RegisterWithObserver, tmpl::list&lt; <a class="el" href="structobservers_1_1Actions_1_1RegisterWithObservers.html">observers::Actions::RegisterWithObservers</a>&lt; <a class="el" href="structobservers_1_1RegisterObservers.html">observers::RegisterObservers</a>&lt; <a class="el" href="structTags_1_1Time.html">Tags::Time</a>, <a class="el" href="structEvolutionMetavars_1_1ObservationType.html">element_observation_type</a> &gt; &gt;, <a class="el" href="structParallel_1_1Actions_1_1TerminatePhase.html">Parallel::Actions::TerminatePhase</a> &gt; &gt;, <a class="el" href="structParallel_1_1PhaseActions.html">Parallel::PhaseActions</a>&lt; Phase, Phase::Evolve, tmpl::flatten&lt; tmpl::list&lt; <a class="el" href="structActions_1_1RunEventsAndTriggers.html">Actions::RunEventsAndTriggers</a>, tmpl::conditional_t&lt; local_time_stepping, <a class="el" href="structActions_1_1ChangeStepSize.html">Actions::ChangeStepSize</a>&lt; step_choosers &gt;, tmpl::list&lt;&gt; &gt;, step_actions, <a class="el" href="structActions_1_1AdvanceTime.html">Actions::AdvanceTime</a> &gt; &gt;&gt; &gt;&gt; &gt;</td></tr>
+<tr class="separator:adf4377eaa33937ed932bdd7af46d91d0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-methods"></a>
+Static Public Member Functions</h2></td></tr>
+<tr class="memitem:a0e8bd937b07d4dcb555e379e6403b44e"><td class="memItemLeft" align="right" valign="top"><a id="a0e8bd937b07d4dcb555e379e6403b44e"></a>
+static Phase&#160;</td><td class="memItemRight" valign="bottom"><b>determine_next_phase</b> (const Phase &amp;current_phase, const Parallel::CProxy_ConstGlobalCache&lt; <a class="el" href="structEvolutionMetavars.html">EvolutionMetavars</a> &gt; &amp;) noexcept</td></tr>
+<tr class="separator:a0e8bd937b07d4dcb555e379e6403b44e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0e8bd937b07d4dcb555e379e6403b44e"><td class="memItemLeft" align="right" valign="top"><a id="a0e8bd937b07d4dcb555e379e6403b44e"></a>
+static Phase&#160;</td><td class="memItemRight" valign="bottom"><b>determine_next_phase</b> (const Phase &amp;current_phase, const Parallel::CProxy_ConstGlobalCache&lt; <a class="el" href="structEvolutionMetavars.html">EvolutionMetavars</a> &gt; &amp;) noexcept</td></tr>
+<tr class="separator:a0e8bd937b07d4dcb555e379e6403b44e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0e8bd937b07d4dcb555e379e6403b44e"><td class="memItemLeft" align="right" valign="top"><a id="a0e8bd937b07d4dcb555e379e6403b44e"></a>
+static Phase&#160;</td><td class="memItemRight" valign="bottom"><b>determine_next_phase</b> (const Phase &amp;current_phase, const Parallel::CProxy_ConstGlobalCache&lt; <a class="el" href="structEvolutionMetavars.html">EvolutionMetavars</a> &gt; &amp;) noexcept</td></tr>
+<tr class="separator:a0e8bd937b07d4dcb555e379e6403b44e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0e8bd937b07d4dcb555e379e6403b44e"><td class="memItemLeft" align="right" valign="top"><a id="a0e8bd937b07d4dcb555e379e6403b44e"></a>
+static Phase&#160;</td><td class="memItemRight" valign="bottom"><b>determine_next_phase</b> (const Phase &amp;current_phase, const Parallel::CProxy_ConstGlobalCache&lt; <a class="el" href="structEvolutionMetavars.html">EvolutionMetavars</a> &gt; &amp;) noexcept</td></tr>
+<tr class="separator:a0e8bd937b07d4dcb555e379e6403b44e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0e8bd937b07d4dcb555e379e6403b44e"><td class="memItemLeft" align="right" valign="top"><a id="a0e8bd937b07d4dcb555e379e6403b44e"></a>
+static Phase&#160;</td><td class="memItemRight" valign="bottom"><b>determine_next_phase</b> (const Phase &amp;current_phase, const Parallel::CProxy_ConstGlobalCache&lt; <a class="el" href="structEvolutionMetavars.html">EvolutionMetavars</a> &gt; &amp;) noexcept</td></tr>
+<tr class="separator:a0e8bd937b07d4dcb555e379e6403b44e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0e8bd937b07d4dcb555e379e6403b44e"><td class="memItemLeft" align="right" valign="top"><a id="a0e8bd937b07d4dcb555e379e6403b44e"></a>
+static Phase&#160;</td><td class="memItemRight" valign="bottom"><b>determine_next_phase</b> (const Phase &amp;current_phase, const Parallel::CProxy_ConstGlobalCache&lt; <a class="el" href="structEvolutionMetavars.html">EvolutionMetavars</a> &gt; &amp;) noexcept</td></tr>
+<tr class="separator:a0e8bd937b07d4dcb555e379e6403b44e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-attribs"></a>
+Static Public Attributes</h2></td></tr>
+<tr class="memitem:ad2f690f872a898bc53bc069c94704305"><td class="memItemLeft" align="right" valign="top"><a id="ad2f690f872a898bc53bc069c94704305"></a>
+static constexpr size_t&#160;</td><td class="memItemRight" valign="bottom"><b>volume_dim</b> = 1</td></tr>
+<tr class="separator:ad2f690f872a898bc53bc069c94704305"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aeeda72be9d913cf4d3205124d0a6787c"><td class="memItemLeft" align="right" valign="top"><a id="aeeda72be9d913cf4d3205124d0a6787c"></a>
+static constexpr bool&#160;</td><td class="memItemRight" valign="bottom"><b>local_time_stepping</b> = false</td></tr>
+<tr class="separator:aeeda72be9d913cf4d3205124d0a6787c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8f767f29b978db8ca31b4270cf00649c"><td class="memItemLeft" align="right" valign="top">static constexpr <a class="el" href="Options_8hpp.html#ac6df7d1b74fbddedd85b06a0087d93f6">OptionString</a>&#160;</td><td class="memItemRight" valign="bottom"><b>help</b></td></tr>
+<tr class="separator:a8f767f29b978db8ca31b4270cf00649c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af3b1a8c675e96fa34103fce5c9a57d4f"><td class="memItemLeft" align="right" valign="top"><a id="af3b1a8c675e96fa34103fce5c9a57d4f"></a>
+static constexpr int&#160;</td><td class="memItemRight" valign="bottom"><b>volume_dim</b> = 3</td></tr>
+<tr class="separator:af3b1a8c675e96fa34103fce5c9a57d4f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a39a6a813414d44738f7b8bb7cbf11d16"><td class="memItemLeft" align="right" valign="top"><a id="a39a6a813414d44738f7b8bb7cbf11d16"></a>
+static constexpr size_t&#160;</td><td class="memItemRight" valign="bottom"><b>thermodynamic_dim</b> = system::thermodynamic_dim</td></tr>
+<tr class="separator:a39a6a813414d44738f7b8bb7cbf11d16"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a439a81fef9b9e9c6d868bef0737f09d5"><td class="memItemLeft" align="right" valign="top">static constexpr bool&#160;</td><td class="memItemRight" valign="bottom"><b>has_source_terms</b></td></tr>
+<tr class="separator:a439a81fef9b9e9c6d868bef0737f09d5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab1b96583a0c3f0e5c8ecf8cec9125b5e"><td class="memItemLeft" align="right" valign="top"><a id="ab1b96583a0c3f0e5c8ecf8cec9125b5e"></a>
+static constexpr bool&#160;</td><td class="memItemRight" valign="bottom"><b>use_filtering</b> = (2 == volume_dim)</td></tr>
+<tr class="separator:ab1b96583a0c3f0e5c8ecf8cec9125b5e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<h2 class="groupheader">Member Data Documentation</h2>
+<a id="a439a81fef9b9e9c6d868bef0737f09d5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a439a81fef9b9e9c6d868bef0737f09d5">&#9670;&nbsp;</a></span>has_source_terms</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename InitialData &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr bool <a class="el" href="structEvolutionMetavars.html">EvolutionMetavars</a>&lt; InitialData &gt;::has_source_terms</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<b>Initial value:</b><div class="fragment"><div class="line">=</div><div class="line">      not cpp17::is_same_v&lt;source_term_type, NewtonianEuler::Sources::NoSource&gt;</div></div><!-- fragment -->
+</div>
+</div>
+<a id="a8f767f29b978db8ca31b4270cf00649c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8f767f29b978db8ca31b4270cf00649c">&#9670;&nbsp;</a></span>help</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename InitialData &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static constexpr <a class="el" href="Options_8hpp.html#ac6df7d1b74fbddedd85b06a0087d93f6">OptionString</a> <a class="el" href="structEvolutionMetavars.html">EvolutionMetavars</a>&lt; InitialData &gt;::help</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<b>Initial value:</b><div class="fragment"><div class="line">{</div><div class="line">      <span class="stringliteral">&quot;Evolve the Burgers equation.\n\n&quot;</span></div><div class="line">      <span class="stringliteral">&quot;The analytic solution is: Linear\n&quot;</span></div><div class="line">      <span class="stringliteral">&quot;The numerical flux is:    LocalLaxFriedrichs\n&quot;</span>}</div></div><!-- fragment -->
+</div>
+</div>
+<hr/>The documentation for this struct was generated from the following files:<ul>
+<li>src/Evolution/Executables/Burgers/<a class="el" href="EvolveBurgers_8hpp_source.html">EvolveBurgers.hpp</a></li>
+<li>src/Evolution/Executables/GeneralizedHarmonic/<a class="el" href="EvolveGeneralizedHarmonic_8hpp_source.html">EvolveGeneralizedHarmonic.hpp</a></li>
+<li>src/Evolution/Executables/GrMhd/ValenciaDivClean/<a class="el" href="EvolveValenciaDivClean_8hpp_source.html">EvolveValenciaDivClean.hpp</a></li>
+<li>src/Evolution/Executables/NewtonianEuler/<a class="el" href="EvolveNewtonianEuler_8hpp_source.html">EvolveNewtonianEuler.hpp</a></li>
+<li>src/Evolution/Executables/RadiationTransport/M1Grey/<a class="el" href="EvolveStandaloneM1_8hpp_source.html">EvolveStandaloneM1.hpp</a></li>
+<li>src/Evolution/Executables/ScalarWave/<a class="el" href="EvolveScalarWave_8hpp_source.html">EvolveScalarWave.hpp</a></li>
+</ul>
+</div><!-- contents -->
+<!-- HTML footer for doxygen 1.8.10-->
+<!-- start footer part -->
+<hr class="footer"/><address class="footer"><small>
+&copy; Copyright 2017 - 2019
+<a href="https://black-holes.org">SXS Collaboration</a>,
+<a href="LICENSE.txt" target="_blank">
+<span class="hidden-xs">Distributed under the</span>
+MIT License</a>
+</small></address>
+</body>
+</html>

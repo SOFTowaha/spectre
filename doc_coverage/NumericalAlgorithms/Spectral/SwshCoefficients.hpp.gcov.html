@@ -1,0 +1,565 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - 5912ac2e49a80e6a27b3707c9a1e6ce5248b1b2a - NumericalAlgorithms/Spectral/SwshCoefficients.hpp</title>
+  <link rel="stylesheet" type="text/css" href="../../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title"> SpECTRE Documentation Coverage Report</td></tr>
+    <tr><td class="ruler"><img src="../../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../../index.html">top level</a> - <a href="index.html">NumericalAlgorithms/Spectral</a> - SwshCoefficients.hpp</td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+             <td class="headerItem">Commit:</td>
+             <td class="headerValue"><a target="_blank" href="https://github.com/sxs-collaboration/spectre/commit/5912ac2e49a80e6a27b3707c9a1e6ce5248b1b2a">5912ac2e49a80e6a27b3707c9a1e6ce5248b1b2a</a></td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">21</td>
+            <td class="headerCovTableEntry">43</td>
+            <td class="headerCovTableEntryLo">48.8 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2019-12-02 22:01:08</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td class="headerItem">Legend:</td>
+            <td class="headerValueLeg">            Lines:
+            <span class="coverLegendCov">hit</span>
+            <span class="coverLegendNoCov">not hit</span>
+</td>
+            <td></td>
+          </tr>
+          <tr><td><img src="../../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">          Line data    Source code</pre>
+<pre class="source">
+<span class="lineNum">       1 </span><span class="lineNoCov">          0 : // Distributed under the MIT License.</span>
+<span class="lineNum">       2 </span>            : // See LICENSE.txt for details
+<span class="lineNum">       3 </span>            : 
+<span class="lineNum">       4 </span>            : #pragma once
+<span class="lineNum">       5 </span>            : 
+<span class="lineNum">       6 </span>            : #include &lt;complex&gt;
+<span class="lineNum">       7 </span>            : #include &lt;cstdlib&gt;
+<span class="lineNum">       8 </span>            : #include &lt;memory&gt;
+<span class="lineNum">       9 </span>            : #include &lt;sharp_cxx.h&gt;
+<span class="lineNum">      10 </span>            : 
+<span class="lineNum">      11 </span>            : #include &quot;DataStructures/ComplexModalVector.hpp&quot;
+<span class="lineNum">      12 </span>            : #include &quot;DataStructures/SpinWeighted.hpp&quot;
+<span class="lineNum">      13 </span>            : #include &quot;NumericalAlgorithms/Spectral/SwshCollocation.hpp&quot;
+<span class="lineNum">      14 </span>            : #include &quot;NumericalAlgorithms/Spectral/SwshSettings.hpp&quot;
+<span class="lineNum">      15 </span>            : #include &quot;Utilities/ConstantExpressions.hpp&quot;
+<span class="lineNum">      16 </span>            : #include &quot;Utilities/ForceInline.hpp&quot;
+<span class="lineNum">      17 </span>            : #include &quot;Utilities/Gsl.hpp&quot;
+<span class="lineNum">      18 </span>            : 
+<span class="lineNum">      19 </span>            : // IWYU pragma: no_forward_declare SpinWeighted
+<span class="lineNum">      20 </span>            : 
+<span class="lineNum">      21 </span>            : namespace Spectral {
+<span class="lineNum">      22 </span>            : namespace Swsh {
+<span class="lineNum">      23 </span>            : 
+<span class="lineNum">      24 </span>            : /// \ingroup SwshGroup
+<span class="lineNum">      25 </span>            : /// \brief Convenience function for determining the number of spin-weighted
+<span class="lineNum">      26 </span>            : /// spherical harmonics coefficients that are stored for a given `l_max`
+<span class="lineNum">      27 </span>            : ///
+<span class="lineNum">      28 </span>            : /// \details This includes the factor of 2 associated with needing
+<span class="lineNum">      29 </span>            : /// to store both the transform of the real and imaginary parts, so is the
+<span class="lineNum">      30 </span>            : /// full size of the result of a libsharp swsh transform.
+<span class="lineNum">      31 </span>            : ///
+<span class="lineNum">      32 </span>            : /// \note Assumes the triangular libsharp representation is used.
+<span class="lineNum">      33 </span>            : constexpr SPECTRE_ALWAYS_INLINE size_t
+<span class="lineNum">      34 </span><span class="lineCov">          1 : size_of_libsharp_coefficient_vector(const size_t l_max) noexcept {</span>
+<span class="lineNum">      35 </span>            :   return (l_max + 1) * (l_max + 2);  // &quot;triangular&quot; representation
+<span class="lineNum">      36 </span>            : }
+<span class="lineNum">      37 </span>            : 
+<span class="lineNum">      38 </span>            : /*!
+<span class="lineNum">      39 </span>            :  * \ingroup SwshGroup
+<span class="lineNum">      40 </span>            :  * \brief Compute the relative sign change necessary to convert between the
+<span class="lineNum">      41 </span>            :  * libsharp basis for spin weight `from_spin_weight` to the basis for spin
+<span class="lineNum">      42 </span>            :  * weight `to_spin_weight`, for the real component coefficients if `real` is
+<span class="lineNum">      43 </span>            :  * true, otherwise for the imaginary component coefficients. The sign change for
+<span class="lineNum">      44 </span>            :  * a given coefficient is equivalent to the product of
+<span class="lineNum">      45 </span>            :  * `sharp_swsh_sign(from_spin, m, real) * sharp_swsh_sign(to_spin, m,
+<span class="lineNum">      46 </span>            :  * real)`. Due to the form of the signs, it does not end up depending on m (the
+<span class="lineNum">      47 </span>            :  * m's in the power of \f$-1\f$'s cancel).
+<span class="lineNum">      48 </span>            :  * For full details of the libsharp sign conventions, see the documentation for
+<span class="lineNum">      49 </span>            :  * TransformJob.
+<span class="lineNum">      50 </span>            :  *
+<span class="lineNum">      51 </span>            :  * \details The sign change is obtained by the
+<span class="lineNum">      52 </span>            :  * difference between the libsharp convention and the convention which uses:
+<span class="lineNum">      53 </span>            :  *
+<span class="lineNum">      54 </span>            :  * \f[
+<span class="lineNum">      55 </span>            :  * {}_s Y_{\ell m} (\theta, \phi) = (-1)^m \sqrt{\frac{2 l + 1}{4 \pi}}
+<span class="lineNum">      56 </span>            :  * D^{\ell}{}_{-m s}(\phi, \theta, 0).
+<span class="lineNum">      57 </span>            :  * \f]
+<span class="lineNum">      58 </span>            :  *
+<span class="lineNum">      59 </span>            :  * See \cite Goldberg1966uu
+<span class="lineNum">      60 </span>            :  */
+<span class="lineNum">      61 </span><span class="lineCov">          1 : constexpr SPECTRE_ALWAYS_INLINE double sharp_swsh_sign_change(</span>
+<span class="lineNum">      62 </span>            :     const int from_spin_weight, const int to_spin_weight,
+<span class="lineNum">      63 </span>            :     const bool real) noexcept {
+<span class="lineNum">      64 </span>            :   if (real) {
+<span class="lineNum">      65 </span>            :     return (from_spin_weight == 0 ? -1.0 : 1.0) *
+<span class="lineNum">      66 </span>            :            (from_spin_weight &gt;= 0 ? -1.0 : 1.0) *
+<span class="lineNum">      67 </span>            :            ((from_spin_weight &lt; 0 and (from_spin_weight % 2 == 0)) ? -1.0
+<span class="lineNum">      68 </span>            :                                                                    : 1.0) *
+<span class="lineNum">      69 </span>            :            (to_spin_weight == 0 ? -1.0 : 1.0) *
+<span class="lineNum">      70 </span>            :            (to_spin_weight &gt;= 0 ? -1.0 : 1.0) *
+<span class="lineNum">      71 </span>            :            ((to_spin_weight &lt; 0 and (to_spin_weight % 2 == 0)) ? -1.0 : 1.0);
+<span class="lineNum">      72 </span>            :   }
+<span class="lineNum">      73 </span>            :   return (from_spin_weight == 0 ? -1.0 : 1.0) *
+<span class="lineNum">      74 </span>            :          ((from_spin_weight &lt; 0 and (from_spin_weight % 2 == 0)) ? 1.0 : -1.0) *
+<span class="lineNum">      75 </span>            :          (to_spin_weight == 0 ? -1.0 : 1.0) *
+<span class="lineNum">      76 </span>            :          ((to_spin_weight &lt; 0 and (to_spin_weight % 2 == 0)) ? 1.0 : -1.0);
+<span class="lineNum">      77 </span>            : }
+<span class="lineNum">      78 </span>            : 
+<span class="lineNum">      79 </span>            : /*!
+<span class="lineNum">      80 </span>            :  * \ingroup SwshGroup
+<span class="lineNum">      81 </span>            :  * \brief Compute the sign change between the libsharp convention and the set
+<span class="lineNum">      82 </span>            :  * of spin-weighted spherical harmonics given by the relation to the Wigner
+<span class="lineNum">      83 </span>            :  * rotation matrices.
+<span class="lineNum">      84 </span>            :  *
+<span class="lineNum">      85 </span>            :  * \details The sign change is obtained via the difference between the libsharp
+<span class="lineNum">      86 </span>            :  * convention and the convention which uses:
+<span class="lineNum">      87 </span>            :  *
+<span class="lineNum">      88 </span>            :  * \f[
+<span class="lineNum">      89 </span>            :  * {}_s Y_{\ell m} (\theta, \phi) = (-1)^m \sqrt{\frac{2 l + 1}{4 \pi}}
+<span class="lineNum">      90 </span>            :  * D^{\ell}{}_{-m s}(\phi, \theta, 0).
+<span class="lineNum">      91 </span>            :  * \f]
+<span class="lineNum">      92 </span>            :  *
+<span class="lineNum">      93 </span>            :  * See \cite Goldberg1966uu.
+<span class="lineNum">      94 </span>            :  * The sign change is computed for the real component coefficients if `real` is
+<span class="lineNum">      95 </span>            :  * true, otherwise for the imaginary component coefficients. For full details on
+<span class="lineNum">      96 </span>            :  * the sign convention used in libsharp, see the documentation for TransformJob.
+<span class="lineNum">      97 </span>            :  * This function outputs the \f$\mathrm{sign}(m, s, \mathrm{real})\f$ necessary
+<span class="lineNum">      98 </span>            :  * to produce the conversion between Goldberg moments and libsharp moments:
+<span class="lineNum">      99 </span>            :  *
+<span class="lineNum">     100 </span>            :  * \f{align*}{
+<span class="lineNum">     101 </span>            :  * {}_s Y_{\ell m}^{\mathrm{real}, \mathrm{sharp}}  =&amp; \mathrm{sign}(m, s,
+<span class="lineNum">     102 </span>            :  * \mathrm{real=true}) {}_s Y_{\ell m}^{\mathrm{Goldberg}}\\
+<span class="lineNum">     103 </span>            :  * {}_s Y_{\ell m}^{\mathrm{imag}, \mathrm{sharp}}  =&amp;
+<span class="lineNum">     104 </span>            :  * \mathrm{sign}(m, s, \mathrm{real=false}) {}_s Y_{\ell
+<span class="lineNum">     105 </span>            :  * m}^{\mathrm{Goldberg}}.
+<span class="lineNum">     106 </span>            :  * \f}
+<span class="lineNum">     107 </span>            :  *
+<span class="lineNum">     108 </span>            :  * Note that in this equation, the &quot;real&quot; and &quot;imag&quot; superscripts refer to the
+<span class="lineNum">     109 </span>            :  * set of basis functions used for the decomposition of the real and imaginary
+<span class="lineNum">     110 </span>            :  * part of the spin-weighted collocation points, not real or imaginary parts of
+<span class="lineNum">     111 </span>            :  * the basis functions themselves.
+<span class="lineNum">     112 </span>            :  */
+<span class="lineNum">     113 </span><span class="lineCov">          1 : constexpr SPECTRE_ALWAYS_INLINE double sharp_swsh_sign(</span>
+<span class="lineNum">     114 </span>            :     const int spin_weight, const int m, const bool real) noexcept {
+<span class="lineNum">     115 </span>            :   if (real) {
+<span class="lineNum">     116 </span>            :     if (m &gt;= 0) {
+<span class="lineNum">     117 </span>            :       return (spin_weight &gt; 0 ? -1.0 : 1.0) *
+<span class="lineNum">     118 </span>            :              ((spin_weight &lt; 0 and (spin_weight % 2 == 0)) ? -1.0 : 1.0);
+<span class="lineNum">     119 </span>            :     }
+<span class="lineNum">     120 </span>            :     return (spin_weight == 0 ? -1.0 : 1.0) *
+<span class="lineNum">     121 </span>            :            ((spin_weight &gt;= 0 and (m % 2 == 0)) ? -1.0 : 1.0) *
+<span class="lineNum">     122 </span>            :            (spin_weight &lt; 0 and (m + spin_weight) % 2 == 0 ? -1.0 : 1.0);
+<span class="lineNum">     123 </span>            :   }
+<span class="lineNum">     124 </span>            :   if (m &gt;= 0) {
+<span class="lineNum">     125 </span>            :     return (spin_weight == 0 ? -1.0 : 1.0) *
+<span class="lineNum">     126 </span>            :            ((spin_weight &lt; 0 and (spin_weight % 2 == 0)) ? 1.0 : -1.0);
+<span class="lineNum">     127 </span>            :   }
+<span class="lineNum">     128 </span>            :   return (spin_weight == 0 ? -1.0 : 1.0) *
+<span class="lineNum">     129 </span>            :          ((spin_weight &gt;= 0 and (m % 2 == 0)) ? -1.0 : 1.0) *
+<span class="lineNum">     130 </span>            :          ((spin_weight &lt; 0 and (m + spin_weight) % 2 != 0) ? -1.0 : 1.0);
+<span class="lineNum">     131 </span>            : }
+<span class="lineNum">     132 </span>            : 
+<span class="lineNum">     133 </span>            : namespace detail {
+<span class="lineNum">     134 </span>            : struct DestroySharpAlm {
+<span class="lineNum">     135 </span>            :   void operator()(sharp_alm_info* to_delete) noexcept {
+<span class="lineNum">     136 </span>            :     sharp_destroy_alm_info(to_delete);
+<span class="lineNum">     137 </span>            :   }
+<span class="lineNum">     138 </span>            : };
+<span class="lineNum">     139 </span>            : }  // namespace detail
+<span class="lineNum">     140 </span>            : 
+<span class="lineNum">     141 </span>            : /// Points to a single pair of modes in a libsharp-compatible
+<span class="lineNum">     142 </span>            : /// spin-weighted spherical harmonic modal representation.
+<span class="lineNum">     143 </span><span class="lineCov">          1 : struct LibsharpCoefficientInfo {</span>
+<span class="lineNum">     144 </span><span class="lineNoCov">          0 :   size_t transform_of_real_part_offset;</span>
+<span class="lineNum">     145 </span><span class="lineNoCov">          0 :   size_t transform_of_imag_part_offset;</span>
+<span class="lineNum">     146 </span><span class="lineNoCov">          0 :   size_t l_max;</span>
+<span class="lineNum">     147 </span><span class="lineNoCov">          0 :   size_t l;</span>
+<span class="lineNum">     148 </span><span class="lineNoCov">          0 :   size_t m;</span>
+<span class="lineNum">     149 </span>            : };
+<span class="lineNum">     150 </span>            : 
+<span class="lineNum">     151 </span>            : /*!
+<span class="lineNum">     152 </span>            :  * \ingroup SwshGroup
+<span class="lineNum">     153 </span>            :  * \brief A container for libsharp metadata for the spin-weighted spherical
+<span class="lineNum">     154 </span>            :  * harmonics modal representation.
+<span class="lineNum">     155 </span>            :  *
+<span class="lineNum">     156 </span>            :  * \details
+<span class="lineNum">     157 </span>            :  * The CoefficientsMetadata class acts as a memory-safe container for a
+<span class="lineNum">     158 </span>            :  * `sharp_alm_info*`, required for use of libsharp transform utilities.
+<span class="lineNum">     159 </span>            :  * The libsharp utilities are currently constructed to only provide user
+<span class="lineNum">     160 </span>            :  * functions with collocation data for spin-weighted functions and
+<span class="lineNum">     161 </span>            :  * derivatives.  This class also provides an iterator for
+<span class="lineNum">     162 </span>            :  * easily traversing a libsharp-compatible modal representation.
+<span class="lineNum">     163 </span>            :  *
+<span class="lineNum">     164 </span>            :  * \note The libsharp representation of coefficients is altered from the
+<span class="lineNum">     165 </span>            :  * standard mathematical definitions in a nontrivial way. There are a number of
+<span class="lineNum">     166 </span>            :  * important features to the data storage of the coefficients.
+<span class="lineNum">     167 </span>            :  * - they are stored as a set of complex values, but each vector of complex
+<span class="lineNum">     168 </span>            :  *   values is the transform of only the real or imaginary part of the
+<span class="lineNum">     169 </span>            :  *   collocation data
+<span class="lineNum">     170 </span>            :  * - because each vector of complex coefficients is related to the transform of
+<span class="lineNum">     171 </span>            :  *   a set of doubles, only (about) half of the m's are stored (m &gt;= 0), because
+<span class="lineNum">     172 </span>            :  *   the remaining m modes are determinable by conjugation from the positive m
+<span class="lineNum">     173 </span>            :  *   modes, given that they represent the transform of a purely real or purely
+<span class="lineNum">     174 </span>            :  *   imaginary collocation quantity
+<span class="lineNum">     175 </span>            :  * - they are stored in an l-varies-fastest, triangular representation. To be
+<span class="lineNum">     176 </span>            :  *   concrete, for an l_max=2, the order of coefficient storage is (l, m):
+<span class="lineNum">     177 </span>            :  *   [(0, 0), (1, 0), (2, 0), (1, 1), (2, 1), (2, 2)]
+<span class="lineNum">     178 </span>            :  * - due to the restriction of representing only the transform of real
+<span class="lineNum">     179 </span>            :  *   quantities, the m=0 modes always have vanishing imaginary component.
+<span class="lineNum">     180 </span>            :  */
+<span class="lineNum">     181 </span><span class="lineCov">          1 : class CoefficientsMetadata {</span>
+<span class="lineNum">     182 </span>            :  public:
+<span class="lineNum">     183 </span>            :   /// An iterator for easily traversing a libsharp-compatible spin-weighted
+<span class="lineNum">     184 </span>            :   /// spherical harmonic modal representation.
+<span class="lineNum">     185 </span>            :   /// The `operator*()` returns a `LibsharpCoefficientInfo`, which  contains two
+<span class="lineNum">     186 </span>            :   /// offsets, `transform_of_real_part_offset` and
+<span class="lineNum">     187 </span>            :   /// `transform_of_imag_part_offset`, and the `l_max`, `l` and `m` associated
+<span class="lineNum">     188 </span>            :   /// with the values at those offsets.
+<span class="lineNum">     189 </span>            :   ///
+<span class="lineNum">     190 </span>            :   /// \note this currently assumes, as do many of the utilities in this file,
+<span class="lineNum">     191 </span>            :   /// that the libsharp representation is chosen to be the triangular
+<span class="lineNum">     192 </span>            :   /// coefficient representation. If alternative representations are desired,
+<span class="lineNum">     193 </span>            :   /// alterations will be needed.
+<span class="lineNum">     194 </span><span class="lineCov">          1 :   class CoefficientsIndexIterator {</span>
+<span class="lineNum">     195 </span>            :    public:
+<span class="lineNum">     196 </span><span class="lineNoCov">          0 :     explicit CoefficientsIndexIterator(const size_t l_max,</span>
+<span class="lineNum">     197 </span>            :                                        const size_t start_l = 0,
+<span class="lineNum">     198 </span>            :                                        const size_t start_m = 0) noexcept
+<span class="lineNum">     199 </span>            :         : m_{start_m}, l_{start_l}, l_max_{l_max} {}
+<span class="lineNum">     200 </span>            : 
+<span class="lineNum">     201 </span><span class="lineNoCov">          0 :     LibsharpCoefficientInfo operator*() const noexcept {</span>
+<span class="lineNum">     202 </span>            :       // permit dereferencing the iterator only if the return represents a
+<span class="lineNum">     203 </span>            :       // viable location in the coefficient vector
+<span class="lineNum">     204 </span>            :       ASSERT(l_ &lt;= l_max_ &amp;&amp; m_ &lt;= l_max_, &quot;coefficients iterator overflow&quot;);
+<span class="lineNum">     205 </span>            :       size_t offset = ((3 + 2 * l_max_ - m_) * m_) / 2 + l_ - m_;
+<span class="lineNum">     206 </span>            :       return LibsharpCoefficientInfo{
+<span class="lineNum">     207 </span>            :           offset,
+<span class="lineNum">     208 </span>            :           offset +
+<span class="lineNum">     209 </span>            :               Spectral::Swsh::size_of_libsharp_coefficient_vector(l_max_) / 2,
+<span class="lineNum">     210 </span>            :           l_max_, l_, m_};
+<span class="lineNum">     211 </span>            :     }
+<span class="lineNum">     212 </span>            : 
+<span class="lineNum">     213 </span>            :     /// advance the iterator by one position (prefix)
+<span class="lineNum">     214 </span><span class="lineCov">          1 :     CoefficientsIndexIterator&amp; operator++() noexcept {</span>
+<span class="lineNum">     215 </span>            :       // permit altering the iterator only if the new value is between the
+<span class="lineNum">     216 </span>            :       // anticipated begin and end, inclusive
+<span class="lineNum">     217 </span>            :       ASSERT(l_ &lt;= l_max_ &amp;&amp; m_ &lt;= l_max_, &quot;coefficients iterator overflow&quot;);
+<span class="lineNum">     218 </span>            :       if (l_ == l_max_) {
+<span class="lineNum">     219 </span>            :         ++m_;
+<span class="lineNum">     220 </span>            :         l_ = m_;
+<span class="lineNum">     221 </span>            :       } else {
+<span class="lineNum">     222 </span>            :         ++l_;
+<span class="lineNum">     223 </span>            :       }
+<span class="lineNum">     224 </span>            :       return *this;
+<span class="lineNum">     225 </span>            :     };
+<span class="lineNum">     226 </span>            : 
+<span class="lineNum">     227 </span>            :     /// advance the iterator by one position (postfix)
+<span class="lineNum">     228 </span><span class="lineCov">          1 :     const CoefficientsIndexIterator operator++(int) noexcept {</span>
+<span class="lineNum">     229 </span>            :       auto pre_increment = *this;
+<span class="lineNum">     230 </span>            :       ++*this;
+<span class="lineNum">     231 </span>            :       return pre_increment;
+<span class="lineNum">     232 </span>            :     }
+<span class="lineNum">     233 </span>            : 
+<span class="lineNum">     234 </span>            :     /// retreat the iterator by one position (prefix)
+<span class="lineNum">     235 </span><span class="lineCov">          1 :     CoefficientsIndexIterator&amp; operator--() noexcept {</span>
+<span class="lineNum">     236 </span>            :       // permit altering the iterator only if the new value is between the
+<span class="lineNum">     237 </span>            :       // anticipated begin and end, inclusive
+<span class="lineNum">     238 </span>            :       ASSERT(l_ &lt;= l_max_ + 1 &amp;&amp; m_ &lt;= l_max_ + 1,
+<span class="lineNum">     239 </span>            :              &quot;coefficients iterator overflow&quot;);
+<span class="lineNum">     240 </span>            :       if (l_ == m_) {
+<span class="lineNum">     241 </span>            :         --m_;
+<span class="lineNum">     242 </span>            :         l_ = l_max_;
+<span class="lineNum">     243 </span>            :       } else {
+<span class="lineNum">     244 </span>            :         --l_;
+<span class="lineNum">     245 </span>            :       }
+<span class="lineNum">     246 </span>            :       return *this;
+<span class="lineNum">     247 </span>            :     }
+<span class="lineNum">     248 </span>            : 
+<span class="lineNum">     249 </span>            :     /// retreat the iterator by one position (postfix)
+<span class="lineNum">     250 </span><span class="lineCov">          1 :     const CoefficientsIndexIterator operator--(int) noexcept {</span>
+<span class="lineNum">     251 </span>            :       auto pre_decrement = *this;
+<span class="lineNum">     252 </span>            :       --*this;
+<span class="lineNum">     253 </span>            :       return pre_decrement;
+<span class="lineNum">     254 </span>            :     }
+<span class="lineNum">     255 </span>            : 
+<span class="lineNum">     256 </span>            :     // @{
+<span class="lineNum">     257 </span>            :     /// (In)Equivalence checks the object as well as the l and m current
+<span class="lineNum">     258 </span>            :     /// position.
+<span class="lineNum">     259 </span><span class="lineCov">          1 :     bool operator==(const CoefficientsIndexIterator&amp; rhs) const noexcept {</span>
+<span class="lineNum">     260 </span>            :       return m_ == rhs.m_ and l_ == rhs.l_ and l_max_ == rhs.l_max_;
+<span class="lineNum">     261 </span>            :     }
+<span class="lineNum">     262 </span><span class="lineCov">          1 :     bool operator!=(const CoefficientsIndexIterator&amp; rhs) const noexcept {</span>
+<span class="lineNum">     263 </span>            :       return not(*this == rhs);
+<span class="lineNum">     264 </span>            :     }
+<span class="lineNum">     265 </span>            :     // @}
+<span class="lineNum">     266 </span>            : 
+<span class="lineNum">     267 </span>            :    private:
+<span class="lineNum">     268 </span><span class="lineNoCov">          0 :     size_t m_;</span>
+<span class="lineNum">     269 </span><span class="lineNoCov">          0 :     size_t l_;</span>
+<span class="lineNum">     270 </span><span class="lineNoCov">          0 :     size_t l_max_;</span>
+<span class="lineNum">     271 </span>            :   };
+<span class="lineNum">     272 </span>            : 
+<span class="lineNum">     273 </span><span class="lineNoCov">          0 :   explicit CoefficientsMetadata(size_t l_max) noexcept;</span>
+<span class="lineNum">     274 </span>            : 
+<span class="lineNum">     275 </span><span class="lineNoCov">          0 :   ~CoefficientsMetadata() = default;</span>
+<span class="lineNum">     276 </span><span class="lineNoCov">          0 :   CoefficientsMetadata() = default;</span>
+<span class="lineNum">     277 </span><span class="lineNoCov">          0 :   CoefficientsMetadata(const CoefficientsMetadata&amp;) = delete;</span>
+<span class="lineNum">     278 </span><span class="lineNoCov">          0 :   CoefficientsMetadata(CoefficientsMetadata&amp;&amp;) = default;</span>
+<span class="lineNum">     279 </span><span class="lineNoCov">          0 :   CoefficientsMetadata&amp; operator=(const CoefficientsMetadata&amp;) = delete;</span>
+<span class="lineNum">     280 </span><span class="lineNoCov">          0 :   CoefficientsMetadata&amp; operator=(CoefficientsMetadata&amp;&amp;) = default;</span>
+<span class="lineNum">     281 </span><span class="lineNoCov">          0 :   sharp_alm_info* get_sharp_alm_info() const noexcept {</span>
+<span class="lineNum">     282 </span>            :     return alm_info_.get();
+<span class="lineNum">     283 </span>            :   }
+<span class="lineNum">     284 </span>            : 
+<span class="lineNum">     285 </span><span class="lineNoCov">          0 :   size_t l_max() const noexcept { return l_max_; }</span>
+<span class="lineNum">     286 </span>            : 
+<span class="lineNum">     287 </span>            :   /// returns the number of (complex) entries in a libsharp-compatible
+<span class="lineNum">     288 </span>            :   /// coefficients vector. This includes the factor of 2 associated with needing
+<span class="lineNum">     289 </span>            :   /// to store both the transform of the real and imaginary parts, so is the
+<span class="lineNum">     290 </span>            :   /// full size of the result of a libsharp swsh transform.
+<span class="lineNum">     291 </span><span class="lineCov">          1 :   size_t size() const noexcept {</span>
+<span class="lineNum">     292 </span>            :     return size_of_libsharp_coefficient_vector(l_max_);
+<span class="lineNum">     293 </span>            :   }
+<span class="lineNum">     294 </span>            : 
+<span class="lineNum">     295 </span>            :   // @{
+<span class="lineNum">     296 </span>            :   /// \brief Get a bidirectional iterator to the start of the series of modes.
+<span class="lineNum">     297 </span><span class="lineCov">          1 :   CoefficientsMetadata::CoefficientsIndexIterator begin() const noexcept {</span>
+<span class="lineNum">     298 </span>            :     return CoefficientsIndexIterator(l_max_, 0, 0);
+<span class="lineNum">     299 </span>            :   }
+<span class="lineNum">     300 </span><span class="lineCov">          1 :   CoefficientsMetadata::CoefficientsIndexIterator cbegin() const noexcept {</span>
+<span class="lineNum">     301 </span>            :     return begin();
+<span class="lineNum">     302 </span>            :   }
+<span class="lineNum">     303 </span>            :   // @}
+<span class="lineNum">     304 </span>            : 
+<span class="lineNum">     305 </span>            :   // @{
+<span class="lineNum">     306 </span>            :   /// \brief Get a bidirectional iterator to the end of the series of modes.
+<span class="lineNum">     307 </span><span class="lineCov">          1 :   CoefficientsMetadata::CoefficientsIndexIterator end() const noexcept {</span>
+<span class="lineNum">     308 </span>            :     return CoefficientsIndexIterator(l_max_, l_max_ + 1, l_max_ + 1);
+<span class="lineNum">     309 </span>            :   }
+<span class="lineNum">     310 </span><span class="lineCov">          1 :   CoefficientsMetadata::CoefficientsIndexIterator cend() const noexcept {</span>
+<span class="lineNum">     311 </span>            :     return end();
+<span class="lineNum">     312 </span>            :   }
+<span class="lineNum">     313 </span>            :   // @}
+<span class="lineNum">     314 </span>            : 
+<span class="lineNum">     315 </span>            :  private:
+<span class="lineNum">     316 </span><span class="lineNoCov">          0 :   std::unique_ptr&lt;sharp_alm_info, detail::DestroySharpAlm&gt; alm_info_;</span>
+<span class="lineNum">     317 </span><span class="lineNoCov">          0 :   size_t l_max_ = 0;</span>
+<span class="lineNum">     318 </span>            : };
+<span class="lineNum">     319 </span>            : 
+<span class="lineNum">     320 </span>            : /*!
+<span class="lineNum">     321 </span>            :  * \ingroup SwshGroup
+<span class="lineNum">     322 </span>            :  * \brief Generation function for obtaining a `CoefficientsMetadata` object
+<span class="lineNum">     323 </span>            :  * which is computed by the libsharp calls only once, then lazily cached as a
+<span class="lineNum">     324 </span>            :  * singleton via a static member of a function template. This is the preferred
+<span class="lineNum">     325 </span>            :  * method for obtaining a `CoefficientsMetadata` when the `l_max` is not very
+<span class="lineNum">     326 </span>            :  * large
+<span class="lineNum">     327 </span>            :  *
+<span class="lineNum">     328 </span>            :  * See the comments in the similar implementation found in `SwshCollocation.hpp`
+<span class="lineNum">     329 </span>            :  * for more details on the lazy cache.
+<span class="lineNum">     330 </span>            :  */
+<span class="lineNum">     331 </span>            : const CoefficientsMetadata&amp; cached_coefficients_metadata(size_t l_max) noexcept;
+<span class="lineNum">     332 </span>            : 
+<span class="lineNum">     333 </span>            : // @{
+<span class="lineNum">     334 </span>            : /*!
+<span class="lineNum">     335 </span>            :  * \ingroup SwshGroup
+<span class="lineNum">     336 </span>            :  * \brief Compute the mode coefficient for the convention of
+<span class="lineNum">     337 </span>            :  * \cite Goldberg1966uu.
+<span class="lineNum">     338 </span>            :  *
+<span class="lineNum">     339 </span>            :  * \details  See the documentation for `TransformJob` for complete
+<span class="lineNum">     340 </span>            :  * details on the libsharp and Goldberg coefficient representations.
+<span class="lineNum">     341 </span>            :  * This interface takes a `LibsharpCoefficientInfo`, so that iterating over the
+<span class="lineNum">     342 </span>            :  * libsharp data structure and performing computations based on the
+<span class="lineNum">     343 </span>            :  * corresponding Goldberg modes is convenient. Two functions are provided, one
+<span class="lineNum">     344 </span>            :  * for the positive m modes in the Goldberg representation, and one for the
+<span class="lineNum">     345 </span>            :  * negative m modes, as the distinction is not made by the coefficient iterator.
+<span class="lineNum">     346 </span>            :  *
+<span class="lineNum">     347 </span>            :  * \param coefficient_info An iterator which stores an \f$l\f$ and \f$|m|\f$
+<span class="lineNum">     348 </span>            :  * for the mode to be converted to the Goldberg form.
+<span class="lineNum">     349 </span>            :  * \param libsharp_modes The libsharp-compatible modal storage to be accessed
+<span class="lineNum">     350 </span>            :  * \param radial_offset The index of which angular slice is desired. Modes for
+<span class="lineNum">     351 </span>            :  * concentric spherical shells are stored as consecutive blocks of angular
+<span class="lineNum">     352 </span>            :  * modes.
+<span class="lineNum">     353 </span>            :  */
+<span class="lineNum">     354 </span>            : template &lt;int Spin&gt;
+<span class="lineNum">     355 </span>            : std::complex&lt;double&gt; libsharp_mode_to_goldberg_plus_m(
+<span class="lineNum">     356 </span>            :     const LibsharpCoefficientInfo&amp; coefficient_info,
+<span class="lineNum">     357 </span>            :     const SpinWeighted&lt;ComplexModalVector, Spin&gt;&amp; libsharp_modes,
+<span class="lineNum">     358 </span>            :     size_t radial_offset) noexcept;
+<span class="lineNum">     359 </span>            : 
+<span class="lineNum">     360 </span>            : template &lt;int Spin&gt;
+<span class="lineNum">     361 </span>            : std::complex&lt;double&gt; libsharp_mode_to_goldberg_minus_m(
+<span class="lineNum">     362 </span>            :     const LibsharpCoefficientInfo&amp; coefficient_info,
+<span class="lineNum">     363 </span>            :     const SpinWeighted&lt;ComplexModalVector, Spin&gt;&amp; libsharp_modes,
+<span class="lineNum">     364 </span>            :     size_t radial_offset) noexcept;
+<span class="lineNum">     365 </span>            : // @}
+<span class="lineNum">     366 </span>            : 
+<span class="lineNum">     367 </span>            : /*!
+<span class="lineNum">     368 </span>            :  * \ingroup SwshGroup
+<span class="lineNum">     369 </span>            :  * \brief Compute the mode coefficient for the convention of
+<span class="lineNum">     370 </span>            :  * \cite Goldberg1966uu. See the documentation for `TransformJob` for complete
+<span class="lineNum">     371 </span>            :  * details on the libsharp and Goldberg coefficient representations.
+<span class="lineNum">     372 </span>            :  *
+<span class="lineNum">     373 </span>            :  * \details This interface extracts the (`l`, `m`) Goldberg mode from the
+<span class="lineNum">     374 </span>            :  * provided libsharp-compatible `libsharp_modes`, at angular slice
+<span class="lineNum">     375 </span>            :  * `radial_offset` (Modes for concentric spherical shells are stored as
+<span class="lineNum">     376 </span>            :  * consecutive blocks of angular modes). `l_max` must also be specified to
+<span class="lineNum">     377 </span>            :  * determine the representation details.
+<span class="lineNum">     378 </span>            :  */
+<span class="lineNum">     379 </span>            : template &lt;int Spin&gt;
+<span class="lineNum">     380 </span>            : std::complex&lt;double&gt; libsharp_mode_to_goldberg(
+<span class="lineNum">     381 </span>            :     size_t l, int m, size_t l_max,
+<span class="lineNum">     382 </span>            :     const SpinWeighted&lt;ComplexModalVector, Spin&gt;&amp; libsharp_modes,
+<span class="lineNum">     383 </span>            :     size_t radial_offset) noexcept;
+<span class="lineNum">     384 </span>            : 
+<span class="lineNum">     385 </span>            : /*!
+<span class="lineNum">     386 </span>            :  * \ingroup SwshGroup
+<span class="lineNum">     387 </span>            :  * \brief Set modes of a libsharp-compatible data structure by specifying the
+<span class="lineNum">     388 </span>            :  * modes in the \cite Goldberg1966uu representation.
+<span class="lineNum">     389 </span>            :  *
+<span class="lineNum">     390 </span>            :  * \details This interface takes a `LibsharpCoefficientInfo`, so that iterating
+<span class="lineNum">     391 </span>            :  * over the libsharp data structure and performing edits based on the
+<span class="lineNum">     392 </span>            :  * corresponding Goldberg modes is convenient.
+<span class="lineNum">     393 </span>            :  *
+<span class="lineNum">     394 </span>            :  * \param coefficient_info An iterator which stores an \f$l\f$ and \f$|m|\f$
+<span class="lineNum">     395 </span>            :  * for the mode to be written by the input Goldberg modes. Note that both the
+<span class="lineNum">     396 </span>            :  * \f$+m\f$ and \f$-m\f$ modes must be simultaneously changed, due to the
+<span class="lineNum">     397 </span>            :  * representation details. See discussion in `TransformJob` for details.
+<span class="lineNum">     398 </span>            :  * \param libsharp_modes The libsharp-compatible modal storage to be altered.
+<span class="lineNum">     399 </span>            :  * \param radial_offset The index of which angular slice is desired. Modes for
+<span class="lineNum">     400 </span>            :  * concentric spherical shells are stored as consecutive blocks of angular
+<span class="lineNum">     401 </span>            :  * modes.
+<span class="lineNum">     402 </span>            :  * \param goldberg_plus_m_mode_value The coefficient in the Goldberg
+<span class="lineNum">     403 </span>            :  * representation (\f$l\f$, \f$m\f$)
+<span class="lineNum">     404 </span>            :  * \param goldberg_minus_m_mode_value The coefficient in the Goldberg
+<span class="lineNum">     405 </span>            :  * representation (\f$l\f$, \f$-m\f$)
+<span class="lineNum">     406 </span>            :  */
+<span class="lineNum">     407 </span>            : template &lt;int Spin&gt;
+<span class="lineNum">     408 </span><span class="lineCov">          1 : void goldberg_modes_to_libsharp_modes_single_pair(</span>
+<span class="lineNum">     409 </span>            :     const LibsharpCoefficientInfo&amp; coefficient_info,
+<span class="lineNum">     410 </span>            :     gsl::not_null&lt;SpinWeighted&lt;ComplexModalVector, Spin&gt;*&gt; libsharp_modes,
+<span class="lineNum">     411 </span>            :     size_t radial_offset, std::complex&lt;double&gt; goldberg_plus_m_mode_value,
+<span class="lineNum">     412 </span>            :     std::complex&lt;double&gt; goldberg_minus_m_mode_value) noexcept;
+<span class="lineNum">     413 </span>            : 
+<span class="lineNum">     414 </span>            : /*!
+<span class="lineNum">     415 </span>            :  * \ingroup SwshGroup
+<span class="lineNum">     416 </span>            :  * \brief Set modes of a libsharp-compatible data structure by specifying the
+<span class="lineNum">     417 </span>            :  * modes in the \cite Goldberg1966uu representation.
+<span class="lineNum">     418 </span>            :  *
+<span class="lineNum">     419 </span>            :  * \details This interface sets the (\f$l\f$, \f$\pm m\f$), modes in a
+<span class="lineNum">     420 </span>            :  * libsharp-compatible representation from modes specified in the Goldberg
+<span class="lineNum">     421 </span>            :  * representation. Note that both the \f$+m\f$ and \f$-m\f$ modes must be
+<span class="lineNum">     422 </span>            :  * simultaneously changed, due to the representation details. See discussion in
+<span class="lineNum">     423 </span>            :  * `TransformJob` for details.
+<span class="lineNum">     424 </span>            :  * \param libsharp_modes The libsharp-compatible modal storage to be altered.
+<span class="lineNum">     425 </span>            :  * \param radial_offset The index of which angular slice is desired. Modes for
+<span class="lineNum">     426 </span>            :  * concentric spherical shells are stored as consecutive blocks of angular
+<span class="lineNum">     427 </span>            :  * modes.
+<span class="lineNum">     428 </span>            :  * \param goldberg_plus_m_mode_value The coefficient in the Goldberg
+<span class="lineNum">     429 </span>            :  * representation (\f$l\f$, \f$m\f$)
+<span class="lineNum">     430 </span>            :  * \param goldberg_minus_m_mode_value The coefficient in the Goldberg
+<span class="lineNum">     431 </span>            :  * representation (\f$l\f$, \f$-m\f$)
+<span class="lineNum">     432 </span>            :  * \param l the spherical harmonic \f$l\f$ mode requested
+<span class="lineNum">     433 </span>            :  * \param m the spherical harmonic \f$m\f$ mode requested
+<span class="lineNum">     434 </span>            :  * \param l_max the `l_max` for the provided coefficient set
+<span class="lineNum">     435 </span>            :  */
+<span class="lineNum">     436 </span>            : template &lt;int Spin&gt;
+<span class="lineNum">     437 </span><span class="lineCov">          1 : void goldberg_modes_to_libsharp_modes_single_pair(</span>
+<span class="lineNum">     438 </span>            :     size_t l, int m, size_t l_max,
+<span class="lineNum">     439 </span>            :     gsl::not_null&lt;SpinWeighted&lt;ComplexModalVector, Spin&gt;*&gt; libsharp_modes,
+<span class="lineNum">     440 </span>            :     size_t radial_offset, std::complex&lt;double&gt; goldberg_plus_m_mode_value,
+<span class="lineNum">     441 </span>            :     std::complex&lt;double&gt; goldberg_minus_m_mode_value) noexcept;
+<span class="lineNum">     442 </span>            : 
+<span class="lineNum">     443 </span>            : // @{
+<span class="lineNum">     444 </span>            : /*!
+<span class="lineNum">     445 </span>            :  * \ingroup SwshGroup
+<span class="lineNum">     446 </span>            :  * \brief Compute the set of Goldberg Spin-weighted spherical harmonic modes (in
+<span class="lineNum">     447 </span>            :  * the convention of  \cite Goldberg1966uu) from a libsharp-compatible series of
+<span class="lineNum">     448 </span>            :  * modes.
+<span class="lineNum">     449 </span>            :  *
+<span class="lineNum">     450 </span>            :  * \details Modes for concentric spherical shells are stored as consecutive
+<span class="lineNum">     451 </span>            :  * blocks of angular modes in both representations.
+<span class="lineNum">     452 </span>            :  */
+<span class="lineNum">     453 </span>            : template &lt;int Spin&gt;
+<span class="lineNum">     454 </span><span class="lineCov">          1 : void libsharp_to_goldberg_modes(</span>
+<span class="lineNum">     455 </span>            :     gsl::not_null&lt;SpinWeighted&lt;ComplexModalVector, Spin&gt;*&gt; goldberg_modes,
+<span class="lineNum">     456 </span>            :     const SpinWeighted&lt;ComplexModalVector, Spin&gt;&amp; libsharp_modes,
+<span class="lineNum">     457 </span>            :     size_t l_max) noexcept;
+<span class="lineNum">     458 </span>            : 
+<span class="lineNum">     459 </span>            : template &lt;int Spin&gt;
+<span class="lineNum">     460 </span>            : SpinWeighted&lt;ComplexModalVector, Spin&gt; libsharp_to_goldberg_modes(
+<span class="lineNum">     461 </span>            :     const SpinWeighted&lt;ComplexModalVector, Spin&gt;&amp; libsharp_modes,
+<span class="lineNum">     462 </span>            :     size_t l_max) noexcept;
+<span class="lineNum">     463 </span>            : // @}
+<span class="lineNum">     464 </span>            : 
+<span class="lineNum">     465 </span>            : /*!
+<span class="lineNum">     466 </span>            :  * \ingroup SwshGroup
+<span class="lineNum">     467 </span>            :  * \brief Returns the index into a vector of modes consistent with
+<span class="lineNum">     468 </span>            :  * \cite Goldberg1966uu.
+<span class="lineNum">     469 </span>            :  *
+<span class="lineNum">     470 </span>            :  * \details `radial_offset` is used to index into three-dimensional data in
+<span class="lineNum">     471 </span>            :  * which concentric spherical shells are stored as consecutive blocks of angular
+<span class="lineNum">     472 </span>            :  * modes. Goldberg modes are stored in an m varies fastest, and ascending
+<span class="lineNum">     473 </span>            :  * \f$m\f$ and \f$l\f$ values. So, the first several modes are (l, m):
+<span class="lineNum">     474 </span>            :  *
+<span class="lineNum">     475 </span>            :  * [(0, 0), (1, -1), (1, 0), (1, 1), (2, -2), ...]
+<span class="lineNum">     476 </span>            :  */
+<span class="lineNum">     477 </span>            : constexpr SPECTRE_ALWAYS_INLINE size_t
+<span class="lineNum">     478 </span><span class="lineCov">          1 : goldberg_mode_index(const size_t l_max, const size_t l, const int m,</span>
+<span class="lineNum">     479 </span>            :                     const size_t radial_offset = 0) noexcept {
+<span class="lineNum">     480 </span>            :   return static_cast&lt;size_t&gt;(
+<span class="lineNum">     481 </span>            :       static_cast&lt;int&gt;(square(l_max + 1) * radial_offset + square(l) + l) + m);
+<span class="lineNum">     482 </span>            : }
+<span class="lineNum">     483 </span>            : 
+<span class="lineNum">     484 </span>            : }  // namespace Swsh
+<span class="lineNum">     485 </span>            : }  // namespace Spectral
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.13</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

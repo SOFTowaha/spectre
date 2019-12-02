@@ -1,0 +1,228 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - 5912ac2e49a80e6a27b3707c9a1e6ce5248b1b2a - Evolution/Systems/NewtonianEuler/Characteristics.hpp</title>
+  <link rel="stylesheet" type="text/css" href="../../../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title"> SpECTRE Documentation Coverage Report</td></tr>
+    <tr><td class="ruler"><img src="../../../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../../../index.html">top level</a> - <a href="index.html">Evolution/Systems/NewtonianEuler</a> - Characteristics.hpp</td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+             <td class="headerItem">Commit:</td>
+             <td class="headerValue"><a target="_blank" href="https://github.com/sxs-collaboration/spectre/commit/5912ac2e49a80e6a27b3707c9a1e6ce5248b1b2a">5912ac2e49a80e6a27b3707c9a1e6ce5248b1b2a</a></td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">5</td>
+            <td class="headerCovTableEntry">13</td>
+            <td class="headerCovTableEntryLo">38.5 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2019-12-02 22:01:08</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td class="headerItem">Legend:</td>
+            <td class="headerValueLeg">            Lines:
+            <span class="coverLegendCov">hit</span>
+            <span class="coverLegendNoCov">not hit</span>
+</td>
+            <td></td>
+          </tr>
+          <tr><td><img src="../../../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../../../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">          Line data    Source code</pre>
+<pre class="source">
+<span class="lineNum">       1 </span><span class="lineNoCov">          0 : // Distributed under the MIT License.</span>
+<span class="lineNum">       2 </span>            : // See LICENSE.txt for details.
+<span class="lineNum">       3 </span>            : 
+<span class="lineNum">       4 </span>            : #pragma once
+<span class="lineNum">       5 </span>            : 
+<span class="lineNum">       6 </span>            : #include &lt;array&gt;
+<span class="lineNum">       7 </span>            : #include &lt;cstddef&gt;
+<span class="lineNum">       8 </span>            : 
+<span class="lineNum">       9 </span>            : #include &quot;DataStructures/DataBox/DataBoxTag.hpp&quot;
+<span class="lineNum">      10 </span>            : #include &quot;DataStructures/Matrix.hpp&quot;
+<span class="lineNum">      11 </span>            : #include &quot;DataStructures/Tensor/EagerMath/Magnitude.hpp&quot;  // IWYU pragma: keep
+<span class="lineNum">      12 </span>            : #include &quot;DataStructures/Tensor/Tensor.hpp&quot;               // for get
+<span class="lineNum">      13 </span>            : #include &quot;DataStructures/Tensor/TypeAliases.hpp&quot;          // IWYU pragma: keep
+<span class="lineNum">      14 </span>            : #include &quot;Domain/FaceNormal.hpp&quot;
+<span class="lineNum">      15 </span>            : #include &quot;Evolution/Systems/NewtonianEuler/Tags.hpp&quot;
+<span class="lineNum">      16 </span>            : #include &quot;Utilities/Gsl.hpp&quot;
+<span class="lineNum">      17 </span>            : #include &quot;Utilities/TMPL.hpp&quot;
+<span class="lineNum">      18 </span>            : 
+<span class="lineNum">      19 </span>            : // IWYU pragma: no_forward_declare EquationsOfState::EquationOfState
+<span class="lineNum">      20 </span>            : // IWYU pragma: no_forward_declare NewtonianEuler::Tags::MassDensity
+<span class="lineNum">      21 </span>            : // IWYU pragma: no_forward_declare NewtonianEuler::Tags::SoundSpeed
+<span class="lineNum">      22 </span>            : // IWYU pragma: no_forward_declare NewtonianEuler::Tags::SpecificInternalEnergy
+<span class="lineNum">      23 </span>            : // IWYU pragma: no_forward_declare NewtonianEuler::Tags::Velocity
+<span class="lineNum">      24 </span>            : // IWYU pragma: no_forward_declare Tensor
+<span class="lineNum">      25 </span>            : // IWYU pragma: no_forward_declare hydro::Tags::EquationOfState
+<span class="lineNum">      26 </span>            : 
+<span class="lineNum">      27 </span>            : /// \cond
+<span class="lineNum">      28 </span>            : class DataVector;
+<span class="lineNum">      29 </span>            : /// \endcond
+<span class="lineNum">      30 </span>            : 
+<span class="lineNum">      31 </span>            : // IWYU pragma: no_forward_declare Tensor
+<span class="lineNum">      32 </span>            : 
+<span class="lineNum">      33 </span>            : namespace NewtonianEuler {
+<span class="lineNum">      34 </span>            : 
+<span class="lineNum">      35 </span>            : // @{
+<span class="lineNum">      36 </span>            : /*!
+<span class="lineNum">      37 </span>            :  * \brief Compute the characteristic speeds of NewtonianEuler system
+<span class="lineNum">      38 </span>            :  *
+<span class="lineNum">      39 </span>            :  * The principal symbol of the system is diagonalized so that the elements of
+<span class="lineNum">      40 </span>            :  * the diagonal matrix are the characteristic speeds
+<span class="lineNum">      41 </span>            :  *
+<span class="lineNum">      42 </span>            :  * \f{align*}
+<span class="lineNum">      43 </span>            :  * \lambda_1 &amp;= v_n - c_s,\\
+<span class="lineNum">      44 </span>            :  * \lambda_{i + 1} &amp;= v_n,\\
+<span class="lineNum">      45 </span>            :  * \lambda_{\text{Dim} + 2} &amp;= v_n + c_s,
+<span class="lineNum">      46 </span>            :  * \f}
+<span class="lineNum">      47 </span>            :  *
+<span class="lineNum">      48 </span>            :  * where \f$i = 1,...,\text{Dim}\f$,
+<span class="lineNum">      49 </span>            :  * \f$v_n = n_i v^i\f$ is the velocity projected onto the normal,
+<span class="lineNum">      50 </span>            :  * and \f$c_s\f$ is the sound speed.
+<span class="lineNum">      51 </span>            :  */
+<span class="lineNum">      52 </span>            : template &lt;size_t Dim&gt;
+<span class="lineNum">      53 </span><span class="lineCov">          1 : void characteristic_speeds(</span>
+<span class="lineNum">      54 </span>            :     gsl::not_null&lt;std::array&lt;DataVector, Dim + 2&gt;*&gt; char_speeds,
+<span class="lineNum">      55 </span>            :     const tnsr::I&lt;DataVector, Dim&gt;&amp; velocity,
+<span class="lineNum">      56 </span>            :     const Scalar&lt;DataVector&gt;&amp; sound_speed,
+<span class="lineNum">      57 </span>            :     const tnsr::i&lt;DataVector, Dim&gt;&amp; normal) noexcept;
+<span class="lineNum">      58 </span>            : 
+<span class="lineNum">      59 </span>            : template &lt;size_t Dim&gt;
+<span class="lineNum">      60 </span><span class="lineCov">          1 : std::array&lt;DataVector, Dim + 2&gt; characteristic_speeds(</span>
+<span class="lineNum">      61 </span>            :     const tnsr::I&lt;DataVector, Dim&gt;&amp; velocity,
+<span class="lineNum">      62 </span>            :     const Scalar&lt;DataVector&gt;&amp; sound_speed,
+<span class="lineNum">      63 </span>            :     const tnsr::i&lt;DataVector, Dim&gt;&amp; normal) noexcept;
+<span class="lineNum">      64 </span>            : // @}
+<span class="lineNum">      65 </span>            : 
+<span class="lineNum">      66 </span>            : // @{
+<span class="lineNum">      67 </span>            : /*!
+<span class="lineNum">      68 </span>            :  * \brief Compute the transform matrices between the conserved variables and
+<span class="lineNum">      69 </span>            :  * the characteristic variables of the NewtonianEuler system.
+<span class="lineNum">      70 </span>            :  *
+<span class="lineNum">      71 </span>            :  * Let \f$u\f$ be the conserved (i.e., evolved) variables of the Newtonian Euler
+<span class="lineNum">      72 </span>            :  * system, and \f$w\f$ the characteristic variables of this system with respect
+<span class="lineNum">      73 </span>            :  * to a unit normal one form \f$n_i\f$.  The function `left_eigenvectors`
+<span class="lineNum">      74 </span>            :  * computes the matrix \f$\Omega_{L}\f$ corresponding to the transform
+<span class="lineNum">      75 </span>            :  * \f$w = \Omega_{L} u\f$. The function `right_eigenvectors` computes the matrix
+<span class="lineNum">      76 </span>            :  * \f$\Omega_{R}\f$ corresponding to the inverse transform
+<span class="lineNum">      77 </span>            :  * \f$u = \Omega_{R} w\f$. Here the components of \f$u\f$ are ordered as
+<span class="lineNum">      78 </span>            :  * \f$u = \{\rho, \rho v_x, \rho v_y, \rho v_z, e\}\f$ in 3D, and the components
+<span class="lineNum">      79 </span>            :  * of \f$w\f$ are ordered by their corresponding eigenvalues
+<span class="lineNum">      80 </span>            :  * (i.e., characteristic speeds)
+<span class="lineNum">      81 </span>            :  * \f$\lambda = \{v_n - c_s, v_n, v_n, v_n, v_n + c_s\}\f$. In these
+<span class="lineNum">      82 </span>            :  * expressions, \f$\rho\f$ is the fluid mass density, \f$v_{x,y,z}\f$ are the
+<span class="lineNum">      83 </span>            :  * components of the fluid velocity, \f$e\f$ is the total energy density,
+<span class="lineNum">      84 </span>            :  * \f$v_n\f$ is the component of the velocity along the unit normal \f$n_i\f$,
+<span class="lineNum">      85 </span>            :  * and \f$c_s\f$ is the sound speed.
+<span class="lineNum">      86 </span>            :  *
+<span class="lineNum">      87 </span>            :  * For a short discussion of the characteristic transformation and the matrices
+<span class="lineNum">      88 </span>            :  * \f$\Omega_{L}\f$ and \f$\Omega_{R}\f$, see \cite Kulikovskii2000 Chapter 3.
+<span class="lineNum">      89 </span>            :  *
+<span class="lineNum">      90 </span>            :  * Here we briefly summarize the procedure. With \f$F^x(u)\f$ the Newtonian
+<span class="lineNum">      91 </span>            :  * Euler flux in direction \f$x\f$, then the flux Jacobian along \f$x\f$ is the
+<span class="lineNum">      92 </span>            :  * matrix \f$A_x = \partial F^x_{\beta}(u) / \partial u_{\alpha}\f$. The indices
+<span class="lineNum">      93 </span>            :  * \f$\alpha, \beta\f$ range over the different evolved fields. In higher
+<span class="lineNum">      94 </span>            :  * dimensions, the flux Jacobian along the unit normal \f$n_i\f$ is
+<span class="lineNum">      95 </span>            :  * \f$A = n_x A_x + n_y A_y + n_z A_z\f$.
+<span class="lineNum">      96 </span>            :  * This matrix can be diagonalized as \f$A = \Omega_{R} \Lambda \Omega_{L}\f$.
+<span class="lineNum">      97 </span>            :  * Here \f$\Lambda = \mathrm{diag}(v_n - c_s, v_n, v_n, v_n, v_n + c_s)\f$
+<span class="lineNum">      98 </span>            :  * is a diagonal matrix containing the characteristic speeds; \f$\Omega_{R}\f$
+<span class="lineNum">      99 </span>            :  * is a matrix whose columns are the right eigenvectors of \f$A\f$;
+<span class="lineNum">     100 </span>            :  * \f$\Omega_{L}\f$ is the inverse of \f$R\f$.
+<span class="lineNum">     101 </span>            :  */
+<span class="lineNum">     102 </span>            : template &lt;size_t Dim&gt;
+<span class="lineNum">     103 </span><span class="lineCov">          1 : Matrix right_eigenvectors(const tnsr::I&lt;double, Dim&gt;&amp; velocity,</span>
+<span class="lineNum">     104 </span>            :                           const Scalar&lt;double&gt;&amp; sound_speed_squared,
+<span class="lineNum">     105 </span>            :                           const Scalar&lt;double&gt;&amp; specific_enthalpy,
+<span class="lineNum">     106 </span>            :                           const Scalar&lt;double&gt;&amp; kappa_over_density,
+<span class="lineNum">     107 </span>            :                           const tnsr::i&lt;double, Dim&gt;&amp; unit_normal) noexcept;
+<span class="lineNum">     108 </span>            : 
+<span class="lineNum">     109 </span>            : template &lt;size_t Dim&gt;
+<span class="lineNum">     110 </span><span class="lineCov">          1 : Matrix left_eigenvectors(const tnsr::I&lt;double, Dim&gt;&amp; velocity,</span>
+<span class="lineNum">     111 </span>            :                          const Scalar&lt;double&gt;&amp; sound_speed_squared,
+<span class="lineNum">     112 </span>            :                          const Scalar&lt;double&gt;&amp; specific_enthalpy,
+<span class="lineNum">     113 </span>            :                          const Scalar&lt;double&gt;&amp; kappa_over_density,
+<span class="lineNum">     114 </span>            :                          const tnsr::i&lt;double, Dim&gt;&amp; unit_normal) noexcept;
+<span class="lineNum">     115 </span>            : // @}
+<span class="lineNum">     116 </span>            : 
+<span class="lineNum">     117 </span><span class="lineCov">          1 : namespace Tags {</span>
+<span class="lineNum">     118 </span>            : 
+<span class="lineNum">     119 </span>            : template &lt;size_t Dim&gt;
+<span class="lineNum">     120 </span><span class="lineNoCov">          0 : struct CharacteristicSpeedsCompute : CharacteristicSpeeds&lt;Dim&gt;, db::ComputeTag {</span>
+<span class="lineNum">     121 </span><span class="lineNoCov">          0 :   using argument_tags =</span>
+<span class="lineNum">     122 </span>            :       tmpl::list&lt;Velocity&lt;DataVector, Dim&gt;, SoundSpeed&lt;DataVector&gt;,
+<span class="lineNum">     123 </span>            :                  ::Tags::Normalized&lt;::Tags::UnnormalizedFaceNormal&lt;Dim&gt;&gt;&gt;;
+<span class="lineNum">     124 </span>            : 
+<span class="lineNum">     125 </span><span class="lineNoCov">          0 :   using return_type = std::array&lt;DataVector, Dim + 2&gt;;</span>
+<span class="lineNum">     126 </span>            : 
+<span class="lineNum">     127 </span><span class="lineNoCov">          0 :   static constexpr void function(</span>
+<span class="lineNum">     128 </span>            :       const gsl::not_null&lt;return_type*&gt; result,
+<span class="lineNum">     129 </span>            :       const tnsr::I&lt;DataVector, Dim&gt;&amp; velocity,
+<span class="lineNum">     130 </span>            :       const Scalar&lt;DataVector&gt;&amp; sound_speed,
+<span class="lineNum">     131 </span>            :       const tnsr::i&lt;DataVector, Dim&gt;&amp; normal) noexcept {
+<span class="lineNum">     132 </span>            :     characteristic_speeds&lt;Dim&gt;(result, velocity, sound_speed, normal);
+<span class="lineNum">     133 </span>            :   }
+<span class="lineNum">     134 </span>            : };
+<span class="lineNum">     135 </span>            : }  // namespace Tags
+<span class="lineNum">     136 </span>            : 
+<span class="lineNum">     137 </span>            : template &lt;size_t Dim&gt;
+<span class="lineNum">     138 </span><span class="lineNoCov">          0 : struct ComputeLargestCharacteristicSpeed {</span>
+<span class="lineNum">     139 </span><span class="lineNoCov">          0 :   using argument_tags =</span>
+<span class="lineNum">     140 </span>            :       tmpl::list&lt;Tags::Velocity&lt;DataVector, Dim&gt;, Tags::SoundSpeed&lt;DataVector&gt;&gt;;
+<span class="lineNum">     141 </span>            : 
+<span class="lineNum">     142 </span><span class="lineNoCov">          0 :   static double apply(const tnsr::I&lt;DataVector, Dim&gt;&amp; velocity,</span>
+<span class="lineNum">     143 </span>            :                       const Scalar&lt;DataVector&gt;&amp; sound_speed) noexcept {
+<span class="lineNum">     144 </span>            :     return max(get(magnitude(velocity)) + get(sound_speed));
+<span class="lineNum">     145 </span>            :   }
+<span class="lineNum">     146 </span>            : };
+<span class="lineNum">     147 </span>            : 
+<span class="lineNum">     148 </span>            : }  // namespace NewtonianEuler
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../../../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.13</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

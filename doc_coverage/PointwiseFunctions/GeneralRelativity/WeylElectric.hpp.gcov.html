@@ -1,0 +1,143 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - 5912ac2e49a80e6a27b3707c9a1e6ce5248b1b2a - PointwiseFunctions/GeneralRelativity/WeylElectric.hpp</title>
+  <link rel="stylesheet" type="text/css" href="../../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title"> SpECTRE Documentation Coverage Report</td></tr>
+    <tr><td class="ruler"><img src="../../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../../index.html">top level</a> - <a href="index.html">PointwiseFunctions/GeneralRelativity</a> - WeylElectric.hpp</td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+             <td class="headerItem">Commit:</td>
+             <td class="headerValue"><a target="_blank" href="https://github.com/sxs-collaboration/spectre/commit/5912ac2e49a80e6a27b3707c9a1e6ce5248b1b2a">5912ac2e49a80e6a27b3707c9a1e6ce5248b1b2a</a></td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">1</td>
+            <td class="headerCovTableEntry">5</td>
+            <td class="headerCovTableEntryLo">20.0 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2019-12-02 22:01:08</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td class="headerItem">Legend:</td>
+            <td class="headerValueLeg">            Lines:
+            <span class="coverLegendCov">hit</span>
+            <span class="coverLegendNoCov">not hit</span>
+</td>
+            <td></td>
+          </tr>
+          <tr><td><img src="../../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">          Line data    Source code</pre>
+<pre class="source">
+<span class="lineNum">       1 </span><span class="lineNoCov">          0 : // Distributed under the MIT License.</span>
+<span class="lineNum">       2 </span>            : // See LICENSE.txt for details.
+<span class="lineNum">       3 </span>            : 
+<span class="lineNum">       4 </span>            : #pragma once
+<span class="lineNum">       5 </span>            : 
+<span class="lineNum">       6 </span>            : #include &lt;cstddef&gt;
+<span class="lineNum">       7 </span>            : 
+<span class="lineNum">       8 </span>            : #include &quot;DataStructures/Tensor/TypeAliases.hpp&quot;
+<span class="lineNum">       9 </span>            : #include &quot;PointwiseFunctions/GeneralRelativity/Tags.hpp&quot;
+<span class="lineNum">      10 </span>            : 
+<span class="lineNum">      11 </span>            : #include &quot;Utilities/Gsl.hpp&quot;
+<span class="lineNum">      12 </span>            : 
+<span class="lineNum">      13 </span>            : namespace gr {
+<span class="lineNum">      14 </span>            : 
+<span class="lineNum">      15 </span>            : /*!
+<span class="lineNum">      16 </span>            :  * \ingroup GeneralRelativityGroup
+<span class="lineNum">      17 </span>            :  * \brief Computes the electric part of the Weyl tensor in vacuum.
+<span class="lineNum">      18 </span>            :  *
+<span class="lineNum">      19 </span>            :  * \details Computes the electric part of the Weyl tensor in vacuum \f$E_{ij}\f$
+<span class="lineNum">      20 </span>            :  * as: \f$ E_{ij} = R_{ij} + KK_{ij} - K^m_{i}K_{mj}\f$ where \f$R_{ij}\f$ is
+<span class="lineNum">      21 </span>            :  * the spatial Ricci tensor, \f$K_{ij}\f$ is the extrinsic curvature, and
+<span class="lineNum">      22 </span>            :  * \f$K\f$ is the trace of \f$K_{ij}\f$. An additional definition is \f$E_{ij} =
+<span class="lineNum">      23 </span>            :  * n^a n^b C_{a i b j}\f$, where \f$n\f$ is the unit-normal to the hypersurface
+<span class="lineNum">      24 </span>            :  * and \f$C\f$ is the Weyl tensor consistent with the conventions
+<span class="lineNum">      25 </span>            :  * in \cite Boyle2019kee.
+<span class="lineNum">      26 </span>            :  * \note This needs additional terms for computations in a non-vacuum.
+<span class="lineNum">      27 </span>            :  */
+<span class="lineNum">      28 </span>            : template &lt;size_t SpatialDim, typename Frame, typename DataType&gt;
+<span class="lineNum">      29 </span>            : tnsr::ii&lt;DataType, SpatialDim, Frame&gt; weyl_electric(
+<span class="lineNum">      30 </span>            :     const tnsr::ii&lt;DataType, SpatialDim, Frame&gt;&amp; spatial_ricci,
+<span class="lineNum">      31 </span>            :     const tnsr::ii&lt;DataType, SpatialDim, Frame&gt;&amp; extrinsic_curvature,
+<span class="lineNum">      32 </span>            :     const tnsr::II&lt;DataType, SpatialDim, Frame&gt;&amp;
+<span class="lineNum">      33 </span>            :         inverse_spatial_metric) noexcept;
+<span class="lineNum">      34 </span>            : 
+<span class="lineNum">      35 </span>            : template &lt;size_t SpatialDim, typename Frame, typename DataType&gt;
+<span class="lineNum">      36 </span><span class="lineNoCov">          0 : void weyl_electric(</span>
+<span class="lineNum">      37 </span>            :     gsl::not_null&lt;tnsr::ii&lt;DataType, SpatialDim, Frame&gt;*&gt;
+<span class="lineNum">      38 </span>            :         weyl_electric_part,
+<span class="lineNum">      39 </span>            :     const tnsr::ii&lt;DataType, SpatialDim, Frame&gt;&amp; spatial_ricci,
+<span class="lineNum">      40 </span>            :     const tnsr::ii&lt;DataType, SpatialDim, Frame&gt;&amp; extrinsic_curvature,
+<span class="lineNum">      41 </span>            :     const tnsr::II&lt;DataType, SpatialDim, Frame&gt;&amp;
+<span class="lineNum">      42 </span>            :         inverse_spatial_metric) noexcept;
+<span class="lineNum">      43 </span>            : 
+<span class="lineNum">      44 </span>            : namespace Tags {
+<span class="lineNum">      45 </span>            : /// Compute item for the electric part of the weyl tensor in vacuum
+<span class="lineNum">      46 </span>            : /// Computed from the RicciTensor, ExtrinsicCurvature, and InverseSpatialMetric
+<span class="lineNum">      47 </span>            : ///
+<span class="lineNum">      48 </span>            : /// Can be retrieved using gr::Tags::WeylElectric
+<span class="lineNum">      49 </span>            : template &lt;size_t SpatialDim, typename Frame, typename DataType&gt;
+<span class="lineNum">      50 </span>            : struct WeylElectricCompute : WeylElectric&lt;SpatialDim, Frame, DataType&gt;,
+<span class="lineNum">      51 </span><span class="lineCov">          1 :                              db::ComputeTag {</span>
+<span class="lineNum">      52 </span><span class="lineNoCov">          0 :   static constexpr tnsr::ii&lt;DataType, SpatialDim, Frame&gt; (*function)(</span>
+<span class="lineNum">      53 </span>            :       const tnsr::ii&lt;DataType, SpatialDim, Frame&gt;&amp;,
+<span class="lineNum">      54 </span>            :       const tnsr::ii&lt;DataType, SpatialDim, Frame&gt;&amp;,
+<span class="lineNum">      55 </span>            :       const tnsr::II&lt;DataType, SpatialDim, Frame&gt;&amp;) =
+<span class="lineNum">      56 </span>            :           &amp;weyl_electric&lt;SpatialDim, Frame, DataType&gt;;
+<span class="lineNum">      57 </span><span class="lineNoCov">          0 :   using argument_tags = tmpl::list&lt;</span>
+<span class="lineNum">      58 </span>            :       gr::Tags::RicciTensor&lt;SpatialDim, Frame, DataType&gt;,
+<span class="lineNum">      59 </span>            :       gr::Tags::ExtrinsicCurvature&lt;SpatialDim, Frame, DataType&gt;,
+<span class="lineNum">      60 </span>            :       gr::Tags::InverseSpatialMetric&lt;SpatialDim, Frame, DataType&gt;&gt;;
+<span class="lineNum">      61 </span>            : };
+<span class="lineNum">      62 </span>            : }  // namespace Tags
+<span class="lineNum">      63 </span>            : }  // namespace gr
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.13</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

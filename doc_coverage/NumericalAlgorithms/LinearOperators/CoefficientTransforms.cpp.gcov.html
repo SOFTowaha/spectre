@@ -1,0 +1,253 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - 5912ac2e49a80e6a27b3707c9a1e6ce5248b1b2a - NumericalAlgorithms/LinearOperators/CoefficientTransforms.cpp</title>
+  <link rel="stylesheet" type="text/css" href="../../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title"> SpECTRE Documentation Coverage Report</td></tr>
+    <tr><td class="ruler"><img src="../../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../../index.html">top level</a> - <a href="index.html">NumericalAlgorithms/LinearOperators</a> - CoefficientTransforms.cpp</td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+             <td class="headerItem">Commit:</td>
+             <td class="headerValue"><a target="_blank" href="https://github.com/sxs-collaboration/spectre/commit/5912ac2e49a80e6a27b3707c9a1e6ce5248b1b2a">5912ac2e49a80e6a27b3707c9a1e6ce5248b1b2a</a></td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntry">16</td>
+            <td class="headerCovTableEntryLo">0.0 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2019-12-02 22:01:08</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td class="headerItem">Legend:</td>
+            <td class="headerValueLeg">            Lines:
+            <span class="coverLegendCov">hit</span>
+            <span class="coverLegendNoCov">not hit</span>
+</td>
+            <td></td>
+          </tr>
+          <tr><td><img src="../../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">          Line data    Source code</pre>
+<pre class="source">
+<span class="lineNum">       1 </span><span class="lineNoCov">          0 : // Distributed under the MIT License.</span>
+<span class="lineNum">       2 </span>            : // See LICENSE.txt for details.
+<span class="lineNum">       3 </span>            : 
+<span class="lineNum">       4 </span>            : #include &quot;NumericalAlgorithms/LinearOperators/CoefficientTransforms.hpp&quot;
+<span class="lineNum">       5 </span>            : 
+<span class="lineNum">       6 </span>            : #include &lt;array&gt;
+<span class="lineNum">       7 </span>            : #include &lt;utility&gt;
+<span class="lineNum">       8 </span>            : 
+<span class="lineNum">       9 </span>            : #include &quot;DataStructures/ComplexDataVector.hpp&quot;
+<span class="lineNum">      10 </span>            : #include &quot;DataStructures/ComplexModalVector.hpp&quot;
+<span class="lineNum">      11 </span>            : #include &quot;DataStructures/DataVector.hpp&quot;
+<span class="lineNum">      12 </span>            : #include &quot;DataStructures/Matrix.hpp&quot;  // IWYU pragma: keep
+<span class="lineNum">      13 </span>            : #include &quot;DataStructures/ModalVector.hpp&quot;
+<span class="lineNum">      14 </span>            : #include &quot;Domain/Mesh.hpp&quot;  // IWYU pragma: keep
+<span class="lineNum">      15 </span>            : #include &quot;ErrorHandling/Assert.hpp&quot;
+<span class="lineNum">      16 </span>            : #include &quot;NumericalAlgorithms/LinearOperators/ApplyMatrices.hpp&quot;
+<span class="lineNum">      17 </span>            : #include &quot;NumericalAlgorithms/Spectral/Spectral.hpp&quot;
+<span class="lineNum">      18 </span>            : #include &quot;Utilities/GenerateInstantiations.hpp&quot;
+<span class="lineNum">      19 </span>            : #include &quot;Utilities/Gsl.hpp&quot;
+<span class="lineNum">      20 </span>            : 
+<span class="lineNum">      21 </span>            : // IWYU pragma: no_forward_declare Matrix
+<span class="lineNum">      22 </span>            : 
+<span class="lineNum">      23 </span><span class="lineNoCov">          0 : namespace {</span>
+<span class="lineNum">      24 </span>            : template &lt;size_t Dim, size_t... Is&gt;
+<span class="lineNum">      25 </span>            : std::array&lt;std::reference_wrapper&lt;const Matrix&gt;, Dim&gt; make_transform_matrices(
+<span class="lineNum">      26 </span>            :     const Mesh&lt;Dim&gt;&amp; mesh, const bool nodal_to_modal,
+<span class="lineNum">      27 </span>            :     std::index_sequence&lt;Is...&gt; /*meta*/) noexcept {
+<span class="lineNum">      28 </span>            :   return nodal_to_modal ? std::array&lt;std::reference_wrapper&lt;const Matrix&gt;,
+<span class="lineNum">      29 </span>            :                                      Dim&gt;{{Spectral::nodal_to_modal_matrix(
+<span class="lineNum">      30 </span>            :                               mesh.slice_through(Is))...}}
+<span class="lineNum">      31 </span>            :                         : std::array&lt;std::reference_wrapper&lt;const Matrix&gt;, Dim&gt;{
+<span class="lineNum">      32 </span>            :                               {Spectral::modal_to_nodal_matrix(
+<span class="lineNum">      33 </span>            :                                   mesh.slice_through(Is))...}};
+<span class="lineNum">      34 </span>            : }
+<span class="lineNum">      35 </span>            : }  // namespace
+<span class="lineNum">      36 </span>            : 
+<span class="lineNum">      37 </span>            : template &lt;size_t Dim&gt;
+<span class="lineNum">      38 </span><span class="lineNoCov">          0 : void to_modal_coefficients(</span>
+<span class="lineNum">      39 </span>            :     const gsl::not_null&lt;ComplexModalVector*&gt; modal_coefficients,
+<span class="lineNum">      40 </span>            :     const ComplexDataVector&amp; nodal_coefficients,
+<span class="lineNum">      41 </span>            :     const Mesh&lt;Dim&gt;&amp; mesh) noexcept {
+<span class="lineNum">      42 </span>            :   modal_coefficients-&gt;destructive_resize(nodal_coefficients.size());
+<span class="lineNum">      43 </span>            :   apply_matrices&lt;ComplexModalVector&gt;(
+<span class="lineNum">      44 </span>            :       modal_coefficients,
+<span class="lineNum">      45 </span>            :       make_transform_matrices&lt;Dim&gt;(mesh, true, std::make_index_sequence&lt;Dim&gt;{}),
+<span class="lineNum">      46 </span>            :       nodal_coefficients, mesh.extents());
+<span class="lineNum">      47 </span>            : }
+<span class="lineNum">      48 </span>            : 
+<span class="lineNum">      49 </span>            : // overload provided so that the most common case of transforming from
+<span class="lineNum">      50 </span>            : // `DataVector` to `ModalVector` does not require additional `make_not_null`s
+<span class="lineNum">      51 </span>            : template &lt;size_t Dim&gt;
+<span class="lineNum">      52 </span><span class="lineNoCov">          0 : void to_modal_coefficients(gsl::not_null&lt;ModalVector*&gt; modal_coefficients,</span>
+<span class="lineNum">      53 </span>            :                            const DataVector&amp; nodal_coefficients,
+<span class="lineNum">      54 </span>            :                            const Mesh&lt;Dim&gt;&amp; mesh) noexcept {
+<span class="lineNum">      55 </span>            :   modal_coefficients-&gt;destructive_resize(nodal_coefficients.size());
+<span class="lineNum">      56 </span>            :   apply_matrices&lt;ModalVector&gt;(
+<span class="lineNum">      57 </span>            :       modal_coefficients,
+<span class="lineNum">      58 </span>            :       make_transform_matrices&lt;Dim&gt;(mesh, true, std::make_index_sequence&lt;Dim&gt;{}),
+<span class="lineNum">      59 </span>            :       nodal_coefficients, mesh.extents());
+<span class="lineNum">      60 </span>            : }
+<span class="lineNum">      61 </span>            : 
+<span class="lineNum">      62 </span>            : template &lt;size_t Dim&gt;
+<span class="lineNum">      63 </span><span class="lineNoCov">          0 : ModalVector to_modal_coefficients(const DataVector&amp; nodal_coefficients,</span>
+<span class="lineNum">      64 </span>            :                                   const Mesh&lt;Dim&gt;&amp; mesh) noexcept {
+<span class="lineNum">      65 </span>            :   ModalVector modal_coefficients(nodal_coefficients.size());
+<span class="lineNum">      66 </span>            :   to_modal_coefficients(make_not_null(&amp;modal_coefficients), nodal_coefficients,
+<span class="lineNum">      67 </span>            :                         mesh);
+<span class="lineNum">      68 </span>            :   return modal_coefficients;
+<span class="lineNum">      69 </span>            : }
+<span class="lineNum">      70 </span>            : 
+<span class="lineNum">      71 </span>            : template &lt;size_t Dim&gt;
+<span class="lineNum">      72 </span><span class="lineNoCov">          0 : ComplexModalVector to_modal_coefficients(</span>
+<span class="lineNum">      73 </span>            :     const ComplexDataVector&amp; nodal_coefficients,
+<span class="lineNum">      74 </span>            :     const Mesh&lt;Dim&gt;&amp; mesh) noexcept {
+<span class="lineNum">      75 </span>            :   ComplexModalVector modal_coefficients(nodal_coefficients.size());
+<span class="lineNum">      76 </span>            :   to_modal_coefficients(make_not_null(&amp;modal_coefficients), nodal_coefficients,
+<span class="lineNum">      77 </span>            :                         mesh);
+<span class="lineNum">      78 </span>            :   return modal_coefficients;
+<span class="lineNum">      79 </span>            : }
+<span class="lineNum">      80 </span>            : 
+<span class="lineNum">      81 </span>            : template &lt;size_t Dim&gt;
+<span class="lineNum">      82 </span><span class="lineNoCov">          0 : void to_nodal_coefficients(</span>
+<span class="lineNum">      83 </span>            :     const gsl::not_null&lt;ComplexDataVector*&gt; nodal_coefficients,
+<span class="lineNum">      84 </span>            :     const ComplexModalVector&amp; modal_coefficients,
+<span class="lineNum">      85 </span>            :     const Mesh&lt;Dim&gt;&amp; mesh) noexcept {
+<span class="lineNum">      86 </span>            :   nodal_coefficients-&gt;destructive_resize(modal_coefficients.size());
+<span class="lineNum">      87 </span>            :   apply_matrices&lt;ComplexDataVector&gt;(
+<span class="lineNum">      88 </span>            :       nodal_coefficients,
+<span class="lineNum">      89 </span>            :       make_transform_matrices&lt;Dim&gt;(mesh, false,
+<span class="lineNum">      90 </span>            :                                    std::make_index_sequence&lt;Dim&gt;{}),
+<span class="lineNum">      91 </span>            :       modal_coefficients, mesh.extents());
+<span class="lineNum">      92 </span>            : }
+<span class="lineNum">      93 </span>            : 
+<span class="lineNum">      94 </span>            : template &lt;size_t Dim&gt;
+<span class="lineNum">      95 </span><span class="lineNoCov">          0 : void to_nodal_coefficients(const gsl::not_null&lt;DataVector*&gt; nodal_coefficients,</span>
+<span class="lineNum">      96 </span>            :                            const ModalVector&amp; modal_coefficients,
+<span class="lineNum">      97 </span>            :                            const Mesh&lt;Dim&gt;&amp; mesh) noexcept {
+<span class="lineNum">      98 </span>            :   nodal_coefficients-&gt;destructive_resize(modal_coefficients.size());
+<span class="lineNum">      99 </span>            :   apply_matrices&lt;DataVector&gt;(nodal_coefficients,
+<span class="lineNum">     100 </span>            :                              make_transform_matrices&lt;Dim&gt;(
+<span class="lineNum">     101 </span>            :                                  mesh, false, std::make_index_sequence&lt;Dim&gt;{}),
+<span class="lineNum">     102 </span>            :                              modal_coefficients, mesh.extents());
+<span class="lineNum">     103 </span>            : }
+<span class="lineNum">     104 </span>            : 
+<span class="lineNum">     105 </span>            : template &lt;size_t Dim&gt;
+<span class="lineNum">     106 </span><span class="lineNoCov">          0 : DataVector to_nodal_coefficients(const ModalVector&amp; modal_coefficients,</span>
+<span class="lineNum">     107 </span>            :                                  const Mesh&lt;Dim&gt;&amp; mesh) noexcept {
+<span class="lineNum">     108 </span>            :   DataVector nodal_coefficients(modal_coefficients.size());
+<span class="lineNum">     109 </span>            :   to_nodal_coefficients(make_not_null(&amp;nodal_coefficients), modal_coefficients,
+<span class="lineNum">     110 </span>            :                         mesh);
+<span class="lineNum">     111 </span>            :   return nodal_coefficients;
+<span class="lineNum">     112 </span>            : }
+<span class="lineNum">     113 </span>            : 
+<span class="lineNum">     114 </span>            : template &lt;size_t Dim&gt;
+<span class="lineNum">     115 </span><span class="lineNoCov">          0 : ComplexDataVector to_nodal_coefficients(</span>
+<span class="lineNum">     116 </span>            :     const ComplexModalVector&amp; modal_coefficients,
+<span class="lineNum">     117 </span>            :     const Mesh&lt;Dim&gt;&amp; mesh) noexcept {
+<span class="lineNum">     118 </span>            :   ComplexDataVector nodal_coefficients(modal_coefficients.size());
+<span class="lineNum">     119 </span>            :   to_nodal_coefficients(make_not_null(&amp;nodal_coefficients), modal_coefficients,
+<span class="lineNum">     120 </span>            :                         mesh);
+<span class="lineNum">     121 </span>            :   return nodal_coefficients;
+<span class="lineNum">     122 </span>            : }
+<span class="lineNum">     123 </span>            : 
+<span class="lineNum">     124 </span>            : namespace {
+<span class="lineNum">     125 </span>            : template &lt;typename Type&gt;
+<span class="lineNum">     126 </span>            : struct modal_type_to_nodal_type;
+<span class="lineNum">     127 </span>            : 
+<span class="lineNum">     128 </span>            : template &lt;&gt;
+<span class="lineNum">     129 </span>            : struct modal_type_to_nodal_type&lt;ModalVector&gt; {
+<span class="lineNum">     130 </span>            :   using type = DataVector;
+<span class="lineNum">     131 </span>            : };
+<span class="lineNum">     132 </span>            : 
+<span class="lineNum">     133 </span>            : template &lt;&gt;
+<span class="lineNum">     134 </span>            : struct modal_type_to_nodal_type&lt;ComplexModalVector&gt; {
+<span class="lineNum">     135 </span>            :   using type = ComplexDataVector;
+<span class="lineNum">     136 </span>            : };
+<span class="lineNum">     137 </span>            : }  // namespace
+<span class="lineNum">     138 </span>            : 
+<span class="lineNum">     139 </span><span class="lineNoCov">          0 : #define GET_DIM(data) BOOST_PP_TUPLE_ELEM(0, data)</span>
+<span class="lineNum">     140 </span><span class="lineNoCov">          0 : #define GET_TYPE(data) BOOST_PP_TUPLE_ELEM(1, data)</span>
+<span class="lineNum">     141 </span>            : 
+<span class="lineNum">     142 </span><span class="lineNoCov">          0 : #define INSTANTIATE_TO_MODAL_COEFFICIENTS(r, data)                   \</span>
+<span class="lineNum">     143 </span>            :   template void to_modal_coefficients(                               \
+<span class="lineNum">     144 </span>            :       const gsl::not_null&lt;GET_TYPE(data)*&gt; modal_coefficients,       \
+<span class="lineNum">     145 </span>            :       const typename modal_type_to_nodal_type&lt;GET_TYPE(data)&gt;::type&amp; \
+<span class="lineNum">     146 </span>            :           nodal_coefficients,                                        \
+<span class="lineNum">     147 </span>            :       const Mesh&lt;GET_DIM(data)&gt;&amp; mesh) noexcept;                     \
+<span class="lineNum">     148 </span>            :   template GET_TYPE(data) to_modal_coefficients(                     \
+<span class="lineNum">     149 </span>            :       const typename modal_type_to_nodal_type&lt;GET_TYPE(data)&gt;::type&amp; \
+<span class="lineNum">     150 </span>            :           nodal_coefficients,                                        \
+<span class="lineNum">     151 </span>            :       const Mesh&lt;GET_DIM(data)&gt;&amp; mesh) noexcept;
+<span class="lineNum">     152 </span>            : 
+<span class="lineNum">     153 </span><span class="lineNoCov">          0 : #define INSTANTIATE_TO_NODAL_COEFFICIENTS(r, data)                  \</span>
+<span class="lineNum">     154 </span>            :   template void to_nodal_coefficients(                              \
+<span class="lineNum">     155 </span>            :       const gsl::not_null&lt;                                          \
+<span class="lineNum">     156 </span>            :           typename modal_type_to_nodal_type&lt;GET_TYPE(data)&gt;::type*&gt; \
+<span class="lineNum">     157 </span>            :           nodal_coefficients,                                       \
+<span class="lineNum">     158 </span>            :       const GET_TYPE(data) &amp; modal_coefficients,                    \
+<span class="lineNum">     159 </span>            :       const Mesh&lt;GET_DIM(data)&gt;&amp; mesh) noexcept;                    \
+<span class="lineNum">     160 </span>            :   template typename modal_type_to_nodal_type&lt;GET_TYPE(data)&gt;::type  \
+<span class="lineNum">     161 </span>            :   to_nodal_coefficients(const GET_TYPE(data) &amp; modal_coefficients,  \
+<span class="lineNum">     162 </span>            :                         const Mesh&lt;GET_DIM(data)&gt;&amp; mesh) noexcept;
+<span class="lineNum">     163 </span>            : 
+<span class="lineNum">     164 </span><span class="lineNoCov">          0 : GENERATE_INSTANTIATIONS(INSTANTIATE_TO_MODAL_COEFFICIENTS, (1, 2, 3),</span>
+<span class="lineNum">     165 </span>            :                         (ModalVector, ComplexModalVector))
+<span class="lineNum">     166 </span>            : 
+<span class="lineNum">     167 </span>            : GENERATE_INSTANTIATIONS(INSTANTIATE_TO_NODAL_COEFFICIENTS, (1, 2, 3),
+<span class="lineNum">     168 </span><span class="lineNoCov">          0 :                         (ModalVector, ComplexModalVector))</span>
+<span class="lineNum">     169 </span>            : 
+<span class="lineNum">     170 </span>            : #undef GET_DIM
+<span class="lineNum">     171 </span>            : #undef GET_TYPE
+<span class="lineNum">     172 </span>            : #undef INSTANTIATE_TO_NODAL_COEFFICIENTS
+<span class="lineNum">     173 </span>            : #undef INSTANTIATE_TO_MODAL_COEFFICIENTS
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.13</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

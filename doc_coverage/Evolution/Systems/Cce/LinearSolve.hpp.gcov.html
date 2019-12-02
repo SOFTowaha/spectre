@@ -1,0 +1,280 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - 5912ac2e49a80e6a27b3707c9a1e6ce5248b1b2a - Evolution/Systems/Cce/LinearSolve.hpp</title>
+  <link rel="stylesheet" type="text/css" href="../../../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title"> SpECTRE Documentation Coverage Report</td></tr>
+    <tr><td class="ruler"><img src="../../../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../../../index.html">top level</a> - <a href="index.html">Evolution/Systems/Cce</a> - LinearSolve.hpp</td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+             <td class="headerItem">Commit:</td>
+             <td class="headerValue"><a target="_blank" href="https://github.com/sxs-collaboration/spectre/commit/5912ac2e49a80e6a27b3707c9a1e6ce5248b1b2a">5912ac2e49a80e6a27b3707c9a1e6ce5248b1b2a</a></td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">2</td>
+            <td class="headerCovTableEntry">29</td>
+            <td class="headerCovTableEntryLo">6.9 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2019-12-02 22:01:08</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td class="headerItem">Legend:</td>
+            <td class="headerValueLeg">            Lines:
+            <span class="coverLegendCov">hit</span>
+            <span class="coverLegendNoCov">not hit</span>
+</td>
+            <td></td>
+          </tr>
+          <tr><td><img src="../../../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../../../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">          Line data    Source code</pre>
+<pre class="source">
+<span class="lineNum">       1 </span><span class="lineNoCov">          0 : // Distributed under the MIT License.</span>
+<span class="lineNum">       2 </span>            : // See LICENSE.txt for details.
+<span class="lineNum">       3 </span>            : 
+<span class="lineNum">       4 </span>            : #pragma once
+<span class="lineNum">       5 </span>            : 
+<span class="lineNum">       6 </span>            : #include &quot;DataStructures/SpinWeighted.hpp&quot;
+<span class="lineNum">       7 </span>            : #include &quot;DataStructures/Tensor/TypeAliases.hpp&quot;
+<span class="lineNum">       8 </span>            : #include &quot;Evolution/Systems/Cce/Tags.hpp&quot;
+<span class="lineNum">       9 </span>            : #include &quot;NumericalAlgorithms/Spectral/SwshTags.hpp&quot;
+<span class="lineNum">      10 </span>            : 
+<span class="lineNum">      11 </span>            : /// \cond
+<span class="lineNum">      12 </span>            : class ComplexDataVector;
+<span class="lineNum">      13 </span>            : class Matrix;
+<span class="lineNum">      14 </span>            : /// \endcond
+<span class="lineNum">      15 </span>            : 
+<span class="lineNum">      16 </span>            : namespace Cce {
+<span class="lineNum">      17 </span>            : 
+<span class="lineNum">      18 </span>            : /*!
+<span class="lineNum">      19 </span>            :  * \brief Provides access to a lazily cached integration matrix for the \f$Q\f$
+<span class="lineNum">      20 </span>            :  * and \f$W\f$ equations in CCE hypersurface evaluation.
+<span class="lineNum">      21 </span>            :  *
+<span class="lineNum">      22 </span>            :  * \details The provided matrix acts on the integrand collocation points and
+<span class="lineNum">      23 </span>            :  * solves the equation,
+<span class="lineNum">      24 </span>            :  *
+<span class="lineNum">      25 </span>            :  * \f[
+<span class="lineNum">      26 </span>            :  * (1 - y) \partial_y f + 2 f = g,
+<span class="lineNum">      27 </span>            :  * \f]
+<span class="lineNum">      28 </span>            :  *
+<span class="lineNum">      29 </span>            :  * for \f$f\f$ given integrand \f$g\f$.
+<span class="lineNum">      30 </span>            :  */
+<span class="lineNum">      31 </span>            : const Matrix&amp; precomputed_cce_q_integrator(
+<span class="lineNum">      32 </span>            :     size_t number_of_radial_grid_points) noexcept;
+<span class="lineNum">      33 </span>            : 
+<span class="lineNum">      34 </span>            : /*!
+<span class="lineNum">      35 </span>            :  * \brief A utility function for evaluating the \f$Q\f$ and \f$W\f$ hypersurface
+<span class="lineNum">      36 </span>            :  * integrals during CCE evolution.
+<span class="lineNum">      37 </span>            :  *
+<span class="lineNum">      38 </span>            :  * \details Computes and returns by `not_null` pointer the solution to the
+<span class="lineNum">      39 </span>            :  * equation
+<span class="lineNum">      40 </span>            :  *
+<span class="lineNum">      41 </span>            :  * \f[
+<span class="lineNum">      42 </span>            :  * (1 - y) \partial_y f + 2 f = A + (1 - y) B,
+<span class="lineNum">      43 </span>            :  * \f]
+<span class="lineNum">      44 </span>            :  *
+<span class="lineNum">      45 </span>            :  * where \f$A\f$ is provided as `pole_of_integrand` and \f$B\f$ is provided as
+<span class="lineNum">      46 </span>            :  * `regular_integrand`. The value `one_minus_y` is required for determining the
+<span class="lineNum">      47 </span>            :  * integrand and `l_max` is required to determine the shape of the spin-weighted
+<span class="lineNum">      48 </span>            :  * spherical harmonic mesh.
+<span class="lineNum">      49 </span>            :  */
+<span class="lineNum">      50 </span><span class="lineCov">          1 : void radial_integrate_cce_pole_equations(</span>
+<span class="lineNum">      51 </span>            :     gsl::not_null&lt;ComplexDataVector*&gt; integral_result,
+<span class="lineNum">      52 </span>            :     const ComplexDataVector&amp; pole_of_integrand,
+<span class="lineNum">      53 </span>            :     const ComplexDataVector&amp; regular_integrand,
+<span class="lineNum">      54 </span>            :     const ComplexDataVector&amp; boundary, const ComplexDataVector&amp; one_minus_y,
+<span class="lineNum">      55 </span>            :     size_t l_max, size_t number_of_radial_points) noexcept;
+<span class="lineNum">      56 </span>            : 
+<span class="lineNum">      57 </span>            : namespace detail {
+<span class="lineNum">      58 </span>            : // needed because the standard transpose utility cannot create an arbitrary
+<span class="lineNum">      59 </span>            : // ordering of blocks of data. This returns by pointer the configuration useful
+<span class="lineNum">      60 </span>            : // for the linear solve step for H integration
+<span class="lineNum">      61 </span>            : void transpose_to_reals_then_imags_radial_stripes(
+<span class="lineNum">      62 </span>            :     gsl::not_null&lt;DataVector*&gt; result, const ComplexDataVector&amp; input,
+<span class="lineNum">      63 </span>            :     size_t number_of_radial_points, size_t number_of_angular_points) noexcept;
+<span class="lineNum">      64 </span>            : }  // namespace detail
+<span class="lineNum">      65 </span>            : 
+<span class="lineNum">      66 </span>            : // @{
+<span class="lineNum">      67 </span>            : /*!
+<span class="lineNum">      68 </span>            :  * \brief Computational structs for evaluating the hypersurface integrals during
+<span class="lineNum">      69 </span>            :  * CCE evolution. These are compatible with use in `db::mutate_apply`.
+<span class="lineNum">      70 </span>            :  *
+<span class="lineNum">      71 </span>            :  * \details
+<span class="lineNum">      72 </span>            :  * The integral evaluated and the corresponding inputs required depend on the
+<span class="lineNum">      73 </span>            :  * CCE quantity being computed. In any of these, the only mutated tag is `Tag`,
+<span class="lineNum">      74 </span>            :  * where the result of the integration is placed. The supported `Tag`s act in
+<span class="lineNum">      75 </span>            :  * the following ways:
+<span class="lineNum">      76 </span>            :  * - If the `Tag` is `Tags::BondiBeta` or `Tags::BondiU`, the integral to be
+<span class="lineNum">      77 </span>            :  * evaluated is simply \f[ \partial_y f = A, \f] where \f$A\f$ is retrieved with
+<span class="lineNum">      78 </span>            :  * `Tags::Integrand&lt;Tag&gt;`.
+<span class="lineNum">      79 </span>            :  * - If the `Tag` is `Tags::BondiQ` or `Tags::BondiW`, the integral to be
+<span class="lineNum">      80 </span>            :  * evaluated is \f[ (1 - y) \partial_y f + 2 f = A + (1 - y) B, \f] where
+<span class="lineNum">      81 </span>            :  * \f$A\f$ is retrieved with `Tags::PoleOfIntegrand&lt;Tag&gt;` and \f$B\f$ is
+<span class="lineNum">      82 </span>            :  * retrieved with `Tags::RegularIntegrand&lt;Tag&gt;`.
+<span class="lineNum">      83 </span>            :  * - If `Tag` is `Tags::BondiH`, the integral to be evaluated is:
+<span class="lineNum">      84 </span>            :  *
+<span class="lineNum">      85 </span>            :  * \f[
+<span class="lineNum">      86 </span>            :  * (1 - y) \partial_y f + L f + L^\prime \bar{f} = A + (1 - y) B,
+<span class="lineNum">      87 </span>            :  * \f]
+<span class="lineNum">      88 </span>            :  *
+<span class="lineNum">      89 </span>            :  * for \f$f\f$, where \f$A\f$ is retrieved with `Tags::PoleOfIntegrand&lt;Tag&gt;`,
+<span class="lineNum">      90 </span>            :  * \f$B\f$ is retrieved with `Tags::RegularIntegrand&lt;Tag&gt;`, \f$L\f$ is retrieved
+<span class="lineNum">      91 </span>            :  * with `Tags::LinearFactor&lt;Tag&gt;`, and \f$L^\prime\f$ is retrieved with
+<span class="lineNum">      92 </span>            :  * `Tags::LinearFactorForConjugate&lt;Tag&gt;`. The presence of \f$L\f$ and
+<span class="lineNum">      93 </span>            :  * \f$L^\prime\f$ ensure that the only current method we have for evaluating the
+<span class="lineNum">      94 </span>            :  * \f$H\f$ hypersurface equation is a direct linear solve, rather than the
+<span class="lineNum">      95 </span>            :  * spectral matrix multiplications which are available for the other integrals.
+<span class="lineNum">      96 </span>            :  *
+<span class="lineNum">      97 </span>            :  * In each case, the boundary value at the world tube for the integration is
+<span class="lineNum">      98 </span>            :  * retrieved from `Tags::BoundaryValue&lt;Tag&gt;`.
+<span class="lineNum">      99 </span>            :  *
+<span class="lineNum">     100 </span>            :  * Additional type aliases `boundary_tags` and `integrand_tags` are provided for
+<span class="lineNum">     101 </span>            :  * template processing of the required input tags necessary for these functions.
+<span class="lineNum">     102 </span>            :  * These type aliases are `tmpl::list`s with the subsets of `argument_tags` from
+<span class="lineNum">     103 </span>            :  * specific other parts of the CCE computation. Because they play different
+<span class="lineNum">     104 </span>            :  * roles, and have different extents, it is better for tag management to give
+<span class="lineNum">     105 </span>            :  * separated lists for the dependencies.
+<span class="lineNum">     106 </span>            :  */
+<span class="lineNum">     107 </span>            : template &lt;typename Tag&gt;
+<span class="lineNum">     108 </span><span class="lineCov">          1 : struct RadialIntegrateBondi {</span>
+<span class="lineNum">     109 </span><span class="lineNoCov">          0 :   using boundary_tags = tmpl::list&lt;Tags::BoundaryValue&lt;Tag&gt;&gt;;</span>
+<span class="lineNum">     110 </span><span class="lineNoCov">          0 :   using integrand_tags = tmpl::list&lt;Tags::Integrand&lt;Tag&gt;&gt;;</span>
+<span class="lineNum">     111 </span>            : 
+<span class="lineNum">     112 </span><span class="lineNoCov">          0 :   using return_tags = tmpl::list&lt;Tag&gt;;</span>
+<span class="lineNum">     113 </span><span class="lineNoCov">          0 :   using argument_tags =</span>
+<span class="lineNum">     114 </span>            :       tmpl::append&lt;integrand_tags, boundary_tags,
+<span class="lineNum">     115 </span>            :                    tmpl::list&lt;Spectral::Swsh::Tags::LMax,
+<span class="lineNum">     116 </span>            :                               Spectral::Swsh::Tags::NumberOfRadialPoints&gt;&gt;;
+<span class="lineNum">     117 </span><span class="lineNoCov">          0 :   static void apply(</span>
+<span class="lineNum">     118 </span>            :       gsl::not_null&lt;Scalar&lt;
+<span class="lineNum">     119 </span>            :           SpinWeighted&lt;ComplexDataVector, db::item_type&lt;Tag&gt;::type::spin&gt;&gt;*&gt;
+<span class="lineNum">     120 </span>            :           integral_result,
+<span class="lineNum">     121 </span>            :       const Scalar&lt;SpinWeighted&lt;ComplexDataVector,
+<span class="lineNum">     122 </span>            :                                 db::item_type&lt;Tag&gt;::type::spin&gt;&gt;&amp; integrand,
+<span class="lineNum">     123 </span>            :       const Scalar&lt;SpinWeighted&lt;ComplexDataVector,
+<span class="lineNum">     124 </span>            :                                 db::item_type&lt;Tag&gt;::type::spin&gt;&gt;&amp; boundary,
+<span class="lineNum">     125 </span>            :       size_t l_max, size_t number_of_radial_points) noexcept;
+<span class="lineNum">     126 </span>            : };
+<span class="lineNum">     127 </span>            : 
+<span class="lineNum">     128 </span>            : template &lt;&gt;
+<span class="lineNum">     129 </span><span class="lineNoCov">          0 : struct RadialIntegrateBondi&lt;Tags::BondiQ&gt; {</span>
+<span class="lineNum">     130 </span><span class="lineNoCov">          0 :   using boundary_tags = tmpl::list&lt;Tags::BoundaryValue&lt;Tags::BondiQ&gt;&gt;;</span>
+<span class="lineNum">     131 </span><span class="lineNoCov">          0 :   using integrand_tags = tmpl::list&lt;Tags::PoleOfIntegrand&lt;Tags::BondiQ&gt;,</span>
+<span class="lineNum">     132 </span>            :                                     Tags::RegularIntegrand&lt;Tags::BondiQ&gt;&gt;;
+<span class="lineNum">     133 </span><span class="lineNoCov">          0 :   using integration_independent_tags = tmpl::list&lt;Tags::OneMinusY&gt;;</span>
+<span class="lineNum">     134 </span>            : 
+<span class="lineNum">     135 </span><span class="lineNoCov">          0 :   using return_tags = tmpl::list&lt;Tags::BondiQ&gt;;</span>
+<span class="lineNum">     136 </span><span class="lineNoCov">          0 :   using argument_tags =</span>
+<span class="lineNum">     137 </span>            :       tmpl::append&lt;integrand_tags, boundary_tags, integration_independent_tags,
+<span class="lineNum">     138 </span>            :                    tmpl::list&lt;Spectral::Swsh::Tags::LMax,
+<span class="lineNum">     139 </span>            :                               Spectral::Swsh::Tags::NumberOfRadialPoints&gt;&gt;;
+<span class="lineNum">     140 </span><span class="lineNoCov">          0 :   static void apply(</span>
+<span class="lineNum">     141 </span>            :       gsl::not_null&lt;Scalar&lt;SpinWeighted&lt;ComplexDataVector, 1&gt;&gt;*&gt;
+<span class="lineNum">     142 </span>            :           integral_result,
+<span class="lineNum">     143 </span>            :       const Scalar&lt;SpinWeighted&lt;ComplexDataVector, 1&gt;&gt;&amp; pole_of_integrand,
+<span class="lineNum">     144 </span>            :       const Scalar&lt;SpinWeighted&lt;ComplexDataVector, 1&gt;&gt;&amp; regular_integrand,
+<span class="lineNum">     145 </span>            :       const Scalar&lt;SpinWeighted&lt;ComplexDataVector, 1&gt;&gt;&amp; boundary,
+<span class="lineNum">     146 </span>            :       const Scalar&lt;SpinWeighted&lt;ComplexDataVector, 0&gt;&gt;&amp; one_minus_y,
+<span class="lineNum">     147 </span>            :       size_t l_max, size_t number_of_radial_points) noexcept;
+<span class="lineNum">     148 </span>            : };
+<span class="lineNum">     149 </span>            : 
+<span class="lineNum">     150 </span>            : template &lt;&gt;
+<span class="lineNum">     151 </span><span class="lineNoCov">          0 : struct RadialIntegrateBondi&lt;Tags::BondiW&gt; {</span>
+<span class="lineNum">     152 </span><span class="lineNoCov">          0 :   using boundary_tags = tmpl::list&lt;Tags::BoundaryValue&lt;Tags::BondiW&gt;&gt;;</span>
+<span class="lineNum">     153 </span><span class="lineNoCov">          0 :   using integrand_tags = tmpl::list&lt;Tags::PoleOfIntegrand&lt;Tags::BondiW&gt;,</span>
+<span class="lineNum">     154 </span>            :                                     Tags::RegularIntegrand&lt;Tags::BondiW&gt;&gt;;
+<span class="lineNum">     155 </span><span class="lineNoCov">          0 :   using integration_independent_tags = tmpl::list&lt;Tags::OneMinusY&gt;;</span>
+<span class="lineNum">     156 </span>            : 
+<span class="lineNum">     157 </span><span class="lineNoCov">          0 :   using return_tags = tmpl::list&lt;Tags::BondiW&gt;;</span>
+<span class="lineNum">     158 </span><span class="lineNoCov">          0 :   using argument_tags =</span>
+<span class="lineNum">     159 </span>            :       tmpl::append&lt;integrand_tags, boundary_tags, integration_independent_tags,
+<span class="lineNum">     160 </span>            :                    tmpl::list&lt;Spectral::Swsh::Tags::LMax,
+<span class="lineNum">     161 </span>            :                               Spectral::Swsh::Tags::NumberOfRadialPoints&gt;&gt;;
+<span class="lineNum">     162 </span><span class="lineNoCov">          0 :   static void apply(</span>
+<span class="lineNum">     163 </span>            :       gsl::not_null&lt;Scalar&lt;SpinWeighted&lt;ComplexDataVector, 0&gt;&gt;*&gt;
+<span class="lineNum">     164 </span>            :           integral_result,
+<span class="lineNum">     165 </span>            :       const Scalar&lt;SpinWeighted&lt;ComplexDataVector, 0&gt;&gt;&amp; pole_of_integrand,
+<span class="lineNum">     166 </span>            :       const Scalar&lt;SpinWeighted&lt;ComplexDataVector, 0&gt;&gt;&amp; regular_integrand,
+<span class="lineNum">     167 </span>            :       const Scalar&lt;SpinWeighted&lt;ComplexDataVector, 0&gt;&gt;&amp; boundary,
+<span class="lineNum">     168 </span>            :       const Scalar&lt;SpinWeighted&lt;ComplexDataVector, 0&gt;&gt;&amp; one_minus_y,
+<span class="lineNum">     169 </span>            :       size_t l_max, size_t number_of_radial_points) noexcept;
+<span class="lineNum">     170 </span>            : };
+<span class="lineNum">     171 </span>            : 
+<span class="lineNum">     172 </span>            : template &lt;&gt;
+<span class="lineNum">     173 </span><span class="lineNoCov">          0 : struct RadialIntegrateBondi&lt;Tags::BondiH&gt; {</span>
+<span class="lineNum">     174 </span><span class="lineNoCov">          0 :   using boundary_tags = tmpl::list&lt;Tags::BoundaryValue&lt;Tags::BondiH&gt;&gt;;</span>
+<span class="lineNum">     175 </span><span class="lineNoCov">          0 :   using integrand_tags =</span>
+<span class="lineNum">     176 </span>            :       tmpl::list&lt;Tags::PoleOfIntegrand&lt;Tags::BondiH&gt;,
+<span class="lineNum">     177 </span>            :                  Tags::RegularIntegrand&lt;Tags::BondiH&gt;,
+<span class="lineNum">     178 </span>            :                  Tags::LinearFactor&lt;Tags::BondiH&gt;,
+<span class="lineNum">     179 </span>            :                  Tags::LinearFactorForConjugate&lt;Tags::BondiH&gt;&gt;;
+<span class="lineNum">     180 </span><span class="lineNoCov">          0 :   using integration_independent_tags = tmpl::list&lt;Tags::OneMinusY&gt;;</span>
+<span class="lineNum">     181 </span>            : 
+<span class="lineNum">     182 </span><span class="lineNoCov">          0 :   using return_tags = tmpl::list&lt;Tags::BondiH&gt;;</span>
+<span class="lineNum">     183 </span><span class="lineNoCov">          0 :   using argument_tags =</span>
+<span class="lineNum">     184 </span>            :       tmpl::append&lt;integrand_tags, boundary_tags, integration_independent_tags,
+<span class="lineNum">     185 </span>            :                    tmpl::list&lt;Spectral::Swsh::Tags::LMax,
+<span class="lineNum">     186 </span>            :                               Spectral::Swsh::Tags::NumberOfRadialPoints&gt;&gt;;
+<span class="lineNum">     187 </span><span class="lineNoCov">          0 :   static void apply(</span>
+<span class="lineNum">     188 </span>            :       gsl::not_null&lt;Scalar&lt;SpinWeighted&lt;ComplexDataVector, 2&gt;&gt;*&gt;
+<span class="lineNum">     189 </span>            :           integral_result,
+<span class="lineNum">     190 </span>            :       const Scalar&lt;SpinWeighted&lt;ComplexDataVector, 2&gt;&gt;&amp; pole_of_integrand,
+<span class="lineNum">     191 </span>            :       const Scalar&lt;SpinWeighted&lt;ComplexDataVector, 2&gt;&gt;&amp; regular_integrand,
+<span class="lineNum">     192 </span>            :       const Scalar&lt;SpinWeighted&lt;ComplexDataVector, 0&gt;&gt;&amp; linear_factor,
+<span class="lineNum">     193 </span>            :       const Scalar&lt;SpinWeighted&lt;ComplexDataVector, 4&gt;&gt;&amp;
+<span class="lineNum">     194 </span>            :           linear_factor_of_conjugate,
+<span class="lineNum">     195 </span>            :       const Scalar&lt;SpinWeighted&lt;ComplexDataVector, 2&gt;&gt;&amp; boundary,
+<span class="lineNum">     196 </span>            :       const Scalar&lt;SpinWeighted&lt;ComplexDataVector, 0&gt;&gt;&amp; one_minus_y,
+<span class="lineNum">     197 </span>            :       size_t l_max, size_t number_of_radial_points) noexcept;
+<span class="lineNum">     198 </span>            : };
+<span class="lineNum">     199 </span>            : // @}
+<span class="lineNum">     200 </span>            : }  // namespace Cce
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../../../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.13</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

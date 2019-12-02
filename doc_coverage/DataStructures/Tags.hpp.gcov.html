@@ -1,0 +1,173 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - 5912ac2e49a80e6a27b3707c9a1e6ce5248b1b2a - DataStructures/Tags.hpp</title>
+  <link rel="stylesheet" type="text/css" href="../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title"> SpECTRE Documentation Coverage Report</td></tr>
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../index.html">top level</a> - <a href="index.html">DataStructures</a> - Tags.hpp</td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+             <td class="headerItem">Commit:</td>
+             <td class="headerValue"><a target="_blank" href="https://github.com/sxs-collaboration/spectre/commit/5912ac2e49a80e6a27b3707c9a1e6ce5248b1b2a">5912ac2e49a80e6a27b3707c9a1e6ce5248b1b2a</a></td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">4</td>
+            <td class="headerCovTableEntry">17</td>
+            <td class="headerCovTableEntryLo">23.5 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2019-12-02 22:01:08</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td class="headerItem">Legend:</td>
+            <td class="headerValueLeg">            Lines:
+            <span class="coverLegendCov">hit</span>
+            <span class="coverLegendNoCov">not hit</span>
+</td>
+            <td></td>
+          </tr>
+          <tr><td><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">          Line data    Source code</pre>
+<pre class="source">
+<span class="lineNum">       1 </span><span class="lineNoCov">          0 : // Distributed under the MIT License.</span>
+<span class="lineNum">       2 </span>            : // See LICENSE.txt for details.
+<span class="lineNum">       3 </span>            : 
+<span class="lineNum">       4 </span>            : #pragma once
+<span class="lineNum">       5 </span>            : 
+<span class="lineNum">       6 </span>            : #include &lt;string&gt;
+<span class="lineNum">       7 </span>            : 
+<span class="lineNum">       8 </span>            : #include &quot;DataStructures/DataBox/DataBoxTag.hpp&quot;
+<span class="lineNum">       9 </span>            : #include &quot;DataStructures/SpinWeighted.hpp&quot;
+<span class="lineNum">      10 </span>            : #include &quot;DataStructures/Tensor/Metafunctions.hpp&quot;
+<span class="lineNum">      11 </span>            : #include &quot;DataStructures/Tensor/TypeAliases.hpp&quot;
+<span class="lineNum">      12 </span>            : 
+<span class="lineNum">      13 </span>            : /// \cond
+<span class="lineNum">      14 </span>            : class DataVector;
+<span class="lineNum">      15 </span>            : class ModalVector;
+<span class="lineNum">      16 </span>            : /// \endcond
+<span class="lineNum">      17 </span>            : 
+<span class="lineNum">      18 </span>            : namespace Tags {
+<span class="lineNum">      19 </span>            : /// Given the `Tag` holding a `Tensor&lt;DataVector, ...&gt;`, swap the
+<span class="lineNum">      20 </span>            : /// `DataVector` with a `double`.
+<span class="lineNum">      21 </span>            : template &lt;typename Tag&gt;
+<span class="lineNum">      22 </span><span class="lineCov">          1 : struct Mean : db::SimpleTag, db::PrefixTag {</span>
+<span class="lineNum">      23 </span><span class="lineNoCov">          0 :   using tag = Tag;</span>
+<span class="lineNum">      24 </span>            :   static_assert(cpp17::is_same_v&lt;typename Tag::type::type, DataVector&gt;,
+<span class="lineNum">      25 </span>            :                 &quot;The Mean tag should only be used on tags that hold &quot;
+<span class="lineNum">      26 </span>            :                 &quot;Tensors of DataVectors&quot;);
+<span class="lineNum">      27 </span><span class="lineNoCov">          0 :   using type = TensorMetafunctions::swap_type&lt;double, typename Tag::type&gt;;</span>
+<span class="lineNum">      28 </span><span class="lineNoCov">          0 :   static std::string name() noexcept { return &quot;Mean(&quot; + Tag::name() + &quot;)&quot;; }</span>
+<span class="lineNum">      29 </span>            : };
+<span class="lineNum">      30 </span>            : 
+<span class="lineNum">      31 </span>            : /// Given the `NodalTag` holding a `Tensor&lt;DataVector, ...&gt;`, swap the
+<span class="lineNum">      32 </span>            : /// `DataVector` with a `ModalVector`.
+<span class="lineNum">      33 </span>            : template &lt;typename NodalTag&gt;
+<span class="lineNum">      34 </span><span class="lineCov">          1 : struct Modal : db::SimpleTag, db::PrefixTag {</span>
+<span class="lineNum">      35 </span><span class="lineNoCov">          0 :   using tag = NodalTag;</span>
+<span class="lineNum">      36 </span>            :   static_assert(cpp17::is_same_v&lt;typename NodalTag::type::type, DataVector&gt;,
+<span class="lineNum">      37 </span>            :                 &quot;The Modal tag should only be used on tags that hold &quot;
+<span class="lineNum">      38 </span>            :                 &quot;Tensors of DataVectors&quot;);
+<span class="lineNum">      39 </span><span class="lineNoCov">          0 :   using type =</span>
+<span class="lineNum">      40 </span>            :       TensorMetafunctions::swap_type&lt;ModalVector, typename NodalTag::type&gt;;
+<span class="lineNum">      41 </span><span class="lineNoCov">          0 :   static std::string name() noexcept {</span>
+<span class="lineNum">      42 </span>            :     return &quot;Modal(&quot; + NodalTag::name() + &quot;)&quot;;
+<span class="lineNum">      43 </span>            :   }
+<span class="lineNum">      44 </span>            : };
+<span class="lineNum">      45 </span>            : 
+<span class="lineNum">      46 </span>            : /// Given a Tag with a `type` of `Tensor&lt;VectorType, ...&gt;`, acts as a new
+<span class="lineNum">      47 </span>            : /// version of the tag with `type` of `Tensor&lt;SpinWeighted&lt;VectorType,
+<span class="lineNum">      48 </span>            : /// SpinConstant::value&gt;, ...&gt;`, which is the preferred tensor type associated
+<span class="lineNum">      49 </span>            : /// with spin-weighted quantities. Here, `SpinConstant` must be a
+<span class="lineNum">      50 </span>            : /// `std::integral_constant` or similar type wrapper for a compile-time
+<span class="lineNum">      51 </span>            : /// constant, in order to work properly with DataBox utilities.
+<span class="lineNum">      52 </span>            : /// \note There are restrictions of which vector types can be wrapped
+<span class="lineNum">      53 </span>            : /// by SpinWeighted in a Tensor, so some `Tag`s that have valid `type`s may
+<span class="lineNum">      54 </span>            : /// give rise to compilation errors when used as `Tags::SpinWeighted&lt;Tag,
+<span class="lineNum">      55 </span>            : /// SpinConstant&gt;`. If you find such trouble, consult the whitelist of possible
+<span class="lineNum">      56 </span>            : /// Tensor storage types in `Tensor.hpp`.
+<span class="lineNum">      57 </span>            : template &lt;typename Tag, typename SpinConstant&gt;
+<span class="lineNum">      58 </span><span class="lineCov">          1 : struct SpinWeighted : db::PrefixTag, db::SimpleTag {</span>
+<span class="lineNum">      59 </span>            :   static_assert(not is_any_spin_weighted_v&lt;typename Tag::type::type&gt;,
+<span class="lineNum">      60 </span>            :                 &quot;The SpinWeighted tag should only be used to create a &quot;
+<span class="lineNum">      61 </span>            :                 &quot;spin-weighted version of a non-spin-weighted tag. The &quot;
+<span class="lineNum">      62 </span>            :                 &quot;provided tag already has a spin-weighted type&quot;);
+<span class="lineNum">      63 </span><span class="lineNoCov">          0 :   using type = TensorMetafunctions::swap_type&lt;</span>
+<span class="lineNum">      64 </span>            :       ::SpinWeighted&lt;typename Tag::type::type, SpinConstant::value&gt;,
+<span class="lineNum">      65 </span>            :       typename Tag::type&gt;;
+<span class="lineNum">      66 </span><span class="lineNoCov">          0 :   using tag = Tag;</span>
+<span class="lineNum">      67 </span><span class="lineNoCov">          0 :   static std::string name() noexcept {</span>
+<span class="lineNum">      68 </span>            :     return &quot;SpinWeighted(&quot; + Tag::name() + &quot;, &quot; +
+<span class="lineNum">      69 </span>            :            std::to_string(SpinConstant::value) + &quot;)&quot;;
+<span class="lineNum">      70 </span>            :   }
+<span class="lineNum">      71 </span>            : };
+<span class="lineNum">      72 </span>            : 
+<span class="lineNum">      73 </span>            : namespace detail {
+<span class="lineNum">      74 </span>            : template &lt;typename LhsType, typename RhsType&gt;
+<span class="lineNum">      75 </span>            : using product_t =
+<span class="lineNum">      76 </span>            :     Scalar&lt;::SpinWeighted&lt;ComplexDataVector,
+<span class="lineNum">      77 </span>            :                           LhsType::type::spin + RhsType::type::spin&gt;&gt;;
+<span class="lineNum">      78 </span>            : }  // namespace detail
+<span class="lineNum">      79 </span>            : 
+<span class="lineNum">      80 </span>            : /// A prefix tag representing the product of two other tags. Note that if
+<span class="lineNum">      81 </span>            : /// non-spin-weighted types are needed in this tag, the type alias
+<span class="lineNum">      82 </span>            : /// `detail::product_t` should be generalized to give a reasonable type for
+<span class="lineNum">      83 </span>            : /// those cases, or template specializations should be constructed for this tag.
+<span class="lineNum">      84 </span>            : template &lt;typename LhsTag, typename RhsTag&gt;
+<span class="lineNum">      85 </span><span class="lineCov">          1 : struct Multiplies : db::PrefixTag, db::SimpleTag {</span>
+<span class="lineNum">      86 </span><span class="lineNoCov">          0 :   using type = detail::product_t&lt;db::item_type&lt;LhsTag&gt;, db::item_type&lt;RhsTag&gt;&gt;;</span>
+<span class="lineNum">      87 </span><span class="lineNoCov">          0 :   using tag = LhsTag;</span>
+<span class="lineNum">      88 </span><span class="lineNoCov">          0 :   static std::string name() noexcept {</span>
+<span class="lineNum">      89 </span>            :     return &quot;Multiplies(&quot; + LhsTag::name() + &quot;, &quot; + RhsTag::name() + &quot;)&quot;;
+<span class="lineNum">      90 </span>            :   }
+<span class="lineNum">      91 </span>            : };
+<span class="lineNum">      92 </span>            : 
+<span class="lineNum">      93 </span>            : }  // namespace Tags
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.13</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

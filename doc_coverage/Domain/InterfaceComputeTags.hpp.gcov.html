@@ -1,0 +1,331 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - 5912ac2e49a80e6a27b3707c9a1e6ce5248b1b2a - Domain/InterfaceComputeTags.hpp</title>
+  <link rel="stylesheet" type="text/css" href="../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title"> SpECTRE Documentation Coverage Report</td></tr>
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../index.html">top level</a> - <a href="index.html">Domain</a> - InterfaceComputeTags.hpp</td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+             <td class="headerItem">Commit:</td>
+             <td class="headerValue"><a target="_blank" href="https://github.com/sxs-collaboration/spectre/commit/5912ac2e49a80e6a27b3707c9a1e6ce5248b1b2a">5912ac2e49a80e6a27b3707c9a1e6ce5248b1b2a</a></td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">4</td>
+            <td class="headerCovTableEntry">28</td>
+            <td class="headerCovTableEntryLo">14.3 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2019-12-02 22:01:08</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td class="headerItem">Legend:</td>
+            <td class="headerValueLeg">            Lines:
+            <span class="coverLegendCov">hit</span>
+            <span class="coverLegendNoCov">not hit</span>
+</td>
+            <td></td>
+          </tr>
+          <tr><td><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">          Line data    Source code</pre>
+<pre class="source">
+<span class="lineNum">       1 </span><span class="lineNoCov">          0 : // Distributed under the MIT License.</span>
+<span class="lineNum">       2 </span>            : // See LICENSE.txt for details.
+<span class="lineNum">       3 </span>            : 
+<span class="lineNum">       4 </span>            : #pragma once
+<span class="lineNum">       5 </span>            : 
+<span class="lineNum">       6 </span>            : #include &lt;cstddef&gt;
+<span class="lineNum">       7 </span>            : 
+<span class="lineNum">       8 </span>            : #include &quot;DataStructures/DataBox/DataBoxTag.hpp&quot;
+<span class="lineNum">       9 </span>            : #include &quot;DataStructures/VariablesHelpers.hpp&quot;
+<span class="lineNum">      10 </span>            : #include &quot;Domain/Direction.hpp&quot;
+<span class="lineNum">      11 </span>            : #include &quot;Domain/ElementMap.hpp&quot;
+<span class="lineNum">      12 </span>            : #include &quot;Domain/IndexToSliceAt.hpp&quot;
+<span class="lineNum">      13 </span>            : #include &quot;Domain/InterfaceHelpers.hpp&quot;
+<span class="lineNum">      14 </span>            : #include &quot;Domain/LogicalCoordinates.hpp&quot;
+<span class="lineNum">      15 </span>            : #include &quot;Domain/Mesh.hpp&quot;
+<span class="lineNum">      16 </span>            : #include &quot;Domain/Tags.hpp&quot;
+<span class="lineNum">      17 </span>            : #include &quot;Utilities/Gsl.hpp&quot;
+<span class="lineNum">      18 </span>            : #include &quot;Utilities/TMPL.hpp&quot;
+<span class="lineNum">      19 </span>            : 
+<span class="lineNum">      20 </span>            : namespace Tags {
+<span class="lineNum">      21 </span>            : 
+<span class="lineNum">      22 </span>            : namespace Interface_detail {
+<span class="lineNum">      23 </span>            : 
+<span class="lineNum">      24 </span>            : template &lt;typename DirectionsTag, typename BaseComputeItem,
+<span class="lineNum">      25 </span>            :           typename ArgumentTags&gt;
+<span class="lineNum">      26 </span>            : struct evaluate_compute_item;
+<span class="lineNum">      27 </span>            : 
+<span class="lineNum">      28 </span>            : template &lt;typename DirectionsTag, typename BaseComputeItem,
+<span class="lineNum">      29 </span>            :           typename... ArgumentTags&gt;
+<span class="lineNum">      30 </span>            : struct evaluate_compute_item&lt;DirectionsTag, BaseComputeItem,
+<span class="lineNum">      31 </span>            :                              tmpl::list&lt;ArgumentTags...&gt;&gt; {
+<span class="lineNum">      32 </span>            :   using volume_tags = get_volume_tags&lt;BaseComputeItem&gt;;
+<span class="lineNum">      33 </span>            :   static_assert(
+<span class="lineNum">      34 </span>            :       tmpl::size&lt;tmpl::list_difference&lt;
+<span class="lineNum">      35 </span>            :               volume_tags, typename BaseComputeItem::argument_tags&gt;&gt;::value ==
+<span class="lineNum">      36 </span>            :           0,
+<span class="lineNum">      37 </span>            :       &quot;volume_tags contains tags not in argument_tags&quot;);
+<span class="lineNum">      38 </span>            : 
+<span class="lineNum">      39 </span>            :  private:
+<span class="lineNum">      40 </span>            :   // Order matters so we mix public/private
+<span class="lineNum">      41 </span>            :   template &lt;class ComputeItem, bool = db::has_return_type_member_v&lt;ComputeItem&gt;&gt;
+<span class="lineNum">      42 </span>            :   struct ComputeItemType {
+<span class="lineNum">      43 </span>            :     using type = std::decay_t&lt;decltype(BaseComputeItem::function(
+<span class="lineNum">      44 </span>            :         std::declval&lt;typename InterfaceHelpers_detail::unmap_interface_args&lt;
+<span class="lineNum">      45 </span>            :             tmpl::list_contains_v&lt;volume_tags, ArgumentTags&gt;&gt;::
+<span class="lineNum">      46 </span>            :                          template f&lt;db::const_item_type&lt;ArgumentTags&gt;&gt;&gt;()...))&gt;;
+<span class="lineNum">      47 </span>            :   };
+<span class="lineNum">      48 </span>            : 
+<span class="lineNum">      49 </span>            :   template &lt;class ComputeItem&gt;
+<span class="lineNum">      50 </span>            :   struct ComputeItemType&lt;ComputeItem, true&gt; {
+<span class="lineNum">      51 </span>            :     using type = typename BaseComputeItem::return_type;
+<span class="lineNum">      52 </span>            :   };
+<span class="lineNum">      53 </span>            : 
+<span class="lineNum">      54 </span>            :  public:
+<span class="lineNum">      55 </span>            :   using return_type = std::unordered_map&lt;
+<span class="lineNum">      56 </span>            :       typename db::const_item_type&lt;DirectionsTag&gt;::value_type,
+<span class="lineNum">      57 </span>            :       typename ComputeItemType&lt;BaseComputeItem&gt;::type&gt;;
+<span class="lineNum">      58 </span>            : 
+<span class="lineNum">      59 </span>            :   static constexpr void apply(
+<span class="lineNum">      60 </span>            :       const gsl::not_null&lt;return_type*&gt; result,
+<span class="lineNum">      61 </span>            :       const db::const_item_type&lt;DirectionsTag&gt;&amp; directions,
+<span class="lineNum">      62 </span>            :       const db::const_item_type&lt;ArgumentTags&gt;&amp;... args) noexcept {
+<span class="lineNum">      63 </span>            :     apply_helper(
+<span class="lineNum">      64 </span>            :         std::integral_constant&lt;bool,
+<span class="lineNum">      65 </span>            :                                db::has_return_type_member_v&lt;BaseComputeItem&gt;&gt;{},
+<span class="lineNum">      66 </span>            :         result, directions, args...);
+<span class="lineNum">      67 </span>            :   }
+<span class="lineNum">      68 </span>            : 
+<span class="lineNum">      69 </span>            :  private:
+<span class="lineNum">      70 </span>            :   static constexpr void apply_helper(
+<span class="lineNum">      71 </span>            :       std::false_type /*has_return_type_member*/,
+<span class="lineNum">      72 </span>            :       const gsl::not_null&lt;return_type*&gt; result,
+<span class="lineNum">      73 </span>            :       const db::const_item_type&lt;DirectionsTag&gt;&amp; directions,
+<span class="lineNum">      74 </span>            :       const db::const_item_type&lt;ArgumentTags&gt;&amp;... args) noexcept {
+<span class="lineNum">      75 </span>            :     for (const auto&amp; direction : directions) {
+<span class="lineNum">      76 </span>            :       (*result)[direction] = BaseComputeItem::function(
+<span class="lineNum">      77 </span>            :           InterfaceHelpers_detail::unmap_interface_args&lt;tmpl::list_contains_v&lt;
+<span class="lineNum">      78 </span>            :               volume_tags, ArgumentTags&gt;&gt;::apply(direction, args)...);
+<span class="lineNum">      79 </span>            :     }
+<span class="lineNum">      80 </span>            :   }
+<span class="lineNum">      81 </span>            : 
+<span class="lineNum">      82 </span>            :   static constexpr void apply_helper(
+<span class="lineNum">      83 </span>            :       std::true_type /*has_return_type_member*/,
+<span class="lineNum">      84 </span>            :       const gsl::not_null&lt;return_type*&gt; result,
+<span class="lineNum">      85 </span>            :       const db::const_item_type&lt;DirectionsTag&gt;&amp; directions,
+<span class="lineNum">      86 </span>            :       const db::const_item_type&lt;ArgumentTags&gt;&amp;... args) noexcept {
+<span class="lineNum">      87 </span>            :     for (const auto&amp; direction : directions) {
+<span class="lineNum">      88 </span>            :       BaseComputeItem::function(
+<span class="lineNum">      89 </span>            :           make_not_null(&amp;(*result)[direction]),
+<span class="lineNum">      90 </span>            :           InterfaceHelpers_detail::unmap_interface_args&lt;tmpl::list_contains_v&lt;
+<span class="lineNum">      91 </span>            :               volume_tags, ArgumentTags&gt;&gt;::apply(direction, args)...);
+<span class="lineNum">      92 </span>            :     }
+<span class="lineNum">      93 </span>            :   }
+<span class="lineNum">      94 </span>            : };
+<span class="lineNum">      95 </span>            : 
+<span class="lineNum">      96 </span>            : }  // namespace Interface_detail
+<span class="lineNum">      97 </span>            : 
+<span class="lineNum">      98 </span>            : /// \ingroup DataBoxTagsGroup
+<span class="lineNum">      99 </span>            : /// \ingroup ComputationalDomainGroup
+<span class="lineNum">     100 </span>            : /// \brief Derived tag for representing a compute item which acts on Tags on an
+<span class="lineNum">     101 </span>            : /// interface. Can be retrieved using Tags::Interface&lt;DirectionsTag, Tag&gt;
+<span class="lineNum">     102 </span>            : ///
+<span class="lineNum">     103 </span>            : /// The contained object will be a map from ::Direction to the item type of
+<span class="lineNum">     104 </span>            : /// `Tag`, with the set of directions being those produced by `DirectionsTag`.
+<span class="lineNum">     105 </span>            : /// `Tag::function` will be applied separately to the data on each interface. If
+<span class="lineNum">     106 </span>            : /// some of the compute item's inputs should be taken from the volume even when
+<span class="lineNum">     107 </span>            : /// applied on a slice, it may indicate them using `volume_tags`.
+<span class="lineNum">     108 </span>            : ///
+<span class="lineNum">     109 </span>            : /// If using the base tag mechanism for an interface tag is desired,
+<span class="lineNum">     110 </span>            : /// then `Tag` can have a `base` type alias pointing to its base
+<span class="lineNum">     111 </span>            : /// class.  (This requirement is due to the lack of a way to determine
+<span class="lineNum">     112 </span>            : /// a type's base classes in C++.)
+<span class="lineNum">     113 </span>            : ///
+<span class="lineNum">     114 </span>            : /// \tparam DirectionsTag the item of Directions
+<span class="lineNum">     115 </span>            : /// \tparam Tag the tag labeling the item
+<span class="lineNum">     116 </span>            : template &lt;typename DirectionsTag, typename Tag&gt;
+<span class="lineNum">     117 </span>            : struct InterfaceCompute : Interface&lt;DirectionsTag, Tag&gt;,
+<span class="lineNum">     118 </span>            :                           db::ComputeTag,
+<span class="lineNum">     119 </span><span class="lineCov">          1 :                           virtual db::PrefixTag {</span>
+<span class="lineNum">     120 </span>            :   static_assert(db::is_compute_item_v&lt;Tag&gt;,
+<span class="lineNum">     121 </span>            :                 &quot;Cannot use a non compute item as an interface compute item.&quot;);
+<span class="lineNum">     122 </span>            :   // Defining name here prevents an ambiguous function call when using base
+<span class="lineNum">     123 </span>            :   // tags; Both Interface&lt;Dirs, Tag&gt; and Interface&lt;Dirs, Tag::base&gt; will have a
+<span class="lineNum">     124 </span>            :   // name function and so cannot be disambiguated.
+<span class="lineNum">     125 </span><span class="lineNoCov">          0 :   static std::string name() noexcept {</span>
+<span class="lineNum">     126 </span>            :     return &quot;Interface&lt;&quot; + DirectionsTag::name() + &quot;, &quot; + Tag::name() + &quot;&gt;&quot;;
+<span class="lineNum">     127 </span>            :   };
+<span class="lineNum">     128 </span><span class="lineNoCov">          0 :   using tag = Tag;</span>
+<span class="lineNum">     129 </span><span class="lineNoCov">          0 :   using forwarded_argument_tags =</span>
+<span class="lineNum">     130 </span>            :       InterfaceHelpers_detail::get_interface_argument_tags&lt;Tag, DirectionsTag&gt;;
+<span class="lineNum">     131 </span><span class="lineNoCov">          0 :   using argument_tags =</span>
+<span class="lineNum">     132 </span>            :       tmpl::push_front&lt;forwarded_argument_tags, DirectionsTag&gt;;
+<span class="lineNum">     133 </span>            : 
+<span class="lineNum">     134 </span><span class="lineNoCov">          0 :   using return_type = typename Interface_detail::evaluate_compute_item&lt;</span>
+<span class="lineNum">     135 </span>            :       DirectionsTag, Tag, forwarded_argument_tags&gt;::return_type;
+<span class="lineNum">     136 </span><span class="lineNoCov">          0 :   static constexpr auto function =</span>
+<span class="lineNum">     137 </span>            :       Interface_detail::evaluate_compute_item&lt;DirectionsTag, Tag,
+<span class="lineNum">     138 </span>            :                                               forwarded_argument_tags&gt;::apply;
+<span class="lineNum">     139 </span>            : };
+<span class="lineNum">     140 </span>            : 
+<span class="lineNum">     141 </span>            : /// \ingroup DataBoxTagsGroup
+<span class="lineNum">     142 </span>            : /// \ingroup ComputationalDomainGroup
+<span class="lineNum">     143 </span>            : /// \brief Derived tag for representing a compute item which slices a Tag
+<span class="lineNum">     144 </span>            : /// containing a `Tensor` or a `Variables` from the volume to an interface.
+<span class="lineNum">     145 </span>            : /// Retrievable from the DataBox using `Tags::Interface&lt;DirectionsTag, Tag&gt;`
+<span class="lineNum">     146 </span>            : ///
+<span class="lineNum">     147 </span>            : /// The contained object will be a map from ::Direction to the item
+<span class="lineNum">     148 </span>            : /// type of `Tag`, with the set of directions being those produced by
+<span class="lineNum">     149 </span>            : /// `DirectionsTag`.
+<span class="lineNum">     150 </span>            : ///
+<span class="lineNum">     151 </span>            : /// \requires `Tag` correspond to a `Tensor` or a `Variables`
+<span class="lineNum">     152 </span>            : ///
+<span class="lineNum">     153 </span>            : /// \tparam DirectionsTag the item of Directions
+<span class="lineNum">     154 </span>            : /// \tparam Tag the tag labeling the item
+<span class="lineNum">     155 </span>            : template &lt;typename DirectionsTag, typename Tag&gt;
+<span class="lineNum">     156 </span><span class="lineCov">          1 : struct Slice : Interface&lt;DirectionsTag, Tag&gt;, db::ComputeTag {</span>
+<span class="lineNum">     157 </span><span class="lineNoCov">          0 :   static constexpr size_t volume_dim =</span>
+<span class="lineNum">     158 </span>            :       db::const_item_type&lt;DirectionsTag&gt;::value_type::volume_dim;
+<span class="lineNum">     159 </span>            : 
+<span class="lineNum">     160 </span><span class="lineNoCov">          0 :   using return_type =</span>
+<span class="lineNum">     161 </span>            :       std::unordered_map&lt;::Direction&lt;volume_dim&gt;, db::const_item_type&lt;Tag&gt;&gt;;
+<span class="lineNum">     162 </span>            : 
+<span class="lineNum">     163 </span><span class="lineNoCov">          0 :   static constexpr void function(</span>
+<span class="lineNum">     164 </span>            :       const gsl::not_null&lt;return_type*&gt; sliced_vars,
+<span class="lineNum">     165 </span>            :       const ::Mesh&lt;volume_dim&gt;&amp; mesh,
+<span class="lineNum">     166 </span>            :       const std::unordered_set&lt;::Direction&lt;volume_dim&gt;&gt;&amp; directions,
+<span class="lineNum">     167 </span>            :       const db::const_item_type&lt;Tag&gt;&amp; variables) noexcept {
+<span class="lineNum">     168 </span>            :     for (const auto&amp; direction : directions) {
+<span class="lineNum">     169 </span>            :       data_on_slice(make_not_null(&amp;((*sliced_vars)[direction])), variables,
+<span class="lineNum">     170 </span>            :                     mesh.extents(), direction.dimension(),
+<span class="lineNum">     171 </span>            :                     index_to_slice_at(mesh.extents(), direction));
+<span class="lineNum">     172 </span>            :     }
+<span class="lineNum">     173 </span>            :   }
+<span class="lineNum">     174 </span><span class="lineNoCov">          0 :   static std::string name() { return &quot;Interface&lt;&quot; + Tag::name() + &quot;&gt;&quot;; };</span>
+<span class="lineNum">     175 </span><span class="lineNoCov">          0 :   using argument_tags = tmpl::list&lt;Mesh&lt;volume_dim&gt;, DirectionsTag, Tag&gt;;</span>
+<span class="lineNum">     176 </span><span class="lineNoCov">          0 :   using volume_tags = tmpl::list&lt;Mesh&lt;volume_dim&gt;, Tag&gt;;</span>
+<span class="lineNum">     177 </span>            : };
+<span class="lineNum">     178 </span>            : 
+<span class="lineNum">     179 </span>            : /// \cond
+<span class="lineNum">     180 </span>            : template &lt;typename DirectionsTag, size_t VolumeDim&gt;
+<span class="lineNum">     181 </span>            : struct InterfaceCompute&lt;DirectionsTag, Direction&lt;VolumeDim&gt;&gt;
+<span class="lineNum">     182 </span>            :     : db::PrefixTag,
+<span class="lineNum">     183 </span>            :       db::ComputeTag,
+<span class="lineNum">     184 </span>            :       Tags::Interface&lt;DirectionsTag, Direction&lt;VolumeDim&gt;&gt; {
+<span class="lineNum">     185 </span>            :   static std::string name() noexcept { return &quot;Interface&quot;; }
+<span class="lineNum">     186 </span>            :   using tag = Direction&lt;VolumeDim&gt;;
+<span class="lineNum">     187 </span>            :   static constexpr auto function(
+<span class="lineNum">     188 </span>            :       const std::unordered_set&lt;::Direction&lt;VolumeDim&gt;&gt;&amp; directions) noexcept {
+<span class="lineNum">     189 </span>            :     std::unordered_map&lt;::Direction&lt;VolumeDim&gt;, ::Direction&lt;VolumeDim&gt;&gt; result;
+<span class="lineNum">     190 </span>            :     for (const auto&amp; d : directions) {
+<span class="lineNum">     191 </span>            :       result.emplace(d, d);
+<span class="lineNum">     192 </span>            :     }
+<span class="lineNum">     193 </span>            :     return result;
+<span class="lineNum">     194 </span>            :   }
+<span class="lineNum">     195 </span>            :   using argument_tags = tmpl::list&lt;DirectionsTag&gt;;
+<span class="lineNum">     196 </span>            : };
+<span class="lineNum">     197 </span>            : /// \endcond
+<span class="lineNum">     198 </span>            : 
+<span class="lineNum">     199 </span>            : /// \ingroup DataBoxTagsGroup
+<span class="lineNum">     200 </span>            : /// \ingroup ComputationalDomainGroup
+<span class="lineNum">     201 </span>            : /// Computes the `VolumeDim-1` dimensional mesh on an interface from the volume
+<span class="lineNum">     202 </span>            : /// mesh. `Tags::InterfaceCompute&lt;Dirs, InterfaceMesh&lt;VolumeDim&gt;&gt;` is
+<span class="lineNum">     203 </span>            : /// retrievable as Tags::Interface&lt;Dirs, Mesh&lt;VolumeDim&gt;&gt;` from the DataBox.
+<span class="lineNum">     204 </span>            : template &lt;size_t VolumeDim&gt;
+<span class="lineNum">     205 </span><span class="lineCov">          1 : struct InterfaceMesh : db::ComputeTag, Tags::Mesh&lt;VolumeDim - 1&gt; {</span>
+<span class="lineNum">     206 </span><span class="lineNoCov">          0 :   static constexpr auto function(</span>
+<span class="lineNum">     207 </span>            :       const ::Direction&lt;VolumeDim&gt;&amp; direction,
+<span class="lineNum">     208 </span>            :       const ::Mesh&lt;VolumeDim&gt;&amp; volume_mesh) noexcept {
+<span class="lineNum">     209 </span>            :     return volume_mesh.slice_away(direction.dimension());
+<span class="lineNum">     210 </span>            :   }
+<span class="lineNum">     211 </span><span class="lineNoCov">          0 :   using base = Tags::Mesh&lt;VolumeDim - 1&gt;;</span>
+<span class="lineNum">     212 </span><span class="lineNoCov">          0 :   using argument_tags = tmpl::list&lt;Direction&lt;VolumeDim&gt;, Mesh&lt;VolumeDim&gt;&gt;;</span>
+<span class="lineNum">     213 </span><span class="lineNoCov">          0 :   using volume_tags = tmpl::list&lt;Mesh&lt;VolumeDim&gt;&gt;;</span>
+<span class="lineNum">     214 </span>            : };
+<span class="lineNum">     215 </span>            : 
+<span class="lineNum">     216 </span>            : /// \ingroup DataBoxTagsGroup
+<span class="lineNum">     217 </span>            : /// \ingroup ComputationDomainGroup
+<span class="lineNum">     218 </span>            : /// Computes the coordinates in the frame `Frame` on the faces defined by
+<span class="lineNum">     219 </span>            : /// `Direction`. Intended to be prefixed by a `Tags::InterfaceCompute` to
+<span class="lineNum">     220 </span>            : /// define the directions on which to compute the coordinates.
+<span class="lineNum">     221 </span>            : template &lt;size_t VolumeDim, typename Frame = ::Frame::Inertial&gt;
+<span class="lineNum">     222 </span>            : struct BoundaryCoordinates : db::ComputeTag,
+<span class="lineNum">     223 </span><span class="lineCov">          1 :                              Tags::Coordinates&lt;VolumeDim, Frame&gt; {</span>
+<span class="lineNum">     224 </span><span class="lineNoCov">          0 :   static constexpr auto function(</span>
+<span class="lineNum">     225 </span>            :       const ::Direction&lt;VolumeDim&gt;&amp; direction,
+<span class="lineNum">     226 </span>            :       const ::Mesh&lt;VolumeDim - 1&gt;&amp; interface_mesh,
+<span class="lineNum">     227 </span>            :       const ::ElementMap&lt;VolumeDim, Frame&gt;&amp; map) noexcept {
+<span class="lineNum">     228 </span>            :     return map(interface_logical_coordinates(interface_mesh, direction));
+<span class="lineNum">     229 </span>            :   }
+<span class="lineNum">     230 </span><span class="lineNoCov">          0 :   static std::string name() noexcept { return &quot;BoundaryCoordinates&quot;; }</span>
+<span class="lineNum">     231 </span><span class="lineNoCov">          0 :   using base = Tags::Coordinates&lt;VolumeDim, Frame&gt;;</span>
+<span class="lineNum">     232 </span><span class="lineNoCov">          0 :   using argument_tags = tmpl::list&lt;Direction&lt;VolumeDim&gt;, Mesh&lt;VolumeDim - 1&gt;,</span>
+<span class="lineNum">     233 </span>            :                                    ElementMap&lt;VolumeDim, Frame&gt;&gt;;
+<span class="lineNum">     234 </span><span class="lineNoCov">          0 :   using volume_tags = tmpl::list&lt;ElementMap&lt;VolumeDim, Frame&gt;&gt;;</span>
+<span class="lineNum">     235 </span>            : };
+<span class="lineNum">     236 </span>            : 
+<span class="lineNum">     237 </span>            : }  // namespace Tags
+<span class="lineNum">     238 </span>            : 
+<span class="lineNum">     239 </span>            : namespace db {
+<span class="lineNum">     240 </span>            : template &lt;typename TagList, typename DirectionsTag, typename VariablesTag&gt;
+<span class="lineNum">     241 </span>            : struct Subitems&lt;
+<span class="lineNum">     242 </span>            :     TagList, Tags::InterfaceCompute&lt;DirectionsTag, VariablesTag&gt;,
+<span class="lineNum">     243 </span>            :     Requires&lt;tt::is_a_v&lt;Variables, const_item_type&lt;VariablesTag, TagList&gt;&gt;&gt;&gt;
+<span class="lineNum">     244 </span><span class="lineNoCov">          0 :     : detail::InterfaceSubitemsImpl&lt;TagList, DirectionsTag, VariablesTag&gt; {};</span>
+<span class="lineNum">     245 </span>            : 
+<span class="lineNum">     246 </span>            : template &lt;typename TagList, typename DirectionsTag, typename VariablesTag&gt;
+<span class="lineNum">     247 </span>            : struct Subitems&lt;
+<span class="lineNum">     248 </span>            :     TagList, Tags::Slice&lt;DirectionsTag, VariablesTag&gt;,
+<span class="lineNum">     249 </span>            :     Requires&lt;tt::is_a_v&lt;Variables, const_item_type&lt;VariablesTag, TagList&gt;&gt;&gt;&gt;
+<span class="lineNum">     250 </span><span class="lineNoCov">          0 :     : detail::InterfaceSubitemsImpl&lt;TagList, DirectionsTag, VariablesTag&gt; {};</span>
+<span class="lineNum">     251 </span>            : }  // namespace db
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.13</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

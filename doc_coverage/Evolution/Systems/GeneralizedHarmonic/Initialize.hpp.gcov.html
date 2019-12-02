@@ -1,0 +1,295 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - 5912ac2e49a80e6a27b3707c9a1e6ce5248b1b2a - Evolution/Systems/GeneralizedHarmonic/Initialize.hpp</title>
+  <link rel="stylesheet" type="text/css" href="../../../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title"> SpECTRE Documentation Coverage Report</td></tr>
+    <tr><td class="ruler"><img src="../../../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../../../index.html">top level</a> - <a href="index.html">Evolution/Systems/GeneralizedHarmonic</a> - Initialize.hpp</td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+             <td class="headerItem">Commit:</td>
+             <td class="headerValue"><a target="_blank" href="https://github.com/sxs-collaboration/spectre/commit/5912ac2e49a80e6a27b3707c9a1e6ce5248b1b2a">5912ac2e49a80e6a27b3707c9a1e6ce5248b1b2a</a></td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntry">11</td>
+            <td class="headerCovTableEntryLo">0.0 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2019-12-02 22:01:08</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td class="headerItem">Legend:</td>
+            <td class="headerValueLeg">            Lines:
+            <span class="coverLegendCov">hit</span>
+            <span class="coverLegendNoCov">not hit</span>
+</td>
+            <td></td>
+          </tr>
+          <tr><td><img src="../../../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../../../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">          Line data    Source code</pre>
+<pre class="source">
+<span class="lineNum">       1 </span><span class="lineNoCov">          0 : // Distributed under the MIT License.</span>
+<span class="lineNum">       2 </span>            : // See LICENSE.txt for details.
+<span class="lineNum">       3 </span>            : 
+<span class="lineNum">       4 </span>            : #pragma once
+<span class="lineNum">       5 </span>            : 
+<span class="lineNum">       6 </span>            : #include &lt;array&gt;
+<span class="lineNum">       7 </span>            : #include &lt;cstddef&gt;
+<span class="lineNum">       8 </span>            : #include &lt;tuple&gt;
+<span class="lineNum">       9 </span>            : #include &lt;utility&gt;  // IWYU pragma: keep
+<span class="lineNum">      10 </span>            : #include &lt;vector&gt;
+<span class="lineNum">      11 </span>            : 
+<span class="lineNum">      12 </span>            : #include &quot;DataStructures/DataBox/DataBox.hpp&quot;
+<span class="lineNum">      13 </span>            : #include &quot;DataStructures/DataBox/DataBoxTag.hpp&quot;
+<span class="lineNum">      14 </span>            : #include &quot;DataStructures/DataBox/Prefixes.hpp&quot;
+<span class="lineNum">      15 </span>            : #include &quot;DataStructures/Tensor/EagerMath/DotProduct.hpp&quot;
+<span class="lineNum">      16 </span>            : #include &quot;DataStructures/Tensor/EagerMath/Norms.hpp&quot;
+<span class="lineNum">      17 </span>            : #include &quot;DataStructures/Variables.hpp&quot;
+<span class="lineNum">      18 </span>            : #include &quot;Domain/Mesh.hpp&quot;
+<span class="lineNum">      19 </span>            : #include &quot;Domain/Tags.hpp&quot;
+<span class="lineNum">      20 </span>            : #include &quot;ErrorHandling/Assert.hpp&quot;
+<span class="lineNum">      21 </span>            : #include &quot;Evolution/Initialization/DiscontinuousGalerkin.hpp&quot;
+<span class="lineNum">      22 </span>            : #include &quot;Evolution/Initialization/Evolution.hpp&quot;
+<span class="lineNum">      23 </span>            : #include &quot;Evolution/Systems/GeneralizedHarmonic/Characteristics.hpp&quot;
+<span class="lineNum">      24 </span>            : #include &quot;Evolution/Systems/GeneralizedHarmonic/GaugeSourceFunctions/DampedHarmonic.hpp&quot;
+<span class="lineNum">      25 </span>            : #include &quot;Evolution/Systems/GeneralizedHarmonic/System.hpp&quot;
+<span class="lineNum">      26 </span>            : #include &quot;Evolution/Systems/GeneralizedHarmonic/Tags.hpp&quot;
+<span class="lineNum">      27 </span>            : #include &quot;NumericalAlgorithms/LinearOperators/PartialDerivatives.hpp&quot;
+<span class="lineNum">      28 </span>            : #include &quot;Parallel/ConstGlobalCache.hpp&quot;
+<span class="lineNum">      29 </span>            : #include &quot;ParallelAlgorithms/Initialization/MergeIntoDataBox.hpp&quot;
+<span class="lineNum">      30 </span>            : #include &quot;PointwiseFunctions/AnalyticData/Tags.hpp&quot;
+<span class="lineNum">      31 </span>            : #include &quot;PointwiseFunctions/AnalyticSolutions/Tags.hpp&quot;
+<span class="lineNum">      32 </span>            : #include &quot;PointwiseFunctions/GeneralRelativity/Christoffel.hpp&quot;
+<span class="lineNum">      33 </span>            : #include &quot;PointwiseFunctions/GeneralRelativity/ComputeGhQuantities.hpp&quot;
+<span class="lineNum">      34 </span>            : #include &quot;PointwiseFunctions/GeneralRelativity/ComputeSpacetimeQuantities.hpp&quot;
+<span class="lineNum">      35 </span>            : #include &quot;PointwiseFunctions/GeneralRelativity/IndexManipulation.hpp&quot;
+<span class="lineNum">      36 </span>            : #include &quot;PointwiseFunctions/GeneralRelativity/Tags.hpp&quot;
+<span class="lineNum">      37 </span>            : #include &quot;Utilities/Gsl.hpp&quot;
+<span class="lineNum">      38 </span>            : #include &quot;Utilities/MakeWithValue.hpp&quot;
+<span class="lineNum">      39 </span>            : #include &quot;Utilities/TMPL.hpp&quot;
+<span class="lineNum">      40 </span>            : #include &quot;Utilities/TypeTraits.hpp&quot;
+<span class="lineNum">      41 </span>            : 
+<span class="lineNum">      42 </span>            : namespace GeneralizedHarmonic {
+<span class="lineNum">      43 </span><span class="lineNoCov">          0 : namespace Actions {</span>
+<span class="lineNum">      44 </span>            : template &lt;size_t Dim&gt;
+<span class="lineNum">      45 </span><span class="lineNoCov">          0 : struct InitializeConstraints {</span>
+<span class="lineNum">      46 </span><span class="lineNoCov">          0 :   using frame = Frame::Inertial;</span>
+<span class="lineNum">      47 </span>            : 
+<span class="lineNum">      48 </span>            :   template &lt;typename DbTagsList, typename... InboxTags, typename Metavariables,
+<span class="lineNum">      49 </span>            :             typename ArrayIndex, typename ActionList,
+<span class="lineNum">      50 </span>            :             typename ParallelComponent&gt;
+<span class="lineNum">      51 </span><span class="lineNoCov">          0 :   static auto apply(db::DataBox&lt;DbTagsList&gt;&amp; box,</span>
+<span class="lineNum">      52 </span>            :                     const tuples::TaggedTuple&lt;InboxTags...&gt;&amp; /*inboxes*/,
+<span class="lineNum">      53 </span>            :                     const Parallel::ConstGlobalCache&lt;Metavariables&gt;&amp; /*cache*/,
+<span class="lineNum">      54 </span>            :                     const ArrayIndex&amp; /*array_index*/,
+<span class="lineNum">      55 </span>            :                     const ActionList /*meta*/,
+<span class="lineNum">      56 </span>            :                     const ParallelComponent* const /*meta*/) noexcept {
+<span class="lineNum">      57 </span>            :     using compute_tags = db::AddComputeTags&lt;
+<span class="lineNum">      58 </span>            :         GeneralizedHarmonic::Tags::GaugeConstraintCompute&lt;Dim, frame&gt;,
+<span class="lineNum">      59 </span>            :         GeneralizedHarmonic::Tags::FourIndexConstraintCompute&lt;Dim, frame&gt;,
+<span class="lineNum">      60 </span>            :         // following tags added to observe constraints
+<span class="lineNum">      61 </span>            :         ::Tags::PointwiseL2NormCompute&lt;
+<span class="lineNum">      62 </span>            :             GeneralizedHarmonic::Tags::GaugeConstraint&lt;Dim, frame&gt;&gt;,
+<span class="lineNum">      63 </span>            :         ::Tags::PointwiseL2NormCompute&lt;
+<span class="lineNum">      64 </span>            :             GeneralizedHarmonic::Tags::ThreeIndexConstraint&lt;Dim, frame&gt;&gt;,
+<span class="lineNum">      65 </span>            :         ::Tags::PointwiseL2NormCompute&lt;
+<span class="lineNum">      66 </span>            :             GeneralizedHarmonic::Tags::FourIndexConstraint&lt;Dim, frame&gt;&gt;&gt;;
+<span class="lineNum">      67 </span>            : 
+<span class="lineNum">      68 </span>            :     return std::make_tuple(
+<span class="lineNum">      69 </span>            :         Initialization::merge_into_databox&lt;InitializeConstraints,
+<span class="lineNum">      70 </span>            :                                            db::AddSimpleTags&lt;&gt;, compute_tags&gt;(
+<span class="lineNum">      71 </span>            :             std::move(box)));
+<span class="lineNum">      72 </span>            :   }
+<span class="lineNum">      73 </span>            : };
+<span class="lineNum">      74 </span>            : 
+<span class="lineNum">      75 </span>            : template &lt;size_t Dim&gt;
+<span class="lineNum">      76 </span><span class="lineNoCov">          0 : struct InitializeGhAnd3Plus1Variables {</span>
+<span class="lineNum">      77 </span><span class="lineNoCov">          0 :   using frame = Frame::Inertial;</span>
+<span class="lineNum">      78 </span>            : 
+<span class="lineNum">      79 </span>            :   template &lt;typename DbTagsList, typename... InboxTags, typename Metavariables,
+<span class="lineNum">      80 </span>            :             typename ArrayIndex, typename ActionList,
+<span class="lineNum">      81 </span>            :             typename ParallelComponent&gt;
+<span class="lineNum">      82 </span><span class="lineNoCov">          0 :   static auto apply(db::DataBox&lt;DbTagsList&gt;&amp; box,</span>
+<span class="lineNum">      83 </span>            :                     const tuples::TaggedTuple&lt;InboxTags...&gt;&amp; /*inboxes*/,
+<span class="lineNum">      84 </span>            :                     const Parallel::ConstGlobalCache&lt;Metavariables&gt;&amp; /*cache*/,
+<span class="lineNum">      85 </span>            :                     const ArrayIndex&amp; /*array_index*/,
+<span class="lineNum">      86 </span>            :                     const ActionList /*meta*/,
+<span class="lineNum">      87 </span>            :                     const ParallelComponent* const /*meta*/) noexcept {
+<span class="lineNum">      88 </span>            :     using compute_tags = db::AddComputeTags&lt;
+<span class="lineNum">      89 </span>            :         gr::Tags::SpatialMetricCompute&lt;Dim, frame, DataVector&gt;,
+<span class="lineNum">      90 </span>            :         gr::Tags::DetAndInverseSpatialMetricCompute&lt;Dim, frame, DataVector&gt;,
+<span class="lineNum">      91 </span>            :         gr::Tags::ShiftCompute&lt;Dim, frame, DataVector&gt;,
+<span class="lineNum">      92 </span>            :         gr::Tags::LapseCompute&lt;Dim, frame, DataVector&gt;,
+<span class="lineNum">      93 </span>            :         gr::Tags::SqrtDetSpatialMetricCompute&lt;Dim, frame, DataVector&gt;,
+<span class="lineNum">      94 </span>            :         gr::Tags::SpacetimeNormalOneFormCompute&lt;Dim, frame, DataVector&gt;,
+<span class="lineNum">      95 </span>            :         gr::Tags::SpacetimeNormalVectorCompute&lt;Dim, frame, DataVector&gt;,
+<span class="lineNum">      96 </span>            :         gr::Tags::InverseSpacetimeMetricCompute&lt;Dim, frame, DataVector&gt;,
+<span class="lineNum">      97 </span>            :         GeneralizedHarmonic::Tags::DerivSpatialMetricCompute&lt;Dim, frame&gt;,
+<span class="lineNum">      98 </span>            :         GeneralizedHarmonic::Tags::DerivLapseCompute&lt;Dim, frame&gt;,
+<span class="lineNum">      99 </span>            :         GeneralizedHarmonic::Tags::DerivShiftCompute&lt;Dim, frame&gt;,
+<span class="lineNum">     100 </span>            :         GeneralizedHarmonic::Tags::TimeDerivSpatialMetricCompute&lt;Dim, frame&gt;,
+<span class="lineNum">     101 </span>            :         GeneralizedHarmonic::Tags::TimeDerivLapseCompute&lt;Dim, frame&gt;,
+<span class="lineNum">     102 </span>            :         GeneralizedHarmonic::Tags::TimeDerivShiftCompute&lt;Dim, frame&gt;,
+<span class="lineNum">     103 </span>            :         gr::Tags::DerivativesOfSpacetimeMetricCompute&lt;Dim, frame&gt;,
+<span class="lineNum">     104 </span>            :         gr::Tags::DerivSpacetimeMetricCompute&lt;Dim, frame&gt;,
+<span class="lineNum">     105 </span>            :         GeneralizedHarmonic::Tags::ThreeIndexConstraintCompute&lt;Dim, frame&gt;,
+<span class="lineNum">     106 </span>            :         gr::Tags::SpacetimeChristoffelFirstKindCompute&lt;Dim, frame, DataVector&gt;,
+<span class="lineNum">     107 </span>            :         gr::Tags::SpacetimeChristoffelSecondKindCompute&lt;Dim, frame, DataVector&gt;,
+<span class="lineNum">     108 </span>            :         gr::Tags::TraceSpacetimeChristoffelFirstKindCompute&lt;Dim, frame,
+<span class="lineNum">     109 </span>            :                                                             DataVector&gt;,
+<span class="lineNum">     110 </span>            :         gr::Tags::SpatialChristoffelFirstKindCompute&lt;Dim, frame, DataVector&gt;,
+<span class="lineNum">     111 </span>            :         gr::Tags::SpatialChristoffelSecondKindCompute&lt;Dim, frame, DataVector&gt;,
+<span class="lineNum">     112 </span>            :         gr::Tags::TraceSpatialChristoffelFirstKindCompute&lt;Dim, frame,
+<span class="lineNum">     113 </span>            :                                                           DataVector&gt;,
+<span class="lineNum">     114 </span>            :         GeneralizedHarmonic::Tags::ExtrinsicCurvatureCompute&lt;Dim, frame&gt;,
+<span class="lineNum">     115 </span>            :         GeneralizedHarmonic::Tags::TraceExtrinsicCurvatureCompute&lt;Dim, frame&gt;,
+<span class="lineNum">     116 </span>            :         GeneralizedHarmonic::Tags::ConstraintGamma0Compute&lt;Dim, frame&gt;,
+<span class="lineNum">     117 </span>            :         GeneralizedHarmonic::Tags::ConstraintGamma1Compute&lt;Dim, frame&gt;,
+<span class="lineNum">     118 </span>            :         GeneralizedHarmonic::Tags::ConstraintGamma2Compute&lt;Dim, frame&gt;&gt;;
+<span class="lineNum">     119 </span>            : 
+<span class="lineNum">     120 </span>            :     return std::make_tuple(
+<span class="lineNum">     121 </span>            :         Initialization::merge_into_databox&lt;InitializeGhAnd3Plus1Variables,
+<span class="lineNum">     122 </span>            :                                            db::AddSimpleTags&lt;&gt;, compute_tags&gt;(
+<span class="lineNum">     123 </span>            :             std::move(box)));
+<span class="lineNum">     124 </span>            :   }
+<span class="lineNum">     125 </span>            : };
+<span class="lineNum">     126 </span>            : 
+<span class="lineNum">     127 </span>            : template &lt;size_t Dim&gt;
+<span class="lineNum">     128 </span><span class="lineNoCov">          0 : struct InitializeGauge {</span>
+<span class="lineNum">     129 </span><span class="lineNoCov">          0 :   using frame = Frame::Inertial;</span>
+<span class="lineNum">     130 </span>            : 
+<span class="lineNum">     131 </span>            :   template &lt;typename DbTagsList, typename... InboxTags, typename Metavariables,
+<span class="lineNum">     132 </span>            :             typename ArrayIndex, typename ActionList,
+<span class="lineNum">     133 </span>            :             typename ParallelComponent&gt;
+<span class="lineNum">     134 </span><span class="lineNoCov">          0 :   static auto apply(db::DataBox&lt;DbTagsList&gt;&amp; box,</span>
+<span class="lineNum">     135 </span>            :                     const tuples::TaggedTuple&lt;InboxTags...&gt;&amp; /*inboxes*/,
+<span class="lineNum">     136 </span>            :                     const Parallel::ConstGlobalCache&lt;Metavariables&gt;&amp; /*cache*/,
+<span class="lineNum">     137 </span>            :                     const ArrayIndex&amp; /*array_index*/,
+<span class="lineNum">     138 </span>            :                     const ActionList /*meta*/,
+<span class="lineNum">     139 </span>            :                     const ParallelComponent* const /*meta*/) noexcept {
+<span class="lineNum">     140 </span>            :     // compute initial-gauge related quantities
+<span class="lineNum">     141 </span>            :     const auto&amp; mesh = db::get&lt;::Tags::Mesh&lt;Dim&gt;&gt;(box);
+<span class="lineNum">     142 </span>            :     const size_t num_grid_points = mesh.number_of_grid_points();
+<span class="lineNum">     143 </span>            :     const auto&amp; lapse = get&lt;gr::Tags::Lapse&lt;DataVector&gt;&gt;(box);
+<span class="lineNum">     144 </span>            :     const auto&amp; dt_lapse = get&lt;::Tags::dt&lt;gr::Tags::Lapse&lt;DataVector&gt;&gt;&gt;(box);
+<span class="lineNum">     145 </span>            :     const auto&amp; deriv_lapse = get&lt;
+<span class="lineNum">     146 </span>            :         ::Tags::deriv&lt;gr::Tags::Lapse&lt;DataVector&gt;, tmpl::size_t&lt;Dim&gt;, frame&gt;&gt;(
+<span class="lineNum">     147 </span>            :         box);
+<span class="lineNum">     148 </span>            :     const auto&amp; shift = get&lt;gr::Tags::Shift&lt;Dim, frame, DataVector&gt;&gt;(box);
+<span class="lineNum">     149 </span>            :     const auto&amp; dt_shift =
+<span class="lineNum">     150 </span>            :         get&lt;::Tags::dt&lt;gr::Tags::Shift&lt;Dim, frame, DataVector&gt;&gt;&gt;(box);
+<span class="lineNum">     151 </span>            :     const auto&amp; deriv_shift =
+<span class="lineNum">     152 </span>            :         get&lt;::Tags::deriv&lt;gr::Tags::Shift&lt;Dim, frame, DataVector&gt;,
+<span class="lineNum">     153 </span>            :                           tmpl::size_t&lt;Dim&gt;, frame&gt;&gt;(box);
+<span class="lineNum">     154 </span>            :     const auto&amp; spatial_metric =
+<span class="lineNum">     155 </span>            :         get&lt;gr::Tags::SpatialMetric&lt;Dim, frame, DataVector&gt;&gt;(box);
+<span class="lineNum">     156 </span>            :     const auto&amp; trace_extrinsic_curvature =
+<span class="lineNum">     157 </span>            :         get&lt;gr::Tags::TraceExtrinsicCurvature&lt;DataVector&gt;&gt;(box);
+<span class="lineNum">     158 </span>            :     const auto&amp; trace_christoffel_last_indices =
+<span class="lineNum">     159 </span>            :         get&lt;gr::Tags::TraceSpatialChristoffelFirstKind&lt;Dim, frame, DataVector&gt;&gt;(
+<span class="lineNum">     160 </span>            :             box);
+<span class="lineNum">     161 </span>            : 
+<span class="lineNum">     162 </span>            :     // compute the initial gauge source function
+<span class="lineNum">     163 </span>            :     auto initial_gauge_h = GeneralizedHarmonic::gauge_source&lt;Dim, frame&gt;(
+<span class="lineNum">     164 </span>            :         lapse, dt_lapse, deriv_lapse, shift, dt_shift, deriv_shift,
+<span class="lineNum">     165 </span>            :         spatial_metric, trace_extrinsic_curvature,
+<span class="lineNum">     166 </span>            :         trace_christoffel_last_indices);
+<span class="lineNum">     167 </span>            :     // set time derivatives of InitialGaugeH = 0
+<span class="lineNum">     168 </span>            :     // NOTE: this will need to be generalized to handle numerical initial data
+<span class="lineNum">     169 </span>            :     // and analytic initial data whose gauge is not initially stationary.
+<span class="lineNum">     170 </span>            :     auto dt_initial_gauge_source =
+<span class="lineNum">     171 </span>            :         make_with_value&lt;tnsr::a&lt;DataVector, Dim, frame&gt;&gt;(lapse, 0.);
+<span class="lineNum">     172 </span>            : 
+<span class="lineNum">     173 </span>            :     // compute spatial derivatives of InitialGaugeH
+<span class="lineNum">     174 </span>            :     // The `partial_derivatives` function does not support single Tensor input,
+<span class="lineNum">     175 </span>            :     // and so we must store the tensor in a Variables first.
+<span class="lineNum">     176 </span>            :     using InitialGaugeHVars = ::Variables&lt;
+<span class="lineNum">     177 </span>            :         tmpl::list&lt;GeneralizedHarmonic::Tags::InitialGaugeH&lt;Dim, frame&gt;&gt;&gt;;
+<span class="lineNum">     178 </span>            :     InitialGaugeHVars initial_gauge_h_vars{num_grid_points};
+<span class="lineNum">     179 </span>            : 
+<span class="lineNum">     180 </span>            :     get&lt;GeneralizedHarmonic::Tags::InitialGaugeH&lt;Dim, frame&gt;&gt;(
+<span class="lineNum">     181 </span>            :         initial_gauge_h_vars) = initial_gauge_h;
+<span class="lineNum">     182 </span>            :     const auto&amp; inverse_jacobian = db::get&lt;
+<span class="lineNum">     183 </span>            :         ::Tags::InverseJacobian&lt;::Tags::ElementMap&lt;Dim, frame&gt;,
+<span class="lineNum">     184 </span>            :                                 ::Tags::Coordinates&lt;Dim, Frame::Logical&gt;&gt;&gt;(box);
+<span class="lineNum">     185 </span>            :     auto d_initial_gauge_source =
+<span class="lineNum">     186 </span>            :         get&lt;::Tags::deriv&lt;GeneralizedHarmonic::Tags::InitialGaugeH&lt;Dim, frame&gt;,
+<span class="lineNum">     187 </span>            :                           tmpl::size_t&lt;Dim&gt;, frame&gt;&gt;(
+<span class="lineNum">     188 </span>            :             partial_derivatives&lt;typename InitialGaugeHVars::tags_list&gt;(
+<span class="lineNum">     189 </span>            :                 initial_gauge_h_vars, mesh, inverse_jacobian));
+<span class="lineNum">     190 </span>            : 
+<span class="lineNum">     191 </span>            :     // compute spacetime derivatives of InitialGaugeH
+<span class="lineNum">     192 </span>            :     auto initial_d4_gauge_h =
+<span class="lineNum">     193 </span>            :         GeneralizedHarmonic::Tags::SpacetimeDerivGaugeHCompute&lt;
+<span class="lineNum">     194 </span>            :             Dim, frame&gt;::function(std::move(dt_initial_gauge_source),
+<span class="lineNum">     195 </span>            :                                   std::move(d_initial_gauge_source));
+<span class="lineNum">     196 </span>            :     // Add gauge tags
+<span class="lineNum">     197 </span>            :     using compute_tags = db::AddComputeTags&lt;
+<span class="lineNum">     198 </span>            :         GeneralizedHarmonic::DampedHarmonicHCompute&lt;Dim, frame&gt;,
+<span class="lineNum">     199 </span>            :         GeneralizedHarmonic::SpacetimeDerivDampedHarmonicHCompute&lt;Dim, frame&gt;&gt;;
+<span class="lineNum">     200 </span>            : 
+<span class="lineNum">     201 </span>            :     // Finally, insert gauge related quantities to the box
+<span class="lineNum">     202 </span>            :     return std::make_tuple(
+<span class="lineNum">     203 </span>            :         Initialization::merge_into_databox&lt;
+<span class="lineNum">     204 </span>            :             InitializeGauge,
+<span class="lineNum">     205 </span>            :             db::AddSimpleTags&lt;
+<span class="lineNum">     206 </span>            :                 GeneralizedHarmonic::Tags::InitialGaugeH&lt;Dim, frame&gt;,
+<span class="lineNum">     207 </span>            :                 GeneralizedHarmonic::Tags::SpacetimeDerivInitialGaugeH&lt;Dim,
+<span class="lineNum">     208 </span>            :                                                                        frame&gt;&gt;,
+<span class="lineNum">     209 </span>            :             compute_tags&gt;(std::move(box), std::move(initial_gauge_h),
+<span class="lineNum">     210 </span>            :                           std::move(initial_d4_gauge_h)));
+<span class="lineNum">     211 </span>            :   }
+<span class="lineNum">     212 </span>            : };
+<span class="lineNum">     213 </span>            : 
+<span class="lineNum">     214 </span>            : }  // namespace Actions
+<span class="lineNum">     215 </span>            : }  // namespace GeneralizedHarmonic
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../../../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.13</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

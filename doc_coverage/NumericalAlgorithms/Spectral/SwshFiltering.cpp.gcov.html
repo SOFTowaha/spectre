@@ -1,0 +1,234 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - 5912ac2e49a80e6a27b3707c9a1e6ce5248b1b2a - NumericalAlgorithms/Spectral/SwshFiltering.cpp</title>
+  <link rel="stylesheet" type="text/css" href="../../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title"> SpECTRE Documentation Coverage Report</td></tr>
+    <tr><td class="ruler"><img src="../../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../../index.html">top level</a> - <a href="index.html">NumericalAlgorithms/Spectral</a> - SwshFiltering.cpp</td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+             <td class="headerItem">Commit:</td>
+             <td class="headerValue"><a target="_blank" href="https://github.com/sxs-collaboration/spectre/commit/5912ac2e49a80e6a27b3707c9a1e6ce5248b1b2a">5912ac2e49a80e6a27b3707c9a1e6ce5248b1b2a</a></td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntry">7</td>
+            <td class="headerCovTableEntryLo">0.0 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2019-12-02 22:01:08</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td class="headerItem">Legend:</td>
+            <td class="headerValueLeg">            Lines:
+            <span class="coverLegendCov">hit</span>
+            <span class="coverLegendNoCov">not hit</span>
+</td>
+            <td></td>
+          </tr>
+          <tr><td><img src="../../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">          Line data    Source code</pre>
+<pre class="source">
+<span class="lineNum">       1 </span><span class="lineNoCov">          0 : // Distributed under the MIT License.</span>
+<span class="lineNum">       2 </span>            : // See LICENSE.txt for details.
+<span class="lineNum">       3 </span>            : 
+<span class="lineNum">       4 </span>            : #include &quot;NumericalAlgorithms/Spectral/SwshFiltering.hpp&quot;
+<span class="lineNum">       5 </span>            : 
+<span class="lineNum">       6 </span>            : #include &quot;DataStructures/ComplexDataVector.hpp&quot;
+<span class="lineNum">       7 </span>            : #include &quot;DataStructures/ComplexModalVector.hpp&quot;
+<span class="lineNum">       8 </span>            : #include &quot;DataStructures/Index.hpp&quot;
+<span class="lineNum">       9 </span>            : #include &quot;DataStructures/Matrix.hpp&quot;
+<span class="lineNum">      10 </span>            : #include &quot;DataStructures/SpinWeighted.hpp&quot;
+<span class="lineNum">      11 </span>            : #include &quot;Domain/Mesh.hpp&quot;
+<span class="lineNum">      12 </span>            : #include &quot;NumericalAlgorithms/LinearOperators/ApplyMatrices.hpp&quot;
+<span class="lineNum">      13 </span>            : #include &quot;NumericalAlgorithms/Spectral/Filtering.hpp&quot;
+<span class="lineNum">      14 </span>            : #include &quot;NumericalAlgorithms/Spectral/Spectral.hpp&quot;
+<span class="lineNum">      15 </span>            : #include &quot;NumericalAlgorithms/Spectral/SwshCoefficients.hpp&quot;
+<span class="lineNum">      16 </span>            : #include &quot;NumericalAlgorithms/Spectral/SwshCollocation.hpp&quot;
+<span class="lineNum">      17 </span>            : #include &quot;NumericalAlgorithms/Spectral/SwshTransform.hpp&quot;
+<span class="lineNum">      18 </span>            : #include &quot;Utilities/GenerateInstantiations.hpp&quot;
+<span class="lineNum">      19 </span>            : #include &quot;Utilities/MakeArray.hpp&quot;
+<span class="lineNum">      20 </span>            : 
+<span class="lineNum">      21 </span>            : // IWYU pragma: no_forward_declare SpinWeighted
+<span class="lineNum">      22 </span>            : 
+<span class="lineNum">      23 </span>            : namespace Spectral {
+<span class="lineNum">      24 </span>            : namespace Swsh {
+<span class="lineNum">      25 </span>            : 
+<span class="lineNum">      26 </span>            : template &lt;int Spin&gt;
+<span class="lineNum">      27 </span><span class="lineNoCov">          0 : void filter_swsh_volume_quantity(</span>
+<span class="lineNum">      28 </span>            :     const gsl::not_null&lt;SpinWeighted&lt;ComplexDataVector, Spin&gt;*&gt; to_filter,
+<span class="lineNum">      29 </span>            :     const size_t l_max, const size_t limit_l, const double exponential_alpha,
+<span class="lineNum">      30 </span>            :     const size_t exponential_half_power,
+<span class="lineNum">      31 </span>            :     const gsl::not_null&lt;ComplexDataVector*&gt; buffer,
+<span class="lineNum">      32 </span>            :     const gsl::not_null&lt;SpinWeighted&lt;ComplexModalVector, Spin&gt;*&gt;
+<span class="lineNum">      33 </span>            :         transform_buffer) noexcept {
+<span class="lineNum">      34 </span>            :   const size_t number_of_radial_grid_points =
+<span class="lineNum">      35 </span>            :       to_filter-&gt;size() / number_of_swsh_collocation_points(l_max);
+<span class="lineNum">      36 </span>            : 
+<span class="lineNum">      37 </span>            :   buffer-&gt;destructive_resize(to_filter-&gt;size());
+<span class="lineNum">      38 </span>            :   // Filter the radial direction using the provided exponential parameters.
+<span class="lineNum">      39 </span>            :   apply_matrices(buffer,
+<span class="lineNum">      40 </span>            :                  make_array(Matrix{}, Matrix{},
+<span class="lineNum">      41 </span>            :                             Spectral::filtering::exponential_filter(
+<span class="lineNum">      42 </span>            :                                 Mesh&lt;1&gt;{number_of_radial_grid_points,
+<span class="lineNum">      43 </span>            :                                         Spectral::Basis::Legendre,
+<span class="lineNum">      44 </span>            :                                         Spectral::Quadrature::GaussLobatto},
+<span class="lineNum">      45 </span>            :                                 exponential_alpha, exponential_half_power)),
+<span class="lineNum">      46 </span>            :                  to_filter-&gt;data(),
+<span class="lineNum">      47 </span>            :                  Index&lt;3&gt;{number_of_swsh_phi_collocation_points(l_max),
+<span class="lineNum">      48 </span>            :                           number_of_swsh_theta_collocation_points(l_max),
+<span class="lineNum">      49 </span>            :                           number_of_radial_grid_points});
+<span class="lineNum">      50 </span>            :   to_filter-&gt;data() = *buffer;
+<span class="lineNum">      51 </span>            : 
+<span class="lineNum">      52 </span>            :   transform_buffer-&gt;destructive_resize(
+<span class="lineNum">      53 </span>            :       number_of_radial_grid_points *
+<span class="lineNum">      54 </span>            :       size_of_libsharp_coefficient_vector(l_max));
+<span class="lineNum">      55 </span>            :   // Filter the angular direction using a transform and `limit_l`
+<span class="lineNum">      56 </span>            :   swsh_transform(l_max, number_of_radial_grid_points, transform_buffer,
+<span class="lineNum">      57 </span>            :                  *to_filter);
+<span class="lineNum">      58 </span>            :   const auto&amp; coefficients_metadata = cached_coefficients_metadata(l_max);
+<span class="lineNum">      59 </span>            :   for (size_t i = 0; i &lt; number_of_radial_grid_points; ++i) {
+<span class="lineNum">      60 </span>            :     for (const auto&amp; mode : coefficients_metadata) {
+<span class="lineNum">      61 </span>            :       if (mode.l &gt; limit_l) {
+<span class="lineNum">      62 </span>            :         transform_buffer-&gt;data()[mode.transform_of_real_part_offset +
+<span class="lineNum">      63 </span>            :                                  i * coefficients_metadata.size()] = 0.0;
+<span class="lineNum">      64 </span>            :         transform_buffer-&gt;data()[mode.transform_of_imag_part_offset +
+<span class="lineNum">      65 </span>            :                                  i * coefficients_metadata.size()] = 0.0;
+<span class="lineNum">      66 </span>            :       }
+<span class="lineNum">      67 </span>            :     }
+<span class="lineNum">      68 </span>            :   }
+<span class="lineNum">      69 </span>            :   inverse_swsh_transform(l_max, number_of_radial_grid_points, to_filter,
+<span class="lineNum">      70 </span>            :                          *transform_buffer);
+<span class="lineNum">      71 </span>            : }
+<span class="lineNum">      72 </span>            : 
+<span class="lineNum">      73 </span>            : template &lt;int Spin&gt;
+<span class="lineNum">      74 </span><span class="lineNoCov">          0 : void filter_swsh_volume_quantity(</span>
+<span class="lineNum">      75 </span>            :     const gsl::not_null&lt;SpinWeighted&lt;ComplexDataVector, Spin&gt;*&gt; to_filter,
+<span class="lineNum">      76 </span>            :     const size_t l_max, const size_t limit_l, const double exponential_alpha,
+<span class="lineNum">      77 </span>            :     const size_t exponential_half_power) noexcept {
+<span class="lineNum">      78 </span>            :   const size_t number_of_radial_grid_points =
+<span class="lineNum">      79 </span>            :       to_filter-&gt;data().size() / number_of_swsh_collocation_points(l_max);
+<span class="lineNum">      80 </span>            :   auto buffer = ComplexDataVector{to_filter-&gt;data().size()};
+<span class="lineNum">      81 </span>            :   auto transform_buffer = SpinWeighted&lt;ComplexModalVector, Spin&gt;{
+<span class="lineNum">      82 </span>            :       number_of_radial_grid_points *
+<span class="lineNum">      83 </span>            :       size_of_libsharp_coefficient_vector(l_max)};
+<span class="lineNum">      84 </span>            :   filter_swsh_volume_quantity(to_filter, l_max, limit_l, exponential_alpha,
+<span class="lineNum">      85 </span>            :                               exponential_half_power, make_not_null(&amp;buffer),
+<span class="lineNum">      86 </span>            :                               make_not_null(&amp;transform_buffer));
+<span class="lineNum">      87 </span>            : }
+<span class="lineNum">      88 </span>            : 
+<span class="lineNum">      89 </span>            : template &lt;int Spin&gt;
+<span class="lineNum">      90 </span><span class="lineNoCov">          0 : void filter_swsh_boundary_quantity(</span>
+<span class="lineNum">      91 </span>            :     const gsl::not_null&lt;SpinWeighted&lt;ComplexDataVector, Spin&gt;*&gt; to_filter,
+<span class="lineNum">      92 </span>            :     const size_t l_max, const size_t limit_l,
+<span class="lineNum">      93 </span>            :     const gsl::not_null&lt;SpinWeighted&lt;ComplexModalVector, Spin&gt;*&gt;
+<span class="lineNum">      94 </span>            :         transform_buffer) noexcept {
+<span class="lineNum">      95 </span>            :   transform_buffer-&gt;destructive_resize(
+<span class="lineNum">      96 </span>            :       size_of_libsharp_coefficient_vector(l_max));
+<span class="lineNum">      97 </span>            :   swsh_transform(l_max, 1, transform_buffer, *to_filter);
+<span class="lineNum">      98 </span>            :   const auto&amp; coefficients_metadata = cached_coefficients_metadata(l_max);
+<span class="lineNum">      99 </span>            :   for (const auto&amp; mode : coefficients_metadata) {
+<span class="lineNum">     100 </span>            :     if (mode.l &gt; limit_l) {
+<span class="lineNum">     101 </span>            :       transform_buffer-&gt;data()[mode.transform_of_real_part_offset] = 0.0;
+<span class="lineNum">     102 </span>            :       transform_buffer-&gt;data()[mode.transform_of_imag_part_offset] = 0.0;
+<span class="lineNum">     103 </span>            :     }
+<span class="lineNum">     104 </span>            :   }
+<span class="lineNum">     105 </span>            :   inverse_swsh_transform(l_max, 1, to_filter, *transform_buffer);
+<span class="lineNum">     106 </span>            : }
+<span class="lineNum">     107 </span>            : 
+<span class="lineNum">     108 </span>            : template &lt;int Spin&gt;
+<span class="lineNum">     109 </span><span class="lineNoCov">          0 : void filter_swsh_boundary_quantity(</span>
+<span class="lineNum">     110 </span>            :     const gsl::not_null&lt;SpinWeighted&lt;ComplexDataVector, Spin&gt;*&gt; to_filter,
+<span class="lineNum">     111 </span>            :     const size_t l_max, const size_t limit_l) noexcept {
+<span class="lineNum">     112 </span>            :   const size_t number_of_radial_grid_points =
+<span class="lineNum">     113 </span>            :       to_filter-&gt;data().size() / number_of_swsh_collocation_points(l_max);
+<span class="lineNum">     114 </span>            :   auto transform_buffer = SpinWeighted&lt;ComplexModalVector, Spin&gt;{
+<span class="lineNum">     115 </span>            :       number_of_radial_grid_points *
+<span class="lineNum">     116 </span>            :       size_of_libsharp_coefficient_vector(l_max)};
+<span class="lineNum">     117 </span>            :   filter_swsh_boundary_quantity(to_filter, l_max, limit_l,
+<span class="lineNum">     118 </span>            :                                 make_not_null(&amp;transform_buffer));
+<span class="lineNum">     119 </span>            : }
+<span class="lineNum">     120 </span>            : 
+<span class="lineNum">     121 </span><span class="lineNoCov">          0 : #define GET_SPIN(data) BOOST_PP_TUPLE_ELEM(0, data)</span>
+<span class="lineNum">     122 </span>            : 
+<span class="lineNum">     123 </span><span class="lineNoCov">          0 : #define SWSH_FILTER_INSTANTIATION(r, data)                                   \</span>
+<span class="lineNum">     124 </span>            :   template void filter_swsh_volume_quantity(                                 \
+<span class="lineNum">     125 </span>            :       const gsl::not_null&lt;SpinWeighted&lt;ComplexDataVector, GET_SPIN(data)&gt;*&gt;  \
+<span class="lineNum">     126 </span>            :           to_filter,                                                         \
+<span class="lineNum">     127 </span>            :       const size_t l_max, const size_t limit_l,                              \
+<span class="lineNum">     128 </span>            :       const double exponential_alpha, const size_t exponential_half_power,   \
+<span class="lineNum">     129 </span>            :       const gsl::not_null&lt;ComplexDataVector*&gt; buffer,                        \
+<span class="lineNum">     130 </span>            :       const gsl::not_null&lt;SpinWeighted&lt;ComplexModalVector, GET_SPIN(data)&gt;*&gt; \
+<span class="lineNum">     131 </span>            :           transform_buffer) noexcept;                                        \
+<span class="lineNum">     132 </span>            :   template void filter_swsh_volume_quantity(                                 \
+<span class="lineNum">     133 </span>            :       const gsl::not_null&lt;SpinWeighted&lt;ComplexDataVector, GET_SPIN(data)&gt;*&gt;  \
+<span class="lineNum">     134 </span>            :           to_filter,                                                         \
+<span class="lineNum">     135 </span>            :       const size_t l_max, const size_t limit_l,                              \
+<span class="lineNum">     136 </span>            :       const double exponential_alpha,                                        \
+<span class="lineNum">     137 </span>            :       const size_t exponential_half_power) noexcept;                         \
+<span class="lineNum">     138 </span>            :   template void filter_swsh_boundary_quantity(                               \
+<span class="lineNum">     139 </span>            :       const gsl::not_null&lt;SpinWeighted&lt;ComplexDataVector, GET_SPIN(data)&gt;*&gt;  \
+<span class="lineNum">     140 </span>            :           to_filter,                                                         \
+<span class="lineNum">     141 </span>            :       const size_t l_max, const size_t limit_l,                              \
+<span class="lineNum">     142 </span>            :       const gsl::not_null&lt;SpinWeighted&lt;ComplexModalVector, GET_SPIN(data)&gt;*&gt; \
+<span class="lineNum">     143 </span>            :           transform_buffer) noexcept;                                        \
+<span class="lineNum">     144 </span>            :   template void filter_swsh_boundary_quantity(                               \
+<span class="lineNum">     145 </span>            :       const gsl::not_null&lt;SpinWeighted&lt;ComplexDataVector, GET_SPIN(data)&gt;*&gt;  \
+<span class="lineNum">     146 </span>            :           to_filter,                                                         \
+<span class="lineNum">     147 </span>            :       const size_t l_max, const size_t limit_l) noexcept;
+<span class="lineNum">     148 </span>            : 
+<span class="lineNum">     149 </span>            : GENERATE_INSTANTIATIONS(SWSH_FILTER_INSTANTIATION, (-2, -1, 0, 1, 2))
+<span class="lineNum">     150 </span>            : 
+<span class="lineNum">     151 </span>            : #undef GET_SPIN
+<span class="lineNum">     152 </span>            : #undef SWSH_FILTER_INSTANTIATION
+<span class="lineNum">     153 </span>            : }  // namespace Swsh
+<span class="lineNum">     154 </span>            : }  // namespace Spectral
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.13</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

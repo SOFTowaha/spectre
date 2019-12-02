@@ -1,0 +1,310 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - 5912ac2e49a80e6a27b3707c9a1e6ce5248b1b2a - NumericalAlgorithms/Spectral/SwshCoefficients.cpp</title>
+  <link rel="stylesheet" type="text/css" href="../../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title"> SpECTRE Documentation Coverage Report</td></tr>
+    <tr><td class="ruler"><img src="../../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../../index.html">top level</a> - <a href="index.html">NumericalAlgorithms/Spectral</a> - SwshCoefficients.cpp</td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+             <td class="headerItem">Commit:</td>
+             <td class="headerValue"><a target="_blank" href="https://github.com/sxs-collaboration/spectre/commit/5912ac2e49a80e6a27b3707c9a1e6ce5248b1b2a">5912ac2e49a80e6a27b3707c9a1e6ce5248b1b2a</a></td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">5</td>
+            <td class="headerCovTableEntry">11</td>
+            <td class="headerCovTableEntryLo">45.5 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2019-12-02 22:01:08</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td class="headerItem">Legend:</td>
+            <td class="headerValueLeg">            Lines:
+            <span class="coverLegendCov">hit</span>
+            <span class="coverLegendNoCov">not hit</span>
+</td>
+            <td></td>
+          </tr>
+          <tr><td><img src="../../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">          Line data    Source code</pre>
+<pre class="source">
+<span class="lineNum">       1 </span><span class="lineNoCov">          0 : // Distributed under the MIT License.</span>
+<span class="lineNum">       2 </span>            : // See LICENSE.txt for details
+<span class="lineNum">       3 </span>            : 
+<span class="lineNum">       4 </span>            : #include &quot;NumericalAlgorithms/Spectral/SwshCoefficients.hpp&quot;
+<span class="lineNum">       5 </span>            : 
+<span class="lineNum">       6 </span>            : #include &lt;array&gt;
+<span class="lineNum">       7 </span>            : #include &lt;cmath&gt;
+<span class="lineNum">       8 </span>            : #include &lt;ostream&gt;
+<span class="lineNum">       9 </span>            : #include &lt;sharp_cxx.h&gt;
+<span class="lineNum">      10 </span>            : #include &lt;utility&gt;
+<span class="lineNum">      11 </span>            : 
+<span class="lineNum">      12 </span>            : #include &quot;DataStructures/SpinWeighted.hpp&quot;
+<span class="lineNum">      13 </span>            : #include &quot;ErrorHandling/Error.hpp&quot;
+<span class="lineNum">      14 </span>            : #include &quot;NumericalAlgorithms/Spectral/SwshCollocation.hpp&quot;
+<span class="lineNum">      15 </span>            : #include &quot;Utilities/ForceInline.hpp&quot;
+<span class="lineNum">      16 </span>            : #include &quot;Utilities/GenerateInstantiations.hpp&quot;
+<span class="lineNum">      17 </span>            : #include &quot;Utilities/Gsl.hpp&quot;
+<span class="lineNum">      18 </span>            : #include &quot;Utilities/StaticCache.hpp&quot;
+<span class="lineNum">      19 </span>            : 
+<span class="lineNum">      20 </span>            : // IWYU pragma: no_forward_declare SpinWeighted
+<span class="lineNum">      21 </span>            : 
+<span class="lineNum">      22 </span>            : namespace Spectral {
+<span class="lineNum">      23 </span>            : namespace Swsh {
+<span class="lineNum">      24 </span>            : 
+<span class="lineNum">      25 </span>            : CoefficientsMetadata::CoefficientsMetadata(const size_t l_max) noexcept
+<span class="lineNum">      26 </span>            :     : l_max_(l_max) {
+<span class="lineNum">      27 </span>            :   sharp_alm_info* alm_to_initialize;
+<span class="lineNum">      28 </span>            :   sharp_make_triangular_alm_info(l_max, l_max, 1, &amp;alm_to_initialize);
+<span class="lineNum">      29 </span>            :   alm_info_.reset(alm_to_initialize);
+<span class="lineNum">      30 </span>            : }
+<span class="lineNum">      31 </span>            : 
+<span class="lineNum">      32 </span><span class="lineCov">          1 : const CoefficientsMetadata&amp; cached_coefficients_metadata(</span>
+<span class="lineNum">      33 </span>            :     const size_t l_max) noexcept {
+<span class="lineNum">      34 </span>            :   const static auto lazy_coefficients_cache =
+<span class="lineNum">      35 </span>            :       make_static_cache&lt;CacheRange&lt;0, detail::coefficients_maximum_l_max&gt;&gt;(
+<span class="lineNum">      36 </span>            :           [](const size_t generator_l_max) noexcept {
+<span class="lineNum">      37 </span>            :             return CoefficientsMetadata{generator_l_max};
+<span class="lineNum">      38 </span>            :           });
+<span class="lineNum">      39 </span>            :   return lazy_coefficients_cache(l_max);
+<span class="lineNum">      40 </span>            : }
+<span class="lineNum">      41 </span>            : 
+<span class="lineNum">      42 </span>            : template &lt;int Spin&gt;
+<span class="lineNum">      43 </span><span class="lineCov">          1 : std::complex&lt;double&gt; libsharp_mode_to_goldberg_plus_m(</span>
+<span class="lineNum">      44 </span>            :     const LibsharpCoefficientInfo&amp; coefficient_info,
+<span class="lineNum">      45 </span>            :     const SpinWeighted&lt;ComplexModalVector, Spin&gt;&amp; libsharp_modes,
+<span class="lineNum">      46 </span>            :     const size_t radial_offset) noexcept {
+<span class="lineNum">      47 </span>            :   return sharp_swsh_sign(Spin, coefficient_info.m, true) *
+<span class="lineNum">      48 </span>            :              libsharp_modes
+<span class="lineNum">      49 </span>            :                  .data()[radial_offset * size_of_libsharp_coefficient_vector(
+<span class="lineNum">      50 </span>            :                                              coefficient_info.l_max) +
+<span class="lineNum">      51 </span>            :                          coefficient_info.transform_of_real_part_offset] +
+<span class="lineNum">      52 </span>            :          std::complex&lt;double&gt;(0.0, 1.0) *
+<span class="lineNum">      53 </span>            :              sharp_swsh_sign(Spin, coefficient_info.m, false) *
+<span class="lineNum">      54 </span>            :              libsharp_modes
+<span class="lineNum">      55 </span>            :                  .data()[radial_offset * size_of_libsharp_coefficient_vector(
+<span class="lineNum">      56 </span>            :                                              coefficient_info.l_max) +
+<span class="lineNum">      57 </span>            :                          coefficient_info.transform_of_imag_part_offset];
+<span class="lineNum">      58 </span>            : }
+<span class="lineNum">      59 </span>            : 
+<span class="lineNum">      60 </span>            : template &lt;int Spin&gt;
+<span class="lineNum">      61 </span><span class="lineCov">          1 : std::complex&lt;double&gt; libsharp_mode_to_goldberg_minus_m(</span>
+<span class="lineNum">      62 </span>            :     const LibsharpCoefficientInfo&amp; coefficient_info,
+<span class="lineNum">      63 </span>            :     const SpinWeighted&lt;ComplexModalVector, Spin&gt;&amp; libsharp_modes,
+<span class="lineNum">      64 </span>            :     const size_t radial_offset) noexcept {
+<span class="lineNum">      65 </span>            :   return sharp_swsh_sign(Spin, -static_cast&lt;int&gt;(coefficient_info.m), true) *
+<span class="lineNum">      66 </span>            :              conj(libsharp_modes
+<span class="lineNum">      67 </span>            :                       .data()[radial_offset *
+<span class="lineNum">      68 </span>            :                                   size_of_libsharp_coefficient_vector(
+<span class="lineNum">      69 </span>            :                                       coefficient_info.l_max) +
+<span class="lineNum">      70 </span>            :                               coefficient_info.transform_of_real_part_offset]) +
+<span class="lineNum">      71 </span>            :          std::complex&lt;double&gt;(0.0, 1.0) *
+<span class="lineNum">      72 </span>            :              sharp_swsh_sign(Spin, -static_cast&lt;int&gt;((coefficient_info.m)),
+<span class="lineNum">      73 </span>            :                              false) *
+<span class="lineNum">      74 </span>            :              conj(libsharp_modes
+<span class="lineNum">      75 </span>            :                       .data()[radial_offset *
+<span class="lineNum">      76 </span>            :                                   size_of_libsharp_coefficient_vector(
+<span class="lineNum">      77 </span>            :                                       coefficient_info.l_max) +
+<span class="lineNum">      78 </span>            :                               coefficient_info.transform_of_imag_part_offset]);
+<span class="lineNum">      79 </span>            : }
+<span class="lineNum">      80 </span>            : 
+<span class="lineNum">      81 </span>            : template &lt;int Spin&gt;
+<span class="lineNum">      82 </span><span class="lineCov">          1 : std::complex&lt;double&gt; libsharp_mode_to_goldberg(</span>
+<span class="lineNum">      83 </span>            :     const size_t l, const int m, const size_t l_max,
+<span class="lineNum">      84 </span>            :     const SpinWeighted&lt;ComplexModalVector, Spin&gt;&amp; libsharp_modes,
+<span class="lineNum">      85 </span>            :     const size_t radial_offset) noexcept {
+<span class="lineNum">      86 </span>            :   const CoefficientsMetadata::CoefficientsIndexIterator coefficients_iterator{
+<span class="lineNum">      87 </span>            :       l_max, l, static_cast&lt;size_t&gt;(abs(m))};
+<span class="lineNum">      88 </span>            :   if (m &gt;= 0) {
+<span class="lineNum">      89 </span>            :     return libsharp_mode_to_goldberg_plus_m(*coefficients_iterator,
+<span class="lineNum">      90 </span>            :                                             libsharp_modes, radial_offset);
+<span class="lineNum">      91 </span>            :   } else {
+<span class="lineNum">      92 </span>            :     return libsharp_mode_to_goldberg_minus_m(*coefficients_iterator,
+<span class="lineNum">      93 </span>            :                                              libsharp_modes, radial_offset);
+<span class="lineNum">      94 </span>            :   }
+<span class="lineNum">      95 </span>            : }
+<span class="lineNum">      96 </span>            : 
+<span class="lineNum">      97 </span>            : template &lt;int Spin&gt;
+<span class="lineNum">      98 </span><span class="lineNoCov">          0 : void goldberg_modes_to_libsharp_modes_single_pair(</span>
+<span class="lineNum">      99 </span>            :     const LibsharpCoefficientInfo&amp; coefficient_info,
+<span class="lineNum">     100 </span>            :     const gsl::not_null&lt;SpinWeighted&lt;ComplexModalVector, Spin&gt;*&gt; libsharp_modes,
+<span class="lineNum">     101 </span>            :     const size_t radial_offset,
+<span class="lineNum">     102 </span>            :     const std::complex&lt;double&gt; goldberg_plus_m_mode_value,
+<span class="lineNum">     103 </span>            :     std::complex&lt;double&gt; goldberg_minus_m_mode_value) noexcept {
+<span class="lineNum">     104 </span>            :   const auto sign_determinant = static_cast&lt;double&gt;(
+<span class="lineNum">     105 </span>            :       sharp_swsh_sign(Spin, coefficient_info.m, true) *
+<span class="lineNum">     106 </span>            :           sharp_swsh_sign(Spin, -static_cast&lt;int&gt;(coefficient_info.m), false) +
+<span class="lineNum">     107 </span>            :       sharp_swsh_sign(Spin, coefficient_info.m, false) *
+<span class="lineNum">     108 </span>            :           sharp_swsh_sign(Spin, -static_cast&lt;int&gt;(coefficient_info.m), true));
+<span class="lineNum">     109 </span>            :   const auto i = std::complex&lt;double&gt;(0.0, 1.0);
+<span class="lineNum">     110 </span>            :   if (coefficient_info.m == 0) {
+<span class="lineNum">     111 </span>            :     goldberg_minus_m_mode_value = goldberg_plus_m_mode_value;
+<span class="lineNum">     112 </span>            :   }
+<span class="lineNum">     113 </span>            :   libsharp_modes-&gt;data()[radial_offset * size_of_libsharp_coefficient_vector(
+<span class="lineNum">     114 </span>            :                                              coefficient_info.l_max) +
+<span class="lineNum">     115 </span>            :                          coefficient_info.transform_of_real_part_offset] =
+<span class="lineNum">     116 </span>            :       (sharp_swsh_sign(Spin, -static_cast&lt;int&gt;(coefficient_info.m), false) *
+<span class="lineNum">     117 </span>            :            goldberg_plus_m_mode_value +
+<span class="lineNum">     118 </span>            :        sharp_swsh_sign(Spin, coefficient_info.m, false) *
+<span class="lineNum">     119 </span>            :            conj(goldberg_minus_m_mode_value)) /
+<span class="lineNum">     120 </span>            :       sign_determinant;
+<span class="lineNum">     121 </span>            : 
+<span class="lineNum">     122 </span>            :   libsharp_modes-&gt;data()[radial_offset * size_of_libsharp_coefficient_vector(
+<span class="lineNum">     123 </span>            :                                              coefficient_info.l_max) +
+<span class="lineNum">     124 </span>            :                          coefficient_info.transform_of_imag_part_offset] =
+<span class="lineNum">     125 </span>            :       (-i * sharp_swsh_sign(Spin, -static_cast&lt;int&gt;(coefficient_info.m), true) *
+<span class="lineNum">     126 </span>            :            goldberg_plus_m_mode_value +
+<span class="lineNum">     127 </span>            :        i * sharp_swsh_sign(Spin, coefficient_info.m, true) *
+<span class="lineNum">     128 </span>            :            conj(goldberg_minus_m_mode_value)) /
+<span class="lineNum">     129 </span>            :       sign_determinant;
+<span class="lineNum">     130 </span>            : }
+<span class="lineNum">     131 </span>            : 
+<span class="lineNum">     132 </span>            : template &lt;int Spin&gt;
+<span class="lineNum">     133 </span><span class="lineNoCov">          0 : void goldberg_modes_to_libsharp_modes_single_pair(</span>
+<span class="lineNum">     134 </span>            :     const size_t l, const int m, const size_t l_max,
+<span class="lineNum">     135 </span>            :     const gsl::not_null&lt;SpinWeighted&lt;ComplexModalVector, Spin&gt;*&gt; libsharp_modes,
+<span class="lineNum">     136 </span>            :     const size_t radial_offset,
+<span class="lineNum">     137 </span>            :     const std::complex&lt;double&gt; goldberg_plus_m_mode_value,
+<span class="lineNum">     138 </span>            :     const std::complex&lt;double&gt; goldberg_minus_m_mode_value) noexcept {
+<span class="lineNum">     139 </span>            :   CoefficientsMetadata::CoefficientsIndexIterator coefficients_iterator{
+<span class="lineNum">     140 </span>            :       l_max, l, static_cast&lt;size_t&gt;(abs(m))};
+<span class="lineNum">     141 </span>            :   goldberg_modes_to_libsharp_modes_single_pair(
+<span class="lineNum">     142 </span>            :       *coefficients_iterator, libsharp_modes, radial_offset,
+<span class="lineNum">     143 </span>            :       goldberg_plus_m_mode_value, goldberg_minus_m_mode_value);
+<span class="lineNum">     144 </span>            : }
+<span class="lineNum">     145 </span>            : 
+<span class="lineNum">     146 </span>            : template &lt;int Spin&gt;
+<span class="lineNum">     147 </span><span class="lineNoCov">          0 : void libsharp_to_goldberg_modes(</span>
+<span class="lineNum">     148 </span>            :     const gsl::not_null&lt;SpinWeighted&lt;ComplexModalVector, Spin&gt;*&gt; goldberg_modes,
+<span class="lineNum">     149 </span>            :     const SpinWeighted&lt;ComplexModalVector, Spin&gt;&amp; libsharp_modes,
+<span class="lineNum">     150 </span>            :     const size_t l_max) noexcept {
+<span class="lineNum">     151 </span>            :   const size_t number_of_radial_grid_points =
+<span class="lineNum">     152 </span>            :       libsharp_modes.data().size() / size_of_libsharp_coefficient_vector(l_max);
+<span class="lineNum">     153 </span>            : 
+<span class="lineNum">     154 </span>            :   goldberg_modes-&gt;destructive_resize(square(1 + l_max) *
+<span class="lineNum">     155 </span>            :                                      number_of_radial_grid_points);
+<span class="lineNum">     156 </span>            : 
+<span class="lineNum">     157 </span>            :   const auto&amp; coefficients_metadata = cached_coefficients_metadata(l_max);
+<span class="lineNum">     158 </span>            :   for (size_t i = 0; i &lt; number_of_radial_grid_points; ++i) {
+<span class="lineNum">     159 </span>            :     for (const auto&amp; coefficient_info : coefficients_metadata) {
+<span class="lineNum">     160 </span>            :       goldberg_modes-&gt;data()[goldberg_mode_index(
+<span class="lineNum">     161 </span>            :           coefficient_info.l_max, coefficient_info.l,
+<span class="lineNum">     162 </span>            :           static_cast&lt;int&gt;(coefficient_info.m), i)] =
+<span class="lineNum">     163 </span>            :           libsharp_mode_to_goldberg_plus_m(coefficient_info, libsharp_modes, i);
+<span class="lineNum">     164 </span>            :       goldberg_modes-&gt;data()[goldberg_mode_index(
+<span class="lineNum">     165 </span>            :           coefficient_info.l_max, coefficient_info.l,
+<span class="lineNum">     166 </span>            :           -static_cast&lt;int&gt;(coefficient_info.m), i)] =
+<span class="lineNum">     167 </span>            :           libsharp_mode_to_goldberg_minus_m(coefficient_info, libsharp_modes,
+<span class="lineNum">     168 </span>            :                                             i);
+<span class="lineNum">     169 </span>            :     }
+<span class="lineNum">     170 </span>            :   }
+<span class="lineNum">     171 </span>            : }
+<span class="lineNum">     172 </span>            : 
+<span class="lineNum">     173 </span>            : template &lt;int Spin&gt;
+<span class="lineNum">     174 </span><span class="lineCov">          1 : SpinWeighted&lt;ComplexModalVector, Spin&gt; libsharp_to_goldberg_modes(</span>
+<span class="lineNum">     175 </span>            :     const SpinWeighted&lt;ComplexModalVector, Spin&gt;&amp; libsharp_modes,
+<span class="lineNum">     176 </span>            :     const size_t l_max) noexcept {
+<span class="lineNum">     177 </span>            :   const size_t number_of_radial_grid_points =
+<span class="lineNum">     178 </span>            :       libsharp_modes.data().size() / size_of_libsharp_coefficient_vector(l_max);
+<span class="lineNum">     179 </span>            :   SpinWeighted&lt;ComplexModalVector, Spin&gt; result{square(1 + l_max) *
+<span class="lineNum">     180 </span>            :                                                 number_of_radial_grid_points};
+<span class="lineNum">     181 </span>            :   libsharp_to_goldberg_modes(make_not_null(&amp;result), libsharp_modes, l_max);
+<span class="lineNum">     182 </span>            :   return result;
+<span class="lineNum">     183 </span>            : }
+<span class="lineNum">     184 </span>            : 
+<span class="lineNum">     185 </span><span class="lineNoCov">          0 : #define GET_SPIN(data) BOOST_PP_TUPLE_ELEM(0, data)</span>
+<span class="lineNum">     186 </span>            : 
+<span class="lineNum">     187 </span><span class="lineNoCov">          0 : #define LIBSHARP_TO_GOLDBERG_INSTANTIATION(r, data)                           \</span>
+<span class="lineNum">     188 </span>            :   template std::complex&lt;double&gt; libsharp_mode_to_goldberg_plus_m(             \
+<span class="lineNum">     189 </span>            :       const LibsharpCoefficientInfo&amp; coefficient_info,                        \
+<span class="lineNum">     190 </span>            :       const SpinWeighted&lt;ComplexModalVector, GET_SPIN(data)&gt;&amp; libsharp_modes, \
+<span class="lineNum">     191 </span>            :       const size_t radial_offset) noexcept;                                   \
+<span class="lineNum">     192 </span>            :   template std::complex&lt;double&gt; libsharp_mode_to_goldberg_minus_m(            \
+<span class="lineNum">     193 </span>            :       const LibsharpCoefficientInfo&amp; coefficient_info,                        \
+<span class="lineNum">     194 </span>            :       const SpinWeighted&lt;ComplexModalVector, GET_SPIN(data)&gt;&amp; libsharp_modes, \
+<span class="lineNum">     195 </span>            :       const size_t radial_offset) noexcept;                                   \
+<span class="lineNum">     196 </span>            :   template std::complex&lt;double&gt; libsharp_mode_to_goldberg(                    \
+<span class="lineNum">     197 </span>            :       const size_t l, const int m, const size_t l_max,                        \
+<span class="lineNum">     198 </span>            :       const SpinWeighted&lt;ComplexModalVector, GET_SPIN(data)&gt;&amp; libsharp_modes, \
+<span class="lineNum">     199 </span>            :       const size_t radial_offset) noexcept;                                   \
+<span class="lineNum">     200 </span>            :   template void goldberg_modes_to_libsharp_modes_single_pair(                 \
+<span class="lineNum">     201 </span>            :       const LibsharpCoefficientInfo&amp; coefficient_info,                        \
+<span class="lineNum">     202 </span>            :       const gsl::not_null&lt;SpinWeighted&lt;ComplexModalVector, GET_SPIN(data)&gt;*&gt;  \
+<span class="lineNum">     203 </span>            :           libsharp_modes,                                                     \
+<span class="lineNum">     204 </span>            :       const size_t radial_offset,                                             \
+<span class="lineNum">     205 </span>            :       const std::complex&lt;double&gt; goldberg_plus_m_mode_value,                  \
+<span class="lineNum">     206 </span>            :       const std::complex&lt;double&gt; goldberg_minus_m_mode_value) noexcept;       \
+<span class="lineNum">     207 </span>            :   template void goldberg_modes_to_libsharp_modes_single_pair(                 \
+<span class="lineNum">     208 </span>            :       const size_t l, const int m, const size_t l_max,                        \
+<span class="lineNum">     209 </span>            :       const gsl::not_null&lt;SpinWeighted&lt;ComplexModalVector, GET_SPIN(data)&gt;*&gt;  \
+<span class="lineNum">     210 </span>            :           libsharp_modes,                                                     \
+<span class="lineNum">     211 </span>            :       const size_t radial_offset,                                             \
+<span class="lineNum">     212 </span>            :       const std::complex&lt;double&gt; goldberg_plus_m_mode_value,                  \
+<span class="lineNum">     213 </span>            :       const std::complex&lt;double&gt; goldberg_minus_m_mode_value) noexcept;       \
+<span class="lineNum">     214 </span>            :   template void libsharp_to_goldberg_modes(                                   \
+<span class="lineNum">     215 </span>            :       const gsl::not_null&lt;SpinWeighted&lt;ComplexModalVector, GET_SPIN(data)&gt;*&gt;  \
+<span class="lineNum">     216 </span>            :           goldberg_modes,                                                     \
+<span class="lineNum">     217 </span>            :       const SpinWeighted&lt;ComplexModalVector, GET_SPIN(data)&gt;&amp; libsharp_modes, \
+<span class="lineNum">     218 </span>            :       const size_t l_max) noexcept;                                           \
+<span class="lineNum">     219 </span>            :   template SpinWeighted&lt;ComplexModalVector, GET_SPIN(data)&gt;                   \
+<span class="lineNum">     220 </span>            :   libsharp_to_goldberg_modes(                                                 \
+<span class="lineNum">     221 </span>            :       const SpinWeighted&lt;ComplexModalVector, GET_SPIN(data)&gt;&amp; libsharp_modes, \
+<span class="lineNum">     222 </span>            :       const size_t l_max) noexcept;
+<span class="lineNum">     223 </span>            : 
+<span class="lineNum">     224 </span>            : GENERATE_INSTANTIATIONS(LIBSHARP_TO_GOLDBERG_INSTANTIATION, (-2, -1, 0, 1, 2))
+<span class="lineNum">     225 </span>            : 
+<span class="lineNum">     226 </span>            : #undef LIBSHARP_TO_GOLDBERG_INSTANTIATION
+<span class="lineNum">     227 </span>            : #undef GET_SPIN
+<span class="lineNum">     228 </span>            : 
+<span class="lineNum">     229 </span>            : }  // namespace Swsh
+<span class="lineNum">     230 </span>            : }  // namespace Spectral
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.13</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

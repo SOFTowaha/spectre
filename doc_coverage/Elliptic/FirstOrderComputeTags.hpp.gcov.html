@@ -1,0 +1,181 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - 5912ac2e49a80e6a27b3707c9a1e6ce5248b1b2a - Elliptic/FirstOrderComputeTags.hpp</title>
+  <link rel="stylesheet" type="text/css" href="../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title"> SpECTRE Documentation Coverage Report</td></tr>
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../index.html">top level</a> - <a href="index.html">Elliptic</a> - FirstOrderComputeTags.hpp</td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+             <td class="headerItem">Commit:</td>
+             <td class="headerValue"><a target="_blank" href="https://github.com/sxs-collaboration/spectre/commit/5912ac2e49a80e6a27b3707c9a1e6ce5248b1b2a">5912ac2e49a80e6a27b3707c9a1e6ce5248b1b2a</a></td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntry">14</td>
+            <td class="headerCovTableEntryLo">0.0 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2019-12-02 22:01:08</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td class="headerItem">Legend:</td>
+            <td class="headerValueLeg">            Lines:
+            <span class="coverLegendCov">hit</span>
+            <span class="coverLegendNoCov">not hit</span>
+</td>
+            <td></td>
+          </tr>
+          <tr><td><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">          Line data    Source code</pre>
+<pre class="source">
+<span class="lineNum">       1 </span><span class="lineNoCov">          0 : // Distributed under the MIT License.</span>
+<span class="lineNum">       2 </span>            : // See LICENSE.txt for details.
+<span class="lineNum">       3 </span>            : 
+<span class="lineNum">       4 </span>            : #pragma once
+<span class="lineNum">       5 </span>            : 
+<span class="lineNum">       6 </span>            : #include &lt;cstddef&gt;
+<span class="lineNum">       7 </span>            : 
+<span class="lineNum">       8 </span>            : #include &quot;DataStructures/DataBox/DataBoxTag.hpp&quot;
+<span class="lineNum">       9 </span>            : #include &quot;DataStructures/DataBox/Prefixes.hpp&quot;
+<span class="lineNum">      10 </span>            : #include &quot;DataStructures/Variables.hpp&quot;
+<span class="lineNum">      11 </span>            : #include &quot;Elliptic/Tags.hpp&quot;
+<span class="lineNum">      12 </span>            : #include &quot;Utilities/MakeWithValue.hpp&quot;
+<span class="lineNum">      13 </span>            : #include &quot;Utilities/TMPL.hpp&quot;
+<span class="lineNum">      14 </span>            : 
+<span class="lineNum">      15 </span>            : namespace elliptic {
+<span class="lineNum">      16 </span><span class="lineNoCov">          0 : namespace Tags {</span>
+<span class="lineNum">      17 </span>            : 
+<span class="lineNum">      18 </span>            : template &lt;size_t Dim, typename System,
+<span class="lineNum">      19 </span>            :           typename VarsTag = typename System::variables_tag,
+<span class="lineNum">      20 </span>            :           typename FluxesComputer = typename System::fluxes,
+<span class="lineNum">      21 </span>            :           typename PrimalVars = typename System::primal_variables,
+<span class="lineNum">      22 </span>            :           typename AuxiliaryVars = typename System::auxiliary_variables,
+<span class="lineNum">      23 </span>            :           typename FluxesArgs = typename FluxesComputer::argument_tags&gt;
+<span class="lineNum">      24 </span><span class="lineNoCov">          0 : struct FirstOrderFluxesCompute;</span>
+<span class="lineNum">      25 </span>            : 
+<span class="lineNum">      26 </span>            : template &lt;size_t Dim, typename System, typename VarsTag,
+<span class="lineNum">      27 </span>            :           typename FluxesComputer, typename... PrimalVars,
+<span class="lineNum">      28 </span>            :           typename... AuxiliaryVars, typename... FluxesArgs&gt;
+<span class="lineNum">      29 </span>            : struct FirstOrderFluxesCompute&lt;
+<span class="lineNum">      30 </span>            :     Dim, System, VarsTag, FluxesComputer, tmpl::list&lt;PrimalVars...&gt;,
+<span class="lineNum">      31 </span>            :     tmpl::list&lt;AuxiliaryVars...&gt;, tmpl::list&lt;FluxesArgs...&gt;&gt;
+<span class="lineNum">      32 </span>            :     : db::add_tag_prefix&lt;::Tags::Flux, VarsTag, tmpl::size_t&lt;Dim&gt;,
+<span class="lineNum">      33 </span>            :                          Frame::Inertial&gt;,
+<span class="lineNum">      34 </span><span class="lineNoCov">          0 :       db::ComputeTag {</span>
+<span class="lineNum">      35 </span>            :  private:
+<span class="lineNum">      36 </span><span class="lineNoCov">          0 :   using fluxes_computer_tag = elliptic::Tags::FluxesComputer&lt;FluxesComputer&gt;;</span>
+<span class="lineNum">      37 </span>            : 
+<span class="lineNum">      38 </span>            :  public:
+<span class="lineNum">      39 </span><span class="lineNoCov">          0 :   using base = db::add_tag_prefix&lt;::Tags::Flux, VarsTag, tmpl::size_t&lt;Dim&gt;,</span>
+<span class="lineNum">      40 </span>            :                                   Frame::Inertial&gt;;
+<span class="lineNum">      41 </span><span class="lineNoCov">          0 :   using argument_tags = tmpl::list&lt;VarsTag, fluxes_computer_tag, FluxesArgs...&gt;;</span>
+<span class="lineNum">      42 </span><span class="lineNoCov">          0 :   using volume_tags = tmpl::list&lt;fluxes_computer_tag&gt;;</span>
+<span class="lineNum">      43 </span><span class="lineNoCov">          0 :   static constexpr auto function(</span>
+<span class="lineNum">      44 </span>            :       const db::const_item_type&lt;VarsTag&gt;&amp; vars,
+<span class="lineNum">      45 </span>            :       const FluxesComputer&amp; fluxes_computer,
+<span class="lineNum">      46 </span>            :       const db::const_item_type&lt;FluxesArgs&gt;&amp;... fluxes_args) noexcept {
+<span class="lineNum">      47 </span>            :     auto fluxes = make_with_value&lt;db::item_type&lt;base&gt;&gt;(vars, 0.);
+<span class="lineNum">      48 </span>            :     // Compute fluxes for primal fields
+<span class="lineNum">      49 </span>            :     fluxes_computer.apply(
+<span class="lineNum">      50 </span>            :         make_not_null(
+<span class="lineNum">      51 </span>            :             &amp;get&lt;::Tags::Flux&lt;PrimalVars, tmpl::size_t&lt;Dim&gt;, Frame::Inertial&gt;&gt;(
+<span class="lineNum">      52 </span>            :                 fluxes))...,
+<span class="lineNum">      53 </span>            :         fluxes_args..., get&lt;AuxiliaryVars&gt;(vars)...);
+<span class="lineNum">      54 </span>            :     // Compute fluxes for auxiliary fields
+<span class="lineNum">      55 </span>            :     fluxes_computer.apply(
+<span class="lineNum">      56 </span>            :         make_not_null(&amp;get&lt;::Tags::Flux&lt;AuxiliaryVars, tmpl::size_t&lt;Dim&gt;,
+<span class="lineNum">      57 </span>            :                                         Frame::Inertial&gt;&gt;(fluxes))...,
+<span class="lineNum">      58 </span>            :         fluxes_args..., get&lt;PrimalVars&gt;(vars)...);
+<span class="lineNum">      59 </span>            :     return fluxes;
+<span class="lineNum">      60 </span>            :   }
+<span class="lineNum">      61 </span>            : };
+<span class="lineNum">      62 </span>            : 
+<span class="lineNum">      63 </span>            : template &lt;typename System, typename VarsTag = typename System::variables_tag,
+<span class="lineNum">      64 </span>            :           typename SourcesComputer = typename System::sources,
+<span class="lineNum">      65 </span>            :           typename PrimalVars = typename System::primal_variables,
+<span class="lineNum">      66 </span>            :           typename AuxiliaryVars = typename System::auxiliary_variables,
+<span class="lineNum">      67 </span>            :           typename SourcesArgs = typename SourcesComputer::argument_tags&gt;
+<span class="lineNum">      68 </span><span class="lineNoCov">          0 : struct FirstOrderSourcesCompute;</span>
+<span class="lineNum">      69 </span>            : 
+<span class="lineNum">      70 </span>            : template &lt;typename System, typename VarsTag, typename SourcesComputer,
+<span class="lineNum">      71 </span>            :           typename... PrimalVars, typename... AuxiliaryVars,
+<span class="lineNum">      72 </span>            :           typename... SourcesArgs&gt;
+<span class="lineNum">      73 </span>            : struct FirstOrderSourcesCompute&lt;
+<span class="lineNum">      74 </span>            :     System, VarsTag, SourcesComputer, tmpl::list&lt;PrimalVars...&gt;,
+<span class="lineNum">      75 </span>            :     tmpl::list&lt;AuxiliaryVars...&gt;, tmpl::list&lt;SourcesArgs...&gt;&gt;
+<span class="lineNum">      76 </span><span class="lineNoCov">          0 :     : db::add_tag_prefix&lt;::Tags::Source, VarsTag&gt;, db::ComputeTag {</span>
+<span class="lineNum">      77 </span><span class="lineNoCov">          0 :   using base = db::add_tag_prefix&lt;::Tags::Source, VarsTag&gt;;</span>
+<span class="lineNum">      78 </span><span class="lineNoCov">          0 :   using argument_tags = tmpl::list&lt;VarsTag, SourcesArgs...&gt;;</span>
+<span class="lineNum">      79 </span><span class="lineNoCov">          0 :   static constexpr auto function(</span>
+<span class="lineNum">      80 </span>            :       const db::const_item_type&lt;VarsTag&gt;&amp; vars,
+<span class="lineNum">      81 </span>            :       const db::const_item_type&lt;SourcesArgs&gt;&amp;... sources_args) noexcept {
+<span class="lineNum">      82 </span>            :     auto sources = make_with_value&lt;db::item_type&lt;base&gt;&gt;(vars, 0.);
+<span class="lineNum">      83 </span>            :     // Compute sources for primal fields
+<span class="lineNum">      84 </span>            :     SourcesComputer::apply(
+<span class="lineNum">      85 </span>            :         make_not_null(&amp;get&lt;::Tags::Source&lt;PrimalVars&gt;&gt;(sources))...,
+<span class="lineNum">      86 </span>            :         sources_args..., get&lt;PrimalVars&gt;(vars)...);
+<span class="lineNum">      87 </span>            :     // Compute sources for auxiliary fields. They are just the auxiliary field
+<span class="lineNum">      88 </span>            :     // values.
+<span class="lineNum">      89 </span>            :     tmpl::for_each&lt;tmpl::list&lt;AuxiliaryVars...&gt;&gt;(
+<span class="lineNum">      90 </span>            :         [&amp;sources, &amp;vars ](const auto auxiliary_field_tag_v) noexcept {
+<span class="lineNum">      91 </span>            :           using auxiliary_field_tag =
+<span class="lineNum">      92 </span>            :               tmpl::type_from&lt;decltype(auxiliary_field_tag_v)&gt;;
+<span class="lineNum">      93 </span>            :           get&lt;::Tags::Source&lt;auxiliary_field_tag&gt;&gt;(sources) =
+<span class="lineNum">      94 </span>            :               get&lt;auxiliary_field_tag&gt;(vars);
+<span class="lineNum">      95 </span>            :         });
+<span class="lineNum">      96 </span>            :     return sources;
+<span class="lineNum">      97 </span>            :   }
+<span class="lineNum">      98 </span>            : };
+<span class="lineNum">      99 </span>            : 
+<span class="lineNum">     100 </span>            : }  // namespace Tags
+<span class="lineNum">     101 </span>            : }  // namespace elliptic
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.13</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

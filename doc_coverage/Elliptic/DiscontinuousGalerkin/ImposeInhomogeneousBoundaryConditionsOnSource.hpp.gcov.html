@@ -1,0 +1,275 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - 5912ac2e49a80e6a27b3707c9a1e6ce5248b1b2a - Elliptic/DiscontinuousGalerkin/ImposeInhomogeneousBoundaryConditionsOnSource.hpp</title>
+  <link rel="stylesheet" type="text/css" href="../../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title"> SpECTRE Documentation Coverage Report</td></tr>
+    <tr><td class="ruler"><img src="../../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../../index.html">top level</a> - <a href="index.html">Elliptic/DiscontinuousGalerkin</a> - ImposeInhomogeneousBoundaryConditionsOnSource.hpp</td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+             <td class="headerItem">Commit:</td>
+             <td class="headerValue"><a target="_blank" href="https://github.com/sxs-collaboration/spectre/commit/5912ac2e49a80e6a27b3707c9a1e6ce5248b1b2a">5912ac2e49a80e6a27b3707c9a1e6ce5248b1b2a</a></td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">1</td>
+            <td class="headerCovTableEntry">8</td>
+            <td class="headerCovTableEntryLo">12.5 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2019-12-02 22:01:08</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td class="headerItem">Legend:</td>
+            <td class="headerValueLeg">            Lines:
+            <span class="coverLegendCov">hit</span>
+            <span class="coverLegendNoCov">not hit</span>
+</td>
+            <td></td>
+          </tr>
+          <tr><td><img src="../../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">          Line data    Source code</pre>
+<pre class="source">
+<span class="lineNum">       1 </span><span class="lineNoCov">          0 : // Distributed under the MIT License.</span>
+<span class="lineNum">       2 </span>            : // See LICENSE.txt for details.
+<span class="lineNum">       3 </span>            : 
+<span class="lineNum">       4 </span>            : #pragma once
+<span class="lineNum">       5 </span>            : 
+<span class="lineNum">       6 </span>            : #include &lt;cstddef&gt;
+<span class="lineNum">       7 </span>            : #include &lt;utility&gt;
+<span class="lineNum">       8 </span>            : 
+<span class="lineNum">       9 </span>            : #include &quot;DataStructures/DataBox/DataBox.hpp&quot;
+<span class="lineNum">      10 </span>            : #include &quot;DataStructures/DataBox/DataBoxTag.hpp&quot;
+<span class="lineNum">      11 </span>            : #include &quot;DataStructures/DataBox/Prefixes.hpp&quot;
+<span class="lineNum">      12 </span>            : #include &quot;DataStructures/Tensor/EagerMath/Magnitude.hpp&quot;
+<span class="lineNum">      13 </span>            : #include &quot;DataStructures/Variables.hpp&quot;
+<span class="lineNum">      14 </span>            : #include &quot;DataStructures/VariablesHelpers.hpp&quot;
+<span class="lineNum">      15 </span>            : #include &quot;Domain/FaceNormal.hpp&quot;
+<span class="lineNum">      16 </span>            : #include &quot;Domain/Mesh.hpp&quot;
+<span class="lineNum">      17 </span>            : #include &quot;Domain/Tags.hpp&quot;
+<span class="lineNum">      18 </span>            : #include &quot;Elliptic/Tags.hpp&quot;
+<span class="lineNum">      19 </span>            : #include &quot;NumericalAlgorithms/DiscontinuousGalerkin/LiftFlux.hpp&quot;
+<span class="lineNum">      20 </span>            : #include &quot;Parallel/ConstGlobalCache.hpp&quot;
+<span class="lineNum">      21 </span>            : #include &quot;ParallelAlgorithms/LinearSolver/Tags.hpp&quot;
+<span class="lineNum">      22 </span>            : 
+<span class="lineNum">      23 </span>            : /// \cond
+<span class="lineNum">      24 </span>            : namespace Frame {
+<span class="lineNum">      25 </span>            : struct Inertial;
+<span class="lineNum">      26 </span>            : }  // namespace Frame
+<span class="lineNum">      27 </span>            : /// \endcond
+<span class="lineNum">      28 </span>            : 
+<span class="lineNum">      29 </span>            : namespace elliptic {
+<span class="lineNum">      30 </span>            : namespace dg {
+<span class="lineNum">      31 </span>            : namespace Actions {
+<span class="lineNum">      32 </span>            : 
+<span class="lineNum">      33 </span>            : /*!
+<span class="lineNum">      34 </span>            :  * \brief Adds boundary contributions to the sources
+<span class="lineNum">      35 </span>            :  *
+<span class="lineNum">      36 </span>            :  * Imposes boundary conditions by adding contributions to the sources of the
+<span class="lineNum">      37 </span>            :  * elliptic equations. With the source modified, we may then assume homogeneous
+<span class="lineNum">      38 </span>            :  * (i.e. zero) Dirichlet boundary conditions throughout the elliptic solve.
+<span class="lineNum">      39 </span>            :  *
+<span class="lineNum">      40 </span>            :  * \note Only Dirichlet boundary conditions retrieved from the analytic solution
+<span class="lineNum">      41 </span>            :  * are currently supported.
+<span class="lineNum">      42 </span>            :  *
+<span class="lineNum">      43 </span>            :  * With:
+<span class="lineNum">      44 </span>            :  * - `fixed_sources_tag` = `db::add_tag_prefix&lt;Tags::FixedSource, fields_tag&gt;`
+<span class="lineNum">      45 </span>            :  *
+<span class="lineNum">      46 </span>            :  * Uses:
+<span class="lineNum">      47 </span>            :  * - Metavariables:
+<span class="lineNum">      48 </span>            :  *   - `analytic_solution_tag`
+<span class="lineNum">      49 </span>            :  *   - `normal_dot_numerical_flux`
+<span class="lineNum">      50 </span>            :  * - System:
+<span class="lineNum">      51 </span>            :  *   - `volume_dim`
+<span class="lineNum">      52 </span>            :  *   - `fields_tag`
+<span class="lineNum">      53 </span>            :  *   - `primal_fields`
+<span class="lineNum">      54 </span>            :  * - DataBox:
+<span class="lineNum">      55 </span>            :  *   - `Tags::Mesh&lt;volume_dim&gt;`
+<span class="lineNum">      56 </span>            :  *   - `Tags::Coordinates&lt;volume_dim, Frame::Inertial&gt;`
+<span class="lineNum">      57 </span>            :  *   - `Tags::BoundaryDirectionsInterior&lt;volume_dim&gt;`
+<span class="lineNum">      58 </span>            :  *   - `Tags::Interface&lt;Tags::BoundaryDirectionsExterior&lt;volume_dim&gt;,
+<span class="lineNum">      59 </span>            :  *   Tags::Coordinates&lt;volume_dim, Frame::Inertial&gt;&gt;`
+<span class="lineNum">      60 </span>            :  *   - `Tags::Interface&lt;Tags::BoundaryDirectionsInterior&lt;volume_dim&gt;,
+<span class="lineNum">      61 </span>            :  *   Tags::Normalized&lt;Tags::UnnormalizedFaceNormal&lt;volume_dim&gt;&gt;&gt;`
+<span class="lineNum">      62 </span>            :  *   - `Tags::Interface&lt;Tags::BoundaryDirectionsInterior&lt;volume_dim&gt;,
+<span class="lineNum">      63 </span>            :  *   Tags::Magnitude&lt;Tags::UnnormalizedFaceNormal&lt;volume_dim&gt;&gt;&gt;`
+<span class="lineNum">      64 </span>            :  *
+<span class="lineNum">      65 </span>            :  * DataBox:
+<span class="lineNum">      66 </span>            :  * - Modifies:
+<span class="lineNum">      67 </span>            :  *   - `fixed_sources_tag`
+<span class="lineNum">      68 </span>            :  */
+<span class="lineNum">      69 </span>            : template &lt;typename Metavariables,
+<span class="lineNum">      70 </span>            :           typename FluxesArgs =
+<span class="lineNum">      71 </span>            :               typename Metavariables::system::fluxes::argument_tags&gt;
+<span class="lineNum">      72 </span><span class="lineCov">          1 : struct ImposeInhomogeneousBoundaryConditionsOnSource;</span>
+<span class="lineNum">      73 </span>            : 
+<span class="lineNum">      74 </span>            : template &lt;typename Metavariables, typename... FluxesArgs&gt;
+<span class="lineNum">      75 </span>            : struct ImposeInhomogeneousBoundaryConditionsOnSource&lt;
+<span class="lineNum">      76 </span><span class="lineNoCov">          0 :     Metavariables, tmpl::list&lt;FluxesArgs...&gt;&gt; {</span>
+<span class="lineNum">      77 </span><span class="lineNoCov">          0 :   using system = typename Metavariables::system;</span>
+<span class="lineNum">      78 </span><span class="lineNoCov">          0 :   using fluxes_computer_tag =</span>
+<span class="lineNum">      79 </span>            :       elliptic::Tags::FluxesComputer&lt;typename system::fluxes&gt;;
+<span class="lineNum">      80 </span>            : 
+<span class="lineNum">      81 </span><span class="lineNoCov">          0 :   using fixed_sources_tag =</span>
+<span class="lineNum">      82 </span>            :       db::add_tag_prefix&lt;::Tags::FixedSource, typename system::fields_tag&gt;;
+<span class="lineNum">      83 </span>            : 
+<span class="lineNum">      84 </span>            :   template &lt;typename NormalDotNumericalFluxComputer,
+<span class="lineNum">      85 </span>            :             typename... NumericalFluxTags, typename... BoundaryDataTags&gt;
+<span class="lineNum">      86 </span><span class="lineNoCov">          0 :   static void compute_dirichlet_boundary_normal_dot_numerical_flux(</span>
+<span class="lineNum">      87 </span>            :       const gsl::not_null&lt;Variables&lt;tmpl::list&lt;NumericalFluxTags...&gt;&gt;*&gt;
+<span class="lineNum">      88 </span>            :           numerical_fluxes,
+<span class="lineNum">      89 </span>            :       const NormalDotNumericalFluxComputer&amp; normal_dot_numerical_flux_computer,
+<span class="lineNum">      90 </span>            :       const Variables&lt;tmpl::list&lt;BoundaryDataTags...&gt;&gt;&amp; boundary_data,
+<span class="lineNum">      91 </span>            :       const db::item_type&lt;fluxes_computer_tag&gt;&amp; fluxes_computer,
+<span class="lineNum">      92 </span>            :       const db::item_type&lt;FluxesArgs&gt;&amp;... fluxes_args,
+<span class="lineNum">      93 </span>            :       const tnsr::i&lt;DataVector, system::volume_dim, Frame::Inertial&gt;&amp;
+<span class="lineNum">      94 </span>            :           normalized_face_normal) noexcept {
+<span class="lineNum">      95 </span>            :     normal_dot_numerical_flux_computer.compute_dirichlet_boundary(
+<span class="lineNum">      96 </span>            :         make_not_null(&amp;get&lt;NumericalFluxTags&gt;(*numerical_fluxes))...,
+<span class="lineNum">      97 </span>            :         get&lt;BoundaryDataTags&gt;(boundary_data)..., fluxes_computer,
+<span class="lineNum">      98 </span>            :         fluxes_args..., normalized_face_normal);
+<span class="lineNum">      99 </span>            :   }
+<span class="lineNum">     100 </span>            : 
+<span class="lineNum">     101 </span>            :   template &lt;typename DbTagsList, typename... InboxTags, typename ArrayIndex,
+<span class="lineNum">     102 </span>            :             typename ActionList, typename ParallelComponent&gt;
+<span class="lineNum">     103 </span><span class="lineNoCov">          0 :   static std::tuple&lt;db::DataBox&lt;DbTagsList&gt;&amp;&amp;&gt; apply(</span>
+<span class="lineNum">     104 </span>            :       db::DataBox&lt;DbTagsList&gt;&amp; box,
+<span class="lineNum">     105 </span>            :       const tuples::TaggedTuple&lt;InboxTags...&gt;&amp; /*inboxes*/,
+<span class="lineNum">     106 </span>            :       const Parallel::ConstGlobalCache&lt;Metavariables&gt;&amp; cache,
+<span class="lineNum">     107 </span>            :       const ArrayIndex&amp; /*array_index*/, const ActionList /*meta*/,
+<span class="lineNum">     108 </span>            :       const ParallelComponent* const /*meta*/) noexcept {
+<span class="lineNum">     109 </span>            :     static constexpr const size_t volume_dim = system::volume_dim;
+<span class="lineNum">     110 </span>            : 
+<span class="lineNum">     111 </span>            :     const auto&amp; analytic_solution =
+<span class="lineNum">     112 </span>            :         Parallel::get&lt;typename Metavariables::analytic_solution_tag&gt;(cache);
+<span class="lineNum">     113 </span>            :     const auto&amp; normal_dot_numerical_flux_computer =
+<span class="lineNum">     114 </span>            :         Parallel::get&lt;typename Metavariables::normal_dot_numerical_flux&gt;(cache);
+<span class="lineNum">     115 </span>            : 
+<span class="lineNum">     116 </span>            :     db::mutate&lt;fixed_sources_tag&gt;(
+<span class="lineNum">     117 </span>            :         make_not_null(&amp;box),
+<span class="lineNum">     118 </span>            :         [
+<span class="lineNum">     119 </span>            :           &amp;analytic_solution, &amp;normal_dot_numerical_flux_computer
+<span class="lineNum">     120 </span>            :         ](const gsl::not_null&lt;db::item_type&lt;fixed_sources_tag&gt;*&gt; fixed_sources,
+<span class="lineNum">     121 </span>            :           const Mesh&lt;volume_dim&gt;&amp; mesh,
+<span class="lineNum">     122 </span>            :           const db::const_item_type&lt;::Tags::BoundaryDirectionsInterior&lt;
+<span class="lineNum">     123 </span>            :               volume_dim&gt;&gt;&amp; boundary_directions,
+<span class="lineNum">     124 </span>            :           const db::const_item_type&lt;::Tags::Interface&lt;
+<span class="lineNum">     125 </span>            :               ::Tags::BoundaryDirectionsExterior&lt;volume_dim&gt;,
+<span class="lineNum">     126 </span>            :               ::Tags::Coordinates&lt;volume_dim, Frame::Inertial&gt;&gt;&gt;&amp;
+<span class="lineNum">     127 </span>            :               boundary_coordinates,
+<span class="lineNum">     128 </span>            :           const db::const_item_type&lt;fluxes_computer_tag&gt;&amp; fluxes_computer,
+<span class="lineNum">     129 </span>            :           const db::const_item_type&lt;
+<span class="lineNum">     130 </span>            :               ::Tags::Interface&lt;::Tags::BoundaryDirectionsExterior&lt;volume_dim&gt;,
+<span class="lineNum">     131 </span>            :                                 FluxesArgs&gt;&gt;&amp;... fluxes_args,
+<span class="lineNum">     132 </span>            :           const db::const_item_type&lt;::Tags::Interface&lt;
+<span class="lineNum">     133 </span>            :               ::Tags::BoundaryDirectionsInterior&lt;volume_dim&gt;,
+<span class="lineNum">     134 </span>            :               ::Tags::Normalized&lt;::Tags::UnnormalizedFaceNormal&lt;volume_dim&gt;&gt;&gt;&gt;&amp;
+<span class="lineNum">     135 </span>            :               normalized_face_normals,
+<span class="lineNum">     136 </span>            :           const db::const_item_type&lt;::Tags::Interface&lt;
+<span class="lineNum">     137 </span>            :               ::Tags::BoundaryDirectionsInterior&lt;volume_dim&gt;,
+<span class="lineNum">     138 </span>            :               ::Tags::Magnitude&lt;::Tags::UnnormalizedFaceNormal&lt;volume_dim&gt;&gt;&gt;&gt;&amp;
+<span class="lineNum">     139 </span>            :               magnitude_of_face_normals) noexcept {
+<span class="lineNum">     140 </span>            :           // Impose Dirichlet boundary conditions as contributions to the source
+<span class="lineNum">     141 </span>            :           for (const auto&amp; direction : boundary_directions) {
+<span class="lineNum">     142 </span>            :             const size_t dimension = direction.dimension();
+<span class="lineNum">     143 </span>            :             const auto mortar_mesh = mesh.slice_away(dimension);
+<span class="lineNum">     144 </span>            :             // Compute Dirichlet data on mortar
+<span class="lineNum">     145 </span>            :             Variables&lt;typename system::primal_fields&gt; dirichlet_boundary_data{
+<span class="lineNum">     146 </span>            :                 mortar_mesh.number_of_grid_points(), 0.};
+<span class="lineNum">     147 </span>            :             dirichlet_boundary_data.assign_subset(
+<span class="lineNum">     148 </span>            :                 analytic_solution.variables(boundary_coordinates.at(direction),
+<span class="lineNum">     149 </span>            :                                             typename system::primal_fields{}));
+<span class="lineNum">     150 </span>            :             // Compute the numerical flux contribution from the Dirichlet data
+<span class="lineNum">     151 </span>            :             db::item_type&lt;db::add_tag_prefix&lt;::Tags::NormalDotNumericalFlux,
+<span class="lineNum">     152 </span>            :                                              fixed_sources_tag&gt;&gt;
+<span class="lineNum">     153 </span>            :                 boundary_normal_dot_numerical_fluxes{
+<span class="lineNum">     154 </span>            :                     mortar_mesh.number_of_grid_points(), 0.};
+<span class="lineNum">     155 </span>            :             compute_dirichlet_boundary_normal_dot_numerical_flux(
+<span class="lineNum">     156 </span>            :                 make_not_null(&amp;boundary_normal_dot_numerical_fluxes),
+<span class="lineNum">     157 </span>            :                 normal_dot_numerical_flux_computer,
+<span class="lineNum">     158 </span>            :                 std::move(dirichlet_boundary_data), fluxes_computer,
+<span class="lineNum">     159 </span>            :                 fluxes_args.at(direction)...,
+<span class="lineNum">     160 </span>            :                 normalized_face_normals.at(direction));
+<span class="lineNum">     161 </span>            :             // Flip sign of the boundary contributions, making them
+<span class="lineNum">     162 </span>            :             // contributions to the source
+<span class="lineNum">     163 </span>            :             db::item_type&lt;fixed_sources_tag&gt; lifted_boundary_data{
+<span class="lineNum">     164 </span>            :                 -1. *
+<span class="lineNum">     165 </span>            :                 ::dg::lift_flux(std::move(boundary_normal_dot_numerical_fluxes),
+<span class="lineNum">     166 </span>            :                                 mesh.extents(dimension),
+<span class="lineNum">     167 </span>            :                                 magnitude_of_face_normals.at(direction))};
+<span class="lineNum">     168 </span>            :             add_slice_to_data(fixed_sources, std::move(lifted_boundary_data),
+<span class="lineNum">     169 </span>            :                               mesh.extents(), dimension,
+<span class="lineNum">     170 </span>            :                               index_to_slice_at(mesh.extents(), direction));
+<span class="lineNum">     171 </span>            :           }
+<span class="lineNum">     172 </span>            :         },
+<span class="lineNum">     173 </span>            :         get&lt;::Tags::Mesh&lt;volume_dim&gt;&gt;(box),
+<span class="lineNum">     174 </span>            :         get&lt;::Tags::BoundaryDirectionsInterior&lt;volume_dim&gt;&gt;(box),
+<span class="lineNum">     175 </span>            :         get&lt;::Tags::Interface&lt;
+<span class="lineNum">     176 </span>            :             ::Tags::BoundaryDirectionsExterior&lt;volume_dim&gt;,
+<span class="lineNum">     177 </span>            :             ::Tags::Coordinates&lt;volume_dim, Frame::Inertial&gt;&gt;&gt;(box),
+<span class="lineNum">     178 </span>            :         get&lt;fluxes_computer_tag&gt;(box),
+<span class="lineNum">     179 </span>            :         get&lt;::Tags::Interface&lt;::Tags::BoundaryDirectionsExterior&lt;volume_dim&gt;,
+<span class="lineNum">     180 </span>            :                               FluxesArgs&gt;&gt;(box)...,
+<span class="lineNum">     181 </span>            :         get&lt;::Tags::Interface&lt;
+<span class="lineNum">     182 </span>            :             ::Tags::BoundaryDirectionsInterior&lt;volume_dim&gt;,
+<span class="lineNum">     183 </span>            :             ::Tags::Normalized&lt;::Tags::UnnormalizedFaceNormal&lt;volume_dim&gt;&gt;&gt;&gt;(
+<span class="lineNum">     184 </span>            :             box),
+<span class="lineNum">     185 </span>            :         get&lt;::Tags::Interface&lt;
+<span class="lineNum">     186 </span>            :             ::Tags::BoundaryDirectionsInterior&lt;volume_dim&gt;,
+<span class="lineNum">     187 </span>            :             ::Tags::Magnitude&lt;::Tags::UnnormalizedFaceNormal&lt;volume_dim&gt;&gt;&gt;&gt;(
+<span class="lineNum">     188 </span>            :             box));
+<span class="lineNum">     189 </span>            : 
+<span class="lineNum">     190 </span>            :     return {std::move(box)};
+<span class="lineNum">     191 </span>            :   }
+<span class="lineNum">     192 </span>            : };
+<span class="lineNum">     193 </span>            : }  // namespace Actions
+<span class="lineNum">     194 </span>            : }  // namespace dg
+<span class="lineNum">     195 </span>            : }  // namespace elliptic
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.13</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

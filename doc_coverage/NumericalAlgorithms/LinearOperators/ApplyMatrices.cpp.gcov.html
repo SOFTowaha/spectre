@@ -1,0 +1,798 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - 5912ac2e49a80e6a27b3707c9a1e6ce5248b1b2a - NumericalAlgorithms/LinearOperators/ApplyMatrices.cpp</title>
+  <link rel="stylesheet" type="text/css" href="../../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title"> SpECTRE Documentation Coverage Report</td></tr>
+    <tr><td class="ruler"><img src="../../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../../index.html">top level</a> - <a href="index.html">NumericalAlgorithms/LinearOperators</a> - ApplyMatrices.cpp</td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+             <td class="headerItem">Commit:</td>
+             <td class="headerValue"><a target="_blank" href="https://github.com/sxs-collaboration/spectre/commit/5912ac2e49a80e6a27b3707c9a1e6ce5248b1b2a">5912ac2e49a80e6a27b3707c9a1e6ce5248b1b2a</a></td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntry">6</td>
+            <td class="headerCovTableEntryLo">0.0 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2019-12-02 22:01:08</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td class="headerItem">Legend:</td>
+            <td class="headerValueLeg">            Lines:
+            <span class="coverLegendCov">hit</span>
+            <span class="coverLegendNoCov">not hit</span>
+</td>
+            <td></td>
+          </tr>
+          <tr><td><img src="../../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">          Line data    Source code</pre>
+<pre class="source">
+<span class="lineNum">       1 </span><span class="lineNoCov">          0 : // Distributed under the MIT License.</span>
+<span class="lineNum">       2 </span>            : // See LICENSE.txt for details.
+<span class="lineNum">       3 </span>            : 
+<span class="lineNum">       4 </span>            : #include &quot;NumericalAlgorithms/LinearOperators/ApplyMatrices.hpp&quot;
+<span class="lineNum">       5 </span>            : 
+<span class="lineNum">       6 </span>            : #include &lt;array&gt;
+<span class="lineNum">       7 </span>            : #include &lt;complex&gt;
+<span class="lineNum">       8 </span>            : #include &lt;cstddef&gt;
+<span class="lineNum">       9 </span>            : #include &lt;vector&gt;
+<span class="lineNum">      10 </span>            : 
+<span class="lineNum">      11 </span>            : #include &quot;DataStructures/Index.hpp&quot;
+<span class="lineNum">      12 </span>            : #include &quot;DataStructures/Matrix.hpp&quot;
+<span class="lineNum">      13 </span>            : #include &quot;NumericalAlgorithms/LinearOperators/Transpose.hpp&quot;
+<span class="lineNum">      14 </span>            : #include &quot;Utilities/Blas.hpp&quot;
+<span class="lineNum">      15 </span>            : #include &quot;Utilities/DereferenceWrapper.hpp&quot;
+<span class="lineNum">      16 </span>            : #include &quot;Utilities/GenerateInstantiations.hpp&quot;
+<span class="lineNum">      17 </span>            : 
+<span class="lineNum">      18 </span><span class="lineNoCov">          0 : namespace {</span>
+<span class="lineNum">      19 </span>            : void multiply_in_first_dimension(const gsl::not_null&lt;double*&gt; result,
+<span class="lineNum">      20 </span>            :                                  const gsl::not_null&lt;size_t*&gt; data_size,
+<span class="lineNum">      21 </span>            :                                  const Matrix&amp; matrix,
+<span class="lineNum">      22 </span>            :                                  const double* data) noexcept {
+<span class="lineNum">      23 </span>            :   *data_size /= matrix.columns();
+<span class="lineNum">      24 </span>            :   dgemm_&lt;true&gt;('N', 'N',
+<span class="lineNum">      25 </span>            :                matrix.rows(),     // rows of matrix and result
+<span class="lineNum">      26 </span>            :                *data_size,        // columns of result and u
+<span class="lineNum">      27 </span>            :                matrix.columns(),  // columns of matrix and rows of u
+<span class="lineNum">      28 </span>            :                1.0,               // overall multiplier
+<span class="lineNum">      29 </span>            :                matrix.data(),     // matrix
+<span class="lineNum">      30 </span>            :                matrix.rows(),     // rows of matrix
+<span class="lineNum">      31 </span>            :                data,              // u
+<span class="lineNum">      32 </span>            :                matrix.columns(),  // rows of u
+<span class="lineNum">      33 </span>            :                0.0,               // multiplier for unused term
+<span class="lineNum">      34 </span>            :                result.get(),      // result
+<span class="lineNum">      35 </span>            :                matrix.rows());    // rows of result
+<span class="lineNum">      36 </span>            :   *data_size *= matrix.rows();
+<span class="lineNum">      37 </span>            : }
+<span class="lineNum">      38 </span>            : 
+<span class="lineNum">      39 </span>            : void do_transpose(const gsl::not_null&lt;double*&gt; result, const double* const data,
+<span class="lineNum">      40 </span>            :                   const size_t data_size, const size_t chunk_size) noexcept {
+<span class="lineNum">      41 </span>            :   raw_transpose(result, data, chunk_size, data_size / chunk_size);
+<span class="lineNum">      42 </span>            : }
+<span class="lineNum">      43 </span>            : 
+<span class="lineNum">      44 </span>            : struct Scratch {
+<span class="lineNum">      45 </span>            :   std::vector&lt;double&gt; buffer;
+<span class="lineNum">      46 </span>            :   double* a;
+<span class="lineNum">      47 </span>            :   double* b;
+<span class="lineNum">      48 </span>            : };
+<span class="lineNum">      49 </span>            : 
+<span class="lineNum">      50 </span>            : // This does not take into account the order that the matrices are
+<span class="lineNum">      51 </span>            : // applied in and gives the largest amount of space that could be
+<span class="lineNum">      52 </span>            : // required for any application order.
+<span class="lineNum">      53 </span>            : template &lt;typename MatrixType, size_t Dim&gt;
+<span class="lineNum">      54 </span>            : Scratch get_scratch(const std::array&lt;MatrixType, Dim&gt;&amp; matrices,
+<span class="lineNum">      55 </span>            :                     const Index&lt;Dim&gt;&amp; extents,
+<span class="lineNum">      56 </span>            :                     const size_t number_of_independent_components) noexcept {
+<span class="lineNum">      57 </span>            :   size_t size = number_of_independent_components;
+<span class="lineNum">      58 </span>            :   for (size_t i = 0; i &lt; Dim; ++i) {
+<span class="lineNum">      59 </span>            :     const auto&amp; matrix = gsl::at(matrices, i);
+<span class="lineNum">      60 </span>            :     if (dereference_wrapper(matrix) == Matrix{}) {
+<span class="lineNum">      61 </span>            :       size *= extents[i];
+<span class="lineNum">      62 </span>            :     } else {
+<span class="lineNum">      63 </span>            :       size *= std::max(dereference_wrapper(matrix).rows(),
+<span class="lineNum">      64 </span>            :                        dereference_wrapper(matrix).columns());
+<span class="lineNum">      65 </span>            :     }
+<span class="lineNum">      66 </span>            :   }
+<span class="lineNum">      67 </span>            :   Scratch result{};
+<span class="lineNum">      68 </span>            :   result.buffer.resize(2 * size);
+<span class="lineNum">      69 </span>            :   result.a = &amp;result.buffer[0];
+<span class="lineNum">      70 </span>            :   result.b = &amp;result.buffer[size];
+<span class="lineNum">      71 </span>            :   return result;
+<span class="lineNum">      72 </span>            : }
+<span class="lineNum">      73 </span>            : 
+<span class="lineNum">      74 </span>            : // Produce the array of the number of rows in each matrix.  Empty
+<span class="lineNum">      75 </span>            : // matrices are processed as if they were identity matrices.
+<span class="lineNum">      76 </span>            : template &lt;size_t Dim, typename MatrixType&gt;
+<span class="lineNum">      77 </span>            : std::array&lt;size_t, Dim&gt; matrix_rows(const std::array&lt;MatrixType, Dim&gt;&amp; matrices,
+<span class="lineNum">      78 </span>            :                                     const Index&lt;Dim&gt;&amp; extents) noexcept {
+<span class="lineNum">      79 </span>            :   std::array&lt;size_t, Dim&gt; result{};
+<span class="lineNum">      80 </span>            :   for (size_t i = 0; i &lt; Dim; ++i) {
+<span class="lineNum">      81 </span>            :     if (dereference_wrapper(gsl::at(matrices, i)) == Matrix{}) {
+<span class="lineNum">      82 </span>            :       gsl::at(result, i) = extents[i];
+<span class="lineNum">      83 </span>            :     } else {
+<span class="lineNum">      84 </span>            :       gsl::at(result, i) = dereference_wrapper(gsl::at(matrices, i)).rows();
+<span class="lineNum">      85 </span>            :     }
+<span class="lineNum">      86 </span>            :   }
+<span class="lineNum">      87 </span>            :   return result;
+<span class="lineNum">      88 </span>            : }
+<span class="lineNum">      89 </span>            : }  // namespace
+<span class="lineNum">      90 </span>            : 
+<span class="lineNum">      91 </span>            : namespace apply_matrices_detail {
+<span class="lineNum">      92 </span>            : template &lt;typename ElementType, size_t Dim, bool... DimensionIsIdentity&gt;
+<span class="lineNum">      93 </span>            : template &lt;typename MatrixType&gt;
+<span class="lineNum">      94 </span>            : void Impl&lt;ElementType, Dim, DimensionIsIdentity...&gt;::apply(
+<span class="lineNum">      95 </span>            :     const gsl::not_null&lt;ElementType*&gt; result,
+<span class="lineNum">      96 </span>            :     const std::array&lt;MatrixType, Dim&gt;&amp; matrices, const ElementType* const data,
+<span class="lineNum">      97 </span>            :     const Index&lt;Dim&gt;&amp; extents,
+<span class="lineNum">      98 </span>            :     const size_t number_of_independent_components) noexcept {
+<span class="lineNum">      99 </span>            :   if (dereference_wrapper(matrices[sizeof...(DimensionIsIdentity)]) ==
+<span class="lineNum">     100 </span>            :       Matrix{}) {
+<span class="lineNum">     101 </span>            :     Impl&lt;ElementType, Dim, DimensionIsIdentity..., true&gt;::apply(
+<span class="lineNum">     102 </span>            :         result, matrices, data, extents, number_of_independent_components);
+<span class="lineNum">     103 </span>            :   } else {
+<span class="lineNum">     104 </span>            :     Impl&lt;ElementType, Dim, DimensionIsIdentity..., false&gt;::apply(
+<span class="lineNum">     105 </span>            :         result, matrices, data, extents, number_of_independent_components);
+<span class="lineNum">     106 </span>            :   }
+<span class="lineNum">     107 </span>            : }
+<span class="lineNum">     108 </span>            : 
+<span class="lineNum">     109 </span>            : template &lt;typename ElementType&gt;
+<span class="lineNum">     110 </span>            : struct Impl&lt;ElementType, 0&gt; {
+<span class="lineNum">     111 </span>            :   static constexpr const size_t Dim = 0;
+<span class="lineNum">     112 </span>            :   template &lt;typename MatrixType&gt;
+<span class="lineNum">     113 </span>            :   static void apply(const gsl::not_null&lt;ElementType*&gt; result,
+<span class="lineNum">     114 </span>            :                     const std::array&lt;MatrixType, Dim&gt;&amp; /*matrices*/,
+<span class="lineNum">     115 </span>            :                     const ElementType* const data,
+<span class="lineNum">     116 </span>            :                     const Index&lt;Dim&gt;&amp; /*extents*/,
+<span class="lineNum">     117 </span>            :                     const size_t number_of_independent_components) noexcept {
+<span class="lineNum">     118 </span>            :     // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-pointer-arithmetic)
+<span class="lineNum">     119 </span>            :     std::copy(data, data + number_of_independent_components, result.get());
+<span class="lineNum">     120 </span>            :   }
+<span class="lineNum">     121 </span>            : };
+<span class="lineNum">     122 </span>            : 
+<span class="lineNum">     123 </span>            : template &lt;&gt;
+<span class="lineNum">     124 </span>            : struct Impl&lt;double, 1, false&gt; {
+<span class="lineNum">     125 </span>            :   static constexpr const size_t Dim = 1;
+<span class="lineNum">     126 </span>            :   template &lt;typename MatrixType&gt;
+<span class="lineNum">     127 </span>            :   static void apply(const gsl::not_null&lt;double*&gt; result,
+<span class="lineNum">     128 </span>            :                     const std::array&lt;MatrixType, Dim&gt;&amp; matrices,
+<span class="lineNum">     129 </span>            :                     const double* const data, const Index&lt;Dim&gt;&amp; extents,
+<span class="lineNum">     130 </span>            :                     const size_t number_of_independent_components) noexcept {
+<span class="lineNum">     131 </span>            :     size_t data_size = number_of_independent_components * extents.product();
+<span class="lineNum">     132 </span>            :     multiply_in_first_dimension(result, &amp;data_size, matrices[0], data);
+<span class="lineNum">     133 </span>            :   }
+<span class="lineNum">     134 </span>            : };
+<span class="lineNum">     135 </span>            : 
+<span class="lineNum">     136 </span>            : template &lt;&gt;
+<span class="lineNum">     137 </span>            : struct Impl&lt;std::complex&lt;double&gt;, 1, false&gt; {
+<span class="lineNum">     138 </span>            :   static constexpr const size_t Dim = 1;
+<span class="lineNum">     139 </span>            :   template &lt;typename MatrixType&gt;
+<span class="lineNum">     140 </span>            :   static void apply(const gsl::not_null&lt;std::complex&lt;double&gt;*&gt; result,
+<span class="lineNum">     141 </span>            :                     const std::array&lt;MatrixType, Dim&gt;&amp; matrices,
+<span class="lineNum">     142 </span>            :                     const std::complex&lt;double&gt;* const data,
+<span class="lineNum">     143 </span>            :                     const Index&lt;Dim&gt;&amp; extents,
+<span class="lineNum">     144 </span>            :                     const size_t number_of_independent_components) noexcept {
+<span class="lineNum">     145 </span>            :     size_t data_size = number_of_independent_components * extents.product() * 2;
+<span class="lineNum">     146 </span>            :     auto scratch =
+<span class="lineNum">     147 </span>            :         get_scratch(matrices, extents, number_of_independent_components * 2);
+<span class="lineNum">     148 </span>            :     // complex values will be treated as pairs of doubles for the LAPACK call,
+<span class="lineNum">     149 </span>            :     // as we will typically be applying a real matrix to a complex vector. To
+<span class="lineNum">     150 </span>            :     // treat the complex values as an additional 'dimension' to transpose, a
+<span class="lineNum">     151 </span>            :     // reinterpret cast is required.
+<span class="lineNum">     152 </span>            :     // NOLINTNEXTLINE(cppcoreguildelines-pro-type-reinterpret-cast)
+<span class="lineNum">     153 </span>            :     do_transpose(scratch.a, reinterpret_cast&lt;const double* const&gt;(data),
+<span class="lineNum">     154 </span>            :                  data_size, 2);
+<span class="lineNum">     155 </span>            :     multiply_in_first_dimension(scratch.b, &amp;data_size, matrices[0], scratch.a);
+<span class="lineNum">     156 </span>            :     // NOLINTNEXTLINE(cppcoreguildelines-pro-type-reinterpret-cast)
+<span class="lineNum">     157 </span>            :     do_transpose(make_not_null(reinterpret_cast&lt;double*&gt;(result.get())),
+<span class="lineNum">     158 </span>            :                  scratch.b, data_size, data_size / 2);
+<span class="lineNum">     159 </span>            :   }
+<span class="lineNum">     160 </span>            : };
+<span class="lineNum">     161 </span>            : 
+<span class="lineNum">     162 </span>            : template &lt;typename ElementType&gt;
+<span class="lineNum">     163 </span>            : struct Impl&lt;ElementType, 1, true&gt; {
+<span class="lineNum">     164 </span>            :   static constexpr const size_t Dim = 1;
+<span class="lineNum">     165 </span>            :   template &lt;typename MatrixType&gt;
+<span class="lineNum">     166 </span>            :   static void apply(const gsl::not_null&lt;ElementType*&gt; result,
+<span class="lineNum">     167 </span>            :                     const std::array&lt;MatrixType, Dim&gt;&amp; /*matrices*/,
+<span class="lineNum">     168 </span>            :                     const ElementType* const data, const Index&lt;Dim&gt;&amp; extents,
+<span class="lineNum">     169 </span>            :                     const size_t number_of_independent_components) noexcept {
+<span class="lineNum">     170 </span>            :     // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-pointer-arithmetic)
+<span class="lineNum">     171 </span>            :     std::copy(data, data + number_of_independent_components * extents.product(),
+<span class="lineNum">     172 </span>            :               result.get());
+<span class="lineNum">     173 </span>            :   }
+<span class="lineNum">     174 </span>            : };
+<span class="lineNum">     175 </span>            : 
+<span class="lineNum">     176 </span>            : template &lt;&gt;
+<span class="lineNum">     177 </span>            : struct Impl&lt;double, 2, false, false&gt; {
+<span class="lineNum">     178 </span>            :   static constexpr size_t Dim = 2;
+<span class="lineNum">     179 </span>            :   template &lt;typename MatrixType&gt;
+<span class="lineNum">     180 </span>            :   static void apply(const gsl::not_null&lt;double*&gt; result,
+<span class="lineNum">     181 </span>            :                     const std::array&lt;MatrixType, Dim&gt;&amp; matrices,
+<span class="lineNum">     182 </span>            :                     const double* const data, const Index&lt;Dim&gt;&amp; extents,
+<span class="lineNum">     183 </span>            :                     const size_t number_of_independent_components) noexcept {
+<span class="lineNum">     184 </span>            :     const auto rows = matrix_rows(matrices, extents);
+<span class="lineNum">     185 </span>            :     auto scratch =
+<span class="lineNum">     186 </span>            :         get_scratch(matrices, extents, number_of_independent_components);
+<span class="lineNum">     187 </span>            : 
+<span class="lineNum">     188 </span>            :     size_t data_size = number_of_independent_components * extents.product();
+<span class="lineNum">     189 </span>            :     multiply_in_first_dimension(scratch.a, &amp;data_size, matrices[0], data);
+<span class="lineNum">     190 </span>            :     do_transpose(scratch.b, scratch.a, data_size, rows[0]);
+<span class="lineNum">     191 </span>            :     multiply_in_first_dimension(scratch.a, &amp;data_size, matrices[1], scratch.b);
+<span class="lineNum">     192 </span>            :     do_transpose(result, scratch.a, data_size,
+<span class="lineNum">     193 </span>            :                  number_of_independent_components * rows[1]);
+<span class="lineNum">     194 </span>            :   }
+<span class="lineNum">     195 </span>            : };
+<span class="lineNum">     196 </span>            : 
+<span class="lineNum">     197 </span>            : template &lt;&gt;
+<span class="lineNum">     198 </span>            : struct Impl&lt;std::complex&lt;double&gt;, 2, false, false&gt; {
+<span class="lineNum">     199 </span>            :   static constexpr size_t Dim = 2;
+<span class="lineNum">     200 </span>            :   template &lt;typename MatrixType&gt;
+<span class="lineNum">     201 </span>            :   static void apply(const gsl::not_null&lt;std::complex&lt;double&gt;*&gt; result,
+<span class="lineNum">     202 </span>            :                     const std::array&lt;MatrixType, Dim&gt;&amp; matrices,
+<span class="lineNum">     203 </span>            :                     const std::complex&lt;double&gt;* const data,
+<span class="lineNum">     204 </span>            :                     const Index&lt;Dim&gt;&amp; extents,
+<span class="lineNum">     205 </span>            :                     const size_t number_of_independent_components) noexcept {
+<span class="lineNum">     206 </span>            :     const auto rows = matrix_rows(matrices, extents);
+<span class="lineNum">     207 </span>            :     auto scratch =
+<span class="lineNum">     208 </span>            :         get_scratch(matrices, extents, number_of_independent_components * 2);
+<span class="lineNum">     209 </span>            : 
+<span class="lineNum">     210 </span>            :     // complex values will be treated as pairs of doubles for the LAPACK call,
+<span class="lineNum">     211 </span>            :     // as we will typically be applying a real matrix to a complex vector. To
+<span class="lineNum">     212 </span>            :     // treat the complex values as an additional 'dimension' to transpose, a
+<span class="lineNum">     213 </span>            :     // reinterpret cast is required.
+<span class="lineNum">     214 </span>            :     size_t data_size = number_of_independent_components * extents.product() * 2;
+<span class="lineNum">     215 </span>            :     // NOLINTNEXTLINE(cppcoreguildelines-pro-type-reinterpret-cast)
+<span class="lineNum">     216 </span>            :     do_transpose(scratch.a, reinterpret_cast&lt;const double* const&gt;(data),
+<span class="lineNum">     217 </span>            :                  data_size, 2);
+<span class="lineNum">     218 </span>            :     multiply_in_first_dimension(scratch.b, &amp;data_size, matrices[0], scratch.a);
+<span class="lineNum">     219 </span>            :     do_transpose(scratch.a, scratch.b, data_size, rows[0]);
+<span class="lineNum">     220 </span>            :     multiply_in_first_dimension(scratch.b, &amp;data_size, matrices[1], scratch.a);
+<span class="lineNum">     221 </span>            :     // NOLINTNEXTLINE(cppcoreguildelines-pro-type-reinterpret-cast)
+<span class="lineNum">     222 </span>            :     do_transpose(make_not_null(reinterpret_cast&lt;double*&gt;(result.get())),
+<span class="lineNum">     223 </span>            :                  scratch.b, data_size,
+<span class="lineNum">     224 </span>            :                  number_of_independent_components * rows[1]);
+<span class="lineNum">     225 </span>            :   }
+<span class="lineNum">     226 </span>            : };
+<span class="lineNum">     227 </span>            : 
+<span class="lineNum">     228 </span>            : template &lt;&gt;
+<span class="lineNum">     229 </span>            : struct Impl&lt;double, 2, false, true&gt; {
+<span class="lineNum">     230 </span>            :   static constexpr size_t Dim = 2;
+<span class="lineNum">     231 </span>            :   template &lt;typename MatrixType&gt;
+<span class="lineNum">     232 </span>            :   static void apply(const gsl::not_null&lt;double*&gt; result,
+<span class="lineNum">     233 </span>            :                     const std::array&lt;MatrixType, Dim&gt;&amp; matrices,
+<span class="lineNum">     234 </span>            :                     const double* const data, const Index&lt;Dim&gt;&amp; extents,
+<span class="lineNum">     235 </span>            :                     const size_t number_of_independent_components) noexcept {
+<span class="lineNum">     236 </span>            :     size_t data_size = number_of_independent_components * extents.product();
+<span class="lineNum">     237 </span>            :     multiply_in_first_dimension(result, &amp;data_size, matrices[0], data);
+<span class="lineNum">     238 </span>            :   }
+<span class="lineNum">     239 </span>            : };
+<span class="lineNum">     240 </span>            : 
+<span class="lineNum">     241 </span>            : template &lt;&gt;
+<span class="lineNum">     242 </span>            : struct Impl&lt;std::complex&lt;double&gt;, 2, false, true&gt; {
+<span class="lineNum">     243 </span>            :   static constexpr size_t Dim = 2;
+<span class="lineNum">     244 </span>            :   template &lt;typename MatrixType&gt;
+<span class="lineNum">     245 </span>            :   static void apply(const gsl::not_null&lt;std::complex&lt;double&gt;*&gt; result,
+<span class="lineNum">     246 </span>            :                     const std::array&lt;MatrixType, Dim&gt;&amp; matrices,
+<span class="lineNum">     247 </span>            :                     const std::complex&lt;double&gt;* const data,
+<span class="lineNum">     248 </span>            :                     const Index&lt;Dim&gt;&amp; extents,
+<span class="lineNum">     249 </span>            :                     const size_t number_of_independent_components) noexcept {
+<span class="lineNum">     250 </span>            :     auto scratch =
+<span class="lineNum">     251 </span>            :         get_scratch(matrices, extents, number_of_independent_components * 2);
+<span class="lineNum">     252 </span>            : 
+<span class="lineNum">     253 </span>            :     // complex values will be treated as pairs of doubles for the LAPACK call,
+<span class="lineNum">     254 </span>            :     // as we will typically be applying a real matrix to a complex vector. To
+<span class="lineNum">     255 </span>            :     // treat the complex values as an additional 'dimension' to transpose, a
+<span class="lineNum">     256 </span>            :     // reinterpret cast is required.
+<span class="lineNum">     257 </span>            :     size_t data_size = number_of_independent_components * extents.product() * 2;
+<span class="lineNum">     258 </span>            :     // NOLINTNEXTLINE(cppcoreguildelines-pro-type-reinterpret-cast)
+<span class="lineNum">     259 </span>            :     do_transpose(scratch.b, reinterpret_cast&lt;const double* const&gt;(data),
+<span class="lineNum">     260 </span>            :                  data_size, 2);
+<span class="lineNum">     261 </span>            :     multiply_in_first_dimension(scratch.a, &amp;data_size, matrices[0], scratch.b);
+<span class="lineNum">     262 </span>            :     // NOLINTNEXTLINE(cppcoreguildelines-pro-type-reinterpret-cast)
+<span class="lineNum">     263 </span>            :     do_transpose(make_not_null(reinterpret_cast&lt;double*&gt;(result.get())),
+<span class="lineNum">     264 </span>            :                  scratch.a, data_size, data_size / 2);
+<span class="lineNum">     265 </span>            :   }
+<span class="lineNum">     266 </span>            : };
+<span class="lineNum">     267 </span>            : 
+<span class="lineNum">     268 </span>            : template &lt;&gt;
+<span class="lineNum">     269 </span>            : struct Impl&lt;double, 2, true, false&gt; {
+<span class="lineNum">     270 </span>            :   static constexpr size_t Dim = 2;
+<span class="lineNum">     271 </span>            :   template &lt;typename MatrixType&gt;
+<span class="lineNum">     272 </span>            :   static void apply(const gsl::not_null&lt;double*&gt; result,
+<span class="lineNum">     273 </span>            :                     const std::array&lt;MatrixType, Dim&gt;&amp; matrices,
+<span class="lineNum">     274 </span>            :                     const double* const data, const Index&lt;Dim&gt;&amp; extents,
+<span class="lineNum">     275 </span>            :                     const size_t number_of_independent_components) noexcept {
+<span class="lineNum">     276 </span>            :     const auto rows = matrix_rows(matrices, extents);
+<span class="lineNum">     277 </span>            :     auto scratch =
+<span class="lineNum">     278 </span>            :         get_scratch(matrices, extents, number_of_independent_components);
+<span class="lineNum">     279 </span>            : 
+<span class="lineNum">     280 </span>            :     size_t data_size = number_of_independent_components * extents.product();
+<span class="lineNum">     281 </span>            :     do_transpose(scratch.b, data, data_size, rows[0]);
+<span class="lineNum">     282 </span>            :     multiply_in_first_dimension(scratch.a, &amp;data_size, matrices[1], scratch.b);
+<span class="lineNum">     283 </span>            :     do_transpose(result, scratch.a, data_size,
+<span class="lineNum">     284 </span>            :                  number_of_independent_components * rows[1]);
+<span class="lineNum">     285 </span>            :   }
+<span class="lineNum">     286 </span>            : };
+<span class="lineNum">     287 </span>            : 
+<span class="lineNum">     288 </span>            : template &lt;&gt;
+<span class="lineNum">     289 </span>            : struct Impl&lt;std::complex&lt;double&gt;, 2, true, false&gt; {
+<span class="lineNum">     290 </span>            :   static constexpr size_t Dim = 2;
+<span class="lineNum">     291 </span>            :   template &lt;typename MatrixType&gt;
+<span class="lineNum">     292 </span>            :   static void apply(const gsl::not_null&lt;std::complex&lt;double&gt;*&gt; result,
+<span class="lineNum">     293 </span>            :                     const std::array&lt;MatrixType, Dim&gt;&amp; matrices,
+<span class="lineNum">     294 </span>            :                     const std::complex&lt;double&gt;* const data,
+<span class="lineNum">     295 </span>            :                     const Index&lt;Dim&gt;&amp; extents,
+<span class="lineNum">     296 </span>            :                     const size_t number_of_independent_components) noexcept {
+<span class="lineNum">     297 </span>            :     const auto rows = matrix_rows(matrices, extents);
+<span class="lineNum">     298 </span>            :     auto scratch =
+<span class="lineNum">     299 </span>            :         get_scratch(matrices, extents, number_of_independent_components * 2);
+<span class="lineNum">     300 </span>            : 
+<span class="lineNum">     301 </span>            :     // complex values will be treated as pairs of doubles for the LAPACK call,
+<span class="lineNum">     302 </span>            :     // as we will typically be applying a real matrix to a complex vector. To
+<span class="lineNum">     303 </span>            :     // treat the complex values as an additional 'dimension' to transpose, a
+<span class="lineNum">     304 </span>            :     // reinterpret cast is required.
+<span class="lineNum">     305 </span>            :     size_t data_size = number_of_independent_components * extents.product() * 2;
+<span class="lineNum">     306 </span>            :     // NOLINTNEXTLINE(cppcoreguildelines-pro-type-reinterpret-cast)
+<span class="lineNum">     307 </span>            :     do_transpose(scratch.a, reinterpret_cast&lt;const double* const&gt;(data),
+<span class="lineNum">     308 </span>            :                  data_size, 2);
+<span class="lineNum">     309 </span>            :     do_transpose(scratch.b, scratch.a, data_size, rows[0]);
+<span class="lineNum">     310 </span>            :     multiply_in_first_dimension(scratch.a, &amp;data_size, matrices[1], scratch.b);
+<span class="lineNum">     311 </span>            :     // NOLINTNEXTLINE(cppcoreguildelines-pro-type-reinterpret-cast)
+<span class="lineNum">     312 </span>            :     do_transpose(make_not_null(reinterpret_cast&lt;double*&gt;(result.get())),
+<span class="lineNum">     313 </span>            :                  scratch.a, data_size,
+<span class="lineNum">     314 </span>            :                  number_of_independent_components * rows[1]);
+<span class="lineNum">     315 </span>            :   }
+<span class="lineNum">     316 </span>            : };
+<span class="lineNum">     317 </span>            : 
+<span class="lineNum">     318 </span>            : template &lt;typename ElementType&gt;
+<span class="lineNum">     319 </span>            : struct Impl&lt;ElementType, 2, true, true&gt; {
+<span class="lineNum">     320 </span>            :   static constexpr size_t Dim = 2;
+<span class="lineNum">     321 </span>            :   template &lt;typename MatrixType&gt;
+<span class="lineNum">     322 </span>            :   static void apply(const gsl::not_null&lt;ElementType*&gt; result,
+<span class="lineNum">     323 </span>            :                     const std::array&lt;MatrixType, Dim&gt;&amp; /*matrices*/,
+<span class="lineNum">     324 </span>            :                     const ElementType* const data, const Index&lt;Dim&gt;&amp; extents,
+<span class="lineNum">     325 </span>            :                     const size_t number_of_independent_components) noexcept {
+<span class="lineNum">     326 </span>            :     // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-pointer-arithmetic)
+<span class="lineNum">     327 </span>            :     std::copy(data, data + number_of_independent_components * extents.product(),
+<span class="lineNum">     328 </span>            :               result.get());
+<span class="lineNum">     329 </span>            :   }
+<span class="lineNum">     330 </span>            : };
+<span class="lineNum">     331 </span>            : 
+<span class="lineNum">     332 </span>            : template &lt;&gt;
+<span class="lineNum">     333 </span>            : struct Impl&lt;double, 3, false, false, false&gt; {
+<span class="lineNum">     334 </span>            :   static constexpr size_t Dim = 3;
+<span class="lineNum">     335 </span>            :   template &lt;typename MatrixType&gt;
+<span class="lineNum">     336 </span>            :   static void apply(const gsl::not_null&lt;double*&gt; result,
+<span class="lineNum">     337 </span>            :                     const std::array&lt;MatrixType, Dim&gt;&amp; matrices,
+<span class="lineNum">     338 </span>            :                     const double* const data, const Index&lt;Dim&gt;&amp; extents,
+<span class="lineNum">     339 </span>            :                     const size_t number_of_independent_components) noexcept {
+<span class="lineNum">     340 </span>            :     const auto rows = matrix_rows(matrices, extents);
+<span class="lineNum">     341 </span>            :     auto scratch =
+<span class="lineNum">     342 </span>            :         get_scratch(matrices, extents, number_of_independent_components);
+<span class="lineNum">     343 </span>            : 
+<span class="lineNum">     344 </span>            :     size_t data_size = number_of_independent_components * extents.product();
+<span class="lineNum">     345 </span>            :     multiply_in_first_dimension(scratch.a, &amp;data_size, matrices[0], data);
+<span class="lineNum">     346 </span>            :     do_transpose(scratch.b, scratch.a, data_size, rows[0]);
+<span class="lineNum">     347 </span>            :     multiply_in_first_dimension(scratch.a, &amp;data_size, matrices[1], scratch.b);
+<span class="lineNum">     348 </span>            :     do_transpose(scratch.b, scratch.a, data_size, rows[1]);
+<span class="lineNum">     349 </span>            :     multiply_in_first_dimension(scratch.a, &amp;data_size, matrices[2], scratch.b);
+<span class="lineNum">     350 </span>            :     do_transpose(result, scratch.a, data_size,
+<span class="lineNum">     351 </span>            :                  number_of_independent_components * rows[2]);
+<span class="lineNum">     352 </span>            :   }
+<span class="lineNum">     353 </span>            : };
+<span class="lineNum">     354 </span>            : 
+<span class="lineNum">     355 </span>            : template &lt;&gt;
+<span class="lineNum">     356 </span>            : struct Impl&lt;std::complex&lt;double&gt;, 3, false, false, false&gt; {
+<span class="lineNum">     357 </span>            :   static constexpr size_t Dim = 3;
+<span class="lineNum">     358 </span>            :   template &lt;typename MatrixType&gt;
+<span class="lineNum">     359 </span>            :   static void apply(const gsl::not_null&lt;std::complex&lt;double&gt;*&gt; result,
+<span class="lineNum">     360 </span>            :                     const std::array&lt;MatrixType, Dim&gt;&amp; matrices,
+<span class="lineNum">     361 </span>            :                     const std::complex&lt;double&gt;* const data,
+<span class="lineNum">     362 </span>            :                     const Index&lt;Dim&gt;&amp; extents,
+<span class="lineNum">     363 </span>            :                     const size_t number_of_independent_components) noexcept {
+<span class="lineNum">     364 </span>            :     const auto rows = matrix_rows(matrices, extents);
+<span class="lineNum">     365 </span>            :     auto scratch =
+<span class="lineNum">     366 </span>            :         get_scratch(matrices, extents, number_of_independent_components * 2);
+<span class="lineNum">     367 </span>            : 
+<span class="lineNum">     368 </span>            :     // complex values will be treated as pairs of doubles for the LAPACK call,
+<span class="lineNum">     369 </span>            :     // as we will typically be applying a real matrix to a complex vector. To
+<span class="lineNum">     370 </span>            :     // treat the complex values as an additional 'dimension' to transpose, a
+<span class="lineNum">     371 </span>            :     // reinterpret cast is required.
+<span class="lineNum">     372 </span>            :     size_t data_size = number_of_independent_components * extents.product() * 2;
+<span class="lineNum">     373 </span>            :     // NOLINTNEXTLINE(cppcoreguildelines-pro-type-reinterpret-cast)
+<span class="lineNum">     374 </span>            :     do_transpose(scratch.b, reinterpret_cast&lt;const double* const&gt;(data),
+<span class="lineNum">     375 </span>            :                  data_size, 2);
+<span class="lineNum">     376 </span>            :     multiply_in_first_dimension(scratch.a, &amp;data_size, matrices[0], scratch.b);
+<span class="lineNum">     377 </span>            :     do_transpose(scratch.b, scratch.a, data_size, rows[0]);
+<span class="lineNum">     378 </span>            :     multiply_in_first_dimension(scratch.a, &amp;data_size, matrices[1], scratch.b);
+<span class="lineNum">     379 </span>            :     do_transpose(scratch.b, scratch.a, data_size, rows[1]);
+<span class="lineNum">     380 </span>            :     multiply_in_first_dimension(scratch.a, &amp;data_size, matrices[2], scratch.b);
+<span class="lineNum">     381 </span>            :     // NOLINTNEXTLINE(cppcoreguildelines-pro-type-reinterpret-cast)
+<span class="lineNum">     382 </span>            :     do_transpose(make_not_null(reinterpret_cast&lt;double*&gt;(result.get())),
+<span class="lineNum">     383 </span>            :                  scratch.a, data_size,
+<span class="lineNum">     384 </span>            :                  number_of_independent_components * rows[2]);
+<span class="lineNum">     385 </span>            :   }
+<span class="lineNum">     386 </span>            : };
+<span class="lineNum">     387 </span>            : 
+<span class="lineNum">     388 </span>            : template &lt;&gt;
+<span class="lineNum">     389 </span>            : struct Impl&lt;double, 3, false, false, true&gt; {
+<span class="lineNum">     390 </span>            :   static constexpr size_t Dim = 3;
+<span class="lineNum">     391 </span>            :   template &lt;typename MatrixType&gt;
+<span class="lineNum">     392 </span>            :   static void apply(const gsl::not_null&lt;double*&gt; result,
+<span class="lineNum">     393 </span>            :                     const std::array&lt;MatrixType, Dim&gt;&amp; matrices,
+<span class="lineNum">     394 </span>            :                     const double* const data, const Index&lt;Dim&gt;&amp; extents,
+<span class="lineNum">     395 </span>            :                     const size_t number_of_independent_components) noexcept {
+<span class="lineNum">     396 </span>            :     const auto rows = matrix_rows(matrices, extents);
+<span class="lineNum">     397 </span>            :     auto scratch =
+<span class="lineNum">     398 </span>            :         get_scratch(matrices, extents, number_of_independent_components);
+<span class="lineNum">     399 </span>            : 
+<span class="lineNum">     400 </span>            :     size_t data_size = number_of_independent_components * extents.product();
+<span class="lineNum">     401 </span>            :     multiply_in_first_dimension(scratch.a, &amp;data_size, matrices[0], data);
+<span class="lineNum">     402 </span>            :     do_transpose(scratch.b, scratch.a, data_size, rows[0]);
+<span class="lineNum">     403 </span>            :     multiply_in_first_dimension(scratch.a, &amp;data_size, matrices[1], scratch.b);
+<span class="lineNum">     404 </span>            :     do_transpose(result, scratch.a, data_size,
+<span class="lineNum">     405 </span>            :                  number_of_independent_components * rows[1] * rows[2]);
+<span class="lineNum">     406 </span>            :   }
+<span class="lineNum">     407 </span>            : };
+<span class="lineNum">     408 </span>            : 
+<span class="lineNum">     409 </span>            : template &lt;&gt;
+<span class="lineNum">     410 </span>            : struct Impl&lt;std::complex&lt;double&gt;, 3, false, false, true&gt; {
+<span class="lineNum">     411 </span>            :   static constexpr size_t Dim = 3;
+<span class="lineNum">     412 </span>            :   template &lt;typename MatrixType&gt;
+<span class="lineNum">     413 </span>            :   static void apply(const gsl::not_null&lt;std::complex&lt;double&gt;*&gt; result,
+<span class="lineNum">     414 </span>            :                     const std::array&lt;MatrixType, Dim&gt;&amp; matrices,
+<span class="lineNum">     415 </span>            :                     const std::complex&lt;double&gt;* const data,
+<span class="lineNum">     416 </span>            :                     const Index&lt;Dim&gt;&amp; extents,
+<span class="lineNum">     417 </span>            :                     const size_t number_of_independent_components) noexcept {
+<span class="lineNum">     418 </span>            :     const auto rows = matrix_rows(matrices, extents);
+<span class="lineNum">     419 </span>            :     auto scratch =
+<span class="lineNum">     420 </span>            :         get_scratch(matrices, extents, number_of_independent_components * 2);
+<span class="lineNum">     421 </span>            : 
+<span class="lineNum">     422 </span>            :     // complex values will be treated as pairs of doubles for the LAPACK call,
+<span class="lineNum">     423 </span>            :     // as we will typically be applying a real matrix to a complex vector. To
+<span class="lineNum">     424 </span>            :     // treat the complex values as an additional 'dimension' to transpose, a
+<span class="lineNum">     425 </span>            :     // reinterpret cast is required.
+<span class="lineNum">     426 </span>            :     size_t data_size = number_of_independent_components * extents.product() * 2;
+<span class="lineNum">     427 </span>            :     // NOLINTNEXTLINE(cppcoreguildelines-pro-type-reinterpret-cast)
+<span class="lineNum">     428 </span>            :     do_transpose(scratch.b, reinterpret_cast&lt;const double* const&gt;(data),
+<span class="lineNum">     429 </span>            :                  data_size, 2);
+<span class="lineNum">     430 </span>            :     multiply_in_first_dimension(scratch.a, &amp;data_size, matrices[0], scratch.b);
+<span class="lineNum">     431 </span>            :     do_transpose(scratch.b, scratch.a, data_size, rows[0]);
+<span class="lineNum">     432 </span>            :     multiply_in_first_dimension(scratch.a, &amp;data_size, matrices[1], scratch.b);
+<span class="lineNum">     433 </span>            :     // NOLINTNEXTLINE(cppcoreguildelines-pro-type-reinterpret-cast)
+<span class="lineNum">     434 </span>            :     do_transpose(make_not_null(reinterpret_cast&lt;double*&gt;(result.get())),
+<span class="lineNum">     435 </span>            :                  scratch.a, data_size,
+<span class="lineNum">     436 </span>            :                  number_of_independent_components * rows[1] * rows[2]);
+<span class="lineNum">     437 </span>            :   }
+<span class="lineNum">     438 </span>            : };
+<span class="lineNum">     439 </span>            : 
+<span class="lineNum">     440 </span>            : template &lt;&gt;
+<span class="lineNum">     441 </span>            : struct Impl&lt;double, 3, false, true, false&gt; {
+<span class="lineNum">     442 </span>            :   static constexpr size_t Dim = 3;
+<span class="lineNum">     443 </span>            :   template &lt;typename MatrixType&gt;
+<span class="lineNum">     444 </span>            :   static void apply(const gsl::not_null&lt;double*&gt; result,
+<span class="lineNum">     445 </span>            :                     const std::array&lt;MatrixType, Dim&gt;&amp; matrices,
+<span class="lineNum">     446 </span>            :                     const double* const data, const Index&lt;Dim&gt;&amp; extents,
+<span class="lineNum">     447 </span>            :                     const size_t number_of_independent_components) noexcept {
+<span class="lineNum">     448 </span>            :     const auto rows = matrix_rows(matrices, extents);
+<span class="lineNum">     449 </span>            :     auto scratch =
+<span class="lineNum">     450 </span>            :         get_scratch(matrices, extents, number_of_independent_components);
+<span class="lineNum">     451 </span>            : 
+<span class="lineNum">     452 </span>            :     size_t data_size = number_of_independent_components * extents.product();
+<span class="lineNum">     453 </span>            :     multiply_in_first_dimension(scratch.a, &amp;data_size, matrices[0], data);
+<span class="lineNum">     454 </span>            :     do_transpose(scratch.b, scratch.a, data_size, rows[0] * rows[1]);
+<span class="lineNum">     455 </span>            :     multiply_in_first_dimension(scratch.a, &amp;data_size, matrices[2], scratch.b);
+<span class="lineNum">     456 </span>            :     do_transpose(result, scratch.a, data_size,
+<span class="lineNum">     457 </span>            :                  number_of_independent_components * rows[2]);
+<span class="lineNum">     458 </span>            :   }
+<span class="lineNum">     459 </span>            : };
+<span class="lineNum">     460 </span>            : 
+<span class="lineNum">     461 </span>            : template &lt;&gt;
+<span class="lineNum">     462 </span>            : struct Impl&lt;std::complex&lt;double&gt;, 3, false, true, false&gt; {
+<span class="lineNum">     463 </span>            :   static constexpr size_t Dim = 3;
+<span class="lineNum">     464 </span>            :   template &lt;typename MatrixType&gt;
+<span class="lineNum">     465 </span>            :   static void apply(const gsl::not_null&lt;std::complex&lt;double&gt;*&gt; result,
+<span class="lineNum">     466 </span>            :                     const std::array&lt;MatrixType, Dim&gt;&amp; matrices,
+<span class="lineNum">     467 </span>            :                     const std::complex&lt;double&gt;* const data,
+<span class="lineNum">     468 </span>            :                     const Index&lt;Dim&gt;&amp; extents,
+<span class="lineNum">     469 </span>            :                     const size_t number_of_independent_components) noexcept {
+<span class="lineNum">     470 </span>            :     const auto rows = matrix_rows(matrices, extents);
+<span class="lineNum">     471 </span>            :     auto scratch =
+<span class="lineNum">     472 </span>            :         get_scratch(matrices, extents, number_of_independent_components * 2);
+<span class="lineNum">     473 </span>            : 
+<span class="lineNum">     474 </span>            :     // complex values will be treated as pairs of doubles for the LAPACK call,
+<span class="lineNum">     475 </span>            :     // as we will typically be applying a real matrix to a complex vector. To
+<span class="lineNum">     476 </span>            :     // treat the complex values as an additional 'dimension' to transpose, a
+<span class="lineNum">     477 </span>            :     // reinterpret cast is required.
+<span class="lineNum">     478 </span>            :     size_t data_size = number_of_independent_components * extents.product() * 2;
+<span class="lineNum">     479 </span>            :     // NOLINTNEXTLINE(cppcoreguildelines-pro-type-reinterpret-cast)
+<span class="lineNum">     480 </span>            :     do_transpose(scratch.b, reinterpret_cast&lt;const double* const&gt;(data),
+<span class="lineNum">     481 </span>            :                  data_size, 2);
+<span class="lineNum">     482 </span>            :     multiply_in_first_dimension(scratch.a, &amp;data_size, matrices[0], scratch.b);
+<span class="lineNum">     483 </span>            :     do_transpose(scratch.b, scratch.a, data_size, rows[0] * rows[1]);
+<span class="lineNum">     484 </span>            :     multiply_in_first_dimension(scratch.a, &amp;data_size, matrices[2], scratch.b);
+<span class="lineNum">     485 </span>            :     // NOLINTNEXTLINE(cppcoreguildelines-pro-type-reinterpret-cast)
+<span class="lineNum">     486 </span>            :     do_transpose(make_not_null(reinterpret_cast&lt;double*&gt;(result.get())),
+<span class="lineNum">     487 </span>            :                  scratch.a, data_size,
+<span class="lineNum">     488 </span>            :                  number_of_independent_components * rows[2]);
+<span class="lineNum">     489 </span>            :   }
+<span class="lineNum">     490 </span>            : };
+<span class="lineNum">     491 </span>            : 
+<span class="lineNum">     492 </span>            : template &lt;&gt;
+<span class="lineNum">     493 </span>            : struct Impl&lt;double, 3, false, true, true&gt; {
+<span class="lineNum">     494 </span>            :   static constexpr size_t Dim = 3;
+<span class="lineNum">     495 </span>            :   template &lt;typename MatrixType&gt;
+<span class="lineNum">     496 </span>            :   static void apply(const gsl::not_null&lt;double*&gt; result,
+<span class="lineNum">     497 </span>            :                     const std::array&lt;MatrixType, Dim&gt;&amp; matrices,
+<span class="lineNum">     498 </span>            :                     const double* const data, const Index&lt;Dim&gt;&amp; extents,
+<span class="lineNum">     499 </span>            :                     const size_t number_of_independent_components) noexcept {
+<span class="lineNum">     500 </span>            :     size_t data_size = number_of_independent_components * extents.product();
+<span class="lineNum">     501 </span>            :     multiply_in_first_dimension(result, &amp;data_size, matrices[0], data);
+<span class="lineNum">     502 </span>            :   }
+<span class="lineNum">     503 </span>            : };
+<span class="lineNum">     504 </span>            : 
+<span class="lineNum">     505 </span>            : template &lt;&gt;
+<span class="lineNum">     506 </span>            : struct Impl&lt;std::complex&lt;double&gt;, 3, false, true, true&gt; {
+<span class="lineNum">     507 </span>            :   static constexpr size_t Dim = 3;
+<span class="lineNum">     508 </span>            :   template &lt;typename MatrixType&gt;
+<span class="lineNum">     509 </span>            :   static void apply(const gsl::not_null&lt;std::complex&lt;double&gt;*&gt; result,
+<span class="lineNum">     510 </span>            :                     const std::array&lt;MatrixType, Dim&gt;&amp; matrices,
+<span class="lineNum">     511 </span>            :                     const std::complex&lt;double&gt;* const data,
+<span class="lineNum">     512 </span>            :                     const Index&lt;Dim&gt;&amp; extents,
+<span class="lineNum">     513 </span>            :                     const size_t number_of_independent_components) noexcept {
+<span class="lineNum">     514 </span>            :     auto scratch =
+<span class="lineNum">     515 </span>            :         get_scratch(matrices, extents, number_of_independent_components * 2);
+<span class="lineNum">     516 </span>            : 
+<span class="lineNum">     517 </span>            :     // complex values will be treated as pairs of doubles for the LAPACK call,
+<span class="lineNum">     518 </span>            :     // as we will typically be applying a real matrix to a complex vector. To
+<span class="lineNum">     519 </span>            :     // treat the complex values as an additional 'dimension' to transpose, a
+<span class="lineNum">     520 </span>            :     // reinterpret cast is required.
+<span class="lineNum">     521 </span>            :     size_t data_size = number_of_independent_components * extents.product() * 2;
+<span class="lineNum">     522 </span>            :     // NOLINTNEXTLINE(cppcoreguildelines-pro-type-reinterpret-cast)
+<span class="lineNum">     523 </span>            :     do_transpose(scratch.a, reinterpret_cast&lt;const double* const&gt;(data),
+<span class="lineNum">     524 </span>            :                  data_size, 2);
+<span class="lineNum">     525 </span>            :     multiply_in_first_dimension(scratch.b, &amp;data_size, matrices[0], scratch.a);
+<span class="lineNum">     526 </span>            :     // NOLINTNEXTLINE(cppcoreguildelines-pro-type-reinterpret-cast)
+<span class="lineNum">     527 </span>            :     do_transpose(make_not_null(reinterpret_cast&lt;double*&gt;(result.get())),
+<span class="lineNum">     528 </span>            :                  scratch.b, data_size, data_size / 2);
+<span class="lineNum">     529 </span>            :   }
+<span class="lineNum">     530 </span>            : };
+<span class="lineNum">     531 </span>            : 
+<span class="lineNum">     532 </span>            : template &lt;&gt;
+<span class="lineNum">     533 </span>            : struct Impl&lt;double, 3, true, false, false&gt; {
+<span class="lineNum">     534 </span>            :   static constexpr size_t Dim = 3;
+<span class="lineNum">     535 </span>            :   template &lt;typename MatrixType&gt;
+<span class="lineNum">     536 </span>            :   static void apply(const gsl::not_null&lt;double*&gt; result,
+<span class="lineNum">     537 </span>            :                     const std::array&lt;MatrixType, Dim&gt;&amp; matrices,
+<span class="lineNum">     538 </span>            :                     const double* const data, const Index&lt;Dim&gt;&amp; extents,
+<span class="lineNum">     539 </span>            :                     const size_t number_of_independent_components) noexcept {
+<span class="lineNum">     540 </span>            :     const auto rows = matrix_rows(matrices, extents);
+<span class="lineNum">     541 </span>            :     auto scratch =
+<span class="lineNum">     542 </span>            :         get_scratch(matrices, extents, number_of_independent_components);
+<span class="lineNum">     543 </span>            : 
+<span class="lineNum">     544 </span>            :     size_t data_size = number_of_independent_components * extents.product();
+<span class="lineNum">     545 </span>            :     do_transpose(scratch.b, data, data_size, rows[0]);
+<span class="lineNum">     546 </span>            :     multiply_in_first_dimension(scratch.a, &amp;data_size, matrices[1], scratch.b);
+<span class="lineNum">     547 </span>            :     do_transpose(scratch.b, scratch.a, data_size, rows[1]);
+<span class="lineNum">     548 </span>            :     multiply_in_first_dimension(scratch.a, &amp;data_size, matrices[2], scratch.b);
+<span class="lineNum">     549 </span>            :     do_transpose(result, scratch.a, data_size,
+<span class="lineNum">     550 </span>            :                  number_of_independent_components * rows[2]);
+<span class="lineNum">     551 </span>            :   }
+<span class="lineNum">     552 </span>            : };
+<span class="lineNum">     553 </span>            : 
+<span class="lineNum">     554 </span>            : template &lt;&gt;
+<span class="lineNum">     555 </span>            : struct Impl&lt;std::complex&lt;double&gt;, 3, true, false, false&gt; {
+<span class="lineNum">     556 </span>            :   static constexpr size_t Dim = 3;
+<span class="lineNum">     557 </span>            :   template &lt;typename MatrixType&gt;
+<span class="lineNum">     558 </span>            :   static void apply(const gsl::not_null&lt;std::complex&lt;double&gt;*&gt; result,
+<span class="lineNum">     559 </span>            :                     const std::array&lt;MatrixType, Dim&gt;&amp; matrices,
+<span class="lineNum">     560 </span>            :                     const std::complex&lt;double&gt;* const data,
+<span class="lineNum">     561 </span>            :                     const Index&lt;Dim&gt;&amp; extents,
+<span class="lineNum">     562 </span>            :                     const size_t number_of_independent_components) noexcept {
+<span class="lineNum">     563 </span>            :     const auto rows = matrix_rows(matrices, extents);
+<span class="lineNum">     564 </span>            :     auto scratch =
+<span class="lineNum">     565 </span>            :         get_scratch(matrices, extents, number_of_independent_components * 2);
+<span class="lineNum">     566 </span>            : 
+<span class="lineNum">     567 </span>            :     // complex values will be treated as pairs of doubles for the LAPACK call,
+<span class="lineNum">     568 </span>            :     // as we will typically be applying a real matrix to a complex vector. To
+<span class="lineNum">     569 </span>            :     // treat the complex values as an additional 'dimension' to transpose, a
+<span class="lineNum">     570 </span>            :     // reinterpret cast is required.
+<span class="lineNum">     571 </span>            :     size_t data_size = number_of_independent_components * extents.product() * 2;
+<span class="lineNum">     572 </span>            :     // NOLINTNEXTLINE(cppcoreguildelines-pro-type-reinterpret-cast)
+<span class="lineNum">     573 </span>            :     do_transpose(scratch.a, reinterpret_cast&lt;const double* const&gt;(data),
+<span class="lineNum">     574 </span>            :                  data_size, 2);
+<span class="lineNum">     575 </span>            :     do_transpose(scratch.b, scratch.a, data_size, rows[0]);
+<span class="lineNum">     576 </span>            :     multiply_in_first_dimension(scratch.a, &amp;data_size, matrices[1], scratch.b);
+<span class="lineNum">     577 </span>            :     do_transpose(scratch.b, scratch.a, data_size, rows[1]);
+<span class="lineNum">     578 </span>            :     multiply_in_first_dimension(scratch.a, &amp;data_size, matrices[2], scratch.b);
+<span class="lineNum">     579 </span>            :     // NOLINTNEXTLINE(cppcoreguildelines-pro-type-reinterpret-cast)
+<span class="lineNum">     580 </span>            :     do_transpose(make_not_null(reinterpret_cast&lt;double*&gt;(result.get())),
+<span class="lineNum">     581 </span>            :                  scratch.a, data_size,
+<span class="lineNum">     582 </span>            :                  number_of_independent_components * rows[2]);
+<span class="lineNum">     583 </span>            :   }
+<span class="lineNum">     584 </span>            : };
+<span class="lineNum">     585 </span>            : 
+<span class="lineNum">     586 </span>            : template &lt;&gt;
+<span class="lineNum">     587 </span>            : struct Impl&lt;double, 3, true, false, true&gt; {
+<span class="lineNum">     588 </span>            :   static constexpr size_t Dim = 3;
+<span class="lineNum">     589 </span>            :   template &lt;typename MatrixType&gt;
+<span class="lineNum">     590 </span>            :   static void apply(const gsl::not_null&lt;double*&gt; result,
+<span class="lineNum">     591 </span>            :                     const std::array&lt;MatrixType, Dim&gt;&amp; matrices,
+<span class="lineNum">     592 </span>            :                     const double* const data, const Index&lt;Dim&gt;&amp; extents,
+<span class="lineNum">     593 </span>            :                     const size_t number_of_independent_components) noexcept {
+<span class="lineNum">     594 </span>            :     const auto rows = matrix_rows(matrices, extents);
+<span class="lineNum">     595 </span>            :     auto scratch =
+<span class="lineNum">     596 </span>            :         get_scratch(matrices, extents, number_of_independent_components);
+<span class="lineNum">     597 </span>            : 
+<span class="lineNum">     598 </span>            :     size_t data_size = number_of_independent_components * extents.product();
+<span class="lineNum">     599 </span>            :     do_transpose(scratch.b, data, data_size, rows[0]);
+<span class="lineNum">     600 </span>            :     multiply_in_first_dimension(scratch.a, &amp;data_size, matrices[1], scratch.b);
+<span class="lineNum">     601 </span>            :     do_transpose(result, scratch.a, data_size,
+<span class="lineNum">     602 </span>            :                  number_of_independent_components * rows[1] * rows[2]);
+<span class="lineNum">     603 </span>            :   }
+<span class="lineNum">     604 </span>            : };
+<span class="lineNum">     605 </span>            : 
+<span class="lineNum">     606 </span>            : template &lt;&gt;
+<span class="lineNum">     607 </span>            : struct Impl&lt;std::complex&lt;double&gt;, 3, true, false, true&gt; {
+<span class="lineNum">     608 </span>            :   static constexpr size_t Dim = 3;
+<span class="lineNum">     609 </span>            :   template &lt;typename MatrixType&gt;
+<span class="lineNum">     610 </span>            :   static void apply(const gsl::not_null&lt;std::complex&lt;double&gt;*&gt; result,
+<span class="lineNum">     611 </span>            :                     const std::array&lt;MatrixType, Dim&gt;&amp; matrices,
+<span class="lineNum">     612 </span>            :                     const std::complex&lt;double&gt;* const data,
+<span class="lineNum">     613 </span>            :                     const Index&lt;Dim&gt;&amp; extents,
+<span class="lineNum">     614 </span>            :                     const size_t number_of_independent_components) noexcept {
+<span class="lineNum">     615 </span>            :     const auto rows = matrix_rows(matrices, extents);
+<span class="lineNum">     616 </span>            :     auto scratch =
+<span class="lineNum">     617 </span>            :         get_scratch(matrices, extents, number_of_independent_components * 2);
+<span class="lineNum">     618 </span>            : 
+<span class="lineNum">     619 </span>            :     // complex values will be treated as pairs of doubles for the LAPACK call,
+<span class="lineNum">     620 </span>            :     // as we will typically be applying a real matrix to a complex vector. To
+<span class="lineNum">     621 </span>            :     // treat the complex values as an additional 'dimension' to transpose, a
+<span class="lineNum">     622 </span>            :     // reinterpret cast is required.
+<span class="lineNum">     623 </span>            :     size_t data_size = number_of_independent_components * extents.product() * 2;
+<span class="lineNum">     624 </span>            :     // NOLINTNEXTLINE(cppcoreguildelines-pro-type-reinterpret-cast)
+<span class="lineNum">     625 </span>            :     do_transpose(scratch.a, reinterpret_cast&lt;const double* const&gt;(data),
+<span class="lineNum">     626 </span>            :                  data_size, 2);
+<span class="lineNum">     627 </span>            :     do_transpose(scratch.b, scratch.a, data_size, rows[0]);
+<span class="lineNum">     628 </span>            :     multiply_in_first_dimension(scratch.a, &amp;data_size, matrices[1], scratch.b);
+<span class="lineNum">     629 </span>            :     // NOLINTNEXTLINE(cppcoreguildelines-pro-type-reinterpret-cast)
+<span class="lineNum">     630 </span>            :     do_transpose(make_not_null(reinterpret_cast&lt;double*&gt;(result.get())),
+<span class="lineNum">     631 </span>            :                  scratch.a, data_size,
+<span class="lineNum">     632 </span>            :                  number_of_independent_components * rows[1] * rows[2]);
+<span class="lineNum">     633 </span>            :   }
+<span class="lineNum">     634 </span>            : };
+<span class="lineNum">     635 </span>            : 
+<span class="lineNum">     636 </span>            : template &lt;&gt;
+<span class="lineNum">     637 </span>            : struct Impl&lt;double, 3, true, true, false&gt; {
+<span class="lineNum">     638 </span>            :   static constexpr size_t Dim = 3;
+<span class="lineNum">     639 </span>            :   template &lt;typename MatrixType&gt;
+<span class="lineNum">     640 </span>            :   static void apply(const gsl::not_null&lt;double*&gt; result,
+<span class="lineNum">     641 </span>            :                     const std::array&lt;MatrixType, Dim&gt;&amp; matrices,
+<span class="lineNum">     642 </span>            :                     const double* const data, const Index&lt;Dim&gt;&amp; extents,
+<span class="lineNum">     643 </span>            :                     const size_t number_of_independent_components) noexcept {
+<span class="lineNum">     644 </span>            :     const auto rows = matrix_rows(matrices, extents);
+<span class="lineNum">     645 </span>            :     auto scratch =
+<span class="lineNum">     646 </span>            :         get_scratch(matrices, extents, number_of_independent_components);
+<span class="lineNum">     647 </span>            : 
+<span class="lineNum">     648 </span>            :     size_t data_size = number_of_independent_components * extents.product();
+<span class="lineNum">     649 </span>            :     do_transpose(scratch.b, data, data_size, rows[0] * rows[1]);
+<span class="lineNum">     650 </span>            :     multiply_in_first_dimension(scratch.a, &amp;data_size, matrices[2], scratch.b);
+<span class="lineNum">     651 </span>            :     do_transpose(result, scratch.a, data_size,
+<span class="lineNum">     652 </span>            :                  number_of_independent_components * rows[2]);
+<span class="lineNum">     653 </span>            :   }
+<span class="lineNum">     654 </span>            : };
+<span class="lineNum">     655 </span>            : 
+<span class="lineNum">     656 </span>            : template &lt;&gt;
+<span class="lineNum">     657 </span>            : struct Impl&lt;std::complex&lt;double&gt;, 3, true, true, false&gt; {
+<span class="lineNum">     658 </span>            :   static constexpr size_t Dim = 3;
+<span class="lineNum">     659 </span>            :   template &lt;typename MatrixType&gt;
+<span class="lineNum">     660 </span>            :   static void apply(const gsl::not_null&lt;std::complex&lt;double&gt;*&gt; result,
+<span class="lineNum">     661 </span>            :                     const std::array&lt;MatrixType, Dim&gt;&amp; matrices,
+<span class="lineNum">     662 </span>            :                     const std::complex&lt;double&gt;* const data,
+<span class="lineNum">     663 </span>            :                     const Index&lt;Dim&gt;&amp; extents,
+<span class="lineNum">     664 </span>            :                     const size_t number_of_independent_components) noexcept {
+<span class="lineNum">     665 </span>            :     const auto rows = matrix_rows(matrices, extents);
+<span class="lineNum">     666 </span>            :     auto scratch =
+<span class="lineNum">     667 </span>            :         get_scratch(matrices, extents, number_of_independent_components * 2);
+<span class="lineNum">     668 </span>            : 
+<span class="lineNum">     669 </span>            :     // complex values will be treated as pairs of doubles for the LAPACK call,
+<span class="lineNum">     670 </span>            :     // as we will typically be applying a real matrix to a complex vector. To
+<span class="lineNum">     671 </span>            :     // treat the complex values as an additional 'dimension' to transpose, a
+<span class="lineNum">     672 </span>            :     // reinterpret cast is required.
+<span class="lineNum">     673 </span>            :     size_t data_size = number_of_independent_components * extents.product() * 2;
+<span class="lineNum">     674 </span>            :     // NOLINTNEXTLINE(cppcoreguildelines-pro-type-reinterpret-cast)
+<span class="lineNum">     675 </span>            :     do_transpose(scratch.a, reinterpret_cast&lt;const double*&gt;(data), data_size,
+<span class="lineNum">     676 </span>            :                  2);
+<span class="lineNum">     677 </span>            :     do_transpose(scratch.b, scratch.a, data_size, rows[0] * rows[1]);
+<span class="lineNum">     678 </span>            :     multiply_in_first_dimension(scratch.a, &amp;data_size, matrices[2], scratch.b);
+<span class="lineNum">     679 </span>            :     // NOLINTNEXTLINE(cppcoreguildelines-pro-type-reinterpret-cast)
+<span class="lineNum">     680 </span>            :     do_transpose(make_not_null(reinterpret_cast&lt;double*&gt;(result.get())),
+<span class="lineNum">     681 </span>            :                  scratch.a, data_size,
+<span class="lineNum">     682 </span>            :                  number_of_independent_components * rows[2]);
+<span class="lineNum">     683 </span>            :   }
+<span class="lineNum">     684 </span>            : };
+<span class="lineNum">     685 </span>            : 
+<span class="lineNum">     686 </span>            : template &lt;typename ElementType&gt;
+<span class="lineNum">     687 </span>            : struct Impl&lt;ElementType, 3, true, true, true&gt; {
+<span class="lineNum">     688 </span>            :   static constexpr size_t Dim = 3;
+<span class="lineNum">     689 </span>            :   template &lt;typename MatrixType&gt;
+<span class="lineNum">     690 </span>            :   static void apply(const gsl::not_null&lt;ElementType*&gt; result,
+<span class="lineNum">     691 </span>            :                     const std::array&lt;MatrixType, Dim&gt;&amp; /*matrices*/,
+<span class="lineNum">     692 </span>            :                     const ElementType* const data, const Index&lt;Dim&gt;&amp; extents,
+<span class="lineNum">     693 </span>            :                     const size_t number_of_independent_components) noexcept {
+<span class="lineNum">     694 </span>            :     // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-pointer-arithmetic)
+<span class="lineNum">     695 </span>            :     std::copy(data, data + number_of_independent_components * extents.product(),
+<span class="lineNum">     696 </span>            :               result.get());
+<span class="lineNum">     697 </span>            :   }
+<span class="lineNum">     698 </span>            : };
+<span class="lineNum">     699 </span>            : 
+<span class="lineNum">     700 </span><span class="lineNoCov">          0 : #define ELEMENTTYPE(data) BOOST_PP_TUPLE_ELEM(0, data)</span>
+<span class="lineNum">     701 </span><span class="lineNoCov">          0 : #define DIM(data) BOOST_PP_TUPLE_ELEM(1, data)</span>
+<span class="lineNum">     702 </span><span class="lineNoCov">          0 : #define MATRIX(data) BOOST_PP_TUPLE_ELEM(2, data)</span>
+<span class="lineNum">     703 </span><span class="lineNoCov">          0 : #define INSTANTIATE(_, data)                                   \</span>
+<span class="lineNum">     704 </span>            :   template void Impl&lt;ELEMENTTYPE(data), DIM(data)&gt;::apply(     \
+<span class="lineNum">     705 </span>            :       const gsl::not_null&lt;ELEMENTTYPE(data)*&gt;,                 \
+<span class="lineNum">     706 </span>            :       const std::array&lt;MATRIX(data), DIM(data)&gt;&amp;,              \
+<span class="lineNum">     707 </span>            :       const ELEMENTTYPE(data)* const, const Index&lt;DIM(data)&gt;&amp;, \
+<span class="lineNum">     708 </span>            :       const size_t) noexcept;
+<span class="lineNum">     709 </span>            : 
+<span class="lineNum">     710 </span>            : GENERATE_INSTANTIATIONS(INSTANTIATE, (double, std::complex&lt;double&gt;),
+<span class="lineNum">     711 </span>            :                         (0, 1, 2, 3),
+<span class="lineNum">     712 </span>            :                         (Matrix, std::reference_wrapper&lt;const Matrix&gt;))
+<span class="lineNum">     713 </span>            : 
+<span class="lineNum">     714 </span>            : #undef DIM
+<span class="lineNum">     715 </span>            : #undef MATRIX
+<span class="lineNum">     716 </span>            : #undef ELEMENTTYPE
+<span class="lineNum">     717 </span>            : #undef INSTANTIATE
+<span class="lineNum">     718 </span>            : }  // namespace apply_matrices_detail
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.13</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

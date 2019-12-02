@@ -1,0 +1,179 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - 5912ac2e49a80e6a27b3707c9a1e6ce5248b1b2a - PointwiseFunctions/AnalyticSolutions/GrMhd/SmoothFlow.cpp</title>
+  <link rel="stylesheet" type="text/css" href="../../../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title"> SpECTRE Documentation Coverage Report</td></tr>
+    <tr><td class="ruler"><img src="../../../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../../../index.html">top level</a> - <a href="index.html">PointwiseFunctions/AnalyticSolutions/GrMhd</a> - SmoothFlow.cpp</td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+             <td class="headerItem">Commit:</td>
+             <td class="headerValue"><a target="_blank" href="https://github.com/sxs-collaboration/spectre/commit/5912ac2e49a80e6a27b3707c9a1e6ce5248b1b2a">5912ac2e49a80e6a27b3707c9a1e6ce5248b1b2a</a></td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntry">1</td>
+            <td class="headerCovTableEntryLo">0.0 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2019-12-02 22:01:08</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td class="headerItem">Legend:</td>
+            <td class="headerValueLeg">            Lines:
+            <span class="coverLegendCov">hit</span>
+            <span class="coverLegendNoCov">not hit</span>
+</td>
+            <td></td>
+          </tr>
+          <tr><td><img src="../../../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../../../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">          Line data    Source code</pre>
+<pre class="source">
+<span class="lineNum">       1 </span><span class="lineNoCov">          0 : // Distributed under the MIT License.</span>
+<span class="lineNum">       2 </span>            : // See LICENSE.txt for details.
+<span class="lineNum">       3 </span>            : 
+<span class="lineNum">       4 </span>            : #include &quot;PointwiseFunctions/AnalyticSolutions/GrMhd/SmoothFlow.hpp&quot;
+<span class="lineNum">       5 </span>            : 
+<span class="lineNum">       6 </span>            : #include &lt;algorithm&gt;
+<span class="lineNum">       7 </span>            : #include &lt;cmath&gt;
+<span class="lineNum">       8 </span>            : #include &lt;cstddef&gt;
+<span class="lineNum">       9 </span>            : #include &lt;numeric&gt;
+<span class="lineNum">      10 </span>            : 
+<span class="lineNum">      11 </span>            : #include &quot;DataStructures/DataBox/DataBoxTag.hpp&quot;
+<span class="lineNum">      12 </span>            : #include &quot;DataStructures/DataVector.hpp&quot;     // IWYU pragma: keep
+<span class="lineNum">      13 </span>            : #include &quot;DataStructures/Tensor/Tensor.hpp&quot;  // IWYU pragma: keep
+<span class="lineNum">      14 </span>            : #include &quot;Parallel/PupStlCpp11.hpp&quot;
+<span class="lineNum">      15 </span>            : #include &quot;Utilities/Functional.hpp&quot;
+<span class="lineNum">      16 </span>            : #include &quot;Utilities/GenerateInstantiations.hpp&quot;
+<span class="lineNum">      17 </span>            : #include &quot;Utilities/Gsl.hpp&quot;
+<span class="lineNum">      18 </span>            : #include &quot;Utilities/MakeWithValue.hpp&quot;
+<span class="lineNum">      19 </span>            : #include &quot;Utilities/Numeric.hpp&quot;
+<span class="lineNum">      20 </span>            : 
+<span class="lineNum">      21 </span>            : // IWYU pragma:  no_include &quot;DataStructures/Tensor/TypeAliases.hpp&quot;
+<span class="lineNum">      22 </span>            : 
+<span class="lineNum">      23 </span>            : /// \cond
+<span class="lineNum">      24 </span>            : namespace grmhd {
+<span class="lineNum">      25 </span>            : namespace Solutions {
+<span class="lineNum">      26 </span>            : 
+<span class="lineNum">      27 </span>            : SmoothFlow::SmoothFlow(MeanVelocity::type mean_velocity,
+<span class="lineNum">      28 </span>            :                        WaveVector::type wavevector,
+<span class="lineNum">      29 </span>            :                        const Pressure::type pressure,
+<span class="lineNum">      30 </span>            :                        const AdiabaticIndex::type adiabatic_index,
+<span class="lineNum">      31 </span>            :                        const PerturbationSize::type perturbation_size) noexcept
+<span class="lineNum">      32 </span>            :     : RelativisticEuler::Solutions::SmoothFlow&lt;3&gt;(mean_velocity, wavevector,
+<span class="lineNum">      33 </span>            :                                                   pressure, adiabatic_index,
+<span class="lineNum">      34 </span>            :                                                   perturbation_size) {}
+<span class="lineNum">      35 </span>            : 
+<span class="lineNum">      36 </span>            : void SmoothFlow::pup(PUP::er&amp; p) noexcept {
+<span class="lineNum">      37 </span>            :   RelativisticEuler::Solutions::SmoothFlow&lt;3&gt;::pup(p);
+<span class="lineNum">      38 </span>            : }
+<span class="lineNum">      39 </span>            : 
+<span class="lineNum">      40 </span>            : template &lt;typename DataType&gt;
+<span class="lineNum">      41 </span>            : tuples::TaggedTuple&lt;hydro::Tags::MagneticField&lt;DataType, 3, Frame::Inertial&gt;&gt;
+<span class="lineNum">      42 </span>            : SmoothFlow::variables(const tnsr::I&lt;DataType, 3&gt;&amp; x, double /*t*/,
+<span class="lineNum">      43 </span>            :                       tmpl::list&lt;hydro::Tags::MagneticField&lt;
+<span class="lineNum">      44 </span>            :                           DataType, 3, Frame::Inertial&gt;&gt; /*meta*/) const
+<span class="lineNum">      45 </span>            :     noexcept {
+<span class="lineNum">      46 </span>            :   return {make_with_value&lt;
+<span class="lineNum">      47 </span>            :       db::item_type&lt;hydro::Tags::MagneticField&lt;DataType, 3, Frame::Inertial&gt;&gt;&gt;(
+<span class="lineNum">      48 </span>            :       x, 0.0)};
+<span class="lineNum">      49 </span>            : }
+<span class="lineNum">      50 </span>            : 
+<span class="lineNum">      51 </span>            : template &lt;typename DataType&gt;
+<span class="lineNum">      52 </span>            : tuples::TaggedTuple&lt;hydro::Tags::DivergenceCleaningField&lt;DataType&gt;&gt;
+<span class="lineNum">      53 </span>            : SmoothFlow::variables(
+<span class="lineNum">      54 </span>            :     const tnsr::I&lt;DataType, 3&gt;&amp; x, double /*t*/,
+<span class="lineNum">      55 </span>            :     tmpl::list&lt;hydro::Tags::DivergenceCleaningField&lt;DataType&gt;&gt; /*meta*/) const
+<span class="lineNum">      56 </span>            :     noexcept {
+<span class="lineNum">      57 </span>            :   return {make_with_value&lt;
+<span class="lineNum">      58 </span>            :       db::item_type&lt;hydro::Tags::DivergenceCleaningField&lt;DataType&gt;&gt;&gt;(x, 0.0)};
+<span class="lineNum">      59 </span>            : }
+<span class="lineNum">      60 </span>            : 
+<span class="lineNum">      61 </span>            : bool operator==(const SmoothFlow&amp; lhs, const SmoothFlow&amp; rhs) noexcept {
+<span class="lineNum">      62 </span>            :   using smooth_flow = RelativisticEuler::Solutions::SmoothFlow&lt;3&gt;;
+<span class="lineNum">      63 </span>            :   return *static_cast&lt;const smooth_flow*&gt;(&amp;lhs) ==
+<span class="lineNum">      64 </span>            :          *static_cast&lt;const smooth_flow*&gt;(&amp;rhs);
+<span class="lineNum">      65 </span>            : }
+<span class="lineNum">      66 </span>            : 
+<span class="lineNum">      67 </span>            : bool operator!=(const SmoothFlow&amp; lhs, const SmoothFlow&amp; rhs) noexcept {
+<span class="lineNum">      68 </span>            :   return not(lhs == rhs);
+<span class="lineNum">      69 </span>            : }
+<span class="lineNum">      70 </span>            : 
+<span class="lineNum">      71 </span>            : #define DTYPE(data) BOOST_PP_TUPLE_ELEM(0, data)
+<span class="lineNum">      72 </span>            : #define TAG(data) BOOST_PP_TUPLE_ELEM(1, data)
+<span class="lineNum">      73 </span>            : 
+<span class="lineNum">      74 </span>            : #define INSTANTIATE_SCALARS(_, data)                                       \
+<span class="lineNum">      75 </span>            :   template tuples::TaggedTuple&lt;TAG(data) &lt; DTYPE(data)&gt;&gt;                   \
+<span class="lineNum">      76 </span>            :       SmoothFlow::variables(const tnsr::I&lt;DTYPE(data), 3&gt;&amp; x, double t,    \
+<span class="lineNum">      77 </span>            :                             tmpl::list&lt;TAG(data) &lt; DTYPE(data)&gt;&gt; /*meta*/) \
+<span class="lineNum">      78 </span>            :           const noexcept;
+<span class="lineNum">      79 </span>            : 
+<span class="lineNum">      80 </span>            : GENERATE_INSTANTIATIONS(INSTANTIATE_SCALARS, (double, DataVector),
+<span class="lineNum">      81 </span>            :                         (hydro::Tags::DivergenceCleaningField))
+<span class="lineNum">      82 </span>            : 
+<span class="lineNum">      83 </span>            : #define INSTANTIATE_VECTORS(_, data)                                         \
+<span class="lineNum">      84 </span>            :   template tuples::TaggedTuple&lt;TAG(data) &lt; DTYPE(data), 3, Frame::Inertial&gt;&gt; \
+<span class="lineNum">      85 </span>            :       SmoothFlow::variables(                                                 \
+<span class="lineNum">      86 </span>            :           const tnsr::I&lt;DTYPE(data), 3&gt;&amp; x, double t,                        \
+<span class="lineNum">      87 </span>            :           tmpl::list&lt;TAG(data) &lt; DTYPE(data), 3, Frame::Inertial&gt;&gt; /*meta*/) \
+<span class="lineNum">      88 </span>            :           const noexcept;
+<span class="lineNum">      89 </span>            : 
+<span class="lineNum">      90 </span>            : GENERATE_INSTANTIATIONS(INSTANTIATE_VECTORS, (double, DataVector),
+<span class="lineNum">      91 </span>            :                         (hydro::Tags::MagneticField))
+<span class="lineNum">      92 </span>            : 
+<span class="lineNum">      93 </span>            : #undef DTYPE
+<span class="lineNum">      94 </span>            : #undef TAG
+<span class="lineNum">      95 </span>            : #undef INSTANTIATE_SCALARS
+<span class="lineNum">      96 </span>            : #undef INSTANTIATE_VECTORS
+<span class="lineNum">      97 </span>            : }  // namespace Solutions
+<span class="lineNum">      98 </span>            : }  // namespace grmhd
+<span class="lineNum">      99 </span>            : /// \endcond
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../../../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.13</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

@@ -1,0 +1,482 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - 5912ac2e49a80e6a27b3707c9a1e6ce5248b1b2a - Parallel/Main.hpp</title>
+  <link rel="stylesheet" type="text/css" href="../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title"> SpECTRE Documentation Coverage Report</td></tr>
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../index.html">top level</a> - <a href="index.html">Parallel</a> - Main.hpp</td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+             <td class="headerItem">Commit:</td>
+             <td class="headerValue"><a target="_blank" href="https://github.com/sxs-collaboration/spectre/commit/5912ac2e49a80e6a27b3707c9a1e6ce5248b1b2a">5912ac2e49a80e6a27b3707c9a1e6ce5248b1b2a</a></td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">4</td>
+            <td class="headerCovTableEntry">15</td>
+            <td class="headerCovTableEntryLo">26.7 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2019-12-02 22:01:08</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td class="headerItem">Legend:</td>
+            <td class="headerValueLeg">            Lines:
+            <span class="coverLegendCov">hit</span>
+            <span class="coverLegendNoCov">not hit</span>
+</td>
+            <td></td>
+          </tr>
+          <tr><td><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">          Line data    Source code</pre>
+<pre class="source">
+<span class="lineNum">       1 </span><span class="lineCov">          1 : // Distributed under the MIT License.</span>
+<span class="lineNum">       2 </span>            : // See LICENSE.txt for details.
+<span class="lineNum">       3 </span>            : 
+<span class="lineNum">       4 </span>            : /// \file
+<span class="lineNum">       5 </span>            : /// Defines the Charm++ mainchare.
+<span class="lineNum">       6 </span>            : 
+<span class="lineNum">       7 </span>            : #pragma once
+<span class="lineNum">       8 </span>            : 
+<span class="lineNum">       9 </span>            : #include &lt;boost/program_options.hpp&gt;
+<span class="lineNum">      10 </span>            : #include &lt;charm++.h&gt;
+<span class="lineNum">      11 </span>            : #include &lt;initializer_list&gt;
+<span class="lineNum">      12 </span>            : #include &lt;string&gt;
+<span class="lineNum">      13 </span>            : #include &lt;type_traits&gt;
+<span class="lineNum">      14 </span>            : 
+<span class="lineNum">      15 </span>            : #include &quot;ErrorHandling/Error.hpp&quot;
+<span class="lineNum">      16 </span>            : #include &quot;Informer/Informer.hpp&quot;
+<span class="lineNum">      17 </span>            : #include &quot;Options/ParseOptions.hpp&quot;
+<span class="lineNum">      18 </span>            : #include &quot;Parallel/AlgorithmMetafunctions.hpp&quot;
+<span class="lineNum">      19 </span>            : #include &quot;Parallel/CharmRegistration.hpp&quot;
+<span class="lineNum">      20 </span>            : #include &quot;Parallel/ConstGlobalCache.hpp&quot;
+<span class="lineNum">      21 </span>            : #include &quot;Parallel/Exit.hpp&quot;
+<span class="lineNum">      22 </span>            : #include &quot;Parallel/ParallelComponentHelpers.hpp&quot;
+<span class="lineNum">      23 </span>            : #include &quot;Parallel/Printf.hpp&quot;
+<span class="lineNum">      24 </span>            : #include &quot;Parallel/TypeTraits.hpp&quot;
+<span class="lineNum">      25 </span>            : #include &quot;Utilities/Formaline.hpp&quot;
+<span class="lineNum">      26 </span>            : #include &quot;Utilities/Overloader.hpp&quot;
+<span class="lineNum">      27 </span>            : #include &quot;Utilities/TMPL.hpp&quot;
+<span class="lineNum">      28 </span>            : #include &quot;Utilities/TaggedTuple.hpp&quot;
+<span class="lineNum">      29 </span>            : 
+<span class="lineNum">      30 </span>            : #include &quot;Parallel/Main.decl.h&quot;
+<span class="lineNum">      31 </span>            : 
+<span class="lineNum">      32 </span>            : namespace Parallel {
+<span class="lineNum">      33 </span>            : 
+<span class="lineNum">      34 </span>            : /// \ingroup ParallelGroup
+<span class="lineNum">      35 </span>            : /// The main function of a Charm++ executable.
+<span class="lineNum">      36 </span>            : /// See [the Parallelization documentation](group__ParallelGroup.html#details)
+<span class="lineNum">      37 </span>            : /// for an overview of Metavariables, Phases, and parallel components.
+<span class="lineNum">      38 </span>            : template &lt;typename Metavariables&gt;
+<span class="lineNum">      39 </span><span class="lineCov">          1 : class Main : public CBase_Main&lt;Metavariables&gt; {</span>
+<span class="lineNum">      40 </span>            :  public:
+<span class="lineNum">      41 </span><span class="lineNoCov">          0 :   using component_list = typename Metavariables::component_list;</span>
+<span class="lineNum">      42 </span><span class="lineNoCov">          0 :   using const_global_cache_tags = get_const_global_cache_tags&lt;Metavariables&gt;;</span>
+<span class="lineNum">      43 </span>            : 
+<span class="lineNum">      44 </span>            :   /// \cond HIDDEN_SYMBOLS
+<span class="lineNum">      45 </span>            :   /// The constructor used to register the class
+<span class="lineNum">      46 </span>            :   explicit Main(
+<span class="lineNum">      47 </span>            :       const Parallel::charmxx::
+<span class="lineNum">      48 </span>            :           MainChareRegistrationConstructor&amp; /*used for registration*/) noexcept
+<span class="lineNum">      49 </span>            :       : options_{&quot;Uninitialized during default construction&quot;} {}
+<span class="lineNum">      50 </span>            :   ~Main() noexcept override {
+<span class="lineNum">      51 </span>            :     (void)Parallel::charmxx::RegisterChare&lt;
+<span class="lineNum">      52 </span>            :         Main&lt;Metavariables&gt;, CkIndex_Main&lt;Metavariables&gt;&gt;::registrar;
+<span class="lineNum">      53 </span>            :   }
+<span class="lineNum">      54 </span>            :   Main(const Main&amp;) = default;
+<span class="lineNum">      55 </span>            :   Main&amp; operator=(const Main&amp;) = default;
+<span class="lineNum">      56 </span>            :   Main(Main&amp;&amp;) = default;
+<span class="lineNum">      57 </span>            :   Main&amp; operator=(Main&amp;&amp;) = default;
+<span class="lineNum">      58 </span>            :   /// \endcond
+<span class="lineNum">      59 </span>            : 
+<span class="lineNum">      60 </span><span class="lineNoCov">          0 :   explicit Main(CkArgMsg* msg) noexcept;</span>
+<span class="lineNum">      61 </span><span class="lineNoCov">          0 :   explicit Main(CkMigrateMessage* /*msg*/)</span>
+<span class="lineNum">      62 </span>            :       : options_(&quot;Uninitialized after migration&quot;) {}
+<span class="lineNum">      63 </span>            : 
+<span class="lineNum">      64 </span>            :   /// Allocate the initial elements of array components, and then execute the
+<span class="lineNum">      65 </span>            :   /// initialization phase on each component
+<span class="lineNum">      66 </span><span class="lineCov">          1 :   void allocate_array_components_and_execute_initialization_phase() noexcept;</span>
+<span class="lineNum">      67 </span>            : 
+<span class="lineNum">      68 </span>            :   /// Determine the next phase of the simulation and execute it.
+<span class="lineNum">      69 </span><span class="lineCov">          1 :   void execute_next_phase() noexcept;</span>
+<span class="lineNum">      70 </span>            : 
+<span class="lineNum">      71 </span>            :  private:
+<span class="lineNum">      72 </span>            :   template &lt;typename ParallelComponent&gt;
+<span class="lineNum">      73 </span><span class="lineNoCov">          0 :   using parallel_component_options = Parallel::get_option_tags&lt;</span>
+<span class="lineNum">      74 </span>            :       typename ParallelComponent::initialization_tags&gt;;
+<span class="lineNum">      75 </span><span class="lineNoCov">          0 :   using option_list = tmpl::remove_duplicates&lt;tmpl::flatten&lt;tmpl::list&lt;</span>
+<span class="lineNum">      76 </span>            :       Parallel::get_option_tags&lt;const_global_cache_tags&gt;,
+<span class="lineNum">      77 </span>            :       tmpl::transform&lt;component_list,
+<span class="lineNum">      78 </span>            :                       tmpl::bind&lt;parallel_component_options, tmpl::_1&gt;&gt;&gt;&gt;&gt;;
+<span class="lineNum">      79 </span><span class="lineNoCov">          0 :   using parallel_component_tag_list = tmpl::transform&lt;</span>
+<span class="lineNum">      80 </span>            :       component_list,
+<span class="lineNum">      81 </span>            :       tmpl::bind&lt;
+<span class="lineNum">      82 </span>            :           tmpl::type_,
+<span class="lineNum">      83 </span>            :           tmpl::bind&lt;Parallel::proxy_from_parallel_component, tmpl::_1&gt;&gt;&gt;;
+<span class="lineNum">      84 </span><span class="lineNoCov">          0 :   typename Metavariables::Phase current_phase_{</span>
+<span class="lineNum">      85 </span>            :       Metavariables::Phase::Initialization};
+<span class="lineNum">      86 </span>            : 
+<span class="lineNum">      87 </span><span class="lineNoCov">          0 :   CProxy_ConstGlobalCache&lt;Metavariables&gt; const_global_cache_proxy_;</span>
+<span class="lineNum">      88 </span><span class="lineNoCov">          0 :   Options&lt;option_list&gt; options_;</span>
+<span class="lineNum">      89 </span>            : };
+<span class="lineNum">      90 </span>            : 
+<span class="lineNum">      91 </span>            : // ================================================================
+<span class="lineNum">      92 </span>            : 
+<span class="lineNum">      93 </span>            : template &lt;typename Metavariables&gt;
+<span class="lineNum">      94 </span>            : Main&lt;Metavariables&gt;::Main(CkArgMsg* msg) noexcept
+<span class="lineNum">      95 </span>            :     : options_(Metavariables::help) {
+<span class="lineNum">      96 </span>            :   Informer::print_startup_info(msg);
+<span class="lineNum">      97 </span>            : 
+<span class="lineNum">      98 </span>            :   /// \todo detail::register_events_to_trace();
+<span class="lineNum">      99 </span>            : 
+<span class="lineNum">     100 </span>            :   namespace bpo = boost::program_options;
+<span class="lineNum">     101 </span>            :   try {
+<span class="lineNum">     102 </span>            :     bpo::options_description command_line_options;
+<span class="lineNum">     103 </span>            :     // disable clang-format because it combines the repeated call operator
+<span class="lineNum">     104 </span>            :     // invocations making the code more difficult to parse.
+<span class="lineNum">     105 </span>            :     // clang-format off
+<span class="lineNum">     106 </span>            :     command_line_options.add_options()
+<span class="lineNum">     107 </span>            :         (&quot;help,h&quot;, &quot;Describe program options&quot;)
+<span class="lineNum">     108 </span>            :         (&quot;check-options&quot;, &quot;Check input file options&quot;)
+<span class="lineNum">     109 </span>            :         (&quot;dump-source-tree-as&quot;, bpo::value&lt;std::string&gt;(),
+<span class="lineNum">     110 </span>            :          &quot;If specified, then a gzip archive of the source tree is dumped &quot;
+<span class="lineNum">     111 </span>            :          &quot;with the specified name. The archive can be expanded using &quot;
+<span class="lineNum">     112 </span>            :          &quot;'tar -xzf ARCHIVE.tar.gz'&quot;)
+<span class="lineNum">     113 </span>            :         (&quot;dump-paths&quot;,
+<span class="lineNum">     114 </span>            :          &quot;Dump the PATH, CPATH, LD_LIBRARY_PATH, LIBRARY_PATH, and &quot;
+<span class="lineNum">     115 </span>            :          &quot;CMAKE_PREFIX_PATH at compile time.&quot;)
+<span class="lineNum">     116 </span>            :         (&quot;dump-environment&quot;,
+<span class="lineNum">     117 </span>            :          &quot;Dump the result of printenv at compile time.&quot;)
+<span class="lineNum">     118 </span>            :         (&quot;dump-library-versions&quot;,
+<span class="lineNum">     119 </span>            :          &quot;Dump the contents of SpECTRE's LibraryVersions.txt&quot;)
+<span class="lineNum">     120 </span>            :         (&quot;dump-only&quot;,
+<span class="lineNum">     121 </span>            :          &quot;Exit after dumping requested information.&quot;)
+<span class="lineNum">     122 </span>            :         ;
+<span class="lineNum">     123 </span>            :     // clang-format on
+<span class="lineNum">     124 </span>            : 
+<span class="lineNum">     125 </span>            :     constexpr bool has_options = tmpl::size&lt;option_list&gt;::value &gt; 0;
+<span class="lineNum">     126 </span>            :     // Add input-file option if it makes sense
+<span class="lineNum">     127 </span>            :     make_overloader(
+<span class="lineNum">     128 </span>            :         [&amp;command_line_options](std::true_type /*meta*/, auto mv,
+<span class="lineNum">     129 </span>            :                                 int /*gcc_bug*/)
+<span class="lineNum">     130 </span>            :             -&gt; cpp17::void_t&lt;decltype(
+<span class="lineNum">     131 </span>            :                 tmpl::type_from&lt;decltype(mv)&gt;::input_file)&gt; {
+<span class="lineNum">     132 </span>            :           // Metavariables has options and default input file name
+<span class="lineNum">     133 </span>            :           command_line_options.add_options()
+<span class="lineNum">     134 </span>            :               (&quot;input-file&quot;,
+<span class="lineNum">     135 </span>            :                bpo::value&lt;std::string&gt;()-&gt;default_value(
+<span class="lineNum">     136 </span>            :                    tmpl::type_from&lt;decltype(mv)&gt;::input_file),
+<span class="lineNum">     137 </span>            :                &quot;Input file name&quot;);
+<span class="lineNum">     138 </span>            :         },
+<span class="lineNum">     139 </span>            :         [&amp;command_line_options](std::true_type /*meta*/, auto /*mv*/,
+<span class="lineNum">     140 </span>            :                                 auto... /*unused*/) {
+<span class="lineNum">     141 </span>            :           // Metavariables has options and no default input file name
+<span class="lineNum">     142 </span>            :           command_line_options.add_options()
+<span class="lineNum">     143 </span>            :               (&quot;input-file&quot;, bpo::value&lt;std::string&gt;(), &quot;Input file name&quot;);
+<span class="lineNum">     144 </span>            :         },
+<span class="lineNum">     145 </span>            :         [](std::false_type /*meta*/, auto mv, int /*gcc_bug*/)
+<span class="lineNum">     146 </span>            :             -&gt; cpp17::void_t&lt;decltype(
+<span class="lineNum">     147 </span>            :                 tmpl::type_from&lt;decltype(mv)&gt;::input_file)&gt; {
+<span class="lineNum">     148 </span>            :           // Metavariables has no options and default input file name
+<span class="lineNum">     149 </span>            : 
+<span class="lineNum">     150 </span>            :           // always false, but must depend on mv
+<span class="lineNum">     151 </span>            :           static_assert(cpp17::is_same_v&lt;decltype(mv), void&gt;,
+<span class="lineNum">     152 </span>            :                         &quot;Metavariables supplies input file name, &quot;
+<span class="lineNum">     153 </span>            :                         &quot;but there are no options&quot;);
+<span class="lineNum">     154 </span>            :           ERROR(&quot;This should have failed at compile time&quot;);
+<span class="lineNum">     155 </span>            :         },
+<span class="lineNum">     156 </span>            :         [](std::false_type /*meta*/, auto... /*unused*/) {
+<span class="lineNum">     157 </span>            :           // Metavariables has no options and no default input file name
+<span class="lineNum">     158 </span>            :         })(cpp17::bool_constant&lt;has_options&gt;{}, tmpl::type_&lt;Metavariables&gt;{},
+<span class="lineNum">     159 </span>            :            0);
+<span class="lineNum">     160 </span>            : 
+<span class="lineNum">     161 </span>            :     bpo::command_line_parser command_line_parser(msg-&gt;argc, msg-&gt;argv);
+<span class="lineNum">     162 </span>            :     command_line_parser.options(command_line_options);
+<span class="lineNum">     163 </span>            : 
+<span class="lineNum">     164 </span>            :     const bool ignore_unrecognized_command_line_options = make_overloader(
+<span class="lineNum">     165 </span>            :         [](auto mv, int /*gcc_bug*/)
+<span class="lineNum">     166 </span>            :             -&gt; decltype(tmpl::type_from&lt;decltype(
+<span class="lineNum">     167 </span>            :                             mv)&gt;::ignore_unrecognized_command_line_options) {
+<span class="lineNum">     168 </span>            :           return tmpl::type_from&lt;decltype(
+<span class="lineNum">     169 </span>            :               mv)&gt;::ignore_unrecognized_command_line_options;
+<span class="lineNum">     170 </span>            :         },
+<span class="lineNum">     171 </span>            :         [](auto /*mv*/, auto... /*meta*/) { return false; })(
+<span class="lineNum">     172 </span>            :         tmpl::type_&lt;Metavariables&gt;{}, 0);
+<span class="lineNum">     173 </span>            :     if (ignore_unrecognized_command_line_options) {
+<span class="lineNum">     174 </span>            :       // Allow unknown --options
+<span class="lineNum">     175 </span>            :       command_line_parser.allow_unregistered();
+<span class="lineNum">     176 </span>            :     } else {
+<span class="lineNum">     177 </span>            :       // Forbid positional parameters
+<span class="lineNum">     178 </span>            :       command_line_parser.positional({});
+<span class="lineNum">     179 </span>            :     }
+<span class="lineNum">     180 </span>            : 
+<span class="lineNum">     181 </span>            :     bpo::variables_map parsed_command_line_options;
+<span class="lineNum">     182 </span>            :     bpo::store(command_line_parser.run(), parsed_command_line_options);
+<span class="lineNum">     183 </span>            :     bpo::notify(parsed_command_line_options);
+<span class="lineNum">     184 </span>            : 
+<span class="lineNum">     185 </span>            :     if (parsed_command_line_options.count(&quot;help&quot;) != 0) {
+<span class="lineNum">     186 </span>            :       Parallel::printf(&quot;%s\n%s&quot;, command_line_options, options_.help());
+<span class="lineNum">     187 </span>            :       Parallel::exit();
+<span class="lineNum">     188 </span>            :     }
+<span class="lineNum">     189 </span>            : 
+<span class="lineNum">     190 </span>            :     if (parsed_command_line_options.count(&quot;dump-source-tree-as&quot;) != 0) {
+<span class="lineNum">     191 </span>            :       formaline::write_to_file(
+<span class="lineNum">     192 </span>            :           parsed_command_line_options[&quot;dump-source-tree-as&quot;].as&lt;std::string&gt;());
+<span class="lineNum">     193 </span>            :       Parallel::printf(&quot;Dumping archive of source tree at link time.\n&quot;);
+<span class="lineNum">     194 </span>            :     }
+<span class="lineNum">     195 </span>            :     if (parsed_command_line_options.count(&quot;dump-paths&quot;) != 0) {
+<span class="lineNum">     196 </span>            :       Parallel::printf(&quot;Paths at link time were:\n%s\n&quot;,
+<span class="lineNum">     197 </span>            :                        formaline::get_paths());
+<span class="lineNum">     198 </span>            :     }
+<span class="lineNum">     199 </span>            :     if (parsed_command_line_options.count(&quot;dump-environment&quot;) != 0) {
+<span class="lineNum">     200 </span>            :       Parallel::printf(&quot;Environment variables at link time were:\n%s\n&quot;,
+<span class="lineNum">     201 </span>            :                        formaline::get_environment_variables());
+<span class="lineNum">     202 </span>            :     }
+<span class="lineNum">     203 </span>            :     if (parsed_command_line_options.count(&quot;dump-library-versions&quot;) != 0) {
+<span class="lineNum">     204 </span>            :       Parallel::printf(&quot;LibraryVersions.txt at link time was:\n%s\n&quot;,
+<span class="lineNum">     205 </span>            :                        formaline::get_library_versions());
+<span class="lineNum">     206 </span>            :     }
+<span class="lineNum">     207 </span>            :     if (parsed_command_line_options.count(&quot;dump-only&quot;) != 0) {
+<span class="lineNum">     208 </span>            :       Parallel::exit();
+<span class="lineNum">     209 </span>            :     }
+<span class="lineNum">     210 </span>            : 
+<span class="lineNum">     211 </span>            :     std::string input_file;
+<span class="lineNum">     212 </span>            :     if (has_options) {
+<span class="lineNum">     213 </span>            :       if (parsed_command_line_options.count(&quot;input-file&quot;) == 0) {
+<span class="lineNum">     214 </span>            :         ERROR(&quot;No default input file name.  Pass --input-file.&quot;);
+<span class="lineNum">     215 </span>            :       }
+<span class="lineNum">     216 </span>            :       input_file = parsed_command_line_options[&quot;input-file&quot;].as&lt;std::string&gt;();
+<span class="lineNum">     217 </span>            :       options_.parse_file(input_file);
+<span class="lineNum">     218 </span>            :     } else {
+<span class="lineNum">     219 </span>            :       options_.parse(&quot;&quot;);
+<span class="lineNum">     220 </span>            :     }
+<span class="lineNum">     221 </span>            : 
+<span class="lineNum">     222 </span>            :     if (parsed_command_line_options.count(&quot;check-options&quot;) != 0) {
+<span class="lineNum">     223 </span>            :       // Force all the options to be created.
+<span class="lineNum">     224 </span>            :       options_.template apply&lt;option_list, Metavariables&gt;([](auto... args) {
+<span class="lineNum">     225 </span>            :         (void)std::initializer_list&lt;char&gt;{((void)args, '0')...};
+<span class="lineNum">     226 </span>            :       });
+<span class="lineNum">     227 </span>            :       if (has_options) {
+<span class="lineNum">     228 </span>            :         Parallel::printf(&quot;%s parsed successfully!\n&quot;, input_file);
+<span class="lineNum">     229 </span>            :       } else {
+<span class="lineNum">     230 </span>            :         // This is still considered successful, since it means the
+<span class="lineNum">     231 </span>            :         // program would have started.
+<span class="lineNum">     232 </span>            :         Parallel::printf(&quot;No options to check!\n&quot;);
+<span class="lineNum">     233 </span>            :       }
+<span class="lineNum">     234 </span>            :       Parallel::exit();
+<span class="lineNum">     235 </span>            :     }
+<span class="lineNum">     236 </span>            :   } catch (const bpo::error&amp; e) {
+<span class="lineNum">     237 </span>            :     ERROR(e.what());
+<span class="lineNum">     238 </span>            :   }
+<span class="lineNum">     239 </span>            : 
+<span class="lineNum">     240 </span>            :   const auto items_from_options =
+<span class="lineNum">     241 </span>            :       options_.template apply&lt;option_list, Metavariables&gt;(
+<span class="lineNum">     242 </span>            :           [](auto... args) noexcept {
+<span class="lineNum">     243 </span>            :             return tuples::tagged_tuple_from_typelist&lt;option_list&gt;(
+<span class="lineNum">     244 </span>            :                 std::move(args)...);
+<span class="lineNum">     245 </span>            :           });
+<span class="lineNum">     246 </span>            : 
+<span class="lineNum">     247 </span>            :   const_global_cache_proxy_ = CProxy_ConstGlobalCache&lt;Metavariables&gt;::ckNew(
+<span class="lineNum">     248 </span>            :       Parallel::create_from_options&lt;Metavariables&gt;(items_from_options,
+<span class="lineNum">     249 </span>            :                                                    const_global_cache_tags{}));
+<span class="lineNum">     250 </span>            : 
+<span class="lineNum">     251 </span>            :   tuples::tagged_tuple_from_typelist&lt;parallel_component_tag_list&gt;
+<span class="lineNum">     252 </span>            :       the_parallel_components;
+<span class="lineNum">     253 </span>            : 
+<span class="lineNum">     254 </span>            :   // Construct the group proxies with a dependency on the ConstGlobalCache proxy
+<span class="lineNum">     255 </span>            :   using group_component_list = tmpl::filter&lt;
+<span class="lineNum">     256 </span>            :       component_list,
+<span class="lineNum">     257 </span>            :       tmpl::or_&lt;Parallel::is_group_proxy&lt;tmpl::bind&lt;
+<span class="lineNum">     258 </span>            :                     Parallel::proxy_from_parallel_component, tmpl::_1&gt;&gt;,
+<span class="lineNum">     259 </span>            :                 Parallel::is_node_group_proxy&lt;tmpl::bind&lt;
+<span class="lineNum">     260 </span>            :                     Parallel::proxy_from_parallel_component, tmpl::_1&gt;&gt;&gt;&gt;;
+<span class="lineNum">     261 </span>            :   CkEntryOptions const_global_cache_dependency;
+<span class="lineNum">     262 </span>            :   const_global_cache_dependency.setGroupDepID(
+<span class="lineNum">     263 </span>            :       const_global_cache_proxy_.ckGetGroupID());
+<span class="lineNum">     264 </span>            : 
+<span class="lineNum">     265 </span>            :   tmpl::for_each&lt;group_component_list&gt;([
+<span class="lineNum">     266 </span>            :     this, &amp;the_parallel_components, &amp;items_from_options, &amp;
+<span class="lineNum">     267 </span>            :     const_global_cache_dependency
+<span class="lineNum">     268 </span>            :   ](auto parallel_component_v) noexcept {
+<span class="lineNum">     269 </span>            :     using parallel_component = tmpl::type_from&lt;decltype(parallel_component_v)&gt;;
+<span class="lineNum">     270 </span>            :     using ParallelComponentProxy =
+<span class="lineNum">     271 </span>            :         Parallel::proxy_from_parallel_component&lt;parallel_component&gt;;
+<span class="lineNum">     272 </span>            :     tuples::get&lt;tmpl::type_&lt;ParallelComponentProxy&gt;&gt;(the_parallel_components) =
+<span class="lineNum">     273 </span>            :         ParallelComponentProxy::ckNew(
+<span class="lineNum">     274 </span>            :             const_global_cache_proxy_,
+<span class="lineNum">     275 </span>            :             Parallel::create_from_options&lt;Metavariables&gt;(
+<span class="lineNum">     276 </span>            :                 items_from_options,
+<span class="lineNum">     277 </span>            :                 typename parallel_component::initialization_tags{}),
+<span class="lineNum">     278 </span>            :             &amp;const_global_cache_dependency);
+<span class="lineNum">     279 </span>            :   });
+<span class="lineNum">     280 </span>            : 
+<span class="lineNum">     281 </span>            :   // Construct the proxies for the single chares
+<span class="lineNum">     282 </span>            :   using singleton_component_list =
+<span class="lineNum">     283 </span>            :       tmpl::filter&lt;component_list,
+<span class="lineNum">     284 </span>            :                    Parallel::is_chare_proxy&lt;tmpl::bind&lt;
+<span class="lineNum">     285 </span>            :                        Parallel::proxy_from_parallel_component, tmpl::_1&gt;&gt;&gt;;
+<span class="lineNum">     286 </span>            :   tmpl::for_each&lt;singleton_component_list&gt;([
+<span class="lineNum">     287 </span>            :     this, &amp;the_parallel_components, &amp;items_from_options
+<span class="lineNum">     288 </span>            :   ](auto parallel_component_v) noexcept {
+<span class="lineNum">     289 </span>            :     using parallel_component = tmpl::type_from&lt;decltype(parallel_component_v)&gt;;
+<span class="lineNum">     290 </span>            :     using ParallelComponentProxy =
+<span class="lineNum">     291 </span>            :         Parallel::proxy_from_parallel_component&lt;parallel_component&gt;;
+<span class="lineNum">     292 </span>            :     tuples::get&lt;tmpl::type_&lt;ParallelComponentProxy&gt;&gt;(the_parallel_components) =
+<span class="lineNum">     293 </span>            :         ParallelComponentProxy::ckNew(
+<span class="lineNum">     294 </span>            :             const_global_cache_proxy_,
+<span class="lineNum">     295 </span>            :             Parallel::create_from_options&lt;Metavariables&gt;(
+<span class="lineNum">     296 </span>            :                 items_from_options,
+<span class="lineNum">     297 </span>            :                 typename parallel_component::initialization_tags{}));
+<span class="lineNum">     298 </span>            :   });
+<span class="lineNum">     299 </span>            : 
+<span class="lineNum">     300 </span>            :   // Create proxies for empty array chares (whose elements will be created by
+<span class="lineNum">     301 </span>            :   // the allocate functions of the array components during
+<span class="lineNum">     302 </span>            :   // execute_initialization_phase)
+<span class="lineNum">     303 </span>            :   using array_component_list = tmpl::filter&lt;
+<span class="lineNum">     304 </span>            :       component_list,
+<span class="lineNum">     305 </span>            :       tmpl::and_&lt;Parallel::is_array_proxy&lt;tmpl::bind&lt;
+<span class="lineNum">     306 </span>            :                      Parallel::proxy_from_parallel_component, tmpl::_1&gt;&gt;,
+<span class="lineNum">     307 </span>            :                  tmpl::not_&lt;Parallel::is_bound_array&lt;tmpl::_1&gt;&gt;&gt;&gt;;
+<span class="lineNum">     308 </span>            :   tmpl::for_each&lt;array_component_list&gt;([&amp;the_parallel_components](
+<span class="lineNum">     309 </span>            :       auto parallel_component) noexcept {
+<span class="lineNum">     310 </span>            :     using ParallelComponentProxy = Parallel::proxy_from_parallel_component&lt;
+<span class="lineNum">     311 </span>            :         tmpl::type_from&lt;decltype(parallel_component)&gt;&gt;;
+<span class="lineNum">     312 </span>            :     tuples::get&lt;tmpl::type_&lt;ParallelComponentProxy&gt;&gt;(the_parallel_components) =
+<span class="lineNum">     313 </span>            :         ParallelComponentProxy::ckNew();
+<span class="lineNum">     314 </span>            :   });
+<span class="lineNum">     315 </span>            : 
+<span class="lineNum">     316 </span>            :   // Create proxies for empty bound array chares
+<span class="lineNum">     317 </span>            :   using bound_array_component_list = tmpl::filter&lt;
+<span class="lineNum">     318 </span>            :       component_list,
+<span class="lineNum">     319 </span>            :       tmpl::and_&lt;Parallel::is_array_proxy&lt;tmpl::bind&lt;
+<span class="lineNum">     320 </span>            :                      Parallel::proxy_from_parallel_component, tmpl::_1&gt;&gt;,
+<span class="lineNum">     321 </span>            :                  Parallel::is_bound_array&lt;tmpl::_1&gt;&gt;&gt;;
+<span class="lineNum">     322 </span>            :   tmpl::for_each&lt;bound_array_component_list&gt;([&amp;the_parallel_components](
+<span class="lineNum">     323 </span>            :       auto parallel_component) noexcept {
+<span class="lineNum">     324 </span>            :     using ParallelComponentProxy = Parallel::proxy_from_parallel_component&lt;
+<span class="lineNum">     325 </span>            :         tmpl::type_from&lt;decltype(parallel_component)&gt;&gt;;
+<span class="lineNum">     326 </span>            :     CkArrayOptions opts;
+<span class="lineNum">     327 </span>            :     opts.bindTo(
+<span class="lineNum">     328 </span>            :         tuples::get&lt;tmpl::type_&lt;Parallel::proxy_from_parallel_component&lt;
+<span class="lineNum">     329 </span>            :             typename tmpl::type_from&lt;decltype(parallel_component)&gt;::bind_to&gt;&gt;&gt;(
+<span class="lineNum">     330 </span>            :             the_parallel_components));
+<span class="lineNum">     331 </span>            :     tuples::get&lt;tmpl::type_&lt;ParallelComponentProxy&gt;&gt;(the_parallel_components) =
+<span class="lineNum">     332 </span>            :         ParallelComponentProxy::ckNew(opts);
+<span class="lineNum">     333 </span>            :   });
+<span class="lineNum">     334 </span>            : 
+<span class="lineNum">     335 </span>            :   // Send the complete list of parallel_components to the ConstGlobalCache on
+<span class="lineNum">     336 </span>            :   // each Charm++ node.  After all nodes have finished, the callback is
+<span class="lineNum">     337 </span>            :   // executed.
+<span class="lineNum">     338 </span>            :   CkCallback callback(
+<span class="lineNum">     339 </span>            :       CkIndex_Main&lt;Metavariables&gt;::
+<span class="lineNum">     340 </span>            :           allocate_array_components_and_execute_initialization_phase(),
+<span class="lineNum">     341 </span>            :       this-&gt;thisProxy);
+<span class="lineNum">     342 </span>            :   const_global_cache_proxy_.set_parallel_components(the_parallel_components,
+<span class="lineNum">     343 </span>            :                                                     callback);
+<span class="lineNum">     344 </span>            : }
+<span class="lineNum">     345 </span>            : 
+<span class="lineNum">     346 </span>            : template &lt;typename Metavariables&gt;
+<span class="lineNum">     347 </span>            : void Main&lt;Metavariables&gt;::
+<span class="lineNum">     348 </span>            :     allocate_array_components_and_execute_initialization_phase() noexcept {
+<span class="lineNum">     349 </span>            :   ASSERT(current_phase_ == Metavariables::Phase::Initialization,
+<span class="lineNum">     350 </span>            :          &quot;Must be in the Initialization phase.&quot;);
+<span class="lineNum">     351 </span>            :   // This is created again to avoid sending it through Charm++ callbacks, and
+<span class="lineNum">     352 </span>            :   // so it goes cleanly out of scope after initialization
+<span class="lineNum">     353 </span>            :   const auto items_from_options =
+<span class="lineNum">     354 </span>            :       options_.template apply&lt;option_list, Metavariables&gt;(
+<span class="lineNum">     355 </span>            :           [](auto... args) noexcept {
+<span class="lineNum">     356 </span>            :             return tuples::tagged_tuple_from_typelist&lt;option_list&gt;(
+<span class="lineNum">     357 </span>            :                 std::move(args)...);
+<span class="lineNum">     358 </span>            :           });
+<span class="lineNum">     359 </span>            :   using array_component_list =
+<span class="lineNum">     360 </span>            :       tmpl::filter&lt;component_list,
+<span class="lineNum">     361 </span>            :                    Parallel::is_array_proxy&lt;tmpl::bind&lt;
+<span class="lineNum">     362 </span>            :                        Parallel::proxy_from_parallel_component, tmpl::_1&gt;&gt;&gt;;
+<span class="lineNum">     363 </span>            :   tmpl::for_each&lt;array_component_list&gt;([ this, &amp;items_from_options ](
+<span class="lineNum">     364 </span>            :       auto parallel_component_v) noexcept {
+<span class="lineNum">     365 </span>            :     using parallel_component = tmpl::type_from&lt;decltype(parallel_component_v)&gt;;
+<span class="lineNum">     366 </span>            :     parallel_component::allocate_array(
+<span class="lineNum">     367 </span>            :         const_global_cache_proxy_,
+<span class="lineNum">     368 </span>            :         Parallel::create_from_options&lt;Metavariables&gt;(
+<span class="lineNum">     369 </span>            :             items_from_options,
+<span class="lineNum">     370 </span>            :             typename parallel_component::initialization_tags{}));
+<span class="lineNum">     371 </span>            :   });
+<span class="lineNum">     372 </span>            :   tmpl::for_each&lt;component_list&gt;([this](auto parallel_component_v) noexcept {
+<span class="lineNum">     373 </span>            :     using parallel_component = tmpl::type_from&lt;decltype(parallel_component_v)&gt;;
+<span class="lineNum">     374 </span>            :     Parallel::get_parallel_component&lt;parallel_component&gt;(
+<span class="lineNum">     375 </span>            :         *(const_global_cache_proxy_.ckLocalBranch()))
+<span class="lineNum">     376 </span>            :         .start_phase(current_phase_);
+<span class="lineNum">     377 </span>            :   });
+<span class="lineNum">     378 </span>            :   CkStartQD(CkCallback(CkIndex_Main&lt;Metavariables&gt;::execute_next_phase(),
+<span class="lineNum">     379 </span>            :                        this-&gt;thisProxy));
+<span class="lineNum">     380 </span>            : }
+<span class="lineNum">     381 </span>            : 
+<span class="lineNum">     382 </span>            : template &lt;typename Metavariables&gt;
+<span class="lineNum">     383 </span>            : void Main&lt;Metavariables&gt;::execute_next_phase() noexcept {
+<span class="lineNum">     384 </span>            :   current_phase_ = Metavariables::determine_next_phase(
+<span class="lineNum">     385 </span>            :       current_phase_, const_global_cache_proxy_);
+<span class="lineNum">     386 </span>            :   if (Metavariables::Phase::Exit == current_phase_) {
+<span class="lineNum">     387 </span>            :     Informer::print_exit_info();
+<span class="lineNum">     388 </span>            :     Parallel::exit();
+<span class="lineNum">     389 </span>            :   }
+<span class="lineNum">     390 </span>            :   tmpl::for_each&lt;component_list&gt;([this](auto parallel_component) noexcept {
+<span class="lineNum">     391 </span>            :     tmpl::type_from&lt;decltype(parallel_component)&gt;::execute_next_phase(
+<span class="lineNum">     392 </span>            :         current_phase_, const_global_cache_proxy_);
+<span class="lineNum">     393 </span>            :   });
+<span class="lineNum">     394 </span>            :   CkStartQD(CkCallback(CkIndex_Main&lt;Metavariables&gt;::execute_next_phase(),
+<span class="lineNum">     395 </span>            :                        this-&gt;thisProxy));
+<span class="lineNum">     396 </span>            : }
+<span class="lineNum">     397 </span>            : 
+<span class="lineNum">     398 </span>            : }  // namespace Parallel
+<span class="lineNum">     399 </span>            : 
+<span class="lineNum">     400 </span><span class="lineNoCov">          0 : #define CK_TEMPLATES_ONLY</span>
+<span class="lineNum">     401 </span>            : #include &quot;Parallel/Main.def.h&quot;
+<span class="lineNum">     402 </span>            : #undef CK_TEMPLATES_ONLY
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.13</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

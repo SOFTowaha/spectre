@@ -1,0 +1,384 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - 5912ac2e49a80e6a27b3707c9a1e6ce5248b1b2a - PointwiseFunctions/AnalyticSolutions/GeneralRelativity/WrappedGr.cpp</title>
+  <link rel="stylesheet" type="text/css" href="../../../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title"> SpECTRE Documentation Coverage Report</td></tr>
+    <tr><td class="ruler"><img src="../../../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../../../index.html">top level</a> - <a href="index.html">PointwiseFunctions/AnalyticSolutions/GeneralRelativity</a> - WrappedGr.cpp</td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+             <td class="headerItem">Commit:</td>
+             <td class="headerValue"><a target="_blank" href="https://github.com/sxs-collaboration/spectre/commit/5912ac2e49a80e6a27b3707c9a1e6ce5248b1b2a">5912ac2e49a80e6a27b3707c9a1e6ce5248b1b2a</a></td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntry">1</td>
+            <td class="headerCovTableEntryLo">0.0 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2019-12-02 22:01:08</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td class="headerItem">Legend:</td>
+            <td class="headerValueLeg">            Lines:
+            <span class="coverLegendCov">hit</span>
+            <span class="coverLegendNoCov">not hit</span>
+</td>
+            <td></td>
+          </tr>
+          <tr><td><img src="../../../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../../../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">          Line data    Source code</pre>
+<pre class="source">
+<span class="lineNum">       1 </span><span class="lineNoCov">          0 : // Distributed under the MIT License.</span>
+<span class="lineNum">       2 </span>            : // See LICENSE.txt for details.
+<span class="lineNum">       3 </span>            : 
+<span class="lineNum">       4 </span>            : #include &quot;PointwiseFunctions/AnalyticSolutions/GeneralRelativity/WrappedGr.hpp&quot;
+<span class="lineNum">       5 </span>            : 
+<span class="lineNum">       6 </span>            : #include &quot;DataStructures/DataBox/Prefixes.hpp&quot;  // IWYU pragma: keep
+<span class="lineNum">       7 </span>            : #include &quot;DataStructures/DataVector.hpp&quot;        // IWYU pragma: keep
+<span class="lineNum">       8 </span>            : #include &quot;DataStructures/Tensor/Tensor.hpp&quot;     // IWYU pragma: keep
+<span class="lineNum">       9 </span>            : #include &quot;PointwiseFunctions/AnalyticSolutions/GeneralRelativity/KerrSchild.hpp&quot;  // IWYU pragma: keep
+<span class="lineNum">      10 </span>            : #include &quot;PointwiseFunctions/AnalyticSolutions/GeneralRelativity/Minkowski.hpp&quot;  // IWYU pragma: keep
+<span class="lineNum">      11 </span>            : #include &quot;PointwiseFunctions/GeneralRelativity/ComputeGhQuantities.hpp&quot;
+<span class="lineNum">      12 </span>            : #include &quot;PointwiseFunctions/GeneralRelativity/ComputeSpacetimeQuantities.hpp&quot;
+<span class="lineNum">      13 </span>            : #include &quot;Utilities/GenerateInstantiations.hpp&quot;
+<span class="lineNum">      14 </span>            : // IWYU pragma: no_forward_declare ::Tags::deriv
+<span class="lineNum">      15 </span>            : 
+<span class="lineNum">      16 </span>            : /// \cond
+<span class="lineNum">      17 </span>            : namespace GeneralizedHarmonic {
+<span class="lineNum">      18 </span>            : namespace Solutions {
+<span class="lineNum">      19 </span>            : // Preprocessor logic to avoid defining variables() functions for
+<span class="lineNum">      20 </span>            : // tags other than the three the wrapper adds (i.e., other than
+<span class="lineNum">      21 </span>            : // gr::Tags::SpacetimeMetric, GeneralizedHarmonic::Tags::Pi, and
+<span class="lineNum">      22 </span>            : // GeneralizedHarmonic:Tags::Phi)
+<span class="lineNum">      23 </span>            : #define FUNC_DEF(r, data, elem)                                            \
+<span class="lineNum">      24 </span>            :   template &lt;typename SolutionType&gt;                                         \
+<span class="lineNum">      25 </span>            :   auto WrappedGr&lt;SolutionType&gt;::variables(                                 \
+<span class="lineNum">      26 </span>            :       const tnsr::I&lt;DataVector, GeneralizedHarmonic::Solutions::WrappedGr&lt; \
+<span class="lineNum">      27 </span>            :                                     SolutionType&gt;::volume_dim&gt;&amp; /*x*/,     \
+<span class="lineNum">      28 </span>            :       double /*t*/, tmpl::list&lt;elem&gt; /*meta*/,                             \
+<span class="lineNum">      29 </span>            :       const IntermediateVars&amp; intermediate_vars)                           \
+<span class="lineNum">      30 </span>            :       const noexcept-&gt;tuples::TaggedTuple&lt;elem&gt; {                          \
+<span class="lineNum">      31 </span>            :     return {get&lt;elem&gt;(intermediate_vars)};                                 \
+<span class="lineNum">      32 </span>            :   }
+<span class="lineNum">      33 </span>            : 
+<span class="lineNum">      34 </span>            : #define MY_LIST                                                              \
+<span class="lineNum">      35 </span>            :   BOOST_PP_TUPLE_TO_LIST(                                                    \
+<span class="lineNum">      36 </span>            :       (gr::Tags::Lapse&lt;DataVector&gt;, TimeDerivLapse, DerivLapse, TagShift,    \
+<span class="lineNum">      37 </span>            :        TimeDerivShift, DerivShift, TagSpatialMetric, TimeDerivSpatialMetric, \
+<span class="lineNum">      38 </span>            :        DerivSpatialMetric, TagInverseSpatialMetric, TagExCurvature,          \
+<span class="lineNum">      39 </span>            :        gr::Tags::SqrtDetSpatialMetric&lt;DataVector&gt;))
+<span class="lineNum">      40 </span>            : 
+<span class="lineNum">      41 </span>            : BOOST_PP_LIST_FOR_EACH(FUNC_DEF, _, MY_LIST)
+<span class="lineNum">      42 </span>            : #undef MY_LIST
+<span class="lineNum">      43 </span>            : #undef FUNC_DEF
+<span class="lineNum">      44 </span>            : 
+<span class="lineNum">      45 </span>            : template &lt;typename SolutionType&gt;
+<span class="lineNum">      46 </span>            : tuples::TaggedTuple&lt;gr::Tags::SpacetimeMetric&lt;
+<span class="lineNum">      47 </span>            :     GeneralizedHarmonic::Solutions::WrappedGr&lt;SolutionType&gt;::volume_dim,
+<span class="lineNum">      48 </span>            :     Frame::Inertial, DataVector&gt;&gt;
+<span class="lineNum">      49 </span>            : WrappedGr&lt;SolutionType&gt;::variables(
+<span class="lineNum">      50 </span>            :     const tnsr::I&lt;DataVector, GeneralizedHarmonic::Solutions::WrappedGr&lt;
+<span class="lineNum">      51 </span>            :                                   SolutionType&gt;::volume_dim&gt;&amp; /*x*/,
+<span class="lineNum">      52 </span>            :     double /*t*/,
+<span class="lineNum">      53 </span>            :     tmpl::list&lt;gr::Tags::SpacetimeMetric&lt;
+<span class="lineNum">      54 </span>            :         GeneralizedHarmonic::Solutions::WrappedGr&lt;SolutionType&gt;::volume_dim,
+<span class="lineNum">      55 </span>            :         Frame::Inertial, DataVector&gt;&gt; /*meta*/,
+<span class="lineNum">      56 </span>            :     const IntermediateVars&amp; intermediate_vars) const noexcept {
+<span class="lineNum">      57 </span>            :   const auto&amp; lapse = get&lt;gr::Tags::Lapse&lt;DataVector&gt;&gt;(intermediate_vars);
+<span class="lineNum">      58 </span>            :   const auto&amp; shift = get&lt;gr::Tags::Shift&lt;
+<span class="lineNum">      59 </span>            :       GeneralizedHarmonic::Solutions::WrappedGr&lt;SolutionType&gt;::volume_dim,
+<span class="lineNum">      60 </span>            :       Frame::Inertial, DataVector&gt;&gt;(intermediate_vars);
+<span class="lineNum">      61 </span>            :   const auto&amp; spatial_metric = get&lt;gr::Tags::SpatialMetric&lt;
+<span class="lineNum">      62 </span>            :       GeneralizedHarmonic::Solutions::WrappedGr&lt;SolutionType&gt;::volume_dim,
+<span class="lineNum">      63 </span>            :       Frame::Inertial, DataVector&gt;&gt;(intermediate_vars);
+<span class="lineNum">      64 </span>            : 
+<span class="lineNum">      65 </span>            :   return {gr::spacetime_metric(lapse, shift, spatial_metric)};
+<span class="lineNum">      66 </span>            : }
+<span class="lineNum">      67 </span>            : 
+<span class="lineNum">      68 </span>            : template &lt;typename SolutionType&gt;
+<span class="lineNum">      69 </span>            : tuples::TaggedTuple&lt;GeneralizedHarmonic::Tags::Phi&lt;
+<span class="lineNum">      70 </span>            :     GeneralizedHarmonic::Solutions::WrappedGr&lt;SolutionType&gt;::volume_dim,
+<span class="lineNum">      71 </span>            :     Frame::Inertial&gt;&gt;
+<span class="lineNum">      72 </span>            : WrappedGr&lt;SolutionType&gt;::variables(
+<span class="lineNum">      73 </span>            :     const tnsr::I&lt;DataVector, GeneralizedHarmonic::Solutions::WrappedGr&lt;
+<span class="lineNum">      74 </span>            :                                   SolutionType&gt;::volume_dim&gt;&amp; /*x*/,
+<span class="lineNum">      75 </span>            :     double /*t*/,
+<span class="lineNum">      76 </span>            :     tmpl::list&lt;GeneralizedHarmonic::Tags::Phi&lt;
+<span class="lineNum">      77 </span>            :         GeneralizedHarmonic::Solutions::WrappedGr&lt;SolutionType&gt;::volume_dim,
+<span class="lineNum">      78 </span>            :         Frame::Inertial&gt;&gt; /*meta*/,
+<span class="lineNum">      79 </span>            :     const IntermediateVars&amp; intermediate_vars) const noexcept {
+<span class="lineNum">      80 </span>            :   const auto&amp; lapse = get&lt;gr::Tags::Lapse&lt;DataVector&gt;&gt;(intermediate_vars);
+<span class="lineNum">      81 </span>            :   const auto&amp; deriv_lapse =
+<span class="lineNum">      82 </span>            :       get&lt;typename WrappedGr&lt;SolutionType&gt;::DerivLapse&gt;(intermediate_vars);
+<span class="lineNum">      83 </span>            : 
+<span class="lineNum">      84 </span>            :   const auto&amp; shift = get&lt;gr::Tags::Shift&lt;
+<span class="lineNum">      85 </span>            :       GeneralizedHarmonic::Solutions::WrappedGr&lt;SolutionType&gt;::volume_dim,
+<span class="lineNum">      86 </span>            :       Frame::Inertial, DataVector&gt;&gt;(intermediate_vars);
+<span class="lineNum">      87 </span>            :   const auto&amp; deriv_shift =
+<span class="lineNum">      88 </span>            :       get&lt;typename WrappedGr&lt;SolutionType&gt;::DerivShift&gt;(intermediate_vars);
+<span class="lineNum">      89 </span>            : 
+<span class="lineNum">      90 </span>            :   const auto&amp; spatial_metric = get&lt;gr::Tags::SpatialMetric&lt;
+<span class="lineNum">      91 </span>            :       GeneralizedHarmonic::Solutions::WrappedGr&lt;SolutionType&gt;::volume_dim,
+<span class="lineNum">      92 </span>            :       Frame::Inertial, DataVector&gt;&gt;(intermediate_vars);
+<span class="lineNum">      93 </span>            :   const auto&amp; deriv_spatial_metric =
+<span class="lineNum">      94 </span>            :       get&lt;typename WrappedGr&lt;SolutionType&gt;::DerivSpatialMetric&gt;(
+<span class="lineNum">      95 </span>            :           intermediate_vars);
+<span class="lineNum">      96 </span>            : 
+<span class="lineNum">      97 </span>            :   return {GeneralizedHarmonic::phi(lapse, deriv_lapse, shift, deriv_shift,
+<span class="lineNum">      98 </span>            :                                    spatial_metric, deriv_spatial_metric)};
+<span class="lineNum">      99 </span>            : }
+<span class="lineNum">     100 </span>            : 
+<span class="lineNum">     101 </span>            : template &lt;typename SolutionType&gt;
+<span class="lineNum">     102 </span>            : tuples::TaggedTuple&lt;GeneralizedHarmonic::Tags::Pi&lt;
+<span class="lineNum">     103 </span>            :     GeneralizedHarmonic::Solutions::WrappedGr&lt;SolutionType&gt;::volume_dim,
+<span class="lineNum">     104 </span>            :     Frame::Inertial&gt;&gt;
+<span class="lineNum">     105 </span>            : WrappedGr&lt;SolutionType&gt;::variables(
+<span class="lineNum">     106 </span>            :     const tnsr::I&lt;DataVector, GeneralizedHarmonic::Solutions::WrappedGr&lt;
+<span class="lineNum">     107 </span>            :                                   SolutionType&gt;::volume_dim&gt;&amp; /*x*/,
+<span class="lineNum">     108 </span>            :     double /*t*/,
+<span class="lineNum">     109 </span>            :     tmpl::list&lt;GeneralizedHarmonic::Tags::Pi&lt;
+<span class="lineNum">     110 </span>            :         GeneralizedHarmonic::Solutions::WrappedGr&lt;SolutionType&gt;::volume_dim,
+<span class="lineNum">     111 </span>            :         Frame::Inertial&gt;&gt; /*meta*/,
+<span class="lineNum">     112 </span>            :     const IntermediateVars&amp; intermediate_vars) const noexcept {
+<span class="lineNum">     113 </span>            :   const auto&amp; lapse = get&lt;gr::Tags::Lapse&lt;DataVector&gt;&gt;(intermediate_vars);
+<span class="lineNum">     114 </span>            :   const auto&amp; dt_lapse =
+<span class="lineNum">     115 </span>            :       get&lt;typename WrappedGr&lt;SolutionType&gt;::TimeDerivLapse&gt;(intermediate_vars);
+<span class="lineNum">     116 </span>            :   const auto&amp; deriv_lapse =
+<span class="lineNum">     117 </span>            :       get&lt;typename WrappedGr&lt;SolutionType&gt;::DerivLapse&gt;(intermediate_vars);
+<span class="lineNum">     118 </span>            : 
+<span class="lineNum">     119 </span>            :   const auto&amp; shift = get&lt;gr::Tags::Shift&lt;
+<span class="lineNum">     120 </span>            :       GeneralizedHarmonic::Solutions::WrappedGr&lt;SolutionType&gt;::volume_dim,
+<span class="lineNum">     121 </span>            :       Frame::Inertial, DataVector&gt;&gt;(intermediate_vars);
+<span class="lineNum">     122 </span>            :   const auto&amp; dt_shift =
+<span class="lineNum">     123 </span>            :       get&lt;typename WrappedGr&lt;SolutionType&gt;::TimeDerivShift&gt;(intermediate_vars);
+<span class="lineNum">     124 </span>            :   const auto&amp; deriv_shift =
+<span class="lineNum">     125 </span>            :       get&lt;typename WrappedGr&lt;SolutionType&gt;::DerivShift&gt;(intermediate_vars);
+<span class="lineNum">     126 </span>            : 
+<span class="lineNum">     127 </span>            :   const auto&amp; spatial_metric = get&lt;gr::Tags::SpatialMetric&lt;
+<span class="lineNum">     128 </span>            :       GeneralizedHarmonic::Solutions::WrappedGr&lt;SolutionType&gt;::volume_dim,
+<span class="lineNum">     129 </span>            :       Frame::Inertial, DataVector&gt;&gt;(intermediate_vars);
+<span class="lineNum">     130 </span>            :   const auto&amp; dt_spatial_metric =
+<span class="lineNum">     131 </span>            :       get&lt;typename WrappedGr&lt;SolutionType&gt;::TimeDerivSpatialMetric&gt;(
+<span class="lineNum">     132 </span>            :           intermediate_vars);
+<span class="lineNum">     133 </span>            :   const auto&amp; deriv_spatial_metric =
+<span class="lineNum">     134 </span>            :       get&lt;typename WrappedGr&lt;SolutionType&gt;::DerivSpatialMetric&gt;(
+<span class="lineNum">     135 </span>            :           intermediate_vars);
+<span class="lineNum">     136 </span>            : 
+<span class="lineNum">     137 </span>            :   const auto phi =
+<span class="lineNum">     138 </span>            :       GeneralizedHarmonic::phi(lapse, deriv_lapse, shift, deriv_shift,
+<span class="lineNum">     139 </span>            :                                spatial_metric, deriv_spatial_metric);
+<span class="lineNum">     140 </span>            : 
+<span class="lineNum">     141 </span>            :   return {GeneralizedHarmonic::pi(lapse, dt_lapse, shift, dt_shift,
+<span class="lineNum">     142 </span>            :                                   spatial_metric, dt_spatial_metric, phi)};
+<span class="lineNum">     143 </span>            : }
+<span class="lineNum">     144 </span>            : }  // namespace Solutions
+<span class="lineNum">     145 </span>            : }  // namespace GeneralizedHarmonic
+<span class="lineNum">     146 </span>            : 
+<span class="lineNum">     147 </span>            : #define STYPE(data) BOOST_PP_TUPLE_ELEM(0, data)
+<span class="lineNum">     148 </span>            : 
+<span class="lineNum">     149 </span>            : #define INSTANTIATE(_, data)                                                   \
+<span class="lineNum">     150 </span>            :   template tuples::TaggedTuple&lt;gr::Tags::Lapse&lt;DataVector&gt;&gt;                    \
+<span class="lineNum">     151 </span>            :   GeneralizedHarmonic::Solutions::WrappedGr&lt;STYPE(data)&gt;::variables(           \
+<span class="lineNum">     152 </span>            :       const tnsr::I&lt;DataVector, GeneralizedHarmonic::Solutions::WrappedGr&lt;     \
+<span class="lineNum">     153 </span>            :                                     STYPE(data)&gt;::volume_dim&gt;&amp; /*x*/,          \
+<span class="lineNum">     154 </span>            :       double /*t*/, tmpl::list&lt;gr::Tags::Lapse&lt;DataVector&gt;&gt; /*meta*/,          \
+<span class="lineNum">     155 </span>            :       const IntermediateVars&amp; intermediate_vars) const noexcept;               \
+<span class="lineNum">     156 </span>            :   template tuples::TaggedTuple&lt;typename GeneralizedHarmonic::Solutions::       \
+<span class="lineNum">     157 </span>            :                                    WrappedGr&lt;STYPE(data)&gt;::TimeDerivLapse&gt;     \
+<span class="lineNum">     158 </span>            :   GeneralizedHarmonic::Solutions::WrappedGr&lt;STYPE(data)&gt;::variables(           \
+<span class="lineNum">     159 </span>            :       const tnsr::I&lt;DataVector, GeneralizedHarmonic::Solutions::WrappedGr&lt;     \
+<span class="lineNum">     160 </span>            :                                     STYPE(data)&gt;::volume_dim&gt;&amp; /*x*/,          \
+<span class="lineNum">     161 </span>            :       double /*t*/,                                                            \
+<span class="lineNum">     162 </span>            :       tmpl::list&lt;typename GeneralizedHarmonic::Solutions::WrappedGr&lt;STYPE(     \
+<span class="lineNum">     163 </span>            :           data)&gt;::TimeDerivLapse&gt; /*meta*/,                                    \
+<span class="lineNum">     164 </span>            :       const IntermediateVars&amp; intermediate_vars) const noexcept;               \
+<span class="lineNum">     165 </span>            :   template tuples::TaggedTuple&lt;typename GeneralizedHarmonic::Solutions::       \
+<span class="lineNum">     166 </span>            :                                    WrappedGr&lt;STYPE(data)&gt;::DerivLapse&gt;         \
+<span class="lineNum">     167 </span>            :   GeneralizedHarmonic::Solutions::WrappedGr&lt;STYPE(data)&gt;::variables(           \
+<span class="lineNum">     168 </span>            :       const tnsr::I&lt;DataVector, GeneralizedHarmonic::Solutions::WrappedGr&lt;     \
+<span class="lineNum">     169 </span>            :                                     STYPE(data)&gt;::volume_dim&gt;&amp; /*x*/,          \
+<span class="lineNum">     170 </span>            :       double /*t*/,                                                            \
+<span class="lineNum">     171 </span>            :       tmpl::list&lt;typename GeneralizedHarmonic::Solutions::WrappedGr&lt;STYPE(     \
+<span class="lineNum">     172 </span>            :           data)&gt;::DerivLapse&gt; /*meta*/,                                        \
+<span class="lineNum">     173 </span>            :       const IntermediateVars&amp; intermediate_vars) const noexcept;               \
+<span class="lineNum">     174 </span>            :   template tuples::TaggedTuple&lt;gr::Tags::Shift&lt;                                \
+<span class="lineNum">     175 </span>            :       GeneralizedHarmonic::Solutions::WrappedGr&lt;STYPE(data)&gt;::volume_dim,      \
+<span class="lineNum">     176 </span>            :       Frame::Inertial, DataVector&gt;&gt;                                            \
+<span class="lineNum">     177 </span>            :   GeneralizedHarmonic::Solutions::WrappedGr&lt;STYPE(data)&gt;::variables(           \
+<span class="lineNum">     178 </span>            :       const tnsr::I&lt;DataVector, GeneralizedHarmonic::Solutions::WrappedGr&lt;     \
+<span class="lineNum">     179 </span>            :                                     STYPE(data)&gt;::volume_dim&gt;&amp; /*x*/,          \
+<span class="lineNum">     180 </span>            :       double /*t*/,                                                            \
+<span class="lineNum">     181 </span>            :       tmpl::list&lt;gr::Tags::Shift&lt;                                              \
+<span class="lineNum">     182 </span>            :           GeneralizedHarmonic::Solutions::WrappedGr&lt;STYPE(data)&gt;::volume_dim,  \
+<span class="lineNum">     183 </span>            :           Frame::Inertial, DataVector&gt;&gt; /*meta*/,                              \
+<span class="lineNum">     184 </span>            :       const IntermediateVars&amp; intermediate_vars) const noexcept;               \
+<span class="lineNum">     185 </span>            :   template tuples::TaggedTuple&lt;typename GeneralizedHarmonic::Solutions::       \
+<span class="lineNum">     186 </span>            :                                    WrappedGr&lt;STYPE(data)&gt;::TimeDerivShift&gt;     \
+<span class="lineNum">     187 </span>            :   GeneralizedHarmonic::Solutions::WrappedGr&lt;STYPE(data)&gt;::variables(           \
+<span class="lineNum">     188 </span>            :       const tnsr::I&lt;DataVector, GeneralizedHarmonic::Solutions::WrappedGr&lt;     \
+<span class="lineNum">     189 </span>            :                                     STYPE(data)&gt;::volume_dim&gt;&amp; /*x*/,          \
+<span class="lineNum">     190 </span>            :       double /*t*/,                                                            \
+<span class="lineNum">     191 </span>            :       tmpl::list&lt;typename GeneralizedHarmonic::Solutions::WrappedGr&lt;STYPE(     \
+<span class="lineNum">     192 </span>            :           data)&gt;::TimeDerivShift&gt; /*meta*/,                                    \
+<span class="lineNum">     193 </span>            :       const IntermediateVars&amp; intermediate_vars) const noexcept;               \
+<span class="lineNum">     194 </span>            :   template tuples::TaggedTuple&lt;typename GeneralizedHarmonic::Solutions::       \
+<span class="lineNum">     195 </span>            :                                    WrappedGr&lt;STYPE(data)&gt;::DerivShift&gt;         \
+<span class="lineNum">     196 </span>            :   GeneralizedHarmonic::Solutions::WrappedGr&lt;STYPE(data)&gt;::variables(           \
+<span class="lineNum">     197 </span>            :       const tnsr::I&lt;DataVector, GeneralizedHarmonic::Solutions::WrappedGr&lt;     \
+<span class="lineNum">     198 </span>            :                                     STYPE(data)&gt;::volume_dim&gt;&amp; /*x*/,          \
+<span class="lineNum">     199 </span>            :       double /*t*/,                                                            \
+<span class="lineNum">     200 </span>            :       tmpl::list&lt;typename GeneralizedHarmonic::Solutions::WrappedGr&lt;STYPE(     \
+<span class="lineNum">     201 </span>            :           data)&gt;::DerivShift&gt; /*meta*/,                                        \
+<span class="lineNum">     202 </span>            :       const IntermediateVars&amp; intermediate_vars) const noexcept;               \
+<span class="lineNum">     203 </span>            :   template tuples::TaggedTuple&lt;gr::Tags::SpatialMetric&lt;                        \
+<span class="lineNum">     204 </span>            :       GeneralizedHarmonic::Solutions::WrappedGr&lt;STYPE(data)&gt;::volume_dim,      \
+<span class="lineNum">     205 </span>            :       Frame::Inertial, DataVector&gt;&gt;                                            \
+<span class="lineNum">     206 </span>            :   GeneralizedHarmonic::Solutions::WrappedGr&lt;STYPE(data)&gt;::variables(           \
+<span class="lineNum">     207 </span>            :       const tnsr::I&lt;DataVector, GeneralizedHarmonic::Solutions::WrappedGr&lt;     \
+<span class="lineNum">     208 </span>            :                                     STYPE(data)&gt;::volume_dim&gt;&amp; /*x*/,          \
+<span class="lineNum">     209 </span>            :       double /*t*/,                                                            \
+<span class="lineNum">     210 </span>            :       tmpl::list&lt;gr::Tags::SpatialMetric&lt;                                      \
+<span class="lineNum">     211 </span>            :           GeneralizedHarmonic::Solutions::WrappedGr&lt;STYPE(data)&gt;::volume_dim,  \
+<span class="lineNum">     212 </span>            :           Frame::Inertial, DataVector&gt;&gt; /*meta*/,                              \
+<span class="lineNum">     213 </span>            :       const IntermediateVars&amp; intermediate_vars) const noexcept;               \
+<span class="lineNum">     214 </span>            :   template tuples::TaggedTuple&lt;                                                \
+<span class="lineNum">     215 </span>            :       typename GeneralizedHarmonic::Solutions::WrappedGr&lt;STYPE(                \
+<span class="lineNum">     216 </span>            :           data)&gt;::TimeDerivSpatialMetric&gt;                                      \
+<span class="lineNum">     217 </span>            :   GeneralizedHarmonic::Solutions::WrappedGr&lt;STYPE(data)&gt;::variables(           \
+<span class="lineNum">     218 </span>            :       const tnsr::I&lt;DataVector, GeneralizedHarmonic::Solutions::WrappedGr&lt;     \
+<span class="lineNum">     219 </span>            :                                     STYPE(data)&gt;::volume_dim&gt;&amp; /*x*/,          \
+<span class="lineNum">     220 </span>            :       double /*t*/,                                                            \
+<span class="lineNum">     221 </span>            :       tmpl::list&lt;typename GeneralizedHarmonic::Solutions::WrappedGr&lt;STYPE(     \
+<span class="lineNum">     222 </span>            :           data)&gt;::TimeDerivSpatialMetric&gt; /*meta*/,                            \
+<span class="lineNum">     223 </span>            :       const IntermediateVars&amp; intermediate_vars) const noexcept;               \
+<span class="lineNum">     224 </span>            :   template tuples::TaggedTuple&lt;typename GeneralizedHarmonic::Solutions::       \
+<span class="lineNum">     225 </span>            :                                    WrappedGr&lt;STYPE(data)&gt;::DerivSpatialMetric&gt; \
+<span class="lineNum">     226 </span>            :   GeneralizedHarmonic::Solutions::WrappedGr&lt;STYPE(data)&gt;::variables(           \
+<span class="lineNum">     227 </span>            :       const tnsr::I&lt;DataVector, GeneralizedHarmonic::Solutions::WrappedGr&lt;     \
+<span class="lineNum">     228 </span>            :                                     STYPE(data)&gt;::volume_dim&gt;&amp; /*x*/,          \
+<span class="lineNum">     229 </span>            :       double /*t*/,                                                            \
+<span class="lineNum">     230 </span>            :       tmpl::list&lt;typename GeneralizedHarmonic::Solutions::WrappedGr&lt;STYPE(     \
+<span class="lineNum">     231 </span>            :           data)&gt;::DerivSpatialMetric&gt; /*meta*/,                                \
+<span class="lineNum">     232 </span>            :       const IntermediateVars&amp; intermediate_vars) const noexcept;               \
+<span class="lineNum">     233 </span>            :   template tuples::TaggedTuple&lt;gr::Tags::InverseSpatialMetric&lt;                 \
+<span class="lineNum">     234 </span>            :       GeneralizedHarmonic::Solutions::WrappedGr&lt;STYPE(data)&gt;::volume_dim,      \
+<span class="lineNum">     235 </span>            :       Frame::Inertial, DataVector&gt;&gt;                                            \
+<span class="lineNum">     236 </span>            :   GeneralizedHarmonic::Solutions::WrappedGr&lt;STYPE(data)&gt;::variables(           \
+<span class="lineNum">     237 </span>            :       const tnsr::I&lt;DataVector, GeneralizedHarmonic::Solutions::WrappedGr&lt;     \
+<span class="lineNum">     238 </span>            :                                     STYPE(data)&gt;::volume_dim&gt;&amp; /*x*/,          \
+<span class="lineNum">     239 </span>            :       double /*t*/,                                                            \
+<span class="lineNum">     240 </span>            :       tmpl::list&lt;gr::Tags::InverseSpatialMetric&lt;                               \
+<span class="lineNum">     241 </span>            :           GeneralizedHarmonic::Solutions::WrappedGr&lt;STYPE(data)&gt;::volume_dim,  \
+<span class="lineNum">     242 </span>            :           Frame::Inertial, DataVector&gt;&gt; /*meta*/,                              \
+<span class="lineNum">     243 </span>            :       const IntermediateVars&amp; intermediate_vars) const noexcept;               \
+<span class="lineNum">     244 </span>            :   template tuples::TaggedTuple&lt;gr::Tags::ExtrinsicCurvature&lt;                   \
+<span class="lineNum">     245 </span>            :       GeneralizedHarmonic::Solutions::WrappedGr&lt;STYPE(data)&gt;::volume_dim,      \
+<span class="lineNum">     246 </span>            :       Frame::Inertial, DataVector&gt;&gt;                                            \
+<span class="lineNum">     247 </span>            :   GeneralizedHarmonic::Solutions::WrappedGr&lt;STYPE(data)&gt;::variables(           \
+<span class="lineNum">     248 </span>            :       const tnsr::I&lt;DataVector, GeneralizedHarmonic::Solutions::WrappedGr&lt;     \
+<span class="lineNum">     249 </span>            :                                     STYPE(data)&gt;::volume_dim&gt;&amp; /*x*/,          \
+<span class="lineNum">     250 </span>            :       double /*t*/,                                                            \
+<span class="lineNum">     251 </span>            :       tmpl::list&lt;gr::Tags::ExtrinsicCurvature&lt;                                 \
+<span class="lineNum">     252 </span>            :           GeneralizedHarmonic::Solutions::WrappedGr&lt;STYPE(data)&gt;::volume_dim,  \
+<span class="lineNum">     253 </span>            :           Frame::Inertial, DataVector&gt;&gt; /*meta*/,                              \
+<span class="lineNum">     254 </span>            :       const IntermediateVars&amp; intermediate_vars) const noexcept;               \
+<span class="lineNum">     255 </span>            :   template tuples::TaggedTuple&lt;gr::Tags::SqrtDetSpatialMetric&lt;DataVector&gt;&gt;     \
+<span class="lineNum">     256 </span>            :   GeneralizedHarmonic::Solutions::WrappedGr&lt;STYPE(data)&gt;::variables(           \
+<span class="lineNum">     257 </span>            :       const tnsr::I&lt;DataVector, GeneralizedHarmonic::Solutions::WrappedGr&lt;     \
+<span class="lineNum">     258 </span>            :                                     STYPE(data)&gt;::volume_dim&gt;&amp; /*x*/,          \
+<span class="lineNum">     259 </span>            :       double /*t*/,                                                            \
+<span class="lineNum">     260 </span>            :       tmpl::list&lt;gr::Tags::SqrtDetSpatialMetric&lt;DataVector&gt;&gt; /*meta*/,         \
+<span class="lineNum">     261 </span>            :       const IntermediateVars&amp; intermediate_vars) const noexcept;               \
+<span class="lineNum">     262 </span>            :   template tuples::TaggedTuple&lt;gr::Tags::SpacetimeMetric&lt;                      \
+<span class="lineNum">     263 </span>            :       GeneralizedHarmonic::Solutions::WrappedGr&lt;STYPE(data)&gt;::volume_dim,      \
+<span class="lineNum">     264 </span>            :       Frame::Inertial, DataVector&gt;&gt;                                            \
+<span class="lineNum">     265 </span>            :   GeneralizedHarmonic::Solutions::WrappedGr&lt;STYPE(data)&gt;::variables(           \
+<span class="lineNum">     266 </span>            :       const tnsr::I&lt;DataVector, GeneralizedHarmonic::Solutions::WrappedGr&lt;     \
+<span class="lineNum">     267 </span>            :                                     STYPE(data)&gt;::volume_dim&gt;&amp; /*x*/,          \
+<span class="lineNum">     268 </span>            :       double /*t*/,                                                            \
+<span class="lineNum">     269 </span>            :       tmpl::list&lt;gr::Tags::SpacetimeMetric&lt;                                    \
+<span class="lineNum">     270 </span>            :           GeneralizedHarmonic::Solutions::WrappedGr&lt;STYPE(data)&gt;::volume_dim,  \
+<span class="lineNum">     271 </span>            :           Frame::Inertial, DataVector&gt;&gt; /*meta*/,                              \
+<span class="lineNum">     272 </span>            :       const IntermediateVars&amp; intermediate_vars) const noexcept;               \
+<span class="lineNum">     273 </span>            :   template tuples::TaggedTuple&lt;GeneralizedHarmonic::Tags::Pi&lt;                  \
+<span class="lineNum">     274 </span>            :       GeneralizedHarmonic::Solutions::WrappedGr&lt;STYPE(data)&gt;::volume_dim,      \
+<span class="lineNum">     275 </span>            :       Frame::Inertial&gt;&gt;                                                        \
+<span class="lineNum">     276 </span>            :   GeneralizedHarmonic::Solutions::WrappedGr&lt;STYPE(data)&gt;::variables(           \
+<span class="lineNum">     277 </span>            :       const tnsr::I&lt;DataVector, GeneralizedHarmonic::Solutions::WrappedGr&lt;     \
+<span class="lineNum">     278 </span>            :                                     STYPE(data)&gt;::volume_dim&gt;&amp; /*x*/,          \
+<span class="lineNum">     279 </span>            :       double /*t*/,                                                            \
+<span class="lineNum">     280 </span>            :       tmpl::list&lt;GeneralizedHarmonic::Tags::Pi&lt;                                \
+<span class="lineNum">     281 </span>            :           GeneralizedHarmonic::Solutions::WrappedGr&lt;STYPE(data)&gt;::volume_dim,  \
+<span class="lineNum">     282 </span>            :           Frame::Inertial&gt;&gt; /*meta*/,                                          \
+<span class="lineNum">     283 </span>            :       const IntermediateVars&amp; intermediate_vars) const noexcept;               \
+<span class="lineNum">     284 </span>            :   template tuples::TaggedTuple&lt;GeneralizedHarmonic::Tags::Phi&lt;                 \
+<span class="lineNum">     285 </span>            :       GeneralizedHarmonic::Solutions::WrappedGr&lt;STYPE(data)&gt;::volume_dim,      \
+<span class="lineNum">     286 </span>            :       Frame::Inertial&gt;&gt;                                                        \
+<span class="lineNum">     287 </span>            :   GeneralizedHarmonic::Solutions::WrappedGr&lt;STYPE(data)&gt;::variables(           \
+<span class="lineNum">     288 </span>            :       const tnsr::I&lt;DataVector, GeneralizedHarmonic::Solutions::WrappedGr&lt;     \
+<span class="lineNum">     289 </span>            :                                     STYPE(data)&gt;::volume_dim&gt;&amp; /*x*/,          \
+<span class="lineNum">     290 </span>            :       double /*t*/,                                                            \
+<span class="lineNum">     291 </span>            :       tmpl::list&lt;GeneralizedHarmonic::Tags::Phi&lt;                               \
+<span class="lineNum">     292 </span>            :           GeneralizedHarmonic::Solutions::WrappedGr&lt;STYPE(data)&gt;::volume_dim,  \
+<span class="lineNum">     293 </span>            :           Frame::Inertial&gt;&gt; /*meta*/,                                          \
+<span class="lineNum">     294 </span>            :       const IntermediateVars&amp; intermediate_vars) const noexcept;
+<span class="lineNum">     295 </span>            : 
+<span class="lineNum">     296 </span>            : GENERATE_INSTANTIATIONS(INSTANTIATE, (gr::Solutions::Minkowski&lt;1&gt;,
+<span class="lineNum">     297 </span>            :                                       gr::Solutions::Minkowski&lt;2&gt;,
+<span class="lineNum">     298 </span>            :                                       gr::Solutions::Minkowski&lt;3&gt;,
+<span class="lineNum">     299 </span>            :                                       gr::Solutions::KerrSchild))
+<span class="lineNum">     300 </span>            : 
+<span class="lineNum">     301 </span>            : #undef DIM
+<span class="lineNum">     302 </span>            : #undef STYPE
+<span class="lineNum">     303 </span>            : #undef INSTANTIATE
+<span class="lineNum">     304 </span>            : /// \endcond
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../../../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.13</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

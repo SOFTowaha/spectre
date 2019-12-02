@@ -1,0 +1,496 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - 5912ac2e49a80e6a27b3707c9a1e6ce5248b1b2a - PointwiseFunctions/AnalyticSolutions/NewtonianEuler/RiemannProblem.hpp</title>
+  <link rel="stylesheet" type="text/css" href="../../../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title"> SpECTRE Documentation Coverage Report</td></tr>
+    <tr><td class="ruler"><img src="../../../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../../../index.html">top level</a> - <a href="index.html">PointwiseFunctions/AnalyticSolutions/NewtonianEuler</a> - RiemannProblem.hpp</td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+             <td class="headerItem">Commit:</td>
+             <td class="headerValue"><a target="_blank" href="https://github.com/sxs-collaboration/spectre/commit/5912ac2e49a80e6a27b3707c9a1e6ce5248b1b2a">5912ac2e49a80e6a27b3707c9a1e6ce5248b1b2a</a></td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">15</td>
+            <td class="headerCovTableEntry">108</td>
+            <td class="headerCovTableEntryLo">13.9 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2019-12-02 22:01:08</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td class="headerItem">Legend:</td>
+            <td class="headerValueLeg">            Lines:
+            <span class="coverLegendCov">hit</span>
+            <span class="coverLegendNoCov">not hit</span>
+</td>
+            <td></td>
+          </tr>
+          <tr><td><img src="../../../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../../../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">          Line data    Source code</pre>
+<pre class="source">
+<span class="lineNum">       1 </span><span class="lineNoCov">          0 : // Distributed under the MIT License.</span>
+<span class="lineNum">       2 </span>            : // See LICENSE.txt for details.
+<span class="lineNum">       3 </span>            : 
+<span class="lineNum">       4 </span>            : #pragma once
+<span class="lineNum">       5 </span>            : 
+<span class="lineNum">       6 </span>            : #include &lt;array&gt;
+<span class="lineNum">       7 </span>            : #include &lt;cstddef&gt;
+<span class="lineNum">       8 </span>            : #include &lt;limits&gt;
+<span class="lineNum">       9 </span>            : 
+<span class="lineNum">      10 </span>            : #include &quot;DataStructures/DataVector.hpp&quot;
+<span class="lineNum">      11 </span>            : #include &quot;DataStructures/Tensor/Tensor.hpp&quot;
+<span class="lineNum">      12 </span>            : #include &quot;DataStructures/Tensor/TypeAliases.hpp&quot;
+<span class="lineNum">      13 </span>            : #include &quot;Evolution/Systems/NewtonianEuler/Sources/NoSource.hpp&quot;
+<span class="lineNum">      14 </span>            : #include &quot;Evolution/Systems/NewtonianEuler/Tags.hpp&quot;
+<span class="lineNum">      15 </span>            : #include &quot;Options/Options.hpp&quot;
+<span class="lineNum">      16 </span>            : #include &quot;PointwiseFunctions/AnalyticSolutions/AnalyticSolution.hpp&quot;
+<span class="lineNum">      17 </span>            : #include &quot;PointwiseFunctions/Hydro/EquationsOfState/EquationOfState.hpp&quot;
+<span class="lineNum">      18 </span>            : #include &quot;PointwiseFunctions/Hydro/EquationsOfState/IdealFluid.hpp&quot;
+<span class="lineNum">      19 </span>            : #include &quot;Utilities/MakeArray.hpp&quot;
+<span class="lineNum">      20 </span>            : #include &quot;Utilities/TMPL.hpp&quot;
+<span class="lineNum">      21 </span>            : #include &quot;Utilities/TaggedTuple.hpp&quot;
+<span class="lineNum">      22 </span>            : 
+<span class="lineNum">      23 </span>            : /// \cond
+<span class="lineNum">      24 </span>            : namespace PUP {
+<span class="lineNum">      25 </span>            : class er;  // IWYU pragma: keep
+<span class="lineNum">      26 </span>            : }  // namespace PUP
+<span class="lineNum">      27 </span>            : /// \endcond
+<span class="lineNum">      28 </span>            : 
+<span class="lineNum">      29 </span>            : namespace NewtonianEuler {
+<span class="lineNum">      30 </span>            : namespace Solutions {
+<span class="lineNum">      31 </span>            : 
+<span class="lineNum">      32 </span>            : /*!
+<span class="lineNum">      33 </span>            :  * \brief Analytic solution to the Riemann Problem
+<span class="lineNum">      34 </span>            :  *
+<span class="lineNum">      35 </span>            :  * This class implements the exact Riemann solver described in detail in
+<span class="lineNum">      36 </span>            :  * Chapter 4 of \cite Toro2009. We follow the notation there.
+<span class="lineNum">      37 </span>            :  * The algorithm implemented here allows for 1, 2 and 3D wave propagation
+<span class="lineNum">      38 </span>            :  * along any coordinate axis. Typical initial data for test cases
+<span class="lineNum">      39 </span>            :  * (see \cite Toro2009) include:
+<span class="lineNum">      40 </span>            :  *
+<span class="lineNum">      41 </span>            :  * - Sod's Shock Tube (shock on the right, rarefaction on the left):
+<span class="lineNum">      42 </span>            :  *   - \f$(\rho_L, u_L, p_L) = (1.0, 0.0, 1.0)\f$
+<span class="lineNum">      43 </span>            :  *   - \f$(\rho_R, u_R, p_R) = (0.125, 0.0, 0.1)\f$
+<span class="lineNum">      44 </span>            :  *   - Recommended setup for sample run:
+<span class="lineNum">      45 </span>            :  *     - InitialTimeStep: 0.0001
+<span class="lineNum">      46 </span>            :  *     - Final time: 0.2
+<span class="lineNum">      47 </span>            :  *     - DomainCreator along wave propagation (no AMR):
+<span class="lineNum">      48 </span>            :  *       - Interval of length 1
+<span class="lineNum">      49 </span>            :  *       - InitialRefinement: 8
+<span class="lineNum">      50 </span>            :  *       - InitialGridPoints: 2
+<span class="lineNum">      51 </span>            :  *
+<span class="lineNum">      52 </span>            :  * - &quot;123&quot; problem (two symmetric rarefaction waves):
+<span class="lineNum">      53 </span>            :  *   - \f$(\rho_L, u_L, p_L) = (1.0, -2.0, 0.4)\f$
+<span class="lineNum">      54 </span>            :  *   - \f$(\rho_R, u_R, p_R) = (1.0, 2.0, 0.4)\f$
+<span class="lineNum">      55 </span>            :  *   - Recommended setup for sample run:
+<span class="lineNum">      56 </span>            :  *     - InitialTimeStep: 0.0001
+<span class="lineNum">      57 </span>            :  *     - Final time: 0.15
+<span class="lineNum">      58 </span>            :  *     - DomainCreator along wave propagation (no AMR):
+<span class="lineNum">      59 </span>            :  *       - Interval of length 1
+<span class="lineNum">      60 </span>            :  *       - InitialRefinement: 8
+<span class="lineNum">      61 </span>            :  *       - InitialGridPoints: 2
+<span class="lineNum">      62 </span>            :  *
+<span class="lineNum">      63 </span>            :  * - Collision of two blast waves (this test is challenging):
+<span class="lineNum">      64 </span>            :  *   - \f$(\rho_L, u_L, p_L) = (5.99924, 19.5975, 460.894)\f$
+<span class="lineNum">      65 </span>            :  *   - \f$(\rho_R, u_R, p_R) = (5.99242, -6.19633, 46.0950)\f$
+<span class="lineNum">      66 </span>            :  *   - Recommended setup for sample run:
+<span class="lineNum">      67 </span>            :  *     - InitialTimeStep: 0.00001
+<span class="lineNum">      68 </span>            :  *     - Final time: 0.012
+<span class="lineNum">      69 </span>            :  *     - DomainCreator along wave propagation (no AMR):
+<span class="lineNum">      70 </span>            :  *       - Interval of length 1
+<span class="lineNum">      71 </span>            :  *       - InitialRefinement: 8
+<span class="lineNum">      72 </span>            :  *       - InitialGridPoints: 2
+<span class="lineNum">      73 </span>            :  *
+<span class="lineNum">      74 </span>            :  * - Lax problem:
+<span class="lineNum">      75 </span>            :  *   - \f$(\rho_L, u_L, p_L) = (0.445, 0.698, 3.528)\f$
+<span class="lineNum">      76 </span>            :  *   - \f$(\rho_R, u_R, p_R) = (0.5, 0.0, 0.571)\f$
+<span class="lineNum">      77 </span>            :  *   - Recommended setup for sample run:
+<span class="lineNum">      78 </span>            :  *     - InitialTimeStep: 0.00001
+<span class="lineNum">      79 </span>            :  *     - Final time: 0.1
+<span class="lineNum">      80 </span>            :  *     - DomainCreator along wave propagation (no AMR):
+<span class="lineNum">      81 </span>            :  *       - Interval of length 1
+<span class="lineNum">      82 </span>            :  *       - InitialRefinement: 8
+<span class="lineNum">      83 </span>            :  *       - InitialGridPoints: 2
+<span class="lineNum">      84 </span>            :  *
+<span class="lineNum">      85 </span>            :  * where \f$\rho\f$ is the mass density, \f$p\f$ is the pressure, and
+<span class="lineNum">      86 </span>            :  * \f$u\f$ denotes the normal velocity.
+<span class="lineNum">      87 </span>            :  *
+<span class="lineNum">      88 </span>            :  * \note Currently the propagation axis must be hard-coded as a `size_t`
+<span class="lineNum">      89 </span>            :  * private member variable `propagation_axis_`, which can take one of
+<span class="lineNum">      90 </span>            :  * the three values `PropagationAxis::X`, `PropagationAxis::Y`, and
+<span class="lineNum">      91 </span>            :  * `PropagationAxis::Z`.
+<span class="lineNum">      92 </span>            :  *
+<span class="lineNum">      93 </span>            :  * \details The algorithm makes use of the following recipe:
+<span class="lineNum">      94 </span>            :  *
+<span class="lineNum">      95 </span>            :  * - Given the initial data on both sides of the initial interface of the
+<span class="lineNum">      96 </span>            :  *   discontinuity (here called &quot;left&quot; and &quot;right&quot; sides, where a coordinate
+<span class="lineNum">      97 </span>            :  *   axis points from left to right), we compute the pressure,
+<span class="lineNum">      98 </span>            :  *   \f$p_*\f$, and the normal velocity,
+<span class="lineNum">      99 </span>            :  *   \f$u_*\f$, in the so-called star region. This is done in the constructor.
+<span class="lineNum">     100 </span>            :  *   Here &quot;normal&quot; refers to the normal direction to the initial interface.
+<span class="lineNum">     101 </span>            :  *
+<span class="lineNum">     102 </span>            :  * - Given the pressure and the normal velocity in the star region, two
+<span class="lineNum">     103 </span>            :  *   `Wave` `struct`s are created, which represent the waves propagating
+<span class="lineNum">     104 </span>            :  *   at later times on each side of the contact discontinuity. Each `Wave`
+<span class="lineNum">     105 </span>            :  *   is equipped with two `struct`s named `Shock` and `Rarefaction` which
+<span class="lineNum">     106 </span>            :  *   contain functions that compute the primitive variables depending on whether
+<span class="lineNum">     107 </span>            :  *   the wave is a shock or a rarefaction.
+<span class="lineNum">     108 </span>            :  *
+<span class="lineNum">     109 </span>            :  * - If \f$p_* &gt; p_K\f$, the wave is a shock, otherwise the wave is a
+<span class="lineNum">     110 </span>            :  *   rarefaction. Here \f$K\f$ stands for \f$L\f$ or \f$R\f$: the left
+<span class="lineNum">     111 </span>            :  *   and right initial pressure, respectively. Since this comparison can't be
+<span class="lineNum">     112 </span>            :  *   performed at compile time, each `Wave` holds a `bool` member `is_shock_`
+<span class="lineNum">     113 </span>            :  *   which is `true` if it is a shock, and `false` if it is a
+<span class="lineNum">     114 </span>            :  *   rarefaction wave. This variable is used to evaluate the correct functions
+<span class="lineNum">     115 </span>            :  *   at run time.
+<span class="lineNum">     116 </span>            :  *
+<span class="lineNum">     117 </span>            :  * - In order to obtain the primitives at a certain time and spatial location,
+<span class="lineNum">     118 </span>            :  *   we evaluate whether the spatial location is on the left of the propagating
+<span class="lineNum">     119 </span>            :  *   contact discontinuity \f$(x &lt; u_* t)\f$ or on the right \f$(x &gt; u_* t)\f$,
+<span class="lineNum">     120 </span>            :  *   and we use the corresponding functions for left or right `Wave`s,
+<span class="lineNum">     121 </span>            :  *   respectively.
+<span class="lineNum">     122 </span>            :  *
+<span class="lineNum">     123 </span>            :  * \note The characterization of each propagating wave will only
+<span class="lineNum">     124 </span>            :  * depend on the normal velocity, while the initial jump in the components of
+<span class="lineNum">     125 </span>            :  * the velocity transverse to the wave propagation will be advected at the
+<span class="lineNum">     126 </span>            :  * speed of the contact discontinuity (\f$u_*\f$).
+<span class="lineNum">     127 </span>            :  */
+<span class="lineNum">     128 </span>            : template &lt;size_t Dim&gt;
+<span class="lineNum">     129 </span>            : class RiemannProblem : public MarkAsAnalyticSolution {
+<span class="lineNum">     130 </span><span class="lineNoCov">          0 :   enum class Side { Left, Right };</span>
+<span class="lineNum">     131 </span><span class="lineNoCov">          0 :   enum PropagationAxis { X = 0, Y = 1, Z = 2 };</span>
+<span class="lineNum">     132 </span>            : 
+<span class="lineNum">     133 </span>            :   struct Wave;
+<span class="lineNum">     134 </span>            :   struct Shock;
+<span class="lineNum">     135 </span>            :   struct Rarefaction;
+<span class="lineNum">     136 </span>            : 
+<span class="lineNum">     137 </span>            :  public:
+<span class="lineNum">     138 </span><span class="lineNoCov">          0 :   using equation_of_state_type = EquationsOfState::IdealFluid&lt;false&gt;;</span>
+<span class="lineNum">     139 </span><span class="lineNoCov">          0 :   using source_term_type = Sources::NoSource;</span>
+<span class="lineNum">     140 </span>            : 
+<span class="lineNum">     141 </span>            :   /// The adiabatic index of the fluid.
+<span class="lineNum">     142 </span><span class="lineCov">          1 :   struct AdiabaticIndex {</span>
+<span class="lineNum">     143 </span><span class="lineNoCov">          0 :     using type = double;</span>
+<span class="lineNum">     144 </span><span class="lineNoCov">          0 :     static constexpr OptionString help = {&quot;The adiabatic index of the fluid.&quot;};</span>
+<span class="lineNum">     145 </span>            :   };
+<span class="lineNum">     146 </span>            : 
+<span class="lineNum">     147 </span>            :   /// Initial position of the discontinuity
+<span class="lineNum">     148 </span><span class="lineCov">          1 :   struct InitialPosition {</span>
+<span class="lineNum">     149 </span><span class="lineNoCov">          0 :     using type = double;</span>
+<span class="lineNum">     150 </span><span class="lineNoCov">          0 :     static constexpr OptionString help = {</span>
+<span class="lineNum">     151 </span>            :         &quot;The initial position of the discontinuity.&quot;};
+<span class="lineNum">     152 </span>            :   };
+<span class="lineNum">     153 </span>            : 
+<span class="lineNum">     154 </span>            :   /// The mass density on the left of the initial discontinuity
+<span class="lineNum">     155 </span><span class="lineCov">          1 :   struct LeftMassDensity {</span>
+<span class="lineNum">     156 </span><span class="lineNoCov">          0 :     using type = double;</span>
+<span class="lineNum">     157 </span><span class="lineNoCov">          0 :     static constexpr OptionString help = {&quot;The left mass density.&quot;};</span>
+<span class="lineNum">     158 </span>            :   };
+<span class="lineNum">     159 </span>            : 
+<span class="lineNum">     160 </span>            :   /// The velocity on the left of the initial discontinuity
+<span class="lineNum">     161 </span><span class="lineCov">          1 :   struct LeftVelocity {</span>
+<span class="lineNum">     162 </span><span class="lineNoCov">          0 :     using type = std::array&lt;double, Dim&gt;;</span>
+<span class="lineNum">     163 </span><span class="lineNoCov">          0 :     static constexpr OptionString help = {&quot;The left velocity.&quot;};</span>
+<span class="lineNum">     164 </span>            :   };
+<span class="lineNum">     165 </span>            : 
+<span class="lineNum">     166 </span>            :   /// The pressure on the left of the initial discontinuity
+<span class="lineNum">     167 </span><span class="lineCov">          1 :   struct LeftPressure {</span>
+<span class="lineNum">     168 </span><span class="lineNoCov">          0 :     using type = double;</span>
+<span class="lineNum">     169 </span><span class="lineNoCov">          0 :     static constexpr OptionString help = {&quot;The left pressure.&quot;};</span>
+<span class="lineNum">     170 </span>            :   };
+<span class="lineNum">     171 </span>            : 
+<span class="lineNum">     172 </span>            :   /// The mass density on the right of the initial discontinuity
+<span class="lineNum">     173 </span><span class="lineCov">          1 :   struct RightMassDensity {</span>
+<span class="lineNum">     174 </span><span class="lineNoCov">          0 :     using type = double;</span>
+<span class="lineNum">     175 </span><span class="lineNoCov">          0 :     static constexpr OptionString help = {&quot;The right mass density.&quot;};</span>
+<span class="lineNum">     176 </span>            :   };
+<span class="lineNum">     177 </span>            : 
+<span class="lineNum">     178 </span>            :   /// The velocity on the right of the initial discontinuity
+<span class="lineNum">     179 </span><span class="lineCov">          1 :   struct RightVelocity {</span>
+<span class="lineNum">     180 </span><span class="lineNoCov">          0 :     using type = std::array&lt;double, Dim&gt;;</span>
+<span class="lineNum">     181 </span><span class="lineNoCov">          0 :     static constexpr OptionString help = {&quot;The right velocity.&quot;};</span>
+<span class="lineNum">     182 </span>            :   };
+<span class="lineNum">     183 </span>            : 
+<span class="lineNum">     184 </span>            :   /// The pressure on the right of the initial discontinuity
+<span class="lineNum">     185 </span><span class="lineCov">          1 :   struct RightPressure {</span>
+<span class="lineNum">     186 </span><span class="lineNoCov">          0 :     using type = double;</span>
+<span class="lineNum">     187 </span><span class="lineNoCov">          0 :     static constexpr OptionString help = {&quot;The right pressure.&quot;};</span>
+<span class="lineNum">     188 </span>            :   };
+<span class="lineNum">     189 </span>            : 
+<span class="lineNum">     190 </span>            :   /// The tolerance for solving for \f$p_*\f$.
+<span class="lineNum">     191 </span><span class="lineCov">          1 :   struct PressureStarTol {</span>
+<span class="lineNum">     192 </span><span class="lineNoCov">          0 :     using type = double;</span>
+<span class="lineNum">     193 </span><span class="lineNoCov">          0 :     static constexpr OptionString help = {</span>
+<span class="lineNum">     194 </span>            :         &quot;The tolerance for the numerical solution for p star&quot;};
+<span class="lineNum">     195 </span><span class="lineNoCov">          0 :     static type default_value() noexcept { return 1.e-9; }</span>
+<span class="lineNum">     196 </span>            :   };
+<span class="lineNum">     197 </span>            : 
+<span class="lineNum">     198 </span>            :   // Any of the two states that constitute the initial data, including
+<span class="lineNum">     199 </span>            :   // some derived quantities that are used repeatedly at each evaluation of the
+<span class="lineNum">     200 </span>            :   // different waves of the solution.
+<span class="lineNum">     201 </span>            :   /// Holds initial data on a side of the discontinuity and related quantities
+<span class="lineNum">     202 </span><span class="lineCov">          1 :   struct InitialData {</span>
+<span class="lineNum">     203 </span><span class="lineNoCov">          0 :     InitialData() = default;</span>
+<span class="lineNum">     204 </span><span class="lineNoCov">          0 :     InitialData(const InitialData&amp; /*rhs*/) = default;</span>
+<span class="lineNum">     205 </span><span class="lineNoCov">          0 :     InitialData&amp; operator=(const InitialData&amp; /*rhs*/) = default;</span>
+<span class="lineNum">     206 </span><span class="lineNoCov">          0 :     InitialData(InitialData&amp;&amp; /*rhs*/) noexcept = default;</span>
+<span class="lineNum">     207 </span><span class="lineNoCov">          0 :     InitialData&amp; operator=(InitialData&amp;&amp; /*rhs*/) noexcept = default;</span>
+<span class="lineNum">     208 </span><span class="lineNoCov">          0 :     ~InitialData() = default;</span>
+<span class="lineNum">     209 </span>            : 
+<span class="lineNum">     210 </span><span class="lineNoCov">          0 :     InitialData(double mass_density, std::array&lt;double, Dim&gt; velocity,</span>
+<span class="lineNum">     211 </span>            :                 double pressure, double adiabatic_index,
+<span class="lineNum">     212 </span>            :                 size_t propagation_axis) noexcept;
+<span class="lineNum">     213 </span>            : 
+<span class="lineNum">     214 </span>            :     // clang-tidy: no runtime references
+<span class="lineNum">     215 </span><span class="lineNoCov">          0 :     void pup(PUP::er&amp; /*p*/) noexcept;  //  NOLINT</span>
+<span class="lineNum">     216 </span>            : 
+<span class="lineNum">     217 </span><span class="lineNoCov">          0 :     double mass_density_ = std::numeric_limits&lt;double&gt;::signaling_NaN();</span>
+<span class="lineNum">     218 </span><span class="lineNoCov">          0 :     std::array&lt;double, Dim&gt; velocity_ =</span>
+<span class="lineNum">     219 </span>            :         make_array&lt;Dim&gt;(std::numeric_limits&lt;double&gt;::signaling_NaN());
+<span class="lineNum">     220 </span><span class="lineNoCov">          0 :     double pressure_ = std::numeric_limits&lt;double&gt;::signaling_NaN();</span>
+<span class="lineNum">     221 </span><span class="lineNoCov">          0 :     double sound_speed_ = std::numeric_limits&lt;double&gt;::signaling_NaN();</span>
+<span class="lineNum">     222 </span><span class="lineNoCov">          0 :     double normal_velocity_ = std::numeric_limits&lt;double&gt;::signaling_NaN();</span>
+<span class="lineNum">     223 </span>            : 
+<span class="lineNum">     224 </span>            :     // Data-dependent constants A and B in Eqns. (4.8) of Toro.
+<span class="lineNum">     225 </span><span class="lineNoCov">          0 :     double constant_a_ = std::numeric_limits&lt;double&gt;::signaling_NaN();</span>
+<span class="lineNum">     226 </span><span class="lineNoCov">          0 :     double constant_b_ = std::numeric_limits&lt;double&gt;::signaling_NaN();</span>
+<span class="lineNum">     227 </span>            : 
+<span class="lineNum">     228 </span><span class="lineNoCov">          0 :     friend bool operator==(const InitialData&amp; lhs,</span>
+<span class="lineNum">     229 </span>            :                            const InitialData&amp; rhs) noexcept {
+<span class="lineNum">     230 </span>            :       return lhs.mass_density_ == rhs.mass_density_ and
+<span class="lineNum">     231 </span>            :              lhs.velocity_ == rhs.velocity_ and lhs.pressure_ == rhs.pressure_;
+<span class="lineNum">     232 </span>            :     }
+<span class="lineNum">     233 </span>            :   };
+<span class="lineNum">     234 </span>            : 
+<span class="lineNum">     235 </span><span class="lineNoCov">          0 :   using options = tmpl::list&lt;AdiabaticIndex, InitialPosition, LeftMassDensity,</span>
+<span class="lineNum">     236 </span>            :                              LeftVelocity, LeftPressure, RightMassDensity,
+<span class="lineNum">     237 </span>            :                              RightVelocity, RightPressure, PressureStarTol&gt;;
+<span class="lineNum">     238 </span>            : 
+<span class="lineNum">     239 </span><span class="lineNoCov">          0 :   static constexpr OptionString help = {</span>
+<span class="lineNum">     240 </span>            :       &quot;Riemann Problem in 1, 2 or 3D along any coordinate axis.&quot;};
+<span class="lineNum">     241 </span>            : 
+<span class="lineNum">     242 </span><span class="lineNoCov">          0 :   RiemannProblem() = default;</span>
+<span class="lineNum">     243 </span><span class="lineNoCov">          0 :   RiemannProblem(const RiemannProblem&amp; /*rhs*/) = delete;</span>
+<span class="lineNum">     244 </span><span class="lineNoCov">          0 :   RiemannProblem&amp; operator=(const RiemannProblem&amp; /*rhs*/) = delete;</span>
+<span class="lineNum">     245 </span><span class="lineNoCov">          0 :   RiemannProblem(RiemannProblem&amp;&amp; /*rhs*/) noexcept = default;</span>
+<span class="lineNum">     246 </span><span class="lineNoCov">          0 :   RiemannProblem&amp; operator=(RiemannProblem&amp;&amp; /*rhs*/) noexcept = default;</span>
+<span class="lineNum">     247 </span><span class="lineNoCov">          0 :   ~RiemannProblem() = default;</span>
+<span class="lineNum">     248 </span>            : 
+<span class="lineNum">     249 </span><span class="lineNoCov">          0 :   RiemannProblem(</span>
+<span class="lineNum">     250 </span>            :       double adiabatic_index, double initial_position, double left_mass_density,
+<span class="lineNum">     251 </span>            :       std::array&lt;double, Dim&gt; left_velocity, double left_pressure,
+<span class="lineNum">     252 </span>            :       double right_mass_density, std::array&lt;double, Dim&gt; right_velocity,
+<span class="lineNum">     253 </span>            :       double right_pressure,
+<span class="lineNum">     254 </span>            :       double pressure_star_tol = PressureStarTol::default_value()) noexcept;
+<span class="lineNum">     255 </span>            : 
+<span class="lineNum">     256 </span>            :   /// Retrieve a collection of hydrodynamic variables at position `x`
+<span class="lineNum">     257 </span>            :   /// and time `t`
+<span class="lineNum">     258 </span>            :   template &lt;typename DataType, typename... Tags&gt;
+<span class="lineNum">     259 </span><span class="lineCov">          1 :   tuples::TaggedTuple&lt;Tags...&gt; variables(</span>
+<span class="lineNum">     260 </span>            :       const tnsr::I&lt;DataType, Dim, Frame::Inertial&gt;&amp; x, double t,
+<span class="lineNum">     261 </span>            :       tmpl::list&lt;Tags...&gt; /*meta*/) const noexcept {
+<span class="lineNum">     262 </span>            :     Wave left(left_initial_data_, pressure_star_, velocity_star_,
+<span class="lineNum">     263 </span>            :               adiabatic_index_, Side::Left);
+<span class="lineNum">     264 </span>            :     Wave right(right_initial_data_, pressure_star_, velocity_star_,
+<span class="lineNum">     265 </span>            :                adiabatic_index_, Side::Right);
+<span class="lineNum">     266 </span>            : 
+<span class="lineNum">     267 </span>            :     tnsr::I&lt;DataType, Dim, Frame::Inertial&gt; x_shifted(x);
+<span class="lineNum">     268 </span>            :     x_shifted.get(propagation_axis_) -= initial_position_;
+<span class="lineNum">     269 </span>            : 
+<span class="lineNum">     270 </span>            :     return {tuples::get&lt;Tags&gt;(
+<span class="lineNum">     271 </span>            :         variables(x_shifted, t, tmpl::list&lt;Tags&gt;{}, left, right))...};
+<span class="lineNum">     272 </span>            :   }
+<span class="lineNum">     273 </span>            : 
+<span class="lineNum">     274 </span><span class="lineNoCov">          0 :   const EquationsOfState::IdealFluid&lt;false&gt;&amp; equation_of_state() const</span>
+<span class="lineNum">     275 </span>            :       noexcept {
+<span class="lineNum">     276 </span>            :     return equation_of_state_;
+<span class="lineNum">     277 </span>            :   }
+<span class="lineNum">     278 </span>            : 
+<span class="lineNum">     279 </span>            :   // clang-tidy: no runtime references
+<span class="lineNum">     280 </span><span class="lineNoCov">          0 :   void pup(PUP::er&amp; /*p*/) noexcept;  //  NOLINT</span>
+<span class="lineNum">     281 </span>            : 
+<span class="lineNum">     282 </span>            :   // Retrieve these member variables for testing purposes.
+<span class="lineNum">     283 </span><span class="lineNoCov">          0 :   constexpr std::array&lt;double, 2&gt; diagnostic_star_region_values() const</span>
+<span class="lineNum">     284 </span>            :       noexcept {
+<span class="lineNum">     285 </span>            :     return make_array(pressure_star_, velocity_star_);
+<span class="lineNum">     286 </span>            :   }
+<span class="lineNum">     287 </span>            : 
+<span class="lineNum">     288 </span>            :  private:
+<span class="lineNum">     289 </span>            :   // @{
+<span class="lineNum">     290 </span>            :   /// Retrieve hydro variable at `(x, t)`
+<span class="lineNum">     291 </span>            :   template &lt;typename DataType&gt;
+<span class="lineNum">     292 </span><span class="lineCov">          1 :   auto variables(const tnsr::I&lt;DataType, Dim, Frame::Inertial&gt;&amp; x_shifted,</span>
+<span class="lineNum">     293 </span>            :                  double t, tmpl::list&lt;Tags::MassDensity&lt;DataType&gt;&gt; /*meta*/,
+<span class="lineNum">     294 </span>            :                  const Wave&amp; left, const Wave&amp; right) const noexcept
+<span class="lineNum">     295 </span>            :       -&gt; tuples::TaggedTuple&lt;Tags::MassDensity&lt;DataType&gt;&gt;;
+<span class="lineNum">     296 </span>            : 
+<span class="lineNum">     297 </span>            :   template &lt;typename DataType&gt;
+<span class="lineNum">     298 </span><span class="lineCov">          1 :   auto variables(</span>
+<span class="lineNum">     299 </span>            :       const tnsr::I&lt;DataType, Dim, Frame::Inertial&gt;&amp; x_shifted, double t,
+<span class="lineNum">     300 </span>            :       tmpl::list&lt;Tags::Velocity&lt;DataType, Dim, Frame::Inertial&gt;&gt; /*meta*/,
+<span class="lineNum">     301 </span>            :       const Wave&amp; left, const Wave&amp; right) const noexcept
+<span class="lineNum">     302 </span>            :       -&gt; tuples::TaggedTuple&lt;Tags::Velocity&lt;DataType, Dim, Frame::Inertial&gt;&gt;;
+<span class="lineNum">     303 </span>            : 
+<span class="lineNum">     304 </span>            :   template &lt;typename DataType&gt;
+<span class="lineNum">     305 </span><span class="lineCov">          1 :   auto variables(const tnsr::I&lt;DataType, Dim, Frame::Inertial&gt;&amp; x_shifted,</span>
+<span class="lineNum">     306 </span>            :                  double t, tmpl::list&lt;Tags::Pressure&lt;DataType&gt;&gt; /*meta*/,
+<span class="lineNum">     307 </span>            :                  const Wave&amp; left, const Wave&amp; right) const noexcept
+<span class="lineNum">     308 </span>            :       -&gt; tuples::TaggedTuple&lt;Tags::Pressure&lt;DataType&gt;&gt;;
+<span class="lineNum">     309 </span>            : 
+<span class="lineNum">     310 </span>            :   template &lt;typename DataType&gt;
+<span class="lineNum">     311 </span><span class="lineCov">          1 :   auto variables(const tnsr::I&lt;DataType, Dim, Frame::Inertial&gt;&amp; x_shifted,</span>
+<span class="lineNum">     312 </span>            :                  double t,
+<span class="lineNum">     313 </span>            :                  tmpl::list&lt;Tags::SpecificInternalEnergy&lt;DataType&gt;&gt; /*meta*/,
+<span class="lineNum">     314 </span>            :                  const Wave&amp; left, const Wave&amp; right) const noexcept
+<span class="lineNum">     315 </span>            :       -&gt; tuples::TaggedTuple&lt;Tags::SpecificInternalEnergy&lt;DataType&gt;&gt;;
+<span class="lineNum">     316 </span>            :   // @}
+<span class="lineNum">     317 </span>            : 
+<span class="lineNum">     318 </span>            :   // Any of the two waves propagating on each side of the contact discontinuity.
+<span class="lineNum">     319 </span>            :   // Depending on whether p_* is larger or smaller
+<span class="lineNum">     320 </span>            :   // than the initial pressure on the corresponding side, the wave is a
+<span class="lineNum">     321 </span>            :   // shock (larger) or a rarefaction (smaller) wave. Since p_*
+<span class="lineNum">     322 </span>            :   // is computed at run time, the characterization of the wave
+<span class="lineNum">     323 </span>            :   // must also be done at run time. Shock and rarefaction waves will provide
+<span class="lineNum">     324 </span>            :   // different functions to retrieve the primitive variables at a given (x, t).
+<span class="lineNum">     325 </span>            :   // Here normal velocity means velocity along the wave propagation.
+<span class="lineNum">     326 </span><span class="lineNoCov">          0 :   struct Wave {</span>
+<span class="lineNum">     327 </span><span class="lineNoCov">          0 :     Wave(const InitialData&amp; data, double pressure_star, double velocity_star,</span>
+<span class="lineNum">     328 </span>            :          double adiabatic_index, const Side&amp; side) noexcept;
+<span class="lineNum">     329 </span>            : 
+<span class="lineNum">     330 </span><span class="lineNoCov">          0 :     double mass_density(double x_shifted, double t) const noexcept;</span>
+<span class="lineNum">     331 </span>            : 
+<span class="lineNum">     332 </span><span class="lineNoCov">          0 :     double normal_velocity(double x_shifted, double t,</span>
+<span class="lineNum">     333 </span>            :                            double velocity_star) const noexcept;
+<span class="lineNum">     334 </span>            : 
+<span class="lineNum">     335 </span><span class="lineNoCov">          0 :     double pressure(double x_shifted, double t, double pressure_star) const</span>
+<span class="lineNum">     336 </span>            :         noexcept;
+<span class="lineNum">     337 </span>            : 
+<span class="lineNum">     338 </span>            :    private:
+<span class="lineNum">     339 </span>            :     // p_* over initial pressure on the corresponding side
+<span class="lineNum">     340 </span><span class="lineNoCov">          0 :     double pressure_ratio_ = std::numeric_limits&lt;double&gt;::signaling_NaN();</span>
+<span class="lineNum">     341 </span>            :     // false if rarefaction wave
+<span class="lineNum">     342 </span><span class="lineNoCov">          0 :     bool is_shock_ = true;</span>
+<span class="lineNum">     343 </span>            : 
+<span class="lineNum">     344 </span><span class="lineNoCov">          0 :     InitialData data_{};</span>
+<span class="lineNum">     345 </span><span class="lineNoCov">          0 :     Shock shock_{};</span>
+<span class="lineNum">     346 </span><span class="lineNoCov">          0 :     Rarefaction rarefaction_{};</span>
+<span class="lineNum">     347 </span>            :   };
+<span class="lineNum">     348 </span>            : 
+<span class="lineNum">     349 </span><span class="lineNoCov">          0 :   struct Shock {</span>
+<span class="lineNum">     350 </span><span class="lineNoCov">          0 :     Shock(const InitialData&amp; data, double pressure_ratio,</span>
+<span class="lineNum">     351 </span>            :           double adiabatic_index, const Side&amp; side) noexcept;
+<span class="lineNum">     352 </span>            : 
+<span class="lineNum">     353 </span><span class="lineNoCov">          0 :     double mass_density(double x_shifted, double t,</span>
+<span class="lineNum">     354 </span>            :                         const InitialData&amp; data) const noexcept;
+<span class="lineNum">     355 </span><span class="lineNoCov">          0 :     double normal_velocity(double x_shifted, double t, const InitialData&amp; data,</span>
+<span class="lineNum">     356 </span>            :                            double velocity_star) const noexcept;
+<span class="lineNum">     357 </span>            : 
+<span class="lineNum">     358 </span><span class="lineNoCov">          0 :     double pressure(double x_shifted, double t, const InitialData&amp; data,</span>
+<span class="lineNum">     359 </span>            :                     double pressure_star) const noexcept;
+<span class="lineNum">     360 </span>            : 
+<span class="lineNum">     361 </span>            :    private:
+<span class="lineNum">     362 </span><span class="lineNoCov">          0 :     double direction_ = std::numeric_limits&lt;double&gt;::signaling_NaN();</span>
+<span class="lineNum">     363 </span><span class="lineNoCov">          0 :     double mass_density_star_ = std::numeric_limits&lt;double&gt;::signaling_NaN();</span>
+<span class="lineNum">     364 </span><span class="lineNoCov">          0 :     double shock_speed_ = std::numeric_limits&lt;double&gt;::signaling_NaN();</span>
+<span class="lineNum">     365 </span>            :   };
+<span class="lineNum">     366 </span>            : 
+<span class="lineNum">     367 </span><span class="lineNoCov">          0 :   struct Rarefaction {</span>
+<span class="lineNum">     368 </span><span class="lineNoCov">          0 :     Rarefaction(const InitialData&amp; data, double pressure_ratio,</span>
+<span class="lineNum">     369 </span>            :                 double velocity_star, double adiabatic_index,
+<span class="lineNum">     370 </span>            :                 const Side&amp; side) noexcept;
+<span class="lineNum">     371 </span>            : 
+<span class="lineNum">     372 </span><span class="lineNoCov">          0 :     double mass_density(double x_shifted, double t,</span>
+<span class="lineNum">     373 </span>            :                         const InitialData&amp; data) const noexcept;
+<span class="lineNum">     374 </span><span class="lineNoCov">          0 :     double normal_velocity(double x_shifted, double t, const InitialData&amp; data,</span>
+<span class="lineNum">     375 </span>            :                            double velocity_star) const noexcept;
+<span class="lineNum">     376 </span>            : 
+<span class="lineNum">     377 </span><span class="lineNoCov">          0 :     double pressure(double x_shifted, double t, const InitialData&amp; data,</span>
+<span class="lineNum">     378 </span>            :                     double pressure_star) const noexcept;
+<span class="lineNum">     379 </span>            : 
+<span class="lineNum">     380 </span>            :    private:
+<span class="lineNum">     381 </span><span class="lineNoCov">          0 :     double direction_ = std::numeric_limits&lt;double&gt;::signaling_NaN();</span>
+<span class="lineNum">     382 </span><span class="lineNoCov">          0 :     double gamma_mm_ = std::numeric_limits&lt;double&gt;::signaling_NaN();</span>
+<span class="lineNum">     383 </span><span class="lineNoCov">          0 :     double gamma_pp_ = std::numeric_limits&lt;double&gt;::signaling_NaN();</span>
+<span class="lineNum">     384 </span><span class="lineNoCov">          0 :     double mass_density_star_ = std::numeric_limits&lt;double&gt;::signaling_NaN();</span>
+<span class="lineNum">     385 </span><span class="lineNoCov">          0 :     double sound_speed_star_ = std::numeric_limits&lt;double&gt;::signaling_NaN();</span>
+<span class="lineNum">     386 </span><span class="lineNoCov">          0 :     double head_speed_ = std::numeric_limits&lt;double&gt;::signaling_NaN();</span>
+<span class="lineNum">     387 </span><span class="lineNoCov">          0 :     double tail_speed_ = std::numeric_limits&lt;double&gt;::signaling_NaN();</span>
+<span class="lineNum">     388 </span>            :   };
+<span class="lineNum">     389 </span>            : 
+<span class="lineNum">     390 </span>            :   template &lt;size_t SpatialDim&gt;
+<span class="lineNum">     391 </span>            :   friend bool
+<span class="lineNum">     392 </span><span class="lineNoCov">          0 :   operator==(  // NOLINT (clang-tidy: readability-redundant-declaration)</span>
+<span class="lineNum">     393 </span>            :       const RiemannProblem&lt;SpatialDim&gt;&amp; lhs,
+<span class="lineNum">     394 </span>            :       const RiemannProblem&lt;SpatialDim&gt;&amp; rhs) noexcept;
+<span class="lineNum">     395 </span>            : 
+<span class="lineNum">     396 </span><span class="lineNoCov">          0 :   double adiabatic_index_ = std::numeric_limits&lt;double&gt;::signaling_NaN();</span>
+<span class="lineNum">     397 </span><span class="lineNoCov">          0 :   double initial_position_ = std::numeric_limits&lt;double&gt;::signaling_NaN();</span>
+<span class="lineNum">     398 </span><span class="lineNoCov">          0 :   size_t propagation_axis_ = PropagationAxis::X;</span>
+<span class="lineNum">     399 </span><span class="lineNoCov">          0 :   InitialData left_initial_data_{};</span>
+<span class="lineNum">     400 </span><span class="lineNoCov">          0 :   InitialData right_initial_data_{};</span>
+<span class="lineNum">     401 </span>            : 
+<span class="lineNum">     402 </span><span class="lineNoCov">          0 :   double pressure_star_tol_ = std::numeric_limits&lt;double&gt;::signaling_NaN();</span>
+<span class="lineNum">     403 </span>            :   // the pressure in the star region, p_*
+<span class="lineNum">     404 </span><span class="lineNoCov">          0 :   double pressure_star_ = std::numeric_limits&lt;double&gt;::signaling_NaN();</span>
+<span class="lineNum">     405 </span>            :   // the velocity in the star region, u_*
+<span class="lineNum">     406 </span><span class="lineNoCov">          0 :   double velocity_star_ = std::numeric_limits&lt;double&gt;::signaling_NaN();</span>
+<span class="lineNum">     407 </span>            : 
+<span class="lineNum">     408 </span><span class="lineNoCov">          0 :   EquationsOfState::IdealFluid&lt;false&gt; equation_of_state_{};</span>
+<span class="lineNum">     409 </span>            : };
+<span class="lineNum">     410 </span>            : 
+<span class="lineNum">     411 </span>            : template &lt;size_t Dim&gt;
+<span class="lineNum">     412 </span><span class="lineNoCov">          0 : bool operator!=(const RiemannProblem&lt;Dim&gt;&amp; lhs,</span>
+<span class="lineNum">     413 </span>            :                 const RiemannProblem&lt;Dim&gt;&amp; rhs) noexcept;
+<span class="lineNum">     414 </span>            : 
+<span class="lineNum">     415 </span>            : }  // namespace Solutions
+<span class="lineNum">     416 </span>            : }  // namespace NewtonianEuler
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../../../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.13</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

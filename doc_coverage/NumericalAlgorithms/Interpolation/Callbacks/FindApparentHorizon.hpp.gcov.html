@@ -1,0 +1,334 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - 5912ac2e49a80e6a27b3707c9a1e6ce5248b1b2a - NumericalAlgorithms/Interpolation/Callbacks/FindApparentHorizon.hpp</title>
+  <link rel="stylesheet" type="text/css" href="../../../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title"> SpECTRE Documentation Coverage Report</td></tr>
+    <tr><td class="ruler"><img src="../../../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../../../index.html">top level</a> - <a href="index.html">NumericalAlgorithms/Interpolation/Callbacks</a> - FindApparentHorizon.hpp</td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+             <td class="headerItem">Commit:</td>
+             <td class="headerValue"><a target="_blank" href="https://github.com/sxs-collaboration/spectre/commit/5912ac2e49a80e6a27b3707c9a1e6ce5248b1b2a">5912ac2e49a80e6a27b3707c9a1e6ce5248b1b2a</a></td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">1</td>
+            <td class="headerCovTableEntry">5</td>
+            <td class="headerCovTableEntryLo">20.0 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2019-12-02 22:01:08</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td class="headerItem">Legend:</td>
+            <td class="headerValueLeg">            Lines:
+            <span class="coverLegendCov">hit</span>
+            <span class="coverLegendNoCov">not hit</span>
+</td>
+            <td></td>
+          </tr>
+          <tr><td><img src="../../../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../../../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">          Line data    Source code</pre>
+<pre class="source">
+<span class="lineNum">       1 </span><span class="lineNoCov">          0 : // Distributed under the MIT License.</span>
+<span class="lineNum">       2 </span>            : // See LICENSE.txt for details.
+<span class="lineNum">       3 </span>            : 
+<span class="lineNum">       4 </span>            : #pragma once
+<span class="lineNum">       5 </span>            : 
+<span class="lineNum">       6 </span>            : #include &lt;utility&gt;
+<span class="lineNum">       7 </span>            : 
+<span class="lineNum">       8 </span>            : #include &quot;ApparentHorizons/FastFlow.hpp&quot;
+<span class="lineNum">       9 </span>            : #include &quot;ApparentHorizons/Strahlkorper.hpp&quot;
+<span class="lineNum">      10 </span>            : #include &quot;ApparentHorizons/Tags.hpp&quot;
+<span class="lineNum">      11 </span>            : #include &quot;ApparentHorizons/YlmSpherepack.hpp&quot;
+<span class="lineNum">      12 </span>            : #include &quot;DataStructures/DataBox/DataBox.hpp&quot;
+<span class="lineNum">      13 </span>            : #include &quot;ErrorHandling/Error.hpp&quot;
+<span class="lineNum">      14 </span>            : #include &quot;Informer/Verbosity.hpp&quot;
+<span class="lineNum">      15 </span>            : #include &quot;Parallel/ConstGlobalCache.hpp&quot;
+<span class="lineNum">      16 </span>            : #include &quot;Parallel/Invoke.hpp&quot;
+<span class="lineNum">      17 </span>            : #include &quot;Parallel/Printf.hpp&quot;
+<span class="lineNum">      18 </span>            : #include &quot;PointwiseFunctions/GeneralRelativity/Tags.hpp&quot;
+<span class="lineNum">      19 </span>            : #include &quot;Utilities/Gsl.hpp&quot;
+<span class="lineNum">      20 </span>            : #include &quot;Utilities/PrettyType.hpp&quot;
+<span class="lineNum">      21 </span>            : 
+<span class="lineNum">      22 </span>            : /// \cond
+<span class="lineNum">      23 </span>            : namespace StrahlkorperTags {
+<span class="lineNum">      24 </span>            : template &lt;typename Frame&gt;
+<span class="lineNum">      25 </span>            : struct Strahlkorper;
+<span class="lineNum">      26 </span>            : }  // namespace StrahlkorperTags
+<span class="lineNum">      27 </span>            : namespace db {
+<span class="lineNum">      28 </span>            : template &lt;typename TagsList&gt;
+<span class="lineNum">      29 </span>            : class DataBox;
+<span class="lineNum">      30 </span>            : }  // namespace db
+<span class="lineNum">      31 </span>            : namespace intrp {
+<span class="lineNum">      32 </span>            : template &lt;class Metavariables, typename InterpolationTargetTag&gt;
+<span class="lineNum">      33 </span>            : struct InterpolationTarget;
+<span class="lineNum">      34 </span>            : namespace Tags {
+<span class="lineNum">      35 </span>            : template &lt;typename Metavariables&gt;
+<span class="lineNum">      36 </span>            : struct TemporalIds;
+<span class="lineNum">      37 </span>            : }  // namespace Tags
+<span class="lineNum">      38 </span>            : }  // namespace intrp
+<span class="lineNum">      39 </span>            : namespace Tags {
+<span class="lineNum">      40 </span>            : struct Verbosity;
+<span class="lineNum">      41 </span>            : }  // namespace Tags
+<span class="lineNum">      42 </span>            : template &lt;typename Frame&gt;
+<span class="lineNum">      43 </span>            : class Strahlkorper;
+<span class="lineNum">      44 </span>            : /// \endcond
+<span class="lineNum">      45 </span>            : 
+<span class="lineNum">      46 </span>            : namespace intrp {
+<span class="lineNum">      47 </span><span class="lineNoCov">          0 : namespace callbacks {</span>
+<span class="lineNum">      48 </span>            : 
+<span class="lineNum">      49 </span>            : /// \brief post interpolation callback (see InterpolationTarget)
+<span class="lineNum">      50 </span>            : /// that does a FastFlow iteration and triggers another one until convergence.
+<span class="lineNum">      51 </span>            : ///
+<span class="lineNum">      52 </span>            : /// Assumes that InterpolationTargetTag contains an additional
+<span class="lineNum">      53 </span>            : /// struct called `post_horizon_find_callback`, which has a function
+<span class="lineNum">      54 </span>            : ///```
+<span class="lineNum">      55 </span>            : ///  static void apply(const DataBox&lt;DbTags&gt;&amp;,
+<span class="lineNum">      56 </span>            : ///                    const intrp::ConstGlobalCache&lt;Metavariables&gt;&amp;,
+<span class="lineNum">      57 </span>            : ///                    const Metavariables::temporal_id&amp;) noexcept;
+<span class="lineNum">      58 </span>            : ///```
+<span class="lineNum">      59 </span>            : /// that is called if the FastFlow iteration has converged.
+<span class="lineNum">      60 </span>            : ///
+<span class="lineNum">      61 </span>            : /// Uses:
+<span class="lineNum">      62 </span>            : /// - Metavariables:
+<span class="lineNum">      63 </span>            : ///   - `temporal_id`
+<span class="lineNum">      64 </span>            : /// - DataBox:
+<span class="lineNum">      65 </span>            : ///   - `::Tags::Verbosity`
+<span class="lineNum">      66 </span>            : ///   - `::gr::Tags::InverseSpatialMetric&lt;3,Frame&gt;`
+<span class="lineNum">      67 </span>            : ///   - `::gr::Tags::ExtrinsicCurvature&lt;3,Frame&gt;`
+<span class="lineNum">      68 </span>            : ///   - `::gr::Tags::SpatialChristoffelSecondKind&lt;3,Frame&gt;`
+<span class="lineNum">      69 </span>            : ///   - `::ah::Tags::FastFlow`
+<span class="lineNum">      70 </span>            : ///   - `StrahlkorperTags::Strahlkorper&lt;Frame&gt;`
+<span class="lineNum">      71 </span>            : ///
+<span class="lineNum">      72 </span>            : /// Modifies:
+<span class="lineNum">      73 </span>            : /// - DataBox:
+<span class="lineNum">      74 </span>            : ///   - `::ah::Tags::FastFlow`
+<span class="lineNum">      75 </span>            : ///   - `StrahlkorperTags::Strahlkorper&lt;Frame&gt;`
+<span class="lineNum">      76 </span>            : ///
+<span class="lineNum">      77 </span>            : /// This is an InterpolationTargetTag::post_interpolation_callback;
+<span class="lineNum">      78 </span>            : /// see InterpolationTarget for a description of InterpolationTargetTag.
+<span class="lineNum">      79 </span>            : template &lt;typename InterpolationTargetTag&gt;
+<span class="lineNum">      80 </span><span class="lineCov">          1 : struct FindApparentHorizon {</span>
+<span class="lineNum">      81 </span><span class="lineNoCov">          0 :   using observation_types = typename InterpolationTargetTag::</span>
+<span class="lineNum">      82 </span>            :       post_horizon_find_callback::observation_types;
+<span class="lineNum">      83 </span>            :   template &lt;typename DbTags, typename Metavariables&gt;
+<span class="lineNum">      84 </span><span class="lineNoCov">          0 :   static bool apply(</span>
+<span class="lineNum">      85 </span>            :       const gsl::not_null&lt;db::DataBox&lt;DbTags&gt;*&gt; box,
+<span class="lineNum">      86 </span>            :       const gsl::not_null&lt;Parallel::ConstGlobalCache&lt;Metavariables&gt;*&gt; cache,
+<span class="lineNum">      87 </span>            :       const typename Metavariables::temporal_id::type&amp; temporal_id) noexcept {
+<span class="lineNum">      88 </span>            : 
+<span class="lineNum">      89 </span>            :     // Before doing anything else, deal with the possibility that some
+<span class="lineNum">      90 </span>            :     // of the points might be outside of the Domain.
+<span class="lineNum">      91 </span>            :     const auto num_invalid_pts =
+<span class="lineNum">      92 </span>            :         db::get&lt;Tags::IndicesOfInvalidInterpPoints&gt;(*box).size();
+<span class="lineNum">      93 </span>            :     if(num_invalid_pts &gt; 0) {
+<span class="lineNum">      94 </span>            :       ERROR(&quot;FindApparentHorizon: Found points that are not in any block&quot;);
+<span class="lineNum">      95 </span>            :     }
+<span class="lineNum">      96 </span>            : 
+<span class="lineNum">      97 </span>            :     const auto&amp; verbosity = db::get&lt;::Tags::Verbosity&gt;(*box);
+<span class="lineNum">      98 </span>            :     const auto&amp; inv_g =
+<span class="lineNum">      99 </span>            :         db::get&lt;::gr::Tags::InverseSpatialMetric&lt;3, Frame::Inertial&gt;&gt;(*box);
+<span class="lineNum">     100 </span>            :     const auto&amp; ex_curv =
+<span class="lineNum">     101 </span>            :         db::get&lt;::gr::Tags::ExtrinsicCurvature&lt;3, Frame::Inertial&gt;&gt;(*box);
+<span class="lineNum">     102 </span>            :     const auto&amp; christoffel =
+<span class="lineNum">     103 </span>            :         db::get&lt;::gr::Tags::SpatialChristoffelSecondKind&lt;3, Frame::Inertial&gt;&gt;(
+<span class="lineNum">     104 </span>            :             *box);
+<span class="lineNum">     105 </span>            : 
+<span class="lineNum">     106 </span>            :     std::pair&lt;FastFlow::Status, FastFlow::IterInfo&gt; status_and_info;
+<span class="lineNum">     107 </span>            : 
+<span class="lineNum">     108 </span>            :     // Do a FastFlow iteration.
+<span class="lineNum">     109 </span>            :     db::mutate&lt;::ah::Tags::FastFlow,
+<span class="lineNum">     110 </span>            :                StrahlkorperTags::Strahlkorper&lt;Frame::Inertial&gt;&gt;(
+<span class="lineNum">     111 </span>            :         box, [&amp;inv_g, &amp;ex_curv, &amp;christoffel, &amp;status_and_info ](
+<span class="lineNum">     112 </span>            :                  const gsl::not_null&lt;::FastFlow*&gt; fast_flow,
+<span class="lineNum">     113 </span>            :                  const gsl::not_null&lt;::Strahlkorper&lt;Frame::Inertial&gt;*&gt;
+<span class="lineNum">     114 </span>            :                      strahlkorper) noexcept {
+<span class="lineNum">     115 </span>            :           status_and_info =
+<span class="lineNum">     116 </span>            :               fast_flow-&gt;template iterate_horizon_finder&lt;Frame::Inertial&gt;(
+<span class="lineNum">     117 </span>            :                   strahlkorper, inv_g, ex_curv, christoffel);
+<span class="lineNum">     118 </span>            :         });
+<span class="lineNum">     119 </span>            : 
+<span class="lineNum">     120 </span>            :     // Determine whether we have converged, whether we need another step,
+<span class="lineNum">     121 </span>            :     // or whether we have encountered an error.
+<span class="lineNum">     122 </span>            : 
+<span class="lineNum">     123 </span>            :     const auto&amp; status = status_and_info.first;
+<span class="lineNum">     124 </span>            :     const auto&amp; info = status_and_info.second;
+<span class="lineNum">     125 </span>            :     const auto has_converged = converged(status);
+<span class="lineNum">     126 </span>            : 
+<span class="lineNum">     127 </span>            :     if (verbosity &gt; ::Verbosity::Quiet or
+<span class="lineNum">     128 </span>            :         (verbosity &gt; ::Verbosity::Silent and has_converged)) {
+<span class="lineNum">     129 </span>            :       //  The things printed out here are:
+<span class="lineNum">     130 </span>            :       //  its     = current iteration number.
+<span class="lineNum">     131 </span>            :       //  R       = min and max of residual over all prolonged grid points.
+<span class="lineNum">     132 </span>            :       // |R|      = L2 norm of residual, counting only L modes solved for.
+<span class="lineNum">     133 </span>            :       // |R_mesh| = L2 norm of residual over prolonged grid points.
+<span class="lineNum">     134 </span>            :       // r        = min and max radius of trial horizon surface.
+<span class="lineNum">     135 </span>            :       //
+<span class="lineNum">     136 </span>            :       // Difference between |R| and |R_mesh|:
+<span class="lineNum">     137 </span>            :       //  The horizon is represented in a Y_lm expansion up to l=l_surface;
+<span class="lineNum">     138 </span>            :       //  the residual |R| represents the failure of that surface to satisfy
+<span class="lineNum">     139 </span>            :       //  the apparent horizon equation.
+<span class="lineNum">     140 </span>            :       //
+<span class="lineNum">     141 </span>            :       //  However, at each iteration we also interpolate the horizon surface
+<span class="lineNum">     142 </span>            :       //  to a higher resolution (&quot;prolongation&quot;).  The prolonged surface
+<span class="lineNum">     143 </span>            :       //  includes Ylm coefficents up to l=l_mesh, where l_mesh &gt; l_surface.
+<span class="lineNum">     144 </span>            :       //  The residual computed on this higher-resolution surface is |R_mesh|.
+<span class="lineNum">     145 </span>            :       //
+<span class="lineNum">     146 </span>            :       //  As iterations proceed, |R| should decrease until it reaches numerical
+<span class="lineNum">     147 </span>            :       //  roundoff error, because we are varying all the Y_lm coefficients up to
+<span class="lineNum">     148 </span>            :       //  l=l_surface to minimize the residual.  However, |R_mesh| should
+<span class="lineNum">     149 </span>            :       //  eventually stop decreasing as iterations proceed, hitting a
+<span class="lineNum">     150 </span>            :       //  floor that represents the numerical truncation error of the solution.
+<span class="lineNum">     151 </span>            :       //
+<span class="lineNum">     152 </span>            :       //  The convergence criterion looks at both |R| and |R_mesh|:  Once
+<span class="lineNum">     153 </span>            :       //  |R| is small enough and |R_mesh| has stabilized, it is pointless
+<span class="lineNum">     154 </span>            :       //  to keep iterating (even though one could iterate until |R| reaches
+<span class="lineNum">     155 </span>            :       //  roundoff).
+<span class="lineNum">     156 </span>            :       //
+<span class="lineNum">     157 </span>            :       //  Problems with convergence of the apparent horizon finder can often
+<span class="lineNum">     158 </span>            :       //  be diagnosed by looking at the behavior of |R| and |R_mesh| as a
+<span class="lineNum">     159 </span>            :       //  function of iteration.
+<span class="lineNum">     160 </span>            :       Parallel::printf(
+<span class="lineNum">     161 </span>            :           &quot;%s: its=%d: %.1e&lt;R&lt;%.0e, |R|=%.1g, &quot;
+<span class="lineNum">     162 </span>            :           &quot;|R_grid|=%.1g, %.4g&lt;r&lt;%.4g\n&quot;,
+<span class="lineNum">     163 </span>            :           pretty_type::short_name&lt;InterpolationTargetTag&gt;(), info.iteration,
+<span class="lineNum">     164 </span>            :           info.min_residual, info.max_residual, info.residual_ylm,
+<span class="lineNum">     165 </span>            :           info.residual_mesh, info.r_min, info.r_max);
+<span class="lineNum">     166 </span>            :     }
+<span class="lineNum">     167 </span>            : 
+<span class="lineNum">     168 </span>            :     if (status == FastFlow::Status::SuccessfulIteration) {
+<span class="lineNum">     169 </span>            :       // Do another iteration of the same horizon search.
+<span class="lineNum">     170 </span>            :       const auto&amp; temporal_ids =
+<span class="lineNum">     171 </span>            :           db::get&lt;intrp::Tags::TemporalIds&lt;Metavariables&gt;&gt;(*box);
+<span class="lineNum">     172 </span>            :       auto&amp; interpolation_target = Parallel::get_parallel_component&lt;
+<span class="lineNum">     173 </span>            :           intrp::InterpolationTarget&lt;Metavariables, InterpolationTargetTag&gt;&gt;(
+<span class="lineNum">     174 </span>            :           *cache);
+<span class="lineNum">     175 </span>            :       Parallel::simple_action&lt;
+<span class="lineNum">     176 </span>            :           typename InterpolationTargetTag::compute_target_points&gt;(
+<span class="lineNum">     177 </span>            :           interpolation_target, temporal_ids.front());
+<span class="lineNum">     178 </span>            :       // We return false because we don't want this iteration to clean
+<span class="lineNum">     179 </span>            :       // up the volume data, since we are using it for the next iteration
+<span class="lineNum">     180 </span>            :       // (i.e. the simple_action that we just called).
+<span class="lineNum">     181 </span>            :       return false;
+<span class="lineNum">     182 </span>            :     } else if (not has_converged) {
+<span class="lineNum">     183 </span>            :       ERROR(&quot;Apparent horizon finder &quot;
+<span class="lineNum">     184 </span>            :             &lt;&lt; pretty_type::short_name&lt;InterpolationTargetTag&gt;()
+<span class="lineNum">     185 </span>            :             &lt;&lt; &quot; failed, reason = &quot; &lt;&lt; status);
+<span class="lineNum">     186 </span>            :     }
+<span class="lineNum">     187 </span>            :     // If we get here, the horizon finder has converged.
+<span class="lineNum">     188 </span>            : 
+<span class="lineNum">     189 </span>            :     // The interpolated variables
+<span class="lineNum">     190 </span>            :     // ::Tags::Variables&lt;InterpolationTargetTag::vars_to_interpolate_to_target&gt;
+<span class="lineNum">     191 </span>            :     // have been interpolated from the volume to the points on the
+<span class="lineNum">     192 </span>            :     // prolonged_strahlkorper, not to the points on the actual
+<span class="lineNum">     193 </span>            :     // strahlkorper.  So here we do a restriction of these quantities onto
+<span class="lineNum">     194 </span>            :     // the actual strahlkorper.
+<span class="lineNum">     195 </span>            : 
+<span class="lineNum">     196 </span>            :     // Type alias to make code more understandable.
+<span class="lineNum">     197 </span>            :     using vars_tags =
+<span class="lineNum">     198 </span>            :         typename InterpolationTargetTag::vars_to_interpolate_to_target;
+<span class="lineNum">     199 </span>            :     db::mutate_apply&lt;tmpl::list&lt;::Tags::Variables&lt;vars_tags&gt;&gt;,
+<span class="lineNum">     200 </span>            :                      tmpl::list&lt;StrahlkorperTags::Strahlkorper&lt;Frame::Inertial&gt;,
+<span class="lineNum">     201 </span>            :                                 ::ah::Tags::FastFlow&gt;&gt;(
+<span class="lineNum">     202 </span>            :         [
+<span class="lineNum">     203 </span>            :         ](const gsl::not_null&lt;db::item_type&lt;::Tags::Variables&lt;vars_tags&gt;&gt;*&gt;
+<span class="lineNum">     204 </span>            :               vars,
+<span class="lineNum">     205 </span>            :           const db::const_item_type&lt;
+<span class="lineNum">     206 </span>            :               StrahlkorperTags::Strahlkorper&lt;Frame::Inertial&gt;&gt;&amp; strahlkorper,
+<span class="lineNum">     207 </span>            :           const db::const_item_type&lt;::ah::Tags::FastFlow&gt;&amp; fast_flow) noexcept {
+<span class="lineNum">     208 </span>            :           const size_t L_mesh = fast_flow.current_l_mesh(strahlkorper);
+<span class="lineNum">     209 </span>            :           const auto prolonged_strahlkorper =
+<span class="lineNum">     210 </span>            :               Strahlkorper&lt;Frame::Inertial&gt;(L_mesh, L_mesh, strahlkorper);
+<span class="lineNum">     211 </span>            :           auto new_vars = db::item_type&lt;::Tags::Variables&lt;vars_tags&gt;&gt;(
+<span class="lineNum">     212 </span>            :               strahlkorper.ylm_spherepack().physical_size());
+<span class="lineNum">     213 </span>            : 
+<span class="lineNum">     214 </span>            :           tmpl::for_each&lt;vars_tags&gt;([
+<span class="lineNum">     215 </span>            :             &amp;strahlkorper, &amp;prolonged_strahlkorper, &amp;vars, &amp;new_vars
+<span class="lineNum">     216 </span>            :           ](auto tag_v) noexcept {
+<span class="lineNum">     217 </span>            :             using tag = typename decltype(tag_v)::type;
+<span class="lineNum">     218 </span>            :             const auto&amp; old_var = get&lt;tag&gt;(*vars);
+<span class="lineNum">     219 </span>            :             auto&amp; new_var = get&lt;tag&gt;(new_vars);
+<span class="lineNum">     220 </span>            :             auto old_iter = old_var.begin();
+<span class="lineNum">     221 </span>            :             auto new_iter = new_var.begin();
+<span class="lineNum">     222 </span>            :             for (; old_iter != old_var.end() and new_iter != new_var.end();
+<span class="lineNum">     223 </span>            :                  ++old_iter, ++new_iter) {
+<span class="lineNum">     224 </span>            :               *new_iter = strahlkorper.ylm_spherepack().spec_to_phys(
+<span class="lineNum">     225 </span>            :                   prolonged_strahlkorper.ylm_spherepack().prolong_or_restrict(
+<span class="lineNum">     226 </span>            :                       prolonged_strahlkorper.ylm_spherepack().phys_to_spec(
+<span class="lineNum">     227 </span>            :                           *old_iter),
+<span class="lineNum">     228 </span>            :                       strahlkorper.ylm_spherepack()));
+<span class="lineNum">     229 </span>            :             }
+<span class="lineNum">     230 </span>            :           });
+<span class="lineNum">     231 </span>            :           *vars = std::move(new_vars);
+<span class="lineNum">     232 </span>            :         },
+<span class="lineNum">     233 </span>            :         box);
+<span class="lineNum">     234 </span>            : 
+<span class="lineNum">     235 </span>            :     InterpolationTargetTag::post_horizon_find_callback::apply(*box, *cache,
+<span class="lineNum">     236 </span>            :                                                               temporal_id);
+<span class="lineNum">     237 </span>            : 
+<span class="lineNum">     238 </span>            :     // Prepare for finding horizon at a new time.
+<span class="lineNum">     239 </span>            :     // For now, the initial guess for the new
+<span class="lineNum">     240 </span>            :     // horizon is the result of the old one, so we don't need
+<span class="lineNum">     241 </span>            :     // to modify the strahlkorper.
+<span class="lineNum">     242 </span>            :     // Eventually we will hold more than one previous guess and
+<span class="lineNum">     243 </span>            :     // will do time-extrapolation to set the next guess.
+<span class="lineNum">     244 </span>            :     db::mutate&lt;::ah::Tags::FastFlow&gt;(
+<span class="lineNum">     245 </span>            :         box, [](const gsl::not_null&lt;::FastFlow*&gt; fast_flow) noexcept {
+<span class="lineNum">     246 </span>            :           fast_flow-&gt;reset_for_next_find();
+<span class="lineNum">     247 </span>            :         });
+<span class="lineNum">     248 </span>            :     // We return true because we are now done with all the volume data
+<span class="lineNum">     249 </span>            :     // at this temporal_id, so we want it cleaned up.
+<span class="lineNum">     250 </span>            :     return true;
+<span class="lineNum">     251 </span>            :   }
+<span class="lineNum">     252 </span>            : };
+<span class="lineNum">     253 </span>            : }  // namespace callbacks
+<span class="lineNum">     254 </span>            : }  // namespace intrp
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../../../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.13</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

@@ -1,0 +1,215 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - 5912ac2e49a80e6a27b3707c9a1e6ce5248b1b2a - Parallel/SimpleActionVisitation.hpp</title>
+  <link rel="stylesheet" type="text/css" href="../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title"> SpECTRE Documentation Coverage Report</td></tr>
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../index.html">top level</a> - <a href="index.html">Parallel</a> - SimpleActionVisitation.hpp</td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+             <td class="headerItem">Commit:</td>
+             <td class="headerValue"><a target="_blank" href="https://github.com/sxs-collaboration/spectre/commit/5912ac2e49a80e6a27b3707c9a1e6ce5248b1b2a">5912ac2e49a80e6a27b3707c9a1e6ce5248b1b2a</a></td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntry">1</td>
+            <td class="headerCovTableEntryLo">0.0 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2019-12-02 22:01:08</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td class="headerItem">Legend:</td>
+            <td class="headerValueLeg">            Lines:
+            <span class="coverLegendCov">hit</span>
+            <span class="coverLegendNoCov">not hit</span>
+</td>
+            <td></td>
+          </tr>
+          <tr><td><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">          Line data    Source code</pre>
+<pre class="source">
+<span class="lineNum">       1 </span><span class="lineNoCov">          0 : // Distributed under the MIT License.</span>
+<span class="lineNum">       2 </span>            : // See LICENSE.txt for details.
+<span class="lineNum">       3 </span>            : 
+<span class="lineNum">       4 </span>            : #pragma once
+<span class="lineNum">       5 </span>            : 
+<span class="lineNum">       6 </span>            : #include &lt;boost/variant/get.hpp&gt;
+<span class="lineNum">       7 </span>            : #include &lt;boost/variant/variant.hpp&gt;
+<span class="lineNum">       8 </span>            : #include &lt;exception&gt;
+<span class="lineNum">       9 </span>            : #include &lt;string&gt;
+<span class="lineNum">      10 </span>            : #include &lt;utility&gt;
+<span class="lineNum">      11 </span>            : 
+<span class="lineNum">      12 </span>            : #include &quot;DataStructures/DataBox/DataBox.hpp&quot;  // IWYU pragma: keep
+<span class="lineNum">      13 </span>            : #include &quot;ErrorHandling/Error.hpp&quot;
+<span class="lineNum">      14 </span>            : #include &quot;Utilities/Gsl.hpp&quot;
+<span class="lineNum">      15 </span>            : #include &quot;Utilities/PrettyType.hpp&quot;
+<span class="lineNum">      16 </span>            : #include &quot;Utilities/Requires.hpp&quot;
+<span class="lineNum">      17 </span>            : #include &quot;Utilities/TMPL.hpp&quot;
+<span class="lineNum">      18 </span>            : #include &quot;Utilities/TypeTraits.hpp&quot;
+<span class="lineNum">      19 </span>            : 
+<span class="lineNum">      20 </span>            : namespace Parallel {
+<span class="lineNum">      21 </span>            : namespace Algorithm_detail {
+<span class="lineNum">      22 </span>            : template &lt;typename TT, typename TParallelComponent, typename... TArgs&gt;
+<span class="lineNum">      23 </span>            : class is_apply_callable {
+<span class="lineNum">      24 </span>            :  private:
+<span class="lineNum">      25 </span>            :   template &lt;typename T, typename ParallelComponent, typename... Args&gt;
+<span class="lineNum">      26 </span>            :   static auto test_callable(int) noexcept
+<span class="lineNum">      27 </span>            :       -&gt; decltype(std::declval&lt;T&gt;().template apply&lt;ParallelComponent&gt;(
+<span class="lineNum">      28 </span>            :                       std::declval&lt;Args&gt;()...),
+<span class="lineNum">      29 </span>            :                   std::true_type());
+<span class="lineNum">      30 </span>            :   template &lt;typename, typename...&gt;
+<span class="lineNum">      31 </span>            :   static auto test_callable(...) noexcept -&gt; std::false_type;
+<span class="lineNum">      32 </span>            : 
+<span class="lineNum">      33 </span>            :  public:
+<span class="lineNum">      34 </span>            :   static constexpr bool value =
+<span class="lineNum">      35 </span>            :       decltype(test_callable&lt;TT, TParallelComponent, TArgs...&gt;(0))::value;
+<span class="lineNum">      36 </span>            :   using type = std::integral_constant&lt;bool, value&gt;;
+<span class="lineNum">      37 </span>            : };
+<span class="lineNum">      38 </span>            : 
+<span class="lineNum">      39 </span>            : template &lt;typename T, typename ParallelComponent, typename... Args&gt;
+<span class="lineNum">      40 </span>            : static constexpr const bool is_apply_callable_v =
+<span class="lineNum">      41 </span>            :     is_apply_callable&lt;T, ParallelComponent, Args...&gt;::value;
+<span class="lineNum">      42 </span>            : 
+<span class="lineNum">      43 </span>            : template &lt;typename T, typename ParallelComponent, typename... Args&gt;
+<span class="lineNum">      44 </span>            : using is_apply_callable_t =
+<span class="lineNum">      45 </span>            :     typename is_apply_callable&lt;T, ParallelComponent, Args...&gt;::type;
+<span class="lineNum">      46 </span>            : 
+<span class="lineNum">      47 </span>            : template &lt;typename Invokable, typename ParallelComponent, typename ThisVariant,
+<span class="lineNum">      48 </span>            :           typename... Variants, typename... Args,
+<span class="lineNum">      49 </span>            :           Requires&lt;is_apply_callable_v&lt;Invokable, ParallelComponent,
+<span class="lineNum">      50 </span>            :                                        std::add_lvalue_reference_t&lt;ThisVariant&gt;,
+<span class="lineNum">      51 </span>            :                                        Args&amp;&amp;...&gt;&gt; = nullptr&gt;
+<span class="lineNum">      52 </span>            : void simple_action_visitor_helper(boost::variant&lt;Variants...&gt;&amp; box,
+<span class="lineNum">      53 </span>            :                                   const gsl::not_null&lt;int*&gt; iter,
+<span class="lineNum">      54 </span>            :                                   const gsl::not_null&lt;bool*&gt; already_visited,
+<span class="lineNum">      55 </span>            :                                   Args&amp;&amp;... args) {
+<span class="lineNum">      56 </span>            :   if (box.which() == *iter and not*already_visited) {
+<span class="lineNum">      57 </span>            :     try {
+<span class="lineNum">      58 </span>            :       static_assert(
+<span class="lineNum">      59 </span>            :           std::is_same&lt;void,
+<span class="lineNum">      60 </span>            :                        decltype(Invokable::template apply&lt;ParallelComponent&gt;(
+<span class="lineNum">      61 </span>            :                            std::declval&lt;ThisVariant&amp;&gt;(),
+<span class="lineNum">      62 </span>            :                            std::declval&lt;Args&gt;()...))&gt;::value,
+<span class="lineNum">      63 </span>            :           &quot;A simple action must return void.&quot;);
+<span class="lineNum">      64 </span>            :       Invokable::template apply&lt;ParallelComponent&gt;(boost::get&lt;ThisVariant&gt;(box),
+<span class="lineNum">      65 </span>            :                                                    std::forward&lt;Args&gt;(args)...);
+<span class="lineNum">      66 </span>            :     } catch (std::exception&amp; e) {
+<span class="lineNum">      67 </span>            :       ERROR(&quot;Fatal error: Failed to call simple Action '&quot;
+<span class="lineNum">      68 </span>            :             &lt;&lt; pretty_type::get_name&lt;Invokable&gt;() &lt;&lt; &quot;' on iteration '&quot; &lt;&lt; iter
+<span class="lineNum">      69 </span>            :             &lt;&lt; &quot;' with DataBox type '&quot; &lt;&lt; pretty_type::get_name&lt;ThisVariant&gt;()
+<span class="lineNum">      70 </span>            :             &lt;&lt; &quot;'\nThe exception is: '&quot; &lt;&lt; e.what() &lt;&lt; &quot;'\n&quot;);
+<span class="lineNum">      71 </span>            :     }
+<span class="lineNum">      72 </span>            :     *already_visited = true;
+<span class="lineNum">      73 </span>            :   }
+<span class="lineNum">      74 </span>            :   (*iter)++;
+<span class="lineNum">      75 </span>            : }
+<span class="lineNum">      76 </span>            : 
+<span class="lineNum">      77 </span>            : template &lt;typename Invokable, typename ParallelComponent, typename ThisVariant,
+<span class="lineNum">      78 </span>            :           typename... Variants, typename... Args,
+<span class="lineNum">      79 </span>            :           Requires&lt;not is_apply_callable_v&lt;
+<span class="lineNum">      80 </span>            :               Invokable, ParallelComponent,
+<span class="lineNum">      81 </span>            :               std::add_lvalue_reference_t&lt;ThisVariant&gt;, Args&amp;&amp;...&gt;&gt; = nullptr&gt;
+<span class="lineNum">      82 </span>            : void simple_action_visitor_helper(boost::variant&lt;Variants...&gt;&amp; box,
+<span class="lineNum">      83 </span>            :                                   const gsl::not_null&lt;int*&gt; iter,
+<span class="lineNum">      84 </span>            :                                   const gsl::not_null&lt;bool*&gt; already_visited,
+<span class="lineNum">      85 </span>            :                                   Args&amp;&amp;... /*args*/) {
+<span class="lineNum">      86 </span>            :   if (box.which() == *iter and not*already_visited) {
+<span class="lineNum">      87 </span>            :     std::string args_list{};
+<span class="lineNum">      88 </span>            :     const auto helper = [&amp;args_list](auto arg_v) {
+<span class="lineNum">      89 </span>            :       args_list +=
+<span class="lineNum">      90 </span>            :           pretty_type::get_name&lt;typename decltype(arg_v)::type&gt;() + &quot;, &quot;;
+<span class="lineNum">      91 </span>            :     };
+<span class="lineNum">      92 </span>            :     EXPAND_PACK_LEFT_TO_RIGHT(helper(tmpl::type_&lt;Args&gt;{}));
+<span class="lineNum">      93 </span>            :     if (sizeof...(Args) &gt; 0) {
+<span class="lineNum">      94 </span>            :       args_list.pop_back();
+<span class="lineNum">      95 </span>            :       args_list.pop_back();
+<span class="lineNum">      96 </span>            :     }
+<span class="lineNum">      97 </span>            :     ERROR(&quot;\nCannot call apply function of '&quot;
+<span class="lineNum">      98 </span>            :           &lt;&lt; pretty_type::get_name&lt;Invokable&gt;() &lt;&lt; &quot;' with DataBox type '&quot;
+<span class="lineNum">      99 </span>            :           &lt;&lt; pretty_type::get_name&lt;ThisVariant&gt;() &lt;&lt; &quot;' and arguments '&quot;
+<span class="lineNum">     100 </span>            :           &lt;&lt; args_list &lt;&lt; &quot;'.\n&quot;
+<span class="lineNum">     101 </span>            :           &lt;&lt; &quot;If the argument types to the apply function match, then it is &quot;
+<span class="lineNum">     102 </span>            :              &quot;possible that the apply function has non-deducible template &quot;
+<span class="lineNum">     103 </span>            :              &quot;parameters. This could occur from removing an apply function &quot;
+<span class="lineNum">     104 </span>            :              &quot;argument and forgetting to remove its associated template &quot;
+<span class="lineNum">     105 </span>            :              &quot;parameters.\n&quot;);
+<span class="lineNum">     106 </span>            :   }
+<span class="lineNum">     107 </span>            :   (*iter)++;
+<span class="lineNum">     108 </span>            : }
+<span class="lineNum">     109 </span>            : 
+<span class="lineNum">     110 </span>            : /*!
+<span class="lineNum">     111 </span>            :  * \brief Calls an `Invokable`'s `apply` static member function with the current
+<span class="lineNum">     112 </span>            :  * type in the `boost::variant`.
+<span class="lineNum">     113 </span>            :  *
+<span class="lineNum">     114 </span>            :  * The simple action can only be invoked if it accesses members of the DataBox
+<span class="lineNum">     115 </span>            :  * that are guaranteed to be present at the time of invocation. This can lead to
+<span class="lineNum">     116 </span>            :  * race conditions since simple actions can be invoked at any time during
+<span class="lineNum">     117 </span>            :  * execution at any part of any phase. As a concrete example of such a race
+<span class="lineNum">     118 </span>            :  * condition, consider a parallel component with iterable actions A, B, and C
+<span class="lineNum">     119 </span>            :  * where B adds something to the DataBox (call it G) and C removes it. If a
+<span class="lineNum">     120 </span>            :  * simple action S that uses G is called on the parallel component the call will
+<span class="lineNum">     121 </span>            :  * succeed if S is invoked between B and C, and fail otherwise.
+<span class="lineNum">     122 </span>            :  */
+<span class="lineNum">     123 </span>            : template &lt;typename Invokable, typename ParallelComponent, typename... Variants,
+<span class="lineNum">     124 </span>            :           typename... Args&gt;
+<span class="lineNum">     125 </span>            : void simple_action_visitor(boost::variant&lt;Variants...&gt;&amp; box, Args&amp;&amp;... args) {
+<span class="lineNum">     126 </span>            :   // iter is the current element of the variant in the &quot;for loop&quot;
+<span class="lineNum">     127 </span>            :   int iter = 0;
+<span class="lineNum">     128 </span>            :   // already_visited ensures that only one visitor is invoked
+<span class="lineNum">     129 </span>            :   bool already_visited = false;
+<span class="lineNum">     130 </span>            :   EXPAND_PACK_LEFT_TO_RIGHT(
+<span class="lineNum">     131 </span>            :       simple_action_visitor_helper&lt;Invokable, ParallelComponent, Variants&gt;(
+<span class="lineNum">     132 </span>            :           box, &amp;iter, &amp;already_visited, std::forward&lt;Args&gt;(args)...));
+<span class="lineNum">     133 </span>            : }
+<span class="lineNum">     134 </span>            : }  // namespace Algorithm_detail
+<span class="lineNum">     135 </span>            : }  // namespace Parallel
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.13</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

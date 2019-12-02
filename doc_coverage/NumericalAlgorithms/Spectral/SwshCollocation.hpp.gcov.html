@@ -1,0 +1,328 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - 5912ac2e49a80e6a27b3707c9a1e6ce5248b1b2a - NumericalAlgorithms/Spectral/SwshCollocation.hpp</title>
+  <link rel="stylesheet" type="text/css" href="../../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title"> SpECTRE Documentation Coverage Report</td></tr>
+    <tr><td class="ruler"><img src="../../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../../index.html">top level</a> - <a href="index.html">NumericalAlgorithms/Spectral</a> - SwshCollocation.hpp</td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+             <td class="headerItem">Commit:</td>
+             <td class="headerValue"><a target="_blank" href="https://github.com/sxs-collaboration/spectre/commit/5912ac2e49a80e6a27b3707c9a1e6ce5248b1b2a">5912ac2e49a80e6a27b3707c9a1e6ce5248b1b2a</a></td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">25</td>
+            <td class="headerCovTableEntry">40</td>
+            <td class="headerCovTableEntryLo">62.5 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2019-12-02 22:01:08</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td class="headerItem">Legend:</td>
+            <td class="headerValueLeg">            Lines:
+            <span class="coverLegendCov">hit</span>
+            <span class="coverLegendNoCov">not hit</span>
+</td>
+            <td></td>
+          </tr>
+          <tr><td><img src="../../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">          Line data    Source code</pre>
+<pre class="source">
+<span class="lineNum">       1 </span><span class="lineNoCov">          0 : // Distributed under the MIT License.</span>
+<span class="lineNum">       2 </span>            : // See LICENSE.txt for details.
+<span class="lineNum">       3 </span>            : 
+<span class="lineNum">       4 </span>            : #pragma once
+<span class="lineNum">       5 </span>            : 
+<span class="lineNum">       6 </span>            : #include &lt;cstdlib&gt;
+<span class="lineNum">       7 </span>            : #include &lt;memory&gt;
+<span class="lineNum">       8 </span>            : #include &lt;sharp_cxx.h&gt;
+<span class="lineNum">       9 </span>            : 
+<span class="lineNum">      10 </span>            : #include &quot;Domain/Mesh.hpp&quot;
+<span class="lineNum">      11 </span>            : #include &quot;NumericalAlgorithms/Spectral/ComplexDataView.hpp&quot;
+<span class="lineNum">      12 </span>            : #include &quot;NumericalAlgorithms/Spectral/Spectral.hpp&quot;
+<span class="lineNum">      13 </span>            : #include &quot;NumericalAlgorithms/Spectral/SwshSettings.hpp&quot;
+<span class="lineNum">      14 </span>            : #include &quot;Utilities/ForceInline.hpp&quot;
+<span class="lineNum">      15 </span>            : #include &quot;Utilities/Gsl.hpp&quot;
+<span class="lineNum">      16 </span>            : 
+<span class="lineNum">      17 </span>            : namespace Spectral {
+<span class="lineNum">      18 </span>            : namespace Swsh {
+<span class="lineNum">      19 </span>            : 
+<span class="lineNum">      20 </span>            : /// \ingroup SwshGroup
+<span class="lineNum">      21 </span>            : /// \brief Convenience function for determining the number of spin-weighted
+<span class="lineNum">      22 </span>            : /// spherical harmonic collocation values that are stored for a given `l_max`
+<span class="lineNum">      23 </span>            : /// for a libsharp-compatible set of collocation points.
+<span class="lineNum">      24 </span>            : constexpr SPECTRE_ALWAYS_INLINE size_t
+<span class="lineNum">      25 </span><span class="lineCov">          1 : number_of_swsh_collocation_points(const size_t l_max) noexcept {</span>
+<span class="lineNum">      26 </span>            :   return (l_max + 1) * (2 * l_max + 1);
+<span class="lineNum">      27 </span>            : }
+<span class="lineNum">      28 </span>            : 
+<span class="lineNum">      29 </span>            : /// \ingroup SwshGroup
+<span class="lineNum">      30 </span>            : /// \brief Returns the number of spin-weighted spherical harmonic collocation
+<span class="lineNum">      31 </span>            : /// values in \f$\theta\f$ for a libsharp-compatible set of collocation
+<span class="lineNum">      32 </span>            : /// points.
+<span class="lineNum">      33 </span>            : ///
+<span class="lineNum">      34 </span>            : /// \details The full number of collocation points is the product of the number
+<span class="lineNum">      35 </span>            : /// of \f$\theta\f$ points and the number of \f$\phi\f$ points (a 'rectangular'
+<span class="lineNum">      36 </span>            : /// grid).
+<span class="lineNum">      37 </span>            : constexpr SPECTRE_ALWAYS_INLINE size_t
+<span class="lineNum">      38 </span><span class="lineCov">          1 : number_of_swsh_theta_collocation_points(const size_t l_max) noexcept {</span>
+<span class="lineNum">      39 </span>            :   return (l_max + 1);
+<span class="lineNum">      40 </span>            : }
+<span class="lineNum">      41 </span>            : 
+<span class="lineNum">      42 </span>            : /// \ingroup SwshGroup
+<span class="lineNum">      43 </span>            : /// \brief Returns the number of spin-weighted spherical harmonic collocation
+<span class="lineNum">      44 </span>            : /// values in \f$\phi\f$ for a libsharp-compatible set of collocation
+<span class="lineNum">      45 </span>            : /// points.
+<span class="lineNum">      46 </span>            : ///
+<span class="lineNum">      47 </span>            : /// \details The full number of collocation points is the product of the number
+<span class="lineNum">      48 </span>            : /// of \f$\theta\f$ points and the number of \f$\phi\f$ points (a 'rectangular'
+<span class="lineNum">      49 </span>            : /// grid).
+<span class="lineNum">      50 </span>            : constexpr SPECTRE_ALWAYS_INLINE size_t
+<span class="lineNum">      51 </span><span class="lineCov">          1 : number_of_swsh_phi_collocation_points(const size_t l_max) noexcept {</span>
+<span class="lineNum">      52 </span>            :   return (2 * l_max + 1);
+<span class="lineNum">      53 </span>            : }
+<span class="lineNum">      54 </span>            : 
+<span class="lineNum">      55 </span>            : /// \ingroup SwshGroup
+<span class="lineNum">      56 </span>            : /// \brief Obtain the three-dimensional mesh associated with a
+<span class="lineNum">      57 </span>            : /// libsharp-compatible sequence of spherical nodal shells.
+<span class="lineNum">      58 </span>            : /// \warning This is to be used only for operations in the radial direction! The
+<span class="lineNum">      59 </span>            : /// angular collocation points should not be regarded as having a useful product
+<span class="lineNum">      60 </span>            : /// representation for e.g. taking derivatives in just the theta direction.
+<span class="lineNum">      61 </span>            : /// Instead, use spin-weighted utilities for all angular operations.
+<span class="lineNum">      62 </span><span class="lineCov">          1 : SPECTRE_ALWAYS_INLINE Mesh&lt;3&gt; swsh_volume_mesh_for_radial_operations(</span>
+<span class="lineNum">      63 </span>            :     const size_t l_max, const size_t number_of_radial_points) {
+<span class="lineNum">      64 </span>            :   return Mesh&lt;3&gt;{{{number_of_swsh_phi_collocation_points(l_max),
+<span class="lineNum">      65 </span>            :                    number_of_swsh_theta_collocation_points(l_max),
+<span class="lineNum">      66 </span>            :                    number_of_radial_points}},
+<span class="lineNum">      67 </span>            :                  Spectral::Basis::Legendre,
+<span class="lineNum">      68 </span>            :                  Spectral::Quadrature::GaussLobatto};
+<span class="lineNum">      69 </span>            : }
+<span class="lineNum">      70 </span>            : 
+<span class="lineNum">      71 </span>            : namespace detail {
+<span class="lineNum">      72 </span>            : // Helping functor to appropriately delete a stored `sharp_geom_info**`
+<span class="lineNum">      73 </span>            : struct DestroySharpGeometry {
+<span class="lineNum">      74 </span>            :   void operator()(sharp_geom_info* to_delete) noexcept {
+<span class="lineNum">      75 </span>            :     sharp_destroy_geom_info(to_delete);
+<span class="lineNum">      76 </span>            :   }
+<span class="lineNum">      77 </span>            : };
+<span class="lineNum">      78 </span>            : }  // namespace detail
+<span class="lineNum">      79 </span>            : 
+<span class="lineNum">      80 </span>            : /// A container for reporting a single collocation point for libsharp compatible
+<span class="lineNum">      81 </span>            : /// data structures
+<span class="lineNum">      82 </span><span class="lineCov">          1 : struct LibsharpCollocationPoint {</span>
+<span class="lineNum">      83 </span><span class="lineNoCov">          0 :   size_t offset;</span>
+<span class="lineNum">      84 </span><span class="lineNoCov">          0 :   double theta;</span>
+<span class="lineNum">      85 </span><span class="lineNoCov">          0 :   double phi;</span>
+<span class="lineNum">      86 </span>            : };
+<span class="lineNum">      87 </span>            : 
+<span class="lineNum">      88 </span>            : /// \brief A wrapper class for the spherical harmonic library collocation data
+<span class="lineNum">      89 </span>            : ///
+<span class="lineNum">      90 </span>            : /// \details The currently chosen library for spin-weighted spherical harmonic
+<span class="lineNum">      91 </span>            : /// transforms is libsharp. The `CollocationMetadata` class stores the
+<span class="lineNum">      92 </span>            : /// libsharp `sharp_geom_info` object, which contains data about
+<span class="lineNum">      93 </span>            : /// 1. The angular collocation points used in spin-weighted spherical harmonic
+<span class="lineNum">      94 </span>            : /// transforms
+<span class="lineNum">      95 </span>            : /// 2. The memory representation of double-type values at those collocation
+<span class="lineNum">      96 </span>            : /// points
+<span class="lineNum">      97 </span>            : ///
+<span class="lineNum">      98 </span>            : /// \tparam Representation the ComplexRepresentation, either
+<span class="lineNum">      99 </span>            : /// `ComplexRepresentation::Interleaved` or
+<span class="lineNum">     100 </span>            : /// `ComplexRepresentation::RealsThenImags` compatible with the generated
+<span class="lineNum">     101 </span>            : /// `CollocationMetadata` - this is necessary because the stored libsharp type
+<span class="lineNum">     102 </span>            : /// contains memory stride information.
+<span class="lineNum">     103 </span>            : template &lt;ComplexRepresentation Representation&gt;
+<span class="lineNum">     104 </span><span class="lineCov">          1 : class CollocationMetadata {</span>
+<span class="lineNum">     105 </span>            :  public:
+<span class="lineNum">     106 </span><span class="lineNoCov">          0 :   class CollocationConstIterator {</span>
+<span class="lineNum">     107 </span>            :    public:
+<span class="lineNum">     108 </span>            :     /// create a new iterator. defaults to the start of the supplied object
+<span class="lineNum">     109 </span><span class="lineCov">          1 :     explicit CollocationConstIterator(</span>
+<span class="lineNum">     110 </span>            :         const gsl::not_null&lt;const CollocationMetadata&lt;Representation&gt;*&gt;
+<span class="lineNum">     111 </span>            :             collocation,
+<span class="lineNum">     112 </span>            :         const size_t start_index = 0) noexcept
+<span class="lineNum">     113 </span>            :         : index_{start_index}, collocation_{collocation} {}
+<span class="lineNum">     114 </span>            : 
+<span class="lineNum">     115 </span>            :     /// recovers the data at the collocation point using a
+<span class="lineNum">     116 </span>            :     /// `LibsharpCollocationPoint`, which stores the vector `offset` of the
+<span class="lineNum">     117 </span>            :     /// location of the `theta`, `phi` point in libsharp compatible data
+<span class="lineNum">     118 </span><span class="lineCov">          1 :     LibsharpCollocationPoint operator*() const noexcept {</span>
+<span class="lineNum">     119 </span>            :       return LibsharpCollocationPoint{index_, collocation_-&gt;theta(index_),
+<span class="lineNum">     120 </span>            :                                       collocation_-&gt;phi(index_)};
+<span class="lineNum">     121 </span>            :     }
+<span class="lineNum">     122 </span>            :     /// advance the iterator by one position (prefix)
+<span class="lineNum">     123 </span><span class="lineCov">          1 :     CollocationConstIterator&amp; operator++() noexcept {</span>
+<span class="lineNum">     124 </span>            :       ++index_;
+<span class="lineNum">     125 </span>            :       return *this;
+<span class="lineNum">     126 </span>            :     };
+<span class="lineNum">     127 </span>            :     /// advance the iterator by one position (postfix)
+<span class="lineNum">     128 </span>            :     // clang-tidy wants this to return a const iterator
+<span class="lineNum">     129 </span><span class="lineCov">          1 :     CollocationConstIterator operator++(int) noexcept {  // NOLINT</span>
+<span class="lineNum">     130 </span>            :       return CollocationConstIterator(collocation_, index_++);
+<span class="lineNum">     131 </span>            :     }
+<span class="lineNum">     132 </span>            : 
+<span class="lineNum">     133 </span>            :     /// retreat the iterator by one position (prefix)
+<span class="lineNum">     134 </span><span class="lineCov">          1 :     CollocationConstIterator&amp; operator--() noexcept {</span>
+<span class="lineNum">     135 </span>            :       --index_;
+<span class="lineNum">     136 </span>            :       return *this;
+<span class="lineNum">     137 </span>            :     };
+<span class="lineNum">     138 </span>            :     /// retreat the iterator by one position (prefix)
+<span class="lineNum">     139 </span>            :     // clang-tidy wants this to return a const iterator
+<span class="lineNum">     140 </span><span class="lineCov">          1 :     CollocationConstIterator operator--(int) noexcept {  // NOLINT</span>
+<span class="lineNum">     141 </span>            :       return CollocationConstIterator(collocation_, index_--);
+<span class="lineNum">     142 </span>            :     }
+<span class="lineNum">     143 </span>            : 
+<span class="lineNum">     144 </span>            :     // @{
+<span class="lineNum">     145 </span>            :     /// (In)Equivalence checks both the object and index for the iterator
+<span class="lineNum">     146 </span><span class="lineCov">          1 :     bool operator==(const CollocationConstIterator&amp; rhs) const noexcept {</span>
+<span class="lineNum">     147 </span>            :       return index_ == rhs.index_ and collocation_ == rhs.collocation_;
+<span class="lineNum">     148 </span>            :     }
+<span class="lineNum">     149 </span><span class="lineCov">          1 :     bool operator!=(const CollocationConstIterator&amp; rhs) const noexcept {</span>
+<span class="lineNum">     150 </span>            :       return not(*this == rhs);
+<span class="lineNum">     151 </span>            :     }
+<span class="lineNum">     152 </span>            :     // @}
+<span class="lineNum">     153 </span>            : 
+<span class="lineNum">     154 </span>            :    private:
+<span class="lineNum">     155 </span><span class="lineNoCov">          0 :     size_t index_;</span>
+<span class="lineNum">     156 </span><span class="lineNoCov">          0 :     const CollocationMetadata&lt;Representation&gt;* const collocation_;</span>
+<span class="lineNum">     157 </span>            :   };
+<span class="lineNum">     158 </span>            : 
+<span class="lineNum">     159 </span>            :   /// The representation of the block of complex values, which sets the stride
+<span class="lineNum">     160 </span>            :   /// inside the libsharp type
+<span class="lineNum">     161 </span><span class="lineCov">          1 :   static constexpr ComplexRepresentation complex_representation =</span>
+<span class="lineNum">     162 </span>            :       Representation;
+<span class="lineNum">     163 </span>            : 
+<span class="lineNum">     164 </span>            :   /// \brief Generates the libsharp collocation information and stores it in
+<span class="lineNum">     165 </span>            :   /// `geom_info_`.
+<span class="lineNum">     166 </span>            :   ///
+<span class="lineNum">     167 </span>            :   /// \note If you will potentially use the same `l_max` collocation set more
+<span class="lineNum">     168 </span>            :   /// than once, it is probably better to use the
+<span class="lineNum">     169 </span>            :   /// `precomputed_spherical_harmonic_collocation` function
+<span class="lineNum">     170 </span><span class="lineCov">          1 :   explicit CollocationMetadata(size_t l_max) noexcept;</span>
+<span class="lineNum">     171 </span>            : 
+<span class="lineNum">     172 </span>            :   /// default constructor required for iterator use
+<span class="lineNum">     173 </span><span class="lineCov">          1 :   ~CollocationMetadata() = default;</span>
+<span class="lineNum">     174 </span><span class="lineNoCov">          0 :   CollocationMetadata() = default;</span>
+<span class="lineNum">     175 </span><span class="lineNoCov">          0 :   CollocationMetadata(const CollocationMetadata&amp;) = default;</span>
+<span class="lineNum">     176 </span><span class="lineNoCov">          0 :   CollocationMetadata(CollocationMetadata&amp;&amp;) = default;</span>
+<span class="lineNum">     177 </span><span class="lineNoCov">          0 :   CollocationMetadata&amp; operator=(CollocationMetadata&amp;) = default;</span>
+<span class="lineNum">     178 </span><span class="lineNoCov">          0 :   CollocationMetadata&amp; operator=(CollocationMetadata&amp;&amp;) = default;</span>
+<span class="lineNum">     179 </span>            : 
+<span class="lineNum">     180 </span>            :   /// retrieve the `sharp_geom_info*` stored. This should largely be used only
+<span class="lineNum">     181 </span>            :   /// for passing to other libsharp functions. Otherwise, access elements
+<span class="lineNum">     182 </span>            :   /// through iterator or access functions.
+<span class="lineNum">     183 </span><span class="lineCov">          1 :   sharp_geom_info* get_sharp_geom_info() const noexcept {</span>
+<span class="lineNum">     184 </span>            :     return geom_info_.get();
+<span class="lineNum">     185 </span>            :   }
+<span class="lineNum">     186 </span>            : 
+<span class="lineNum">     187 </span>            :   /// Retrieve the \f$\theta\f$ value for a given index in a libsharp-compatible
+<span class="lineNum">     188 </span>            :   /// array
+<span class="lineNum">     189 </span><span class="lineCov">          1 :   double theta(size_t offset) const noexcept;</span>
+<span class="lineNum">     190 </span>            :   /// Retrieve the \f$\phi\f$ value for a given index in a libsharp-compatible
+<span class="lineNum">     191 </span>            :   /// array
+<span class="lineNum">     192 </span><span class="lineCov">          1 :   double phi(size_t offset) const noexcept;</span>
+<span class="lineNum">     193 </span>            : 
+<span class="lineNum">     194 </span><span class="lineNoCov">          0 :   constexpr size_t l_max() const noexcept { return l_max_; }</span>
+<span class="lineNum">     195 </span>            : 
+<span class="lineNum">     196 </span>            :   /// Compute the number of entries the libsharp-compatible data structure
+<span class="lineNum">     197 </span>            :   /// should have
+<span class="lineNum">     198 </span><span class="lineCov">          1 :   constexpr size_t size() const noexcept {</span>
+<span class="lineNum">     199 </span>            :     return (l_max_ + 1) * (2 * l_max_ + 1);
+<span class="lineNum">     200 </span>            :   }
+<span class="lineNum">     201 </span>            : 
+<span class="lineNum">     202 </span>            :   // @{
+<span class="lineNum">     203 </span>            :   /// Get a bidirectional iterator to the start of the grid. `operator*` for
+<span class="lineNum">     204 </span>            :   /// that iterator gives a `LibsharpCollocationPoint` with members `offset`,
+<span class="lineNum">     205 </span>            :   /// `theta`, and `phi`
+<span class="lineNum">     206 </span><span class="lineCov">          1 :   CollocationMetadata&lt;Representation&gt;::CollocationConstIterator begin() const</span>
+<span class="lineNum">     207 </span>            :       noexcept {
+<span class="lineNum">     208 </span>            :     return CollocationConstIterator{make_not_null(this), 0};
+<span class="lineNum">     209 </span>            :   }
+<span class="lineNum">     210 </span><span class="lineCov">          1 :   CollocationMetadata&lt;Representation&gt;::CollocationConstIterator cbegin() const</span>
+<span class="lineNum">     211 </span>            :       noexcept {
+<span class="lineNum">     212 </span>            :     return begin();
+<span class="lineNum">     213 </span>            :   }
+<span class="lineNum">     214 </span>            :   // @}
+<span class="lineNum">     215 </span>            :   // @{
+<span class="lineNum">     216 </span>            :   /// Get a bidirectional iterator to the end of the grid. `operator*` for
+<span class="lineNum">     217 </span>            :   /// that iterator gives a `LibsharpCollocationPoint` with members `offset`,
+<span class="lineNum">     218 </span>            :   /// `theta`, and `phi`
+<span class="lineNum">     219 </span><span class="lineCov">          1 :   CollocationMetadata&lt;Representation&gt;::CollocationConstIterator end() const</span>
+<span class="lineNum">     220 </span>            :       noexcept {
+<span class="lineNum">     221 </span>            :     return CollocationConstIterator{make_not_null(this), size()};
+<span class="lineNum">     222 </span>            :   }
+<span class="lineNum">     223 </span><span class="lineCov">          1 :   CollocationMetadata&lt;Representation&gt;::CollocationConstIterator cend() const</span>
+<span class="lineNum">     224 </span>            :       noexcept {
+<span class="lineNum">     225 </span>            :     return end();
+<span class="lineNum">     226 </span>            :   }
+<span class="lineNum">     227 </span>            :   // @}
+<span class="lineNum">     228 </span>            : 
+<span class="lineNum">     229 </span>            :  private:
+<span class="lineNum">     230 </span>            :   // an extra pointer layer is required for the peculiar way that libsharp
+<span class="lineNum">     231 </span>            :   // constructs these values.
+<span class="lineNum">     232 </span><span class="lineNoCov">          0 :   size_t l_max_ = 0;</span>
+<span class="lineNum">     233 </span><span class="lineNoCov">          0 :   std::unique_ptr&lt;sharp_geom_info, detail::DestroySharpGeometry&gt; geom_info_;</span>
+<span class="lineNum">     234 </span>            : };
+<span class="lineNum">     235 </span>            : 
+<span class="lineNum">     236 </span>            : /// \brief precomputation function for those collocation grids that are
+<span class="lineNum">     237 </span>            : /// requested
+<span class="lineNum">     238 </span>            : ///
+<span class="lineNum">     239 </span>            : /// \details keeps a compile-time structure which acts as a thread-safe lookup
+<span class="lineNum">     240 </span>            : /// table for all l_max values that have been requested so far during execution,
+<span class="lineNum">     241 </span>            : /// so that the libsharp generation need not be re-run. If it has been
+<span class="lineNum">     242 </span>            : /// generated, it's returned by reference. Otherwise, the new grid is generated
+<span class="lineNum">     243 </span>            : /// and put in the lookup table before it is returned by reference.
+<span class="lineNum">     244 </span>            : template &lt;ComplexRepresentation Representation&gt;
+<span class="lineNum">     245 </span>            : const CollocationMetadata&lt;Representation&gt;&amp; cached_collocation_metadata(
+<span class="lineNum">     246 </span>            :     size_t l_max) noexcept;
+<span class="lineNum">     247 </span>            : }  // namespace Swsh
+<span class="lineNum">     248 </span>            : }  // namespace Spectral
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.13</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

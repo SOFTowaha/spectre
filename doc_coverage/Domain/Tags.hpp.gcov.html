@@ -1,0 +1,450 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - 5912ac2e49a80e6a27b3707c9a1e6ce5248b1b2a - Domain/Tags.hpp</title>
+  <link rel="stylesheet" type="text/css" href="../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title"> SpECTRE Documentation Coverage Report</td></tr>
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../index.html">top level</a> - <a href="index.html">Domain</a> - Tags.hpp</td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+             <td class="headerItem">Commit:</td>
+             <td class="headerValue"><a target="_blank" href="https://github.com/sxs-collaboration/spectre/commit/5912ac2e49a80e6a27b3707c9a1e6ce5248b1b2a">5912ac2e49a80e6a27b3707c9a1e6ce5248b1b2a</a></td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">17</td>
+            <td class="headerCovTableEntry">63</td>
+            <td class="headerCovTableEntryLo">27.0 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2019-12-02 22:01:08</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td class="headerItem">Legend:</td>
+            <td class="headerValueLeg">            Lines:
+            <span class="coverLegendCov">hit</span>
+            <span class="coverLegendNoCov">not hit</span>
+</td>
+            <td></td>
+          </tr>
+          <tr><td><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">          Line data    Source code</pre>
+<pre class="source">
+<span class="lineNum">       1 </span><span class="lineCov">          1 : // Distributed under the MIT License.</span>
+<span class="lineNum">       2 </span>            : // See LICENSE.txt for details.
+<span class="lineNum">       3 </span>            : 
+<span class="lineNum">       4 </span>            : /// \file
+<span class="lineNum">       5 </span>            : /// Defines tags related to domain quantities
+<span class="lineNum">       6 </span>            : 
+<span class="lineNum">       7 </span>            : #pragma once
+<span class="lineNum">       8 </span>            : 
+<span class="lineNum">       9 </span>            : #include &lt;array&gt;
+<span class="lineNum">      10 </span>            : #include &lt;cstddef&gt;
+<span class="lineNum">      11 </span>            : #include &lt;memory&gt;
+<span class="lineNum">      12 </span>            : #include &lt;string&gt;
+<span class="lineNum">      13 </span>            : #include &lt;unordered_map&gt;
+<span class="lineNum">      14 </span>            : #include &lt;unordered_set&gt;
+<span class="lineNum">      15 </span>            : #include &lt;vector&gt;
+<span class="lineNum">      16 </span>            : 
+<span class="lineNum">      17 </span>            : #include &quot;DataStructures/DataBox/DataBoxTag.hpp&quot;
+<span class="lineNum">      18 </span>            : #include &quot;DataStructures/Index.hpp&quot;
+<span class="lineNum">      19 </span>            : #include &quot;DataStructures/Tensor/TypeAliases.hpp&quot;
+<span class="lineNum">      20 </span>            : #include &quot;DataStructures/Variables.hpp&quot;
+<span class="lineNum">      21 </span>            : #include &quot;Domain/Creators/DomainCreator.hpp&quot;  // IWYU pragma: keep
+<span class="lineNum">      22 </span>            : #include &quot;Domain/Direction.hpp&quot;
+<span class="lineNum">      23 </span>            : #include &quot;Domain/Element.hpp&quot;
+<span class="lineNum">      24 </span>            : #include &quot;Domain/ElementMap.hpp&quot;
+<span class="lineNum">      25 </span>            : #include &quot;Domain/Mesh.hpp&quot;
+<span class="lineNum">      26 </span>            : #include &quot;Domain/Side.hpp&quot;
+<span class="lineNum">      27 </span>            : #include &quot;Options/Options.hpp&quot;
+<span class="lineNum">      28 </span>            : #include &quot;Utilities/GetOutput.hpp&quot;
+<span class="lineNum">      29 </span>            : #include &quot;Utilities/Gsl.hpp&quot;
+<span class="lineNum">      30 </span>            : #include &quot;Utilities/NoSuchType.hpp&quot;
+<span class="lineNum">      31 </span>            : #include &quot;Utilities/Requires.hpp&quot;
+<span class="lineNum">      32 </span>            : #include &quot;Utilities/TMPL.hpp&quot;
+<span class="lineNum">      33 </span>            : #include &quot;Utilities/TaggedTuple.hpp&quot;
+<span class="lineNum">      34 </span>            : #include &quot;Utilities/TypeTraits.hpp&quot;
+<span class="lineNum">      35 </span>            : 
+<span class="lineNum">      36 </span>            : /// \cond
+<span class="lineNum">      37 </span>            : class DataVector;
+<span class="lineNum">      38 </span>            : /// \endcond
+<span class="lineNum">      39 </span>            : 
+<span class="lineNum">      40 </span>            : namespace OptionTags {
+<span class="lineNum">      41 </span>            : /// \ingroup OptionTagsGroup
+<span class="lineNum">      42 </span>            : /// \ingroup ComputationalDomainGroup
+<span class="lineNum">      43 </span>            : /// The input file tag for the DomainCreator to use
+<span class="lineNum">      44 </span>            : template &lt;size_t Dim&gt;
+<span class="lineNum">      45 </span><span class="lineCov">          1 : struct DomainCreator {</span>
+<span class="lineNum">      46 </span><span class="lineNoCov">          0 :   using type = std::unique_ptr&lt;::DomainCreator&lt;Dim&gt;&gt;;</span>
+<span class="lineNum">      47 </span><span class="lineNoCov">          0 :   static constexpr OptionString help = {&quot;The domain to create initially&quot;};</span>
+<span class="lineNum">      48 </span>            : };
+<span class="lineNum">      49 </span>            : }  // namespace OptionTags
+<span class="lineNum">      50 </span>            : 
+<span class="lineNum">      51 </span>            : namespace Tags {
+<span class="lineNum">      52 </span>            : /// \ingroup DataBoxTagsGroup
+<span class="lineNum">      53 </span>            : /// \ingroup ComputationalDomainGroup
+<span class="lineNum">      54 </span>            : /// The ::Domain.
+<span class="lineNum">      55 </span>            : template &lt;size_t VolumeDim&gt;
+<span class="lineNum">      56 </span><span class="lineCov">          1 : struct Domain : db::SimpleTag {</span>
+<span class="lineNum">      57 </span><span class="lineNoCov">          0 :   static std::string name() noexcept { return &quot;Domain&quot;; }</span>
+<span class="lineNum">      58 </span><span class="lineNoCov">          0 :   using type = ::Domain&lt;VolumeDim&gt;;</span>
+<span class="lineNum">      59 </span><span class="lineNoCov">          0 :   using option_tags = tmpl::list&lt;::OptionTags::DomainCreator&lt;VolumeDim&gt;&gt;;</span>
+<span class="lineNum">      60 </span>            : 
+<span class="lineNum">      61 </span>            :   template &lt;typename Metavariables&gt;
+<span class="lineNum">      62 </span><span class="lineNoCov">          0 :   static ::Domain&lt;VolumeDim&gt; create_from_options(</span>
+<span class="lineNum">      63 </span>            :       const std::unique_ptr&lt;::DomainCreator&lt;VolumeDim&gt;&gt;&amp;
+<span class="lineNum">      64 </span>            :           domain_creator) noexcept {
+<span class="lineNum">      65 </span>            :     return domain_creator-&gt;create_domain();
+<span class="lineNum">      66 </span>            :   }
+<span class="lineNum">      67 </span>            : };
+<span class="lineNum">      68 </span>            : 
+<span class="lineNum">      69 </span>            : /// \ingroup DataBoxTagsGroup
+<span class="lineNum">      70 </span>            : /// \ingroup ComputationalDomainGroup
+<span class="lineNum">      71 </span>            : /// The number of grid points per dimension for all elements in each block of
+<span class="lineNum">      72 </span>            : /// the initial computational domain
+<span class="lineNum">      73 </span>            : template &lt;size_t Dim&gt;
+<span class="lineNum">      74 </span><span class="lineCov">          1 : struct InitialExtents : db::SimpleTag {</span>
+<span class="lineNum">      75 </span><span class="lineNoCov">          0 :   static std::string name() noexcept { return &quot;InitialExtents&quot;; }</span>
+<span class="lineNum">      76 </span><span class="lineNoCov">          0 :   using type = std::vector&lt;std::array&lt;size_t, Dim&gt;&gt;;</span>
+<span class="lineNum">      77 </span><span class="lineNoCov">          0 :   using option_tags = tmpl::list&lt;::OptionTags::DomainCreator&lt;Dim&gt;&gt;;</span>
+<span class="lineNum">      78 </span>            : 
+<span class="lineNum">      79 </span>            :   template &lt;typename Metavariables&gt;
+<span class="lineNum">      80 </span><span class="lineNoCov">          0 :   static std::vector&lt;std::array&lt;size_t, Dim&gt;&gt; create_from_options(</span>
+<span class="lineNum">      81 </span>            :       const std::unique_ptr&lt;::DomainCreator&lt;Dim&gt;&gt;&amp; domain_creator) noexcept {
+<span class="lineNum">      82 </span>            :     return domain_creator-&gt;initial_extents();
+<span class="lineNum">      83 </span>            :   }
+<span class="lineNum">      84 </span>            : };
+<span class="lineNum">      85 </span>            : 
+<span class="lineNum">      86 </span>            : /// \ingroup DataBoxTagsGroup
+<span class="lineNum">      87 </span>            : /// \ingroup ComputationalDomainGroup
+<span class="lineNum">      88 </span>            : /// The initial refinement level per dimension for all elements in each block of
+<span class="lineNum">      89 </span>            : /// the initial computational domain
+<span class="lineNum">      90 </span>            : template &lt;size_t Dim&gt;
+<span class="lineNum">      91 </span><span class="lineCov">          1 : struct InitialRefinementLevels : db::SimpleTag {</span>
+<span class="lineNum">      92 </span><span class="lineNoCov">          0 :   static std::string name() noexcept { return &quot;InitialRefinementLevels&quot;; }</span>
+<span class="lineNum">      93 </span><span class="lineNoCov">          0 :   using type = std::vector&lt;std::array&lt;size_t, Dim&gt;&gt;;</span>
+<span class="lineNum">      94 </span><span class="lineNoCov">          0 :   using option_tags = tmpl::list&lt;::OptionTags::DomainCreator&lt;Dim&gt;&gt;;</span>
+<span class="lineNum">      95 </span>            : 
+<span class="lineNum">      96 </span>            :   template &lt;typename Metavariables&gt;
+<span class="lineNum">      97 </span><span class="lineNoCov">          0 :   static std::vector&lt;std::array&lt;size_t, Dim&gt;&gt; create_from_options(</span>
+<span class="lineNum">      98 </span>            :       const std::unique_ptr&lt;::DomainCreator&lt;Dim&gt;&gt;&amp; domain_creator) noexcept {
+<span class="lineNum">      99 </span>            :     return domain_creator-&gt;initial_refinement_levels();
+<span class="lineNum">     100 </span>            :   }
+<span class="lineNum">     101 </span>            : };
+<span class="lineNum">     102 </span>            : 
+<span class="lineNum">     103 </span>            : /// \ingroup DataBoxTagsGroup
+<span class="lineNum">     104 </span>            : /// \ingroup ComputationalDomainGroup
+<span class="lineNum">     105 </span>            : /// The ::Element associated with the DataBox
+<span class="lineNum">     106 </span>            : template &lt;size_t VolumeDim&gt;
+<span class="lineNum">     107 </span><span class="lineCov">          1 : struct Element : db::SimpleTag {</span>
+<span class="lineNum">     108 </span><span class="lineNoCov">          0 :   static std::string name() noexcept { return &quot;Element&quot;; }</span>
+<span class="lineNum">     109 </span><span class="lineNoCov">          0 :   using type = ::Element&lt;VolumeDim&gt;;</span>
+<span class="lineNum">     110 </span>            : };
+<span class="lineNum">     111 </span>            : 
+<span class="lineNum">     112 </span>            : /// \ingroup DataBoxTagsGroup
+<span class="lineNum">     113 </span>            : /// \ingroup ComputationalDomainGroup
+<span class="lineNum">     114 </span>            : /// \brief The computational grid of the Element in the DataBox
+<span class="lineNum">     115 </span>            : /// \details The corresponding interface tag uses Mesh::slice_through to compute
+<span class="lineNum">     116 </span>            : /// the mesh on the face of the element.
+<span class="lineNum">     117 </span>            : template &lt;size_t VolumeDim&gt;
+<span class="lineNum">     118 </span><span class="lineCov">          1 : struct Mesh : db::SimpleTag {</span>
+<span class="lineNum">     119 </span><span class="lineNoCov">          0 :   static std::string name() noexcept { return &quot;Mesh&quot;; }</span>
+<span class="lineNum">     120 </span><span class="lineNoCov">          0 :   using type = ::Mesh&lt;VolumeDim&gt;;</span>
+<span class="lineNum">     121 </span>            : };
+<span class="lineNum">     122 </span>            : 
+<span class="lineNum">     123 </span>            : /// \ingroup DataBoxTagsGroup
+<span class="lineNum">     124 </span>            : /// \ingroup ComputationalDomainGroup
+<span class="lineNum">     125 </span>            : /// The coordinate map from logical to grid coordinate
+<span class="lineNum">     126 </span>            : template &lt;size_t VolumeDim, typename Frame = ::Frame::Inertial&gt;
+<span class="lineNum">     127 </span><span class="lineCov">          1 : struct ElementMap : db::SimpleTag {</span>
+<span class="lineNum">     128 </span><span class="lineNoCov">          0 :   static std::string name() noexcept { return &quot;ElementMap&quot;; }</span>
+<span class="lineNum">     129 </span><span class="lineNoCov">          0 :   using type = ::ElementMap&lt;VolumeDim, Frame&gt;;</span>
+<span class="lineNum">     130 </span>            : };
+<span class="lineNum">     131 </span>            : 
+<span class="lineNum">     132 </span>            : /// \ingroup DataBoxTagsGroup
+<span class="lineNum">     133 </span>            : /// \ingroup ComputationalDomainGroup
+<span class="lineNum">     134 </span>            : /// The coordinates in a given frame.
+<span class="lineNum">     135 </span>            : ///
+<span class="lineNum">     136 </span>            : /// \snippet Test_CoordinatesTag.cpp coordinates_name
+<span class="lineNum">     137 </span>            : template &lt;size_t Dim, typename Frame&gt;
+<span class="lineNum">     138 </span><span class="lineCov">          1 : struct Coordinates : db::SimpleTag {</span>
+<span class="lineNum">     139 </span><span class="lineNoCov">          0 :   static std::string name() noexcept {</span>
+<span class="lineNum">     140 </span>            :     return get_output(Frame{}) + &quot;Coordinates&quot;;
+<span class="lineNum">     141 </span>            :   }
+<span class="lineNum">     142 </span><span class="lineNoCov">          0 :   using type = tnsr::I&lt;DataVector, Dim, Frame&gt;;</span>
+<span class="lineNum">     143 </span>            : };
+<span class="lineNum">     144 </span>            : 
+<span class="lineNum">     145 </span>            : /// \ingroup DataBoxTagsGroup
+<span class="lineNum">     146 </span>            : /// \ingroup ComputationalDomainGroup
+<span class="lineNum">     147 </span>            : /// The coordinates in the target frame of `MapTag`. The `SourceCoordsTag`'s
+<span class="lineNum">     148 </span>            : /// frame must be the source frame of `MapTag`
+<span class="lineNum">     149 </span>            : template &lt;class MapTag, class SourceCoordsTag&gt;
+<span class="lineNum">     150 </span>            : struct MappedCoordinates
+<span class="lineNum">     151 </span>            :     : Coordinates&lt;db::const_item_type&lt;MapTag&gt;::dim,
+<span class="lineNum">     152 </span>            :                   typename db::const_item_type&lt;MapTag&gt;::target_frame&gt;,
+<span class="lineNum">     153 </span><span class="lineCov">          1 :       db::ComputeTag {</span>
+<span class="lineNum">     154 </span><span class="lineNoCov">          0 :   static constexpr auto function(</span>
+<span class="lineNum">     155 </span>            :       const db::const_item_type&lt;MapTag&gt;&amp; element_map,
+<span class="lineNum">     156 </span>            :       const db::const_item_type&lt;SourceCoordsTag&gt;&amp; source_coords) noexcept {
+<span class="lineNum">     157 </span>            :     return element_map(source_coords);
+<span class="lineNum">     158 </span>            :   }
+<span class="lineNum">     159 </span><span class="lineNoCov">          0 :   using argument_tags = tmpl::list&lt;MapTag, SourceCoordsTag&gt;;</span>
+<span class="lineNum">     160 </span>            : };
+<span class="lineNum">     161 </span>            : 
+<span class="lineNum">     162 </span>            : /// \ingroup DataBoxTagsGroup
+<span class="lineNum">     163 </span>            : /// \ingroup ComputationalDomainGroup
+<span class="lineNum">     164 </span>            : /// Computes the inverse Jacobian of the map held by `MapTag` at the coordinates
+<span class="lineNum">     165 </span>            : /// held by `SourceCoordsTag`. The coordinates must be in the source frame of
+<span class="lineNum">     166 </span>            : /// the map.
+<span class="lineNum">     167 </span>            : template &lt;typename MapTag, typename SourceCoordsTag&gt;
+<span class="lineNum">     168 </span><span class="lineCov">          1 : struct InverseJacobian : db::ComputeTag, db::PrefixTag {</span>
+<span class="lineNum">     169 </span><span class="lineNoCov">          0 :   using tag = MapTag;</span>
+<span class="lineNum">     170 </span><span class="lineNoCov">          0 :   static std::string name() noexcept { return &quot;InverseJacobian&quot;; }</span>
+<span class="lineNum">     171 </span><span class="lineNoCov">          0 :   static constexpr auto function(</span>
+<span class="lineNum">     172 </span>            :       const db::const_item_type&lt;MapTag&gt;&amp; element_map,
+<span class="lineNum">     173 </span>            :       const db::const_item_type&lt;SourceCoordsTag&gt;&amp; source_coords) noexcept {
+<span class="lineNum">     174 </span>            :     return element_map.inv_jacobian(source_coords);
+<span class="lineNum">     175 </span>            :   }
+<span class="lineNum">     176 </span><span class="lineNoCov">          0 :   using argument_tags = tmpl::list&lt;MapTag, SourceCoordsTag&gt;;</span>
+<span class="lineNum">     177 </span>            : };
+<span class="lineNum">     178 </span>            : 
+<span class="lineNum">     179 </span>            : /// \ingroup DataBoxTagsGroup
+<span class="lineNum">     180 </span>            : /// \ingroup DomainGroup
+<span class="lineNum">     181 </span>            : /// Base tag for boundary data needed for updating the variables.
+<span class="lineNum">     182 </span><span class="lineCov">          1 : struct VariablesBoundaryData : db::BaseTag {};</span>
+<span class="lineNum">     183 </span>            : 
+<span class="lineNum">     184 </span>            : /// \ingroup DataBoxTagsGroup
+<span class="lineNum">     185 </span>            : /// \ingroup ComputationalDomainGroup
+<span class="lineNum">     186 </span>            : /// The set of directions to neighboring Elements
+<span class="lineNum">     187 </span>            : template &lt;size_t VolumeDim&gt;
+<span class="lineNum">     188 </span><span class="lineCov">          1 : struct InternalDirections : db::ComputeTag {</span>
+<span class="lineNum">     189 </span><span class="lineNoCov">          0 :   static constexpr size_t volume_dim = VolumeDim;</span>
+<span class="lineNum">     190 </span><span class="lineNoCov">          0 :   static std::string name() noexcept { return &quot;InternalDirections&quot;; }</span>
+<span class="lineNum">     191 </span><span class="lineNoCov">          0 :   using argument_tags = tmpl::list&lt;Element&lt;VolumeDim&gt;&gt;;</span>
+<span class="lineNum">     192 </span><span class="lineNoCov">          0 :   static constexpr auto function(const ::Element&lt;VolumeDim&gt;&amp; element) noexcept {</span>
+<span class="lineNum">     193 </span>            :     std::unordered_set&lt;::Direction&lt;VolumeDim&gt;&gt; result;
+<span class="lineNum">     194 </span>            :     for (const auto&amp; direction_neighbors : element.neighbors()) {
+<span class="lineNum">     195 </span>            :       result.insert(direction_neighbors.first);
+<span class="lineNum">     196 </span>            :     }
+<span class="lineNum">     197 </span>            :     return result;
+<span class="lineNum">     198 </span>            :   }
+<span class="lineNum">     199 </span>            : };
+<span class="lineNum">     200 </span>            : 
+<span class="lineNum">     201 </span>            : /// \ingroup DataBoxTagsGroup
+<span class="lineNum">     202 </span>            : /// \ingroup ComputationalDomainGroup
+<span class="lineNum">     203 </span>            : /// The set of directions which correspond to external boundaries.
+<span class="lineNum">     204 </span>            : /// Used for representing data on the interior side of the external boundary
+<span class="lineNum">     205 </span>            : /// faces.
+<span class="lineNum">     206 </span>            : template &lt;size_t VolumeDim&gt;
+<span class="lineNum">     207 </span><span class="lineCov">          1 : struct BoundaryDirectionsInterior : db::ComputeTag {</span>
+<span class="lineNum">     208 </span><span class="lineNoCov">          0 :   static constexpr size_t volume_dim = VolumeDim;</span>
+<span class="lineNum">     209 </span><span class="lineNoCov">          0 :   static std::string name() noexcept { return &quot;BoundaryDirectionsInterior&quot;; }</span>
+<span class="lineNum">     210 </span><span class="lineNoCov">          0 :   using argument_tags = tmpl::list&lt;Element&lt;VolumeDim&gt;&gt;;</span>
+<span class="lineNum">     211 </span><span class="lineNoCov">          0 :   static constexpr auto function(const ::Element&lt;VolumeDim&gt;&amp; element) noexcept {</span>
+<span class="lineNum">     212 </span>            :     return element.external_boundaries();
+<span class="lineNum">     213 </span>            :   }
+<span class="lineNum">     214 </span>            : };
+<span class="lineNum">     215 </span>            : 
+<span class="lineNum">     216 </span>            : /// \ingroup DataBoxTagsGroup
+<span class="lineNum">     217 </span>            : /// \ingroup ComputationalDomainGroup
+<span class="lineNum">     218 </span>            : /// The set of directions which correspond to external boundaries. To be used
+<span class="lineNum">     219 </span>            : /// to represent data which exists on the exterior side of the external boundary
+<span class="lineNum">     220 </span>            : /// faces.
+<span class="lineNum">     221 </span>            : template &lt;size_t VolumeDim&gt;
+<span class="lineNum">     222 </span><span class="lineCov">          1 : struct BoundaryDirectionsExterior : db::ComputeTag {</span>
+<span class="lineNum">     223 </span><span class="lineNoCov">          0 :   static constexpr size_t volume_dim = VolumeDim;</span>
+<span class="lineNum">     224 </span><span class="lineNoCov">          0 :   static std::string name() noexcept { return &quot;BoundaryDirectionsExterior&quot;; }</span>
+<span class="lineNum">     225 </span><span class="lineNoCov">          0 :   using argument_tags = tmpl::list&lt;Element&lt;VolumeDim&gt;&gt;;</span>
+<span class="lineNum">     226 </span><span class="lineNoCov">          0 :   static constexpr auto function(const ::Element&lt;VolumeDim&gt;&amp; element) noexcept {</span>
+<span class="lineNum">     227 </span>            :     return element.external_boundaries();
+<span class="lineNum">     228 </span>            :   }
+<span class="lineNum">     229 </span>            : };
+<span class="lineNum">     230 </span>            : 
+<span class="lineNum">     231 </span>            : /// \ingroup DataBoxTagsGroup
+<span class="lineNum">     232 </span>            : /// \ingroup ComputationalDomainGroup
+<span class="lineNum">     233 </span>            : /// \brief Tag which is either a SimpleTag for quantities on an
+<span class="lineNum">     234 </span>            : /// interface, base tag to a compute item which acts on tags on an interface, or
+<span class="lineNum">     235 </span>            : /// base tag to a compute item which slices a tag from the volume to an
+<span class="lineNum">     236 </span>            : /// interface.
+<span class="lineNum">     237 </span>            : ///
+<span class="lineNum">     238 </span>            : /// The contained object will be a map from ::Direction to the item type of
+<span class="lineNum">     239 </span>            : /// `Tag`, with the set of directions being those produced by `DirectionsTag`.
+<span class="lineNum">     240 </span>            : ///
+<span class="lineNum">     241 </span>            : /// If a SimpleTag is desired on the interface, then this tag can be added to
+<span class="lineNum">     242 </span>            : /// the DataBox directly. If a ComputeTag which acts on Tags on the interface is
+<span class="lineNum">     243 </span>            : /// desired, then the tag should be added using `InterfaceCompute`. If a
+<span class="lineNum">     244 </span>            : /// ComputeTag which slices a TensorTag or a VariablesTag in the volume to an
+<span class="lineNum">     245 </span>            : /// Interface is desired, then it should be added using `Slice`. In all cases,
+<span class="lineNum">     246 </span>            : /// the tag can then be retrieved using `Tags::Interface&lt;DirectionsTag, Tag&gt;`.
+<span class="lineNum">     247 </span>            : ///
+<span class="lineNum">     248 </span>            : /// If using the base tag mechanism for an interface tag is desired,
+<span class="lineNum">     249 </span>            : /// then `Tag` can have a `base` type alias pointing to its base
+<span class="lineNum">     250 </span>            : /// class.  (This requirement is due to the lack of a way to determine
+<span class="lineNum">     251 </span>            : /// a type's base classes in C++.)
+<span class="lineNum">     252 </span>            : ///
+<span class="lineNum">     253 </span>            : /// It must be possible to determine the type associated with `Tag`
+<span class="lineNum">     254 </span>            : /// without reference to a DataBox, i.e., `db::const_item_type&lt;Tag&gt;` must
+<span class="lineNum">     255 </span>            : /// work.
+<span class="lineNum">     256 </span>            : ///
+<span class="lineNum">     257 </span>            : /// \tparam DirectionsTag the item of directions
+<span class="lineNum">     258 </span>            : /// \tparam Tag the tag labeling the item
+<span class="lineNum">     259 </span>            : ///
+<span class="lineNum">     260 </span>            : /// \see InterfaceCompute, Slice
+<span class="lineNum">     261 </span>            : template &lt;typename DirectionsTag, typename Tag&gt;
+<span class="lineNum">     262 </span><span class="lineCov">          1 : struct Interface;</span>
+<span class="lineNum">     263 </span>            : 
+<span class="lineNum">     264 </span>            : namespace Interface_detail {
+<span class="lineNum">     265 </span>            : template &lt;typename DirectionsTag, typename Tag, typename = cpp17::void_t&lt;&gt;&gt;
+<span class="lineNum">     266 </span>            : struct GetBaseTagIfPresent {};
+<span class="lineNum">     267 </span>            : 
+<span class="lineNum">     268 </span>            : template &lt;typename DirectionsTag, typename Tag&gt;
+<span class="lineNum">     269 </span>            : struct GetBaseTagIfPresent&lt;DirectionsTag, Tag,
+<span class="lineNum">     270 </span>            :                            cpp17::void_t&lt;typename Tag::base&gt;&gt;
+<span class="lineNum">     271 </span>            :     : Interface&lt;DirectionsTag, typename Tag::base&gt; {
+<span class="lineNum">     272 </span>            :   static_assert(cpp17::is_base_of_v&lt;typename Tag::base, Tag&gt;,
+<span class="lineNum">     273 </span>            :                 &quot;Tag `base` alias must be a base class of `Tag`.&quot;);
+<span class="lineNum">     274 </span>            : };
+<span class="lineNum">     275 </span>            : }  // namespace Interface_detail
+<span class="lineNum">     276 </span>            : 
+<span class="lineNum">     277 </span>            : // Virtual inheritance is used here to prevent a compiler warning: Derived class
+<span class="lineNum">     278 </span>            : // SimpleTag is inaccessible
+<span class="lineNum">     279 </span>            : template &lt;typename DirectionsTag, typename Tag&gt;
+<span class="lineNum">     280 </span>            : struct Interface : virtual db::SimpleTag,
+<span class="lineNum">     281 </span>            :                    Interface_detail::GetBaseTagIfPresent&lt;DirectionsTag, Tag&gt; {
+<span class="lineNum">     282 </span><span class="lineNoCov">          0 :   static std::string name() noexcept {</span>
+<span class="lineNum">     283 </span>            :     return &quot;Interface&lt;&quot; + DirectionsTag::name() + &quot;, &quot; + Tag::name() + &quot;&gt;&quot;;
+<span class="lineNum">     284 </span>            :   };
+<span class="lineNum">     285 </span><span class="lineNoCov">          0 :   using tag = Tag;</span>
+<span class="lineNum">     286 </span>            :   // The use of db::const_item_type&lt;Tag&gt; assumes we will never store
+<span class="lineNum">     287 </span>            :   // unique_ptrs on interfaces.  This is probably a reasonable
+<span class="lineNum">     288 </span>            :   // assumption.
+<span class="lineNum">     289 </span><span class="lineNoCov">          0 :   using type = std::unordered_map&lt;</span>
+<span class="lineNum">     290 </span>            :       typename db::const_item_type&lt;DirectionsTag&gt;::value_type,
+<span class="lineNum">     291 </span>            :       db::const_item_type&lt;Tag&gt;&gt;;
+<span class="lineNum">     292 </span>            : };
+<span class="lineNum">     293 </span>            : 
+<span class="lineNum">     294 </span>            : /// \ingroup DataBoxTagsGroup
+<span class="lineNum">     295 </span>            : /// \ingroup ComputationalDomainGroup
+<span class="lineNum">     296 </span>            : /// ::Direction to an interface
+<span class="lineNum">     297 </span>            : template &lt;size_t VolumeDim&gt;
+<span class="lineNum">     298 </span><span class="lineCov">          1 : struct Direction : db::SimpleTag {</span>
+<span class="lineNum">     299 </span><span class="lineNoCov">          0 :   static std::string name() noexcept { return &quot;Direction&quot;; }</span>
+<span class="lineNum">     300 </span><span class="lineNoCov">          0 :   using type = ::Direction&lt;VolumeDim&gt;;</span>
+<span class="lineNum">     301 </span>            : };
+<span class="lineNum">     302 </span>            : 
+<span class="lineNum">     303 </span>            : }  // namespace Tags
+<span class="lineNum">     304 </span>            : 
+<span class="lineNum">     305 </span>            : namespace db {
+<span class="lineNum">     306 </span>            : namespace detail {
+<span class="lineNum">     307 </span>            : template &lt;typename TagList, typename DirectionsTag, typename VariablesTag&gt;
+<span class="lineNum">     308 </span>            : struct InterfaceSubitemsImpl {
+<span class="lineNum">     309 </span>            :   using type = tmpl::transform&lt;
+<span class="lineNum">     310 </span>            :       typename const_item_type&lt;VariablesTag&gt;::tags_list,
+<span class="lineNum">     311 </span>            :       tmpl::bind&lt;Tags::Interface, tmpl::pin&lt;DirectionsTag&gt;, tmpl::_1&gt;&gt;;
+<span class="lineNum">     312 </span>            : 
+<span class="lineNum">     313 </span>            :   using tag = Tags::Interface&lt;DirectionsTag, VariablesTag&gt;;
+<span class="lineNum">     314 </span>            : 
+<span class="lineNum">     315 </span>            :   template &lt;typename Subtag&gt;
+<span class="lineNum">     316 </span>            :   static void create_item(
+<span class="lineNum">     317 </span>            :       const gsl::not_null&lt;item_type&lt;tag&gt;*&gt; parent_value,
+<span class="lineNum">     318 </span>            :       const gsl::not_null&lt;item_type&lt;Subtag&gt;*&gt; sub_value) noexcept {
+<span class="lineNum">     319 </span>            :     sub_value-&gt;clear();
+<span class="lineNum">     320 </span>            :     for (auto&amp; direction_vars : *parent_value) {
+<span class="lineNum">     321 </span>            :       const auto&amp; direction = direction_vars.first;
+<span class="lineNum">     322 </span>            :       auto&amp; parent_vars = get&lt;typename Subtag::tag&gt;(direction_vars.second);
+<span class="lineNum">     323 </span>            :       auto&amp; sub_var = (*sub_value)[direction];
+<span class="lineNum">     324 </span>            :       for (auto vars_it = parent_vars.begin(), sub_var_it = sub_var.begin();
+<span class="lineNum">     325 </span>            :            vars_it != parent_vars.end(); ++vars_it, ++sub_var_it) {
+<span class="lineNum">     326 </span>            :         sub_var_it-&gt;set_data_ref(&amp;*vars_it);
+<span class="lineNum">     327 </span>            :       }
+<span class="lineNum">     328 </span>            :     }
+<span class="lineNum">     329 </span>            :   }
+<span class="lineNum">     330 </span>            : 
+<span class="lineNum">     331 </span>            :   // The `return_type` can be anything for Subitems because the DataBox figures
+<span class="lineNum">     332 </span>            :   // out the correct return type, we just use the `return_type` type alias to
+<span class="lineNum">     333 </span>            :   // signal to the DataBox we want mutating behavior.
+<span class="lineNum">     334 </span>            :   using return_type = NoSuchType;
+<span class="lineNum">     335 </span>            : 
+<span class="lineNum">     336 </span>            :   template &lt;typename Subtag&gt;
+<span class="lineNum">     337 </span>            :   static void create_compute_item(
+<span class="lineNum">     338 </span>            :       const gsl::not_null&lt;item_type&lt;Subtag&gt;*&gt; sub_value,
+<span class="lineNum">     339 </span>            :       const item_type&lt;tag&gt;&amp; parent_value) noexcept {
+<span class="lineNum">     340 </span>            :     for (const auto&amp; direction_vars : parent_value) {
+<span class="lineNum">     341 </span>            :       const auto&amp; direction = direction_vars.first;
+<span class="lineNum">     342 </span>            :       const auto&amp; parent_vars =
+<span class="lineNum">     343 </span>            :           get&lt;typename Subtag::tag&gt;(direction_vars.second);
+<span class="lineNum">     344 </span>            :       auto&amp; sub_var = (*sub_value)[direction];
+<span class="lineNum">     345 </span>            :       auto sub_var_it = sub_var.begin();
+<span class="lineNum">     346 </span>            :       for (auto vars_it = parent_vars.begin();
+<span class="lineNum">     347 </span>            :            vars_it != parent_vars.end(); ++vars_it, ++sub_var_it) {
+<span class="lineNum">     348 </span>            :         // clang-tidy: do not use const_cast
+<span class="lineNum">     349 </span>            :         // The DataBox will only give out a const reference to the
+<span class="lineNum">     350 </span>            :         // result of a compute item.  Here, that is a reference to a
+<span class="lineNum">     351 </span>            :         // const map to Tensors of DataVectors.  There is no (publicly
+<span class="lineNum">     352 </span>            :         // visible) indirection there, so having the map const will
+<span class="lineNum">     353 </span>            :         // allow only allow const access to the contained DataVectors,
+<span class="lineNum">     354 </span>            :         // so no modification through the pointer cast here is
+<span class="lineNum">     355 </span>            :         // possible.
+<span class="lineNum">     356 </span>            :         sub_var_it-&gt;set_data_ref(const_cast&lt;DataVector*&gt;(&amp;*vars_it));  // NOLINT
+<span class="lineNum">     357 </span>            :       }
+<span class="lineNum">     358 </span>            :     }
+<span class="lineNum">     359 </span>            :   }
+<span class="lineNum">     360 </span>            : };
+<span class="lineNum">     361 </span>            : }  // namespace detail
+<span class="lineNum">     362 </span>            : 
+<span class="lineNum">     363 </span>            : template &lt;typename TagList, typename DirectionsTag, typename VariablesTag&gt;
+<span class="lineNum">     364 </span>            : struct Subitems&lt;
+<span class="lineNum">     365 </span>            :     TagList, Tags::Interface&lt;DirectionsTag, VariablesTag&gt;,
+<span class="lineNum">     366 </span>            :     Requires&lt;tt::is_a_v&lt;Variables, item_type&lt;VariablesTag, TagList&gt;&gt;&gt;&gt;
+<span class="lineNum">     367 </span><span class="lineNoCov">          0 :     : detail::InterfaceSubitemsImpl&lt;TagList, DirectionsTag, VariablesTag&gt; {</span>
+<span class="lineNum">     368 </span>            : };
+<span class="lineNum">     369 </span>            : 
+<span class="lineNum">     370 </span>            : }  // namespace db
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.13</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

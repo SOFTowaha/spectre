@@ -1,0 +1,471 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - 5912ac2e49a80e6a27b3707c9a1e6ce5248b1b2a - Evolution/DiscontinuousGalerkin/Limiters/Weno.hpp</title>
+  <link rel="stylesheet" type="text/css" href="../../../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title"> SpECTRE Documentation Coverage Report</td></tr>
+    <tr><td class="ruler"><img src="../../../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../../../index.html">top level</a> - <a href="index.html">Evolution/DiscontinuousGalerkin/Limiters</a> - Weno.hpp</td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+             <td class="headerItem">Commit:</td>
+             <td class="headerValue"><a target="_blank" href="https://github.com/sxs-collaboration/spectre/commit/5912ac2e49a80e6a27b3707c9a1e6ce5248b1b2a">5912ac2e49a80e6a27b3707c9a1e6ce5248b1b2a</a></td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">7</td>
+            <td class="headerCovTableEntry">42</td>
+            <td class="headerCovTableEntryLo">16.7 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2019-12-02 22:01:08</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td class="headerItem">Legend:</td>
+            <td class="headerValueLeg">            Lines:
+            <span class="coverLegendCov">hit</span>
+            <span class="coverLegendNoCov">not hit</span>
+</td>
+            <td></td>
+          </tr>
+          <tr><td><img src="../../../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../../../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">          Line data    Source code</pre>
+<pre class="source">
+<span class="lineNum">       1 </span><span class="lineNoCov">          0 : // Distributed under the MIT License.</span>
+<span class="lineNum">       2 </span>            : // See LICENSE.txt for details.
+<span class="lineNum">       3 </span>            : 
+<span class="lineNum">       4 </span>            : #pragma once
+<span class="lineNum">       5 </span>            : 
+<span class="lineNum">       6 </span>            : #include &lt;array&gt;
+<span class="lineNum">       7 </span>            : #include &lt;boost/functional/hash.hpp&gt;  // IWYU pragma: keep
+<span class="lineNum">       8 </span>            : #include &lt;cstddef&gt;
+<span class="lineNum">       9 </span>            : #include &lt;limits&gt;
+<span class="lineNum">      10 </span>            : #include &lt;string&gt;
+<span class="lineNum">      11 </span>            : #include &lt;type_traits&gt;
+<span class="lineNum">      12 </span>            : #include &lt;unordered_map&gt;
+<span class="lineNum">      13 </span>            : #include &lt;utility&gt;
+<span class="lineNum">      14 </span>            : 
+<span class="lineNum">      15 </span>            : #include &quot;DataStructures/DataBox/DataBoxTag.hpp&quot;
+<span class="lineNum">      16 </span>            : #include &quot;DataStructures/DataBox/Prefixes.hpp&quot;
+<span class="lineNum">      17 </span>            : #include &quot;DataStructures/Tags.hpp&quot;
+<span class="lineNum">      18 </span>            : #include &quot;DataStructures/Tensor/Tensor.hpp&quot;
+<span class="lineNum">      19 </span>            : #include &quot;DataStructures/Variables.hpp&quot;
+<span class="lineNum">      20 </span>            : #include &quot;Domain/Element.hpp&quot;  // IWYU pragma: keep
+<span class="lineNum">      21 </span>            : #include &quot;Domain/Mesh.hpp&quot;
+<span class="lineNum">      22 </span>            : #include &quot;Domain/OrientationMapHelpers.hpp&quot;
+<span class="lineNum">      23 </span>            : #include &quot;Domain/SizeOfElement.hpp&quot;
+<span class="lineNum">      24 </span>            : #include &quot;Domain/Tags.hpp&quot;  // IWYU pragma: keep
+<span class="lineNum">      25 </span>            : #include &quot;ErrorHandling/Assert.hpp&quot;
+<span class="lineNum">      26 </span>            : #include &quot;Evolution/DiscontinuousGalerkin/Limiters/HwenoModifiedSolution.hpp&quot;
+<span class="lineNum">      27 </span>            : #include &quot;Evolution/DiscontinuousGalerkin/Limiters/MinmodTci.hpp&quot;
+<span class="lineNum">      28 </span>            : #include &quot;Evolution/DiscontinuousGalerkin/Limiters/MinmodType.hpp&quot;
+<span class="lineNum">      29 </span>            : #include &quot;Evolution/DiscontinuousGalerkin/Limiters/WenoGridHelpers.hpp&quot;
+<span class="lineNum">      30 </span>            : #include &quot;Evolution/DiscontinuousGalerkin/Limiters/WenoHelpers.hpp&quot;
+<span class="lineNum">      31 </span>            : #include &quot;Evolution/DiscontinuousGalerkin/Limiters/WenoType.hpp&quot;
+<span class="lineNum">      32 </span>            : #include &quot;NumericalAlgorithms/Interpolation/RegularGridInterpolant.hpp&quot;
+<span class="lineNum">      33 </span>            : #include &quot;NumericalAlgorithms/LinearOperators/MeanValue.hpp&quot;
+<span class="lineNum">      34 </span>            : #include &quot;Options/Options.hpp&quot;
+<span class="lineNum">      35 </span>            : #include &quot;Utilities/Algorithm.hpp&quot;
+<span class="lineNum">      36 </span>            : #include &quot;Utilities/Gsl.hpp&quot;
+<span class="lineNum">      37 </span>            : #include &quot;Utilities/MakeArray.hpp&quot;
+<span class="lineNum">      38 </span>            : #include &quot;Utilities/TMPL.hpp&quot;
+<span class="lineNum">      39 </span>            : #include &quot;Utilities/TaggedTuple.hpp&quot;
+<span class="lineNum">      40 </span>            : 
+<span class="lineNum">      41 </span>            : /// \cond
+<span class="lineNum">      42 </span>            : template &lt;size_t VolumeDim&gt;
+<span class="lineNum">      43 </span>            : class Direction;
+<span class="lineNum">      44 </span>            : template &lt;size_t VolumeDim&gt;
+<span class="lineNum">      45 </span>            : class ElementId;
+<span class="lineNum">      46 </span>            : 
+<span class="lineNum">      47 </span>            : namespace PUP {
+<span class="lineNum">      48 </span>            : class er;
+<span class="lineNum">      49 </span>            : }  // namespace PUP
+<span class="lineNum">      50 </span>            : 
+<span class="lineNum">      51 </span>            : namespace Limiters {
+<span class="lineNum">      52 </span>            : template &lt;size_t VolumeDim, typename TagsToLimit&gt;
+<span class="lineNum">      53 </span>            : class Weno;
+<span class="lineNum">      54 </span>            : }  // namespace Limiters
+<span class="lineNum">      55 </span>            : /// \endcond
+<span class="lineNum">      56 </span>            : 
+<span class="lineNum">      57 </span>            : namespace Limiters {
+<span class="lineNum">      58 </span>            : /// \ingroup LimitersGroup
+<span class="lineNum">      59 </span>            : /// \brief A compact-stencil WENO limiter for DG
+<span class="lineNum">      60 </span>            : ///
+<span class="lineNum">      61 </span>            : /// Implements the simple WENO limiter of \cite Zhong2013 and the Hermite WENO
+<span class="lineNum">      62 </span>            : /// (HWENO) limiter of \cite Zhu2016. These limiters require communication only
+<span class="lineNum">      63 </span>            : /// between nearest-neighbor elements, but preserve the full order of the DG
+<span class="lineNum">      64 </span>            : /// solution when the solution is smooth. Full volume data is communicated
+<span class="lineNum">      65 </span>            : /// between neighbors.
+<span class="lineNum">      66 </span>            : ///
+<span class="lineNum">      67 </span>            : /// The limiter uses a Minmod-based troubled-cell indicator to identify elements
+<span class="lineNum">      68 </span>            : /// that need limiting. The \f$\Lambda\Pi^N\f$ limiter of \cite Cockburn1999 is
+<span class="lineNum">      69 </span>            : /// used. Note that the HWENO paper recommends a more sophisticated
+<span class="lineNum">      70 </span>            : /// troubled-cell indicator instead, but the specific choice of indicator should
+<span class="lineNum">      71 </span>            : /// not be too important for a high-order WENO limiter.
+<span class="lineNum">      72 </span>            : ///
+<span class="lineNum">      73 </span>            : /// On any identified &quot;troubled&quot; elements, the limited solution is obtained by
+<span class="lineNum">      74 </span>            : /// WENO reconstruction --- a linear combination of the local DG solution and a
+<span class="lineNum">      75 </span>            : /// &quot;modified&quot; solution from each neighbor element. For the simple WENO limiter,
+<span class="lineNum">      76 </span>            : /// the modified solution is obtained by simply extrapolating the neighbor
+<span class="lineNum">      77 </span>            : /// solution onto the troubled element. For the HWENO limiter, the modified
+<span class="lineNum">      78 </span>            : /// solution is obtained by a least-squares fit to the solution across multiple
+<span class="lineNum">      79 </span>            : /// neighboring elements.
+<span class="lineNum">      80 </span>            : ///
+<span class="lineNum">      81 </span>            : /// To reconstruct the WENO solution from the local solution and the modified
+<span class="lineNum">      82 </span>            : /// neighbor solutions, the standard WENO procedure is followed. We use the
+<span class="lineNum">      83 </span>            : /// oscillation indicator of \cite Dumbser2007, modified for use on the
+<span class="lineNum">      84 </span>            : /// square/cube grids of SpECTRE. We favor this indicator because portions of
+<span class="lineNum">      85 </span>            : /// the work can be precomputed, leading to an oscillation measure that is
+<span class="lineNum">      86 </span>            : /// efficient to evaluate.
+<span class="lineNum">      87 </span>            : ///
+<span class="lineNum">      88 </span>            : /// \warning
+<span class="lineNum">      89 </span>            : /// Limitations:
+<span class="lineNum">      90 </span>            : /// - Does not support h- or p-refinement; this is enforced with ASSERTIONS.
+<span class="lineNum">      91 </span>            : /// - Does not support curved elements; this is not enforced.
+<span class="lineNum">      92 </span>            : template &lt;size_t VolumeDim, typename... Tags&gt;
+<span class="lineNum">      93 </span><span class="lineCov">          1 : class Weno&lt;VolumeDim, tmpl::list&lt;Tags...&gt;&gt; {</span>
+<span class="lineNum">      94 </span>            :  public:
+<span class="lineNum">      95 </span>            :   /// \brief The WenoType
+<span class="lineNum">      96 </span>            :   ///
+<span class="lineNum">      97 </span>            :   /// One of `Limiters::WenoType`. See the `Limiters::Weno`
+<span class="lineNum">      98 </span>            :   /// documentation for details.
+<span class="lineNum">      99 </span><span class="lineCov">          1 :   struct Type {</span>
+<span class="lineNum">     100 </span><span class="lineNoCov">          0 :     using type = WenoType;</span>
+<span class="lineNum">     101 </span><span class="lineNoCov">          0 :     static constexpr OptionString help = {&quot;Type of WENO limiter&quot;};</span>
+<span class="lineNum">     102 </span>            :   };
+<span class="lineNum">     103 </span>            :   /// \brief The linear weight given to each neighbor
+<span class="lineNum">     104 </span>            :   ///
+<span class="lineNum">     105 </span>            :   /// This linear weight gets combined with the oscillation indicator to
+<span class="lineNum">     106 </span>            :   /// compute the weight for each WENO estimated solution. Larger values are
+<span class="lineNum">     107 </span>            :   /// better suited for problems with strong shocks, and smaller values are
+<span class="lineNum">     108 </span>            :   /// better suited to smooth problems.
+<span class="lineNum">     109 </span><span class="lineCov">          1 :   struct NeighborWeight {</span>
+<span class="lineNum">     110 </span><span class="lineNoCov">          0 :     using type = double;</span>
+<span class="lineNum">     111 </span><span class="lineNoCov">          0 :     static type default_value() noexcept { return 0.001; }</span>
+<span class="lineNum">     112 </span><span class="lineNoCov">          0 :     static type lower_bound() noexcept { return 1e-6; }</span>
+<span class="lineNum">     113 </span><span class="lineNoCov">          0 :     static type upper_bound() noexcept { return 0.1; }</span>
+<span class="lineNum">     114 </span><span class="lineNoCov">          0 :     static constexpr OptionString help = {</span>
+<span class="lineNum">     115 </span>            :         &quot;Linear weight for each neighbor element's solution&quot;};
+<span class="lineNum">     116 </span>            :   };
+<span class="lineNum">     117 </span>            :   /// \brief Turn the limiter off
+<span class="lineNum">     118 </span>            :   ///
+<span class="lineNum">     119 </span>            :   /// This option exists to temporarily disable the limiter for debugging
+<span class="lineNum">     120 </span>            :   /// purposes. For problems where limiting is not needed, the preferred
+<span class="lineNum">     121 </span>            :   /// approach is to not compile the limiter into the executable.
+<span class="lineNum">     122 </span><span class="lineCov">          1 :   struct DisableForDebugging {</span>
+<span class="lineNum">     123 </span><span class="lineNoCov">          0 :     using type = bool;</span>
+<span class="lineNum">     124 </span><span class="lineNoCov">          0 :     static type default_value() noexcept { return false; }</span>
+<span class="lineNum">     125 </span><span class="lineNoCov">          0 :     static constexpr OptionString help = {&quot;Disable the limiter&quot;};</span>
+<span class="lineNum">     126 </span>            :   };
+<span class="lineNum">     127 </span><span class="lineNoCov">          0 :   using options = tmpl::list&lt;Type, NeighborWeight, DisableForDebugging&gt;;</span>
+<span class="lineNum">     128 </span><span class="lineNoCov">          0 :   static constexpr OptionString help = {&quot;A WENO limiter for DG&quot;};</span>
+<span class="lineNum">     129 </span>            : 
+<span class="lineNum">     130 </span><span class="lineNoCov">          0 :   Weno(WenoType weno_type, double neighbor_linear_weight,</span>
+<span class="lineNum">     131 </span>            :        bool disable_for_debugging = false) noexcept;
+<span class="lineNum">     132 </span>            : 
+<span class="lineNum">     133 </span><span class="lineNoCov">          0 :   Weno() noexcept = default;</span>
+<span class="lineNum">     134 </span><span class="lineNoCov">          0 :   Weno(const Weno&amp; /*rhs*/) = default;</span>
+<span class="lineNum">     135 </span><span class="lineNoCov">          0 :   Weno&amp; operator=(const Weno&amp; /*rhs*/) = default;</span>
+<span class="lineNum">     136 </span><span class="lineNoCov">          0 :   Weno(Weno&amp;&amp; /*rhs*/) noexcept = default;</span>
+<span class="lineNum">     137 </span><span class="lineNoCov">          0 :   Weno&amp; operator=(Weno&amp;&amp; /*rhs*/) noexcept = default;</span>
+<span class="lineNum">     138 </span><span class="lineNoCov">          0 :   ~Weno() = default;</span>
+<span class="lineNum">     139 </span>            : 
+<span class="lineNum">     140 </span>            :   // NOLINTNEXTLINE(google-runtime-references)
+<span class="lineNum">     141 </span><span class="lineNoCov">          0 :   void pup(PUP::er&amp; p) noexcept;</span>
+<span class="lineNum">     142 </span>            : 
+<span class="lineNum">     143 </span>            :   /// \brief Data to send to neighbor elements
+<span class="lineNum">     144 </span><span class="lineCov">          1 :   struct PackagedData {</span>
+<span class="lineNum">     145 </span><span class="lineNoCov">          0 :     Variables&lt;tmpl::list&lt;Tags...&gt;&gt; volume_data;</span>
+<span class="lineNum">     146 </span><span class="lineNoCov">          0 :     tuples::TaggedTuple&lt;::Tags::Mean&lt;Tags&gt;...&gt; means;</span>
+<span class="lineNum">     147 </span><span class="lineNoCov">          0 :     Mesh&lt;VolumeDim&gt; mesh;</span>
+<span class="lineNum">     148 </span><span class="lineNoCov">          0 :     std::array&lt;double, VolumeDim&gt; element_size =</span>
+<span class="lineNum">     149 </span>            :         make_array&lt;VolumeDim&gt;(std::numeric_limits&lt;double&gt;::signaling_NaN());
+<span class="lineNum">     150 </span>            : 
+<span class="lineNum">     151 </span>            :     // NOLINTNEXTLINE(google-runtime-references)
+<span class="lineNum">     152 </span><span class="lineNoCov">          0 :     void pup(PUP::er&amp; p) noexcept {</span>
+<span class="lineNum">     153 </span>            :       p | volume_data;
+<span class="lineNum">     154 </span>            :       p | means;
+<span class="lineNum">     155 </span>            :       p | mesh;
+<span class="lineNum">     156 </span>            :       p | element_size;
+<span class="lineNum">     157 </span>            :     }
+<span class="lineNum">     158 </span>            :   };
+<span class="lineNum">     159 </span>            : 
+<span class="lineNum">     160 </span><span class="lineNoCov">          0 :   using package_argument_tags = tmpl::list&lt;Tags..., ::Tags::Mesh&lt;VolumeDim&gt;,</span>
+<span class="lineNum">     161 </span>            :                                            ::Tags::SizeOfElement&lt;VolumeDim&gt;&gt;;
+<span class="lineNum">     162 </span>            : 
+<span class="lineNum">     163 </span>            :   /// \brief Package data for sending to neighbor elements
+<span class="lineNum">     164 </span><span class="lineCov">          1 :   void package_data(gsl::not_null&lt;PackagedData*&gt; packaged_data,</span>
+<span class="lineNum">     165 </span>            :                     const db::const_item_type&lt;Tags&gt;&amp;... tensors,
+<span class="lineNum">     166 </span>            :                     const Mesh&lt;VolumeDim&gt;&amp; mesh,
+<span class="lineNum">     167 </span>            :                     const std::array&lt;double, VolumeDim&gt;&amp; element_size,
+<span class="lineNum">     168 </span>            :                     const OrientationMap&lt;VolumeDim&gt;&amp; orientation_map) const
+<span class="lineNum">     169 </span>            :       noexcept;
+<span class="lineNum">     170 </span>            : 
+<span class="lineNum">     171 </span><span class="lineNoCov">          0 :   using limit_tags = tmpl::list&lt;Tags...&gt;;</span>
+<span class="lineNum">     172 </span><span class="lineNoCov">          0 :   using limit_argument_tags =</span>
+<span class="lineNum">     173 </span>            :       tmpl::list&lt;::Tags::Element&lt;VolumeDim&gt;, ::Tags::Mesh&lt;VolumeDim&gt;,
+<span class="lineNum">     174 </span>            :                  ::Tags::SizeOfElement&lt;VolumeDim&gt;&gt;;
+<span class="lineNum">     175 </span>            : 
+<span class="lineNum">     176 </span>            :   /// \brief Limit the solution on the element
+<span class="lineNum">     177 </span><span class="lineCov">          1 :   bool operator()(</span>
+<span class="lineNum">     178 </span>            :       const gsl::not_null&lt;std::add_pointer_t&lt;db::item_type&lt;Tags&gt;&gt;&gt;... tensors,
+<span class="lineNum">     179 </span>            :       const Element&lt;VolumeDim&gt;&amp; element, const Mesh&lt;VolumeDim&gt;&amp; mesh,
+<span class="lineNum">     180 </span>            :       const std::array&lt;double, VolumeDim&gt;&amp; element_size,
+<span class="lineNum">     181 </span>            :       const std::unordered_map&lt;
+<span class="lineNum">     182 </span>            :           std::pair&lt;Direction&lt;VolumeDim&gt;, ElementId&lt;VolumeDim&gt;&gt;, PackagedData,
+<span class="lineNum">     183 </span>            :           boost::hash&lt;std::pair&lt;Direction&lt;VolumeDim&gt;, ElementId&lt;VolumeDim&gt;&gt;&gt;&gt;&amp;
+<span class="lineNum">     184 </span>            :           neighbor_data) const noexcept;
+<span class="lineNum">     185 </span>            : 
+<span class="lineNum">     186 </span>            :  private:
+<span class="lineNum">     187 </span>            :   template &lt;size_t LocalDim, typename LocalTagList&gt;
+<span class="lineNum">     188 </span>            :   // NOLINTNEXTLINE(readability-redundant-declaration) false positive
+<span class="lineNum">     189 </span><span class="lineNoCov">          0 :   friend bool operator==(const Weno&lt;LocalDim, LocalTagList&gt;&amp; lhs,</span>
+<span class="lineNum">     190 </span>            :                          const Weno&lt;LocalDim, LocalTagList&gt;&amp; rhs) noexcept;
+<span class="lineNum">     191 </span>            : 
+<span class="lineNum">     192 </span><span class="lineNoCov">          0 :   WenoType weno_type_;</span>
+<span class="lineNum">     193 </span><span class="lineNoCov">          0 :   double neighbor_linear_weight_;</span>
+<span class="lineNum">     194 </span><span class="lineNoCov">          0 :   bool disable_for_debugging_;</span>
+<span class="lineNum">     195 </span>            : };
+<span class="lineNum">     196 </span>            : 
+<span class="lineNum">     197 </span>            : template &lt;size_t VolumeDim, typename... Tags&gt;
+<span class="lineNum">     198 </span>            : Weno&lt;VolumeDim, tmpl::list&lt;Tags...&gt;&gt;::Weno(
+<span class="lineNum">     199 </span>            :     const WenoType weno_type, const double neighbor_linear_weight,
+<span class="lineNum">     200 </span>            :     const bool disable_for_debugging) noexcept
+<span class="lineNum">     201 </span>            :     : weno_type_(weno_type),
+<span class="lineNum">     202 </span>            :       neighbor_linear_weight_(neighbor_linear_weight),
+<span class="lineNum">     203 </span>            :       disable_for_debugging_(disable_for_debugging) {}
+<span class="lineNum">     204 </span>            : 
+<span class="lineNum">     205 </span>            : template &lt;size_t VolumeDim, typename... Tags&gt;
+<span class="lineNum">     206 </span>            : // NOLINTNEXTLINE(google-runtime-references)
+<span class="lineNum">     207 </span>            : void Weno&lt;VolumeDim, tmpl::list&lt;Tags...&gt;&gt;::pup(PUP::er&amp; p) noexcept {
+<span class="lineNum">     208 </span>            :   p | weno_type_;
+<span class="lineNum">     209 </span>            :   p | neighbor_linear_weight_;
+<span class="lineNum">     210 </span>            :   p | disable_for_debugging_;
+<span class="lineNum">     211 </span>            : }
+<span class="lineNum">     212 </span>            : 
+<span class="lineNum">     213 </span>            : template &lt;size_t VolumeDim, typename... Tags&gt;
+<span class="lineNum">     214 </span>            : void Weno&lt;VolumeDim, tmpl::list&lt;Tags...&gt;&gt;::package_data(
+<span class="lineNum">     215 </span>            :     const gsl::not_null&lt;PackagedData*&gt; packaged_data,
+<span class="lineNum">     216 </span>            :     const db::const_item_type&lt;Tags&gt;&amp;... tensors, const Mesh&lt;VolumeDim&gt;&amp; mesh,
+<span class="lineNum">     217 </span>            :     const std::array&lt;double, VolumeDim&gt;&amp; element_size,
+<span class="lineNum">     218 </span>            :     const OrientationMap&lt;VolumeDim&gt;&amp; orientation_map) const noexcept {
+<span class="lineNum">     219 </span>            :   if (UNLIKELY(disable_for_debugging_)) {
+<span class="lineNum">     220 </span>            :     // Do not initialize packaged_data
+<span class="lineNum">     221 </span>            :     return;
+<span class="lineNum">     222 </span>            :   }
+<span class="lineNum">     223 </span>            : 
+<span class="lineNum">     224 </span>            :   const auto wrap_compute_means =
+<span class="lineNum">     225 </span>            :       [&amp;mesh, &amp;packaged_data ](auto tag, const auto tensor) noexcept {
+<span class="lineNum">     226 </span>            :     for (size_t i = 0; i &lt; tensor.size(); ++i) {
+<span class="lineNum">     227 </span>            :       // Compute the mean using the local orientation of the tensor and mesh.
+<span class="lineNum">     228 </span>            :       get&lt;::Tags::Mean&lt;decltype(tag)&gt;&gt;(packaged_data-&gt;means)[i] =
+<span class="lineNum">     229 </span>            :           mean_value(tensor[i], mesh);
+<span class="lineNum">     230 </span>            :     }
+<span class="lineNum">     231 </span>            :     return '0';
+<span class="lineNum">     232 </span>            :   };
+<span class="lineNum">     233 </span>            :   expand_pack(wrap_compute_means(Tags{}, tensors)...);
+<span class="lineNum">     234 </span>            : 
+<span class="lineNum">     235 </span>            :   packaged_data-&gt;element_size =
+<span class="lineNum">     236 </span>            :       orientation_map.permute_from_neighbor(element_size);
+<span class="lineNum">     237 </span>            : 
+<span class="lineNum">     238 </span>            :   (packaged_data-&gt;volume_data).initialize(mesh.number_of_grid_points());
+<span class="lineNum">     239 </span>            :   const auto wrap_copy_tensor = [&amp;packaged_data](auto tag,
+<span class="lineNum">     240 </span>            :                                                  const auto tensor) noexcept {
+<span class="lineNum">     241 </span>            :     get&lt;decltype(tag)&gt;(packaged_data-&gt;volume_data) = tensor;
+<span class="lineNum">     242 </span>            :     return '0';
+<span class="lineNum">     243 </span>            :   };
+<span class="lineNum">     244 </span>            :   expand_pack(wrap_copy_tensor(Tags{}, tensors)...);
+<span class="lineNum">     245 </span>            :   packaged_data-&gt;volume_data = orient_variables(
+<span class="lineNum">     246 </span>            :       packaged_data-&gt;volume_data, mesh.extents(), orientation_map);
+<span class="lineNum">     247 </span>            : 
+<span class="lineNum">     248 </span>            :   packaged_data-&gt;mesh = orientation_map(mesh);
+<span class="lineNum">     249 </span>            : }
+<span class="lineNum">     250 </span>            : 
+<span class="lineNum">     251 </span>            : template &lt;size_t VolumeDim, typename... Tags&gt;
+<span class="lineNum">     252 </span>            : bool Weno&lt;VolumeDim, tmpl::list&lt;Tags...&gt;&gt;::operator()(
+<span class="lineNum">     253 </span>            :     const gsl::not_null&lt;std::add_pointer_t&lt;db::item_type&lt;Tags&gt;&gt;&gt;... tensors,
+<span class="lineNum">     254 </span>            :     const Element&lt;VolumeDim&gt;&amp; element, const Mesh&lt;VolumeDim&gt;&amp; mesh,
+<span class="lineNum">     255 </span>            :     const std::array&lt;double, VolumeDim&gt;&amp; element_size,
+<span class="lineNum">     256 </span>            :     const std::unordered_map&lt;
+<span class="lineNum">     257 </span>            :         std::pair&lt;Direction&lt;VolumeDim&gt;, ElementId&lt;VolumeDim&gt;&gt;, PackagedData,
+<span class="lineNum">     258 </span>            :         boost::hash&lt;std::pair&lt;Direction&lt;VolumeDim&gt;, ElementId&lt;VolumeDim&gt;&gt;&gt;&gt;&amp;
+<span class="lineNum">     259 </span>            :         neighbor_data) const noexcept {
+<span class="lineNum">     260 </span>            :   if (UNLIKELY(disable_for_debugging_)) {
+<span class="lineNum">     261 </span>            :     // Do not modify input tensors
+<span class="lineNum">     262 </span>            :     return false;
+<span class="lineNum">     263 </span>            :   }
+<span class="lineNum">     264 </span>            : 
+<span class="lineNum">     265 </span>            :   // Enforce restrictions on h-refinement, p-refinement
+<span class="lineNum">     266 </span>            :   if (UNLIKELY(alg::any_of(element.neighbors(),
+<span class="lineNum">     267 </span>            :                            [](const auto&amp; direction_neighbors) noexcept {
+<span class="lineNum">     268 </span>            :                              return direction_neighbors.second.size() != 1;
+<span class="lineNum">     269 </span>            :                            }))) {
+<span class="lineNum">     270 </span>            :     ERROR(&quot;The Weno limiter does not yet support h-refinement&quot;);
+<span class="lineNum">     271 </span>            :     // Removing this limitation will require:
+<span class="lineNum">     272 </span>            :     // - Generalizing the computation of the modified neighbor solutions.
+<span class="lineNum">     273 </span>            :     // - Generalizing the WENO weighted sum for multiple neighbors in each
+<span class="lineNum">     274 </span>            :     //   direction.
+<span class="lineNum">     275 </span>            :   }
+<span class="lineNum">     276 </span>            :   alg::for_each(neighbor_data, [&amp;mesh](const auto&amp; neighbor_and_data) noexcept {
+<span class="lineNum">     277 </span>            :     if (UNLIKELY(neighbor_and_data.second.mesh != mesh)) {
+<span class="lineNum">     278 </span>            :       ERROR(&quot;The Weno limiter does not yet support p-refinement&quot;);
+<span class="lineNum">     279 </span>            :       // Removing this limitation will require generalizing the
+<span class="lineNum">     280 </span>            :       // computation of the modified neighbor solutions.
+<span class="lineNum">     281 </span>            :     }
+<span class="lineNum">     282 </span>            :   });
+<span class="lineNum">     283 </span>            : 
+<span class="lineNum">     284 </span>            :   // Troubled-cell detection for WENO flags the element for limiting if any
+<span class="lineNum">     285 </span>            :   // component of any tensor needs limiting.
+<span class="lineNum">     286 </span>            :   const double minmod_tci_tvbm_constant = 0.0;
+<span class="lineNum">     287 </span>            :   const bool cell_is_troubled =
+<span class="lineNum">     288 </span>            :       Minmod_detail::troubled_cell_indicator&lt;VolumeDim, PackagedData, Tags...&gt;(
+<span class="lineNum">     289 </span>            :           (*tensors)..., neighbor_data, minmod_tci_tvbm_constant, element, mesh,
+<span class="lineNum">     290 </span>            :           element_size);
+<span class="lineNum">     291 </span>            : 
+<span class="lineNum">     292 </span>            :   if (not cell_is_troubled) {
+<span class="lineNum">     293 </span>            :     // No limiting is needed
+<span class="lineNum">     294 </span>            :     return false;
+<span class="lineNum">     295 </span>            :   }
+<span class="lineNum">     296 </span>            : 
+<span class="lineNum">     297 </span>            :   // Compute the modified solutions from each neighbor, for each tensor
+<span class="lineNum">     298 </span>            :   // component. For this step, each WenoType requires a different treatment.
+<span class="lineNum">     299 </span>            :   std::unordered_map&lt;
+<span class="lineNum">     300 </span>            :       std::pair&lt;Direction&lt;VolumeDim&gt;, ElementId&lt;VolumeDim&gt;&gt;,
+<span class="lineNum">     301 </span>            :       Variables&lt;tmpl::list&lt;Tags...&gt;&gt;,
+<span class="lineNum">     302 </span>            :       boost::hash&lt;std::pair&lt;Direction&lt;VolumeDim&gt;, ElementId&lt;VolumeDim&gt;&gt;&gt;&gt;
+<span class="lineNum">     303 </span>            :       modified_neighbor_solutions;
+<span class="lineNum">     304 </span>            : 
+<span class="lineNum">     305 </span>            :   if (weno_type_ == WenoType::Hweno) {
+<span class="lineNum">     306 </span>            :     // For each neighbor, the HWENO fits are done one tensor at a time.
+<span class="lineNum">     307 </span>            :     for (const auto&amp; neighbor_and_data : neighbor_data) {
+<span class="lineNum">     308 </span>            :       modified_neighbor_solutions[neighbor_and_data.first].initialize(
+<span class="lineNum">     309 </span>            :           mesh.number_of_grid_points());
+<span class="lineNum">     310 </span>            :     }
+<span class="lineNum">     311 </span>            :     const auto wrap_hweno_neighbor_solution_one_tensor =
+<span class="lineNum">     312 </span>            :         [&amp;element, &amp;mesh, &amp;neighbor_data, &amp;
+<span class="lineNum">     313 </span>            :          modified_neighbor_solutions ](auto tag, const auto tensor) noexcept {
+<span class="lineNum">     314 </span>            :       for (const auto&amp; neighbor_and_data : neighbor_data) {
+<span class="lineNum">     315 </span>            :         const auto&amp; primary_neighbor = neighbor_and_data.first;
+<span class="lineNum">     316 </span>            :         auto&amp; modified_tensor = get&lt;decltype(tag)&gt;(
+<span class="lineNum">     317 </span>            :             modified_neighbor_solutions.at(primary_neighbor));
+<span class="lineNum">     318 </span>            :         hweno_modified_neighbor_solution&lt;decltype(tag)&gt;(
+<span class="lineNum">     319 </span>            :             make_not_null(&amp;modified_tensor), *tensor, element, mesh,
+<span class="lineNum">     320 </span>            :             neighbor_data, primary_neighbor);
+<span class="lineNum">     321 </span>            :       }
+<span class="lineNum">     322 </span>            :       return '0';
+<span class="lineNum">     323 </span>            :     };
+<span class="lineNum">     324 </span>            :     expand_pack(wrap_hweno_neighbor_solution_one_tensor(Tags{}, tensors)...);
+<span class="lineNum">     325 </span>            :   } else if (weno_type_ == WenoType::SimpleWeno) {
+<span class="lineNum">     326 </span>            :     // For each neighbor, the simple WENO data is obtained by extrapolation,
+<span class="lineNum">     327 </span>            :     // with a constant offset added to preserve the correct mean value.
+<span class="lineNum">     328 </span>            :     // The extrapolation step is done on the entire Variables:
+<span class="lineNum">     329 </span>            :     for (const auto&amp; neighbor_and_data : neighbor_data) {
+<span class="lineNum">     330 </span>            :       const auto&amp; neighbor = neighbor_and_data.first;
+<span class="lineNum">     331 </span>            :       const auto&amp; direction = neighbor.first;
+<span class="lineNum">     332 </span>            :       const auto&amp; data = neighbor_and_data.second;
+<span class="lineNum">     333 </span>            :       const auto&amp; source_mesh = data.mesh;
+<span class="lineNum">     334 </span>            :       const auto target_1d_logical_coords =
+<span class="lineNum">     335 </span>            :           Weno_detail::local_grid_points_in_neighbor_logical_coords(
+<span class="lineNum">     336 </span>            :               mesh, source_mesh, element, direction);
+<span class="lineNum">     337 </span>            :       const intrp::RegularGrid&lt;VolumeDim&gt; interpolant(source_mesh, mesh,
+<span class="lineNum">     338 </span>            :                                                       target_1d_logical_coords);
+<span class="lineNum">     339 </span>            :       modified_neighbor_solutions.insert(
+<span class="lineNum">     340 </span>            :           std::make_pair(neighbor, interpolant.interpolate(data.volume_data)));
+<span class="lineNum">     341 </span>            :     }
+<span class="lineNum">     342 </span>            : 
+<span class="lineNum">     343 </span>            :     // Then the correction is added one tensor component at a time:
+<span class="lineNum">     344 </span>            :     const auto wrap_mean_correction = [&amp;mesh, &amp;modified_neighbor_solutions ](
+<span class="lineNum">     345 </span>            :         auto tag, const auto tensor) noexcept {
+<span class="lineNum">     346 </span>            :       for (size_t i = 0; i &lt; tensor-&gt;size(); ++i) {
+<span class="lineNum">     347 </span>            :         const double local_mean = mean_value((*tensor)[i], mesh);
+<span class="lineNum">     348 </span>            :         for (auto&amp; kv : modified_neighbor_solutions) {
+<span class="lineNum">     349 </span>            :           DataVector&amp; neighbor_component_to_correct =
+<span class="lineNum">     350 </span>            :               get&lt;decltype(tag)&gt;(kv.second)[i];
+<span class="lineNum">     351 </span>            :           const double neighbor_mean =
+<span class="lineNum">     352 </span>            :               mean_value(neighbor_component_to_correct, mesh);
+<span class="lineNum">     353 </span>            :           neighbor_component_to_correct += local_mean - neighbor_mean;
+<span class="lineNum">     354 </span>            :         }
+<span class="lineNum">     355 </span>            :       }
+<span class="lineNum">     356 </span>            :       return '0';
+<span class="lineNum">     357 </span>            :     };
+<span class="lineNum">     358 </span>            :     expand_pack(wrap_mean_correction(Tags{}, tensors)...);
+<span class="lineNum">     359 </span>            :   } else {
+<span class="lineNum">     360 </span>            :     ERROR(&quot;WENO limiter not implemented for WenoType: &quot; &lt;&lt; weno_type_);
+<span class="lineNum">     361 </span>            :   }
+<span class="lineNum">     362 </span>            : 
+<span class="lineNum">     363 </span>            :   // Reconstruct WENO solution from local solution and modified neighbor
+<span class="lineNum">     364 </span>            :   // solutions.
+<span class="lineNum">     365 </span>            :   const auto wrap_reconstruct_one_tensor =
+<span class="lineNum">     366 </span>            :       [ this, &amp;mesh, &amp;
+<span class="lineNum">     367 </span>            :         modified_neighbor_solutions ](auto tag, const auto tensor) noexcept {
+<span class="lineNum">     368 </span>            :     Weno_detail::reconstruct_from_weighted_sum&lt;decltype(tag)&gt;(
+<span class="lineNum">     369 </span>            :         tensor, mesh, neighbor_linear_weight_, modified_neighbor_solutions,
+<span class="lineNum">     370 </span>            :         Weno_detail::DerivativeWeight::Unity);
+<span class="lineNum">     371 </span>            :     return '0';
+<span class="lineNum">     372 </span>            :   };
+<span class="lineNum">     373 </span>            :   expand_pack(wrap_reconstruct_one_tensor(Tags{}, tensors)...);
+<span class="lineNum">     374 </span>            :   return true;  // cell_is_troubled
+<span class="lineNum">     375 </span>            : }
+<span class="lineNum">     376 </span>            : 
+<span class="lineNum">     377 </span>            : template &lt;size_t LocalDim, typename LocalTagList&gt;
+<span class="lineNum">     378 </span><span class="lineNoCov">          0 : bool operator==(const Weno&lt;LocalDim, LocalTagList&gt;&amp; lhs,</span>
+<span class="lineNum">     379 </span>            :                 const Weno&lt;LocalDim, LocalTagList&gt;&amp; rhs) noexcept {
+<span class="lineNum">     380 </span>            :   return lhs.weno_type_ == rhs.weno_type_ and
+<span class="lineNum">     381 </span>            :          lhs.neighbor_linear_weight_ == rhs.neighbor_linear_weight_ and
+<span class="lineNum">     382 </span>            :          lhs.disable_for_debugging_ == rhs.disable_for_debugging_;
+<span class="lineNum">     383 </span>            : }
+<span class="lineNum">     384 </span>            : 
+<span class="lineNum">     385 </span>            : template &lt;size_t VolumeDim, typename TagList&gt;
+<span class="lineNum">     386 </span><span class="lineNoCov">          0 : bool operator!=(const Weno&lt;VolumeDim, TagList&gt;&amp; lhs,</span>
+<span class="lineNum">     387 </span>            :                 const Weno&lt;VolumeDim, TagList&gt;&amp; rhs) noexcept {
+<span class="lineNum">     388 </span>            :   return not(lhs == rhs);
+<span class="lineNum">     389 </span>            : }
+<span class="lineNum">     390 </span>            : 
+<span class="lineNum">     391 </span>            : }  // namespace Limiters
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../../../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.13</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

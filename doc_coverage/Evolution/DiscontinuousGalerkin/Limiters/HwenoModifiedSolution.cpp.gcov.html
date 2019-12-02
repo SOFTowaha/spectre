@@ -1,0 +1,420 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - 5912ac2e49a80e6a27b3707c9a1e6ce5248b1b2a - Evolution/DiscontinuousGalerkin/Limiters/HwenoModifiedSolution.cpp</title>
+  <link rel="stylesheet" type="text/css" href="../../../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title"> SpECTRE Documentation Coverage Report</td></tr>
+    <tr><td class="ruler"><img src="../../../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../../../index.html">top level</a> - <a href="index.html">Evolution/DiscontinuousGalerkin/Limiters</a> - HwenoModifiedSolution.cpp</td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+             <td class="headerItem">Commit:</td>
+             <td class="headerValue"><a target="_blank" href="https://github.com/sxs-collaboration/spectre/commit/5912ac2e49a80e6a27b3707c9a1e6ce5248b1b2a">5912ac2e49a80e6a27b3707c9a1e6ce5248b1b2a</a></td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">1</td>
+            <td class="headerCovTableEntry">5</td>
+            <td class="headerCovTableEntryLo">20.0 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2019-12-02 22:01:08</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td class="headerItem">Legend:</td>
+            <td class="headerValueLeg">            Lines:
+            <span class="coverLegendCov">hit</span>
+            <span class="coverLegendNoCov">not hit</span>
+</td>
+            <td></td>
+          </tr>
+          <tr><td><img src="../../../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../../../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">          Line data    Source code</pre>
+<pre class="source">
+<span class="lineNum">       1 </span><span class="lineNoCov">          0 : // Distributed under the MIT License.</span>
+<span class="lineNum">       2 </span>            : // See LICENSE.txt for details.
+<span class="lineNum">       3 </span>            : 
+<span class="lineNum">       4 </span>            : #include &quot;Evolution/DiscontinuousGalerkin/Limiters/HwenoModifiedSolution.hpp&quot;
+<span class="lineNum">       5 </span>            : 
+<span class="lineNum">       6 </span>            : #include &lt;array&gt;
+<span class="lineNum">       7 </span>            : #include &lt;bitset&gt;
+<span class="lineNum">       8 </span>            : #include &lt;cstddef&gt;
+<span class="lineNum">       9 </span>            : #include &lt;ostream&gt;
+<span class="lineNum">      10 </span>            : #include &lt;vector&gt;
+<span class="lineNum">      11 </span>            : 
+<span class="lineNum">      12 </span>            : #include &quot;DataStructures/IndexIterator.hpp&quot;
+<span class="lineNum">      13 </span>            : #include &quot;Domain/Direction.hpp&quot;
+<span class="lineNum">      14 </span>            : #include &quot;Domain/Element.hpp&quot;  // IWYU pragma: keep
+<span class="lineNum">      15 </span>            : #include &quot;Domain/Mesh.hpp&quot;     // IWYU pragma: keep
+<span class="lineNum">      16 </span>            : #include &quot;Domain/Side.hpp&quot;
+<span class="lineNum">      17 </span>            : #include &quot;ErrorHandling/Error.hpp&quot;
+<span class="lineNum">      18 </span>            : #include &quot;Evolution/DiscontinuousGalerkin/Limiters/WenoGridHelpers.hpp&quot;
+<span class="lineNum">      19 </span>            : #include &quot;NumericalAlgorithms/Interpolation/RegularGridInterpolant.hpp&quot;
+<span class="lineNum">      20 </span>            : #include &quot;NumericalAlgorithms/Spectral/Spectral.hpp&quot;
+<span class="lineNum">      21 </span>            : #include &quot;Utilities/ConstantExpressions.hpp&quot;
+<span class="lineNum">      22 </span>            : #include &quot;Utilities/GenerateInstantiations.hpp&quot;
+<span class="lineNum">      23 </span>            : #include &quot;Utilities/Gsl.hpp&quot;
+<span class="lineNum">      24 </span>            : 
+<span class="lineNum">      25 </span><span class="lineNoCov">          0 : namespace {</span>
+<span class="lineNum">      26 </span>            : 
+<span class="lineNum">      27 </span>            : // Compute the VolumeDim-dimensional quadrature weights, by taking the tensor
+<span class="lineNum">      28 </span>            : // product of the 1D quadrature weights in each logical dimension of the Mesh.
+<span class="lineNum">      29 </span>            : template &lt;size_t VolumeDim&gt;
+<span class="lineNum">      30 </span>            : DataVector volume_quadrature_weights(const Mesh&lt;VolumeDim&gt;&amp; mesh) noexcept {
+<span class="lineNum">      31 </span>            :   std::array&lt;DataVector, VolumeDim&gt; quadrature_weights_1d{};
+<span class="lineNum">      32 </span>            :   for (size_t d = 0; d &lt; VolumeDim; ++d) {
+<span class="lineNum">      33 </span>            :     gsl::at(quadrature_weights_1d, d) =
+<span class="lineNum">      34 </span>            :         Spectral::quadrature_weights(mesh.slice_through(d));
+<span class="lineNum">      35 </span>            :   }
+<span class="lineNum">      36 </span>            : 
+<span class="lineNum">      37 </span>            :   DataVector result{mesh.number_of_grid_points(), 1.};
+<span class="lineNum">      38 </span>            :   for (IndexIterator&lt;VolumeDim&gt; s(mesh.extents()); s; ++s) {
+<span class="lineNum">      39 </span>            :     result[s.collapsed_index()] = quadrature_weights_1d[0][s()[0]];
+<span class="lineNum">      40 </span>            :     for (size_t d = 1; d &lt; VolumeDim; ++d) {
+<span class="lineNum">      41 </span>            :       result[s.collapsed_index()] *= gsl::at(quadrature_weights_1d, d)[s()[d]];
+<span class="lineNum">      42 </span>            :     }
+<span class="lineNum">      43 </span>            :   }
+<span class="lineNum">      44 </span>            :   return result;
+<span class="lineNum">      45 </span>            : }
+<span class="lineNum">      46 </span>            : 
+<span class="lineNum">      47 </span>            : // Compute the matrix that interpolates data in VolumeDim dimensions from
+<span class="lineNum">      48 </span>            : // source_mesh to the grid points of target_mesh, by taking the tensor product
+<span class="lineNum">      49 </span>            : // of the 1D interpolation matrices in each logical dimension of the meshes.
+<span class="lineNum">      50 </span>            : //
+<span class="lineNum">      51 </span>            : // Note: typically it is more efficient to interpolate from source_mesh to
+<span class="lineNum">      52 </span>            : // target_mesh in one logical direction at a time, and to avoid computing this
+<span class="lineNum">      53 </span>            : // matrix. However, the HWENO algorithm requires constructing this matrix
+<span class="lineNum">      54 </span>            : // explicitly.
+<span class="lineNum">      55 </span>            : //
+<span class="lineNum">      56 </span>            : // In particular, for this HWENO application:
+<span class="lineNum">      57 </span>            : // - source_mesh is the mesh of local element.
+<span class="lineNum">      58 </span>            : // - target_mesh is the mesh of the neighboring element in direction. Note that
+<span class="lineNum">      59 </span>            : //   there can only be one neighbor in this direction, and this is checked in
+<span class="lineNum">      60 </span>            : //   the call to `neighbor_grid_points_in_local_logical_coordinates`.
+<span class="lineNum">      61 </span>            : // - rectilinear elements are assumed.
+<span class="lineNum">      62 </span>            : template &lt;size_t VolumeDim&gt;
+<span class="lineNum">      63 </span>            : Matrix volume_interpolation_matrix(
+<span class="lineNum">      64 </span>            :     const Mesh&lt;VolumeDim&gt;&amp; source_mesh, const Mesh&lt;VolumeDim&gt;&amp; target_mesh,
+<span class="lineNum">      65 </span>            :     const Element&lt;VolumeDim&gt;&amp; element,
+<span class="lineNum">      66 </span>            :     const Direction&lt;VolumeDim&gt;&amp; direction) noexcept {
+<span class="lineNum">      67 </span>            :   // The grid points of source_mesh and target_mesh must be in the same
+<span class="lineNum">      68 </span>            :   // coordinates to construct the interpolation matrix. Here we get the points
+<span class="lineNum">      69 </span>            :   // of target_mesh in the local logical coordinates.
+<span class="lineNum">      70 </span>            :   const auto target_1d_coords =
+<span class="lineNum">      71 </span>            :       Limiters::Weno_detail::neighbor_grid_points_in_local_logical_coords(
+<span class="lineNum">      72 </span>            :           source_mesh, target_mesh, element, direction);
+<span class="lineNum">      73 </span>            : 
+<span class="lineNum">      74 </span>            :   const auto interpolation_matrices_1d =
+<span class="lineNum">      75 </span>            :       intrp::RegularGrid&lt;VolumeDim&gt;(source_mesh, target_mesh, target_1d_coords)
+<span class="lineNum">      76 </span>            :           .interpolation_matrices();
+<span class="lineNum">      77 </span>            : 
+<span class="lineNum">      78 </span>            :   // The 1D interpolation matrices will be empty if there is no need to
+<span class="lineNum">      79 </span>            :   // interpolate in that particular direction (i.e., the interpolation in that
+<span class="lineNum">      80 </span>            :   // direction is identity). This function undoes the optimization by returning
+<span class="lineNum">      81 </span>            :   // elements of an identity matrix if an empty matrix is found.
+<span class="lineNum">      82 </span>            :   const auto matrix_element = [&amp;interpolation_matrices_1d](
+<span class="lineNum">      83 </span>            :       const size_t dim, const size_t r, const size_t s) noexcept {
+<span class="lineNum">      84 </span>            :     const auto&amp; matrix = gsl::at(interpolation_matrices_1d, dim);
+<span class="lineNum">      85 </span>            :     if (matrix.rows() * matrix.columns() == 0) {
+<span class="lineNum">      86 </span>            :       return (r == s) ? 1. : 0.;
+<span class="lineNum">      87 </span>            :     } else {
+<span class="lineNum">      88 </span>            :       return matrix(r, s);
+<span class="lineNum">      89 </span>            :     }
+<span class="lineNum">      90 </span>            :   };
+<span class="lineNum">      91 </span>            : 
+<span class="lineNum">      92 </span>            :   Matrix result(target_mesh.number_of_grid_points(),
+<span class="lineNum">      93 </span>            :                 source_mesh.number_of_grid_points(), 0.);
+<span class="lineNum">      94 </span>            :   for (IndexIterator&lt;VolumeDim&gt; r(target_mesh.extents()); r; ++r) {
+<span class="lineNum">      95 </span>            :     for (IndexIterator&lt;VolumeDim&gt; s(source_mesh.extents()); s; ++s) {
+<span class="lineNum">      96 </span>            :       result(r.collapsed_index(), s.collapsed_index()) =
+<span class="lineNum">      97 </span>            :           matrix_element(0, r()[0], s()[0]);
+<span class="lineNum">      98 </span>            :       for (size_t d = 1; d &lt; VolumeDim; ++d) {
+<span class="lineNum">      99 </span>            :         result(r.collapsed_index(), s.collapsed_index()) *=
+<span class="lineNum">     100 </span>            :             matrix_element(d, r()[d], s()[d]);
+<span class="lineNum">     101 </span>            :       }
+<span class="lineNum">     102 </span>            :     }
+<span class="lineNum">     103 </span>            :   }
+<span class="lineNum">     104 </span>            :   return result;
+<span class="lineNum">     105 </span>            : }
+<span class="lineNum">     106 </span>            : 
+<span class="lineNum">     107 </span>            : }  // namespace
+<span class="lineNum">     108 </span>            : 
+<span class="lineNum">     109 </span><span class="lineCov">          1 : namespace Limiters {</span>
+<span class="lineNum">     110 </span>            : namespace Hweno_detail {
+<span class="lineNum">     111 </span>            : 
+<span class="lineNum">     112 </span>            : template &lt;size_t VolumeDim&gt;
+<span class="lineNum">     113 </span>            : Matrix inverse_a_matrix(
+<span class="lineNum">     114 </span>            :     const Element&lt;VolumeDim&gt;&amp; element, const Mesh&lt;VolumeDim&gt;&amp; mesh,
+<span class="lineNum">     115 </span>            :     const DataVector&amp; quadrature_weights,
+<span class="lineNum">     116 </span>            :     const DirectionMap&lt;VolumeDim, Matrix&gt;&amp; interpolation_matrices,
+<span class="lineNum">     117 </span>            :     const DirectionMap&lt;VolumeDim, DataVector&gt;&amp;
+<span class="lineNum">     118 </span>            :         quadrature_weights_dot_interpolation_matrices,
+<span class="lineNum">     119 </span>            :     const Direction&lt;VolumeDim&gt;&amp; primary_direction,
+<span class="lineNum">     120 </span>            :     const std::vector&lt;Direction&lt;VolumeDim&gt;&gt;&amp; directions_to_exclude) noexcept {
+<span class="lineNum">     121 </span>            :   const size_t number_of_grid_points = mesh.number_of_grid_points();
+<span class="lineNum">     122 </span>            :   Matrix a(number_of_grid_points, number_of_grid_points, 0.);
+<span class="lineNum">     123 </span>            : 
+<span class="lineNum">     124 </span>            :   // Loop only over directions where there is a neighbor
+<span class="lineNum">     125 </span>            :   const std::vector&lt;Direction&lt;VolumeDim&gt;&gt;
+<span class="lineNum">     126 </span>            :       directions_with_neighbors = [&amp;element]() noexcept {
+<span class="lineNum">     127 </span>            :     std::vector&lt;Direction&lt;VolumeDim&gt;&gt; result;
+<span class="lineNum">     128 </span>            :     for (const auto&amp; dir_and_neighbors : element.neighbors()) {
+<span class="lineNum">     129 </span>            :       result.push_back(dir_and_neighbors.first);
+<span class="lineNum">     130 </span>            :     }
+<span class="lineNum">     131 </span>            :     return result;
+<span class="lineNum">     132 </span>            :   }
+<span class="lineNum">     133 </span>            :   ();
+<span class="lineNum">     134 </span>            : 
+<span class="lineNum">     135 </span>            :   // Sanity check that directions_to_exclude is consistent with the element
+<span class="lineNum">     136 </span>            :   ASSERT(
+<span class="lineNum">     137 </span>            :       (not directions_to_exclude.empty()) or
+<span class="lineNum">     138 </span>            :           directions_with_neighbors.size() == 1,
+<span class="lineNum">     139 </span>            :       &quot;directions_to_exclude can only be empty if there is a single neighbor&quot;);
+<span class="lineNum">     140 </span>            : 
+<span class="lineNum">     141 </span>            :   for (const auto&amp; dir : directions_with_neighbors) {
+<span class="lineNum">     142 </span>            :     if (alg::found(directions_to_exclude, dir)) {
+<span class="lineNum">     143 </span>            :       continue;
+<span class="lineNum">     144 </span>            :     }
+<span class="lineNum">     145 </span>            : 
+<span class="lineNum">     146 </span>            :     const auto&amp; neighbor_mesh = mesh;
+<span class="lineNum">     147 </span>            :     const auto&amp; neighbor_quadrature_weights = quadrature_weights;
+<span class="lineNum">     148 </span>            :     const auto&amp; interpolation_matrix = interpolation_matrices.at(dir);
+<span class="lineNum">     149 </span>            :     const auto&amp; weights_dot_interpolation_matrix =
+<span class="lineNum">     150 </span>            :         quadrature_weights_dot_interpolation_matrices.at(dir);
+<span class="lineNum">     151 </span>            : 
+<span class="lineNum">     152 </span>            :     // Add terms from the primary neighbor
+<span class="lineNum">     153 </span>            :     if (dir == primary_direction) {
+<span class="lineNum">     154 </span>            :       for (size_t r = 0; r &lt; neighbor_mesh.number_of_grid_points(); ++r) {
+<span class="lineNum">     155 </span>            :         for (size_t s = 0; s &lt; number_of_grid_points; ++s) {
+<span class="lineNum">     156 </span>            :           for (size_t t = 0; t &lt; number_of_grid_points; ++t) {
+<span class="lineNum">     157 </span>            :             a(s, t) += neighbor_quadrature_weights[r] *
+<span class="lineNum">     158 </span>            :                        interpolation_matrix(r, s) * interpolation_matrix(r, t);
+<span class="lineNum">     159 </span>            :           }
+<span class="lineNum">     160 </span>            :         }
+<span class="lineNum">     161 </span>            :       }
+<span class="lineNum">     162 </span>            :     }
+<span class="lineNum">     163 </span>            :     // Add terms from the secondary neighbors
+<span class="lineNum">     164 </span>            :     else {
+<span class="lineNum">     165 </span>            :       for (size_t s = 0; s &lt; number_of_grid_points; ++s) {
+<span class="lineNum">     166 </span>            :         for (size_t t = 0; t &lt; number_of_grid_points; ++t) {
+<span class="lineNum">     167 </span>            :           a(s, t) += weights_dot_interpolation_matrix[s] *
+<span class="lineNum">     168 </span>            :                      weights_dot_interpolation_matrix[t];
+<span class="lineNum">     169 </span>            :         }
+<span class="lineNum">     170 </span>            :       }
+<span class="lineNum">     171 </span>            :     }
+<span class="lineNum">     172 </span>            :   }
+<span class="lineNum">     173 </span>            : 
+<span class="lineNum">     174 </span>            :   // Invert matrix in-place before returning
+<span class="lineNum">     175 </span>            :   blaze::invert&lt;blaze::asSymmetric&gt;(a);
+<span class="lineNum">     176 </span>            :   return a;
+<span class="lineNum">     177 </span>            : }
+<span class="lineNum">     178 </span>            : 
+<span class="lineNum">     179 </span>            : template &lt;size_t VolumeDim&gt;
+<span class="lineNum">     180 </span>            : ConstrainedFitCache&lt;VolumeDim&gt;::ConstrainedFitCache(
+<span class="lineNum">     181 </span>            :     const Element&lt;VolumeDim&gt;&amp; element, const Mesh&lt;VolumeDim&gt;&amp; mesh) noexcept
+<span class="lineNum">     182 </span>            :     : quadrature_weights(volume_quadrature_weights(mesh)) {
+<span class="lineNum">     183 </span>            :   // Cache will only store quantities for directions that have neighbors.
+<span class="lineNum">     184 </span>            :   const std::vector&lt;Direction&lt;VolumeDim&gt;&gt;
+<span class="lineNum">     185 </span>            :       directions_with_neighbors = [&amp;element]() noexcept {
+<span class="lineNum">     186 </span>            :     std::vector&lt;Direction&lt;VolumeDim&gt;&gt; result;
+<span class="lineNum">     187 </span>            :     for (const auto&amp; dir_and_neighbors : element.neighbors()) {
+<span class="lineNum">     188 </span>            :       result.push_back(dir_and_neighbors.first);
+<span class="lineNum">     189 </span>            :     }
+<span class="lineNum">     190 </span>            :     return result;
+<span class="lineNum">     191 </span>            :   }
+<span class="lineNum">     192 </span>            :   ();
+<span class="lineNum">     193 </span>            : 
+<span class="lineNum">     194 </span>            :   for (const auto&amp; dir : directions_with_neighbors) {
+<span class="lineNum">     195 </span>            :     interpolation_matrices[dir] =
+<span class="lineNum">     196 </span>            :         volume_interpolation_matrix(mesh, mesh, element, dir);
+<span class="lineNum">     197 </span>            :     quadrature_weights_dot_interpolation_matrices[dir] = apply_matrices(
+<span class="lineNum">     198 </span>            :         std::array&lt;Matrix, 1&gt;{{trans(interpolation_matrices.at(dir))}},
+<span class="lineNum">     199 </span>            :         quadrature_weights, Index&lt;1&gt;(quadrature_weights.size()));
+<span class="lineNum">     200 </span>            :   }
+<span class="lineNum">     201 </span>            : 
+<span class="lineNum">     202 </span>            :   for (const auto&amp; primary_dir : directions_with_neighbors) {
+<span class="lineNum">     203 </span>            :     if (directions_with_neighbors.size() == 1) {
+<span class="lineNum">     204 </span>            :       // With a single neighbor, there can be no neighbors to exclude.
+<span class="lineNum">     205 </span>            :       std::vector&lt;Direction&lt;VolumeDim&gt;&gt; nothing_to_exclude{{}};
+<span class="lineNum">     206 </span>            :       // To reuse the same data structure from the more common `else` branch,
+<span class="lineNum">     207 </span>            :       // here we stick the data into the (normally nonsensical) slot where
+<span class="lineNum">     208 </span>            :       // `dir_to_exclude == primary_dir`.
+<span class="lineNum">     209 </span>            :       inverse_a_matrices[primary_dir][primary_dir] = inverse_a_matrix(
+<span class="lineNum">     210 </span>            :           element, mesh, quadrature_weights, interpolation_matrices,
+<span class="lineNum">     211 </span>            :           quadrature_weights_dot_interpolation_matrices, primary_dir,
+<span class="lineNum">     212 </span>            :           nothing_to_exclude);
+<span class="lineNum">     213 </span>            :     } else {
+<span class="lineNum">     214 </span>            :       // Cache only handles the case of 1 neighbor to exclude.
+<span class="lineNum">     215 </span>            :       for (const auto&amp; dir_to_exclude : directions_with_neighbors) {
+<span class="lineNum">     216 </span>            :         // Skip the nonsensical case where the primary and excluded neighbors
+<span class="lineNum">     217 </span>            :         // are the same.
+<span class="lineNum">     218 </span>            :         if (dir_to_exclude == primary_dir) {
+<span class="lineNum">     219 </span>            :           continue;
+<span class="lineNum">     220 </span>            :         }
+<span class="lineNum">     221 </span>            :         inverse_a_matrices[primary_dir][dir_to_exclude] = inverse_a_matrix(
+<span class="lineNum">     222 </span>            :             element, mesh, quadrature_weights, interpolation_matrices,
+<span class="lineNum">     223 </span>            :             quadrature_weights_dot_interpolation_matrices, primary_dir,
+<span class="lineNum">     224 </span>            :             {{dir_to_exclude}});
+<span class="lineNum">     225 </span>            :       }
+<span class="lineNum">     226 </span>            :     }
+<span class="lineNum">     227 </span>            :   }
+<span class="lineNum">     228 </span>            : }
+<span class="lineNum">     229 </span>            : 
+<span class="lineNum">     230 </span>            : template &lt;size_t VolumeDim&gt;
+<span class="lineNum">     231 </span>            : const Matrix&amp; ConstrainedFitCache&lt;VolumeDim&gt;::retrieve_inverse_a_matrix(
+<span class="lineNum">     232 </span>            :     const Direction&lt;VolumeDim&gt;&amp; primary_direction,
+<span class="lineNum">     233 </span>            :     const std::vector&lt;Direction&lt;VolumeDim&gt;&gt;&amp; directions_to_exclude) const
+<span class="lineNum">     234 </span>            :     noexcept {
+<span class="lineNum">     235 </span>            :   if (LIKELY(directions_to_exclude.size() == 1)) {
+<span class="lineNum">     236 </span>            :     return inverse_a_matrices.at(primary_direction)
+<span class="lineNum">     237 </span>            :         .at(directions_to_exclude[0]);
+<span class="lineNum">     238 </span>            :   } else if (directions_to_exclude.empty()) {
+<span class="lineNum">     239 </span>            :     return inverse_a_matrices.at(primary_direction).at(primary_direction);
+<span class="lineNum">     240 </span>            :   } else {
+<span class="lineNum">     241 </span>            :     ERROR(
+<span class="lineNum">     242 </span>            :         &quot;Cache misuse error: asked to retrieve a cached A^{-1} matrix for a\n&quot;
+<span class="lineNum">     243 </span>            :         &quot;configuration where multiple neighboring elements are excluded from\n&quot;
+<span class="lineNum">     244 </span>            :         &quot;the HWENO fit. Because this case is so rare, it is not handled by\n&quot;
+<span class="lineNum">     245 </span>            :         &quot;the cache. The caller should check for multiple neighbors being\n&quot;
+<span class="lineNum">     246 </span>            :         &quot;excluded, and, if this occurs, should bypass the cache and compute\n&quot;
+<span class="lineNum">     247 </span>            :         &quot;A^{-1} directly.&quot;);
+<span class="lineNum">     248 </span>            :   }
+<span class="lineNum">     249 </span>            : }
+<span class="lineNum">     250 </span>            : 
+<span class="lineNum">     251 </span>            : namespace {
+<span class="lineNum">     252 </span>            : 
+<span class="lineNum">     253 </span>            : template &lt;size_t VolumeDim, size_t DummyIndex&gt;
+<span class="lineNum">     254 </span>            : const ConstrainedFitCache&lt;VolumeDim&gt;&amp; constrained_fit_cache_impl(
+<span class="lineNum">     255 </span>            :     const Element&lt;VolumeDim&gt;&amp; element, const Mesh&lt;VolumeDim&gt;&amp; mesh) noexcept {
+<span class="lineNum">     256 </span>            :   // For the cache to be valid,
+<span class="lineNum">     257 </span>            :   // - the mesh must always be the same, so we check it below
+<span class="lineNum">     258 </span>            :   // - the element can be different, as long as it has the same configuration
+<span class="lineNum">     259 </span>            :   //   of internal/external boundaries. this is handled in the calling code
+<span class="lineNum">     260 </span>            :   //   because the boundary configuration sets the value of DummyIndex
+<span class="lineNum">     261 </span>            :   static const Mesh&lt;VolumeDim&gt; mesh_for_cached_matrix = mesh;
+<span class="lineNum">     262 </span>            :   ASSERT(mesh_for_cached_matrix == mesh,
+<span class="lineNum">     263 </span>            :          &quot;This call to constrained_fit_cache_impl received a different Mesh\n&quot;
+<span class="lineNum">     264 </span>            :          &quot;than was previously cached, suggesting that multiple meshes are\n&quot;
+<span class="lineNum">     265 </span>            :          &quot;used in the computational domain. This is not (yet) supported.\n&quot;
+<span class="lineNum">     266 </span>            :          &quot;Cached mesh: &quot;
+<span class="lineNum">     267 </span>            :              &lt;&lt; mesh_for_cached_matrix
+<span class="lineNum">     268 </span>            :              &lt;&lt; &quot;\n&quot;
+<span class="lineNum">     269 </span>            :                 &quot;Argument mesh: &quot;
+<span class="lineNum">     270 </span>            :              &lt;&lt; mesh);
+<span class="lineNum">     271 </span>            :   static const ConstrainedFitCache&lt;VolumeDim&gt; result(element, mesh);
+<span class="lineNum">     272 </span>            :   return result;
+<span class="lineNum">     273 </span>            : }
+<span class="lineNum">     274 </span>            : 
+<span class="lineNum">     275 </span>            : template &lt;size_t VolumeDim, size_t... Is&gt;
+<span class="lineNum">     276 </span>            : const ConstrainedFitCache&lt;VolumeDim&gt;&amp; constrained_fit_cache(
+<span class="lineNum">     277 </span>            :     const Element&lt;VolumeDim&gt;&amp; element, const Mesh&lt;VolumeDim&gt;&amp; mesh,
+<span class="lineNum">     278 </span>            :     std::index_sequence&lt;Is...&gt; /*dummy_indices*/) noexcept {
+<span class="lineNum">     279 </span>            :   static const std::array&lt;
+<span class="lineNum">     280 </span>            :       const ConstrainedFitCache&lt;VolumeDim&gt;&amp; (*)(const Element&lt;VolumeDim&gt;&amp;,
+<span class="lineNum">     281 </span>            :                                                 const Mesh&lt;VolumeDim&gt;&amp;),
+<span class="lineNum">     282 </span>            :       sizeof...(Is)&gt;
+<span class="lineNum">     283 </span>            :       cache{{&amp;constrained_fit_cache_impl&lt;VolumeDim, Is&gt;...}};
+<span class="lineNum">     284 </span>            : 
+<span class="lineNum">     285 </span>            :   // Use std::bitset to compute an integer based on the configuration of
+<span class="lineNum">     286 </span>            :   // internal/external boundaries to the element. This is sort of like a hash
+<span class="lineNum">     287 </span>            :   // for indexing into the std::array of ConstrainedFitCache's.
+<span class="lineNum">     288 </span>            :   const size_t index_from_boundary_types = [&amp;element]() noexcept {
+<span class="lineNum">     289 </span>            :     std::bitset&lt;2 * VolumeDim&gt; bits;
+<span class="lineNum">     290 </span>            :     for (size_t d = 0; d &lt; VolumeDim; ++d) {
+<span class="lineNum">     291 </span>            :       for (const Side&amp; side : {Side::Lower, Side::Upper}) {
+<span class="lineNum">     292 </span>            :         // Index into bitset
+<span class="lineNum">     293 </span>            :         const size_t bit_index = 2 * d + (side == Side::Lower ? 0 : 1);
+<span class="lineNum">     294 </span>            :         // Is there a neighbor in this direction?
+<span class="lineNum">     295 </span>            :         const Direction&lt;VolumeDim&gt; dir(d, side);
+<span class="lineNum">     296 </span>            :         const bool neighbor_exists =
+<span class="lineNum">     297 </span>            :             (element.neighbors().find(dir) != element.neighbors().end());
+<span class="lineNum">     298 </span>            :         bits[bit_index] = neighbor_exists;
+<span class="lineNum">     299 </span>            :       }
+<span class="lineNum">     300 </span>            :     }
+<span class="lineNum">     301 </span>            :     return static_cast&lt;size_t&gt;(bits.to_ulong());
+<span class="lineNum">     302 </span>            :   }
+<span class="lineNum">     303 </span>            :   ();
+<span class="lineNum">     304 </span>            :   ASSERT(index_from_boundary_types &gt;= 0 and
+<span class="lineNum">     305 </span>            :              index_from_boundary_types &lt; sizeof...(Is),
+<span class="lineNum">     306 </span>            :          &quot;Got index_from_boundary_types = &quot;
+<span class="lineNum">     307 </span>            :              &lt;&lt; index_from_boundary_types &lt;&lt; &quot;, but expect only &quot;
+<span class="lineNum">     308 </span>            :              &lt;&lt; sizeof...(Is) &lt;&lt; &quot; configurations&quot;);
+<span class="lineNum">     309 </span>            :   return gsl::at(cache, index_from_boundary_types)(element, mesh);
+<span class="lineNum">     310 </span>            : }
+<span class="lineNum">     311 </span>            : 
+<span class="lineNum">     312 </span>            : }  // namespace
+<span class="lineNum">     313 </span>            : 
+<span class="lineNum">     314 </span>            : template &lt;size_t VolumeDim&gt;
+<span class="lineNum">     315 </span>            : const ConstrainedFitCache&lt;VolumeDim&gt;&amp; constrained_fit_cache(
+<span class="lineNum">     316 </span>            :     const Element&lt;VolumeDim&gt;&amp; element, const Mesh&lt;VolumeDim&gt;&amp; mesh) noexcept {
+<span class="lineNum">     317 </span>            :   return constrained_fit_cache&lt;VolumeDim&gt;(
+<span class="lineNum">     318 </span>            :       element, mesh, std::make_index_sequence&lt;two_to_the(2 * VolumeDim)&gt;{});
+<span class="lineNum">     319 </span>            : }
+<span class="lineNum">     320 </span>            : 
+<span class="lineNum">     321 </span>            : // Explicit instantiations
+<span class="lineNum">     322 </span><span class="lineNoCov">          0 : #define DIM(data) BOOST_PP_TUPLE_ELEM(0, data)</span>
+<span class="lineNum">     323 </span>            : 
+<span class="lineNum">     324 </span><span class="lineNoCov">          0 : #define INSTANTIATE(_, data)                                                   \</span>
+<span class="lineNum">     325 </span>            :   template Matrix inverse_a_matrix&lt;DIM(data)&gt;(                                 \
+<span class="lineNum">     326 </span>            :       const Element&lt;DIM(data)&gt;&amp;, const Mesh&lt;DIM(data)&gt;&amp;, const DataVector&amp;,    \
+<span class="lineNum">     327 </span>            :       const DirectionMap&lt;DIM(data), Matrix&gt;&amp;,                                  \
+<span class="lineNum">     328 </span>            :       const DirectionMap&lt;DIM(data), DataVector&gt;&amp;, const Direction&lt;DIM(data)&gt;&amp;, \
+<span class="lineNum">     329 </span>            :       const std::vector&lt;Direction&lt;DIM(data)&gt;&gt;&amp;) noexcept;                      \
+<span class="lineNum">     330 </span>            :   template class ConstrainedFitCache&lt;DIM(data)&gt;;                               \
+<span class="lineNum">     331 </span>            :   template const ConstrainedFitCache&lt;DIM(data)&gt;&amp; constrained_fit_cache(        \
+<span class="lineNum">     332 </span>            :       const Element&lt;DIM(data)&gt;&amp;, const Mesh&lt;DIM(data)&gt;&amp;) noexcept;
+<span class="lineNum">     333 </span>            : 
+<span class="lineNum">     334 </span>            : GENERATE_INSTANTIATIONS(INSTANTIATE, (1, 2, 3))
+<span class="lineNum">     335 </span>            : 
+<span class="lineNum">     336 </span>            : #undef DIM
+<span class="lineNum">     337 </span>            : #undef INSTANTIATE
+<span class="lineNum">     338 </span>            : 
+<span class="lineNum">     339 </span>            : }  // namespace Hweno_detail
+<span class="lineNum">     340 </span>            : }  // namespace Limiters
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../../../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.13</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>
